@@ -22,3 +22,11 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio files
+*.sdf
+*.suo
+
+# My own
+/build/
+/bin/
