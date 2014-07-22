@@ -22,7 +22,12 @@ string(REGEX REPLACE "/" "\\\\" OutDir "${OutDir}")
 string(REGEX REPLACE "/" "\\\\" ProjectDir "${ProjectDir}")
 string(REGEX REPLACE "/" "\\\\" RtDir "${RtDir}")
 
-#message(${CMAKE_CURRENT_LIST_FILE})
+if(WIN32)
+   set_target_properties(Game PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+   set_target_properties(Game PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
+   set_target_properties(Game PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+   set_target_properties(Game PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS")
+endif(WIN32)
 
 file(MAKE_DIRECTORY ${OutDir}/resources)
 add_custom_command(TARGET Game
