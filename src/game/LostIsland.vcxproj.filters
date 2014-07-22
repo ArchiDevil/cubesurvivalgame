@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Headers\Game">
+      <UniqueIdentifier>{8fd0e97a-4887-421d-ab66-242ebed372df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Game\world">
+      <UniqueIdentifier>{f16ef67b-2dfc-4717-93da-6ca1ef62a38a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Game\player">
+      <UniqueIdentifier>{3494d23d-869c-4dd9-ac94-63f763a73cdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Game\Environment">
+      <UniqueIdentifier>{a4dffe94-4c31-4794-9585-d83f5ad7ccd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Game\Items">
+      <UniqueIdentifier>{7d4328b2-ec98-42ee-b44e-da9d36edce9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Sources\Game">
+      <UniqueIdentifier>{cc7cc236-9d34-4a04-8ae4-b9de6fd73984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Game\world">
+      <UniqueIdentifier>{4c95e187-4890-427f-8abc-985648abe425}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Game\player">
+      <UniqueIdentifier>{4cddbe2d-aec1-4ad1-9522-4da784482545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Game\Environment">
+      <UniqueIdentifier>{dc85b17d-5f33-4da1-940f-fe084e83289e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Game\Items">
+      <UniqueIdentifier>{12baa4e9-dcaa-4c2d-80c6-0fe18857edda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Game\States">
+      <UniqueIdentifier>{13456401-fa14-4bdf-9aa2-4433ba747e94}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="appclass.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="world\world.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="player\player.cpp">
+      <Filter>Sources\Game\player</Filter>
+    </ClCompile>
+    <ClCompile Include="world\WorldChunk.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="player\cSelectedBlock.cpp">
+      <Filter>Sources\Game\player</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\EnvironmentManager.cpp">
+      <Filter>Sources\Game\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="world\cChunksStorage.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\cItemManager.cpp">
+      <Filter>Sources\Game\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\cItem.cpp">
+      <Filter>Sources\Game\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="player\cInventory.cpp">
+      <Filter>Sources\Game\player</Filter>
+    </ClCompile>
+    <ClCompile Include="cEventProc.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEntity.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemEntity.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="cItemUsingHandler.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="world\cChunkStreamer.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\worldGenerator\cWorldGenerator.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\worldGenerator\cNoise.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\Tesselator.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\typesStorage.cpp">
+      <Filter>Sources\Game\world</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\Sky.cpp">
+      <Filter>Sources\Game\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="gameStates\mainMenuState.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="gameStates\gameState.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="InventoryScreen.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="gameHud.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="appclass.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="world\world.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\datatypes.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\block.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="player\player.h">
+      <Filter>Headers\Game\player</Filter>
+    </ClInclude>
+    <ClInclude Include="world\WorldChunk.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="player\cSelectedBlock.h">
+      <Filter>Headers\Game\player</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\EnvironmentManager.h">
+      <Filter>Headers\Game\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="world\cWorldStorage.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\cChunksStorage.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cItemManager.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="player\cInventory.h">
+      <Filter>Headers\Game\player</Filter>
+    </ClInclude>
+    <ClInclude Include="cEventProc.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEntity.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemEntity.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="cItemUsingHandler.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cArmorItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cMiscItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cPotionItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cToolItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cWeaponItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Items\cBlockItem.h">
+      <Filter>Headers\Game\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="world\cChunkStreamer.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\worldGenerator\cWorldGenerator.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\Tesselator.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\blockInfo.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\typesStorage.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="gameHud.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dayTimer.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\Sky.h">
+      <Filter>Headers\Game\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="events.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="IObserver.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="INotifer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="appState.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="gameStates\gameState.h">
+      <Filter>Headers\Game\States</Filter>
+    </ClInclude>
+    <ClInclude Include="gameStates\mainMenuState.h">
+      <Filter>Headers\Game\States</Filter>
+    </ClInclude>
+    <ClInclude Include="world\worldGenerator\cNoise.h">
+      <Filter>Headers\Game\world</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryScreen.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Headers\Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

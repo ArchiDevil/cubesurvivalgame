@@ -1,0 +1,10 @@
+<materials>
+    <material name="waterChunk">
+		<params>
+			<param name="isTransparent" value="true"/>
+			<param name="opacity" value="0.5"/>
+			<param name="diffuseColor" value="rgb(0.06275, 0.43137, 0.56863)"/>
+			<param name="specularColor" value="rgb(0.0, 0.0, 0.0)"/>
+		</params>
+    </material>
+</materials>

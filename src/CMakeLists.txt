@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 2.6)
+
+if(MSVC)
+	add_definitions(-DUNICODE -D_UNICODE)
+else()
+	add_definitions(-std=c++0x)
+endif()
+
+add_subdirectory(GraphicsEngine)
+add_subdirectory(GUI)
+add_subdirectory(MathLib)
+add_subdirectory(Utilities)
+add_subdirectory(SimplePhysicsEngine)
+add_subdirectory(game)
+add_subdirectory(Converter)
+
+set_property(TARGET GraphicsEngine 		PROPERTY FOLDER "Game")
+set_property(TARGET GUI 				PROPERTY FOLDER "Game")
+set_property(TARGET MathLib 			PROPERTY FOLDER "Game")
+set_property(TARGET Utilities 			PROPERTY FOLDER "Game")
+set_property(TARGET SimplePhysicsEngine PROPERTY FOLDER "Game")
+set_property(TARGET Game 				PROPERTY FOLDER "Game")
+set_property(TARGET Converter  			PROPERTY FOLDER "Tools")
+
+
+option(BUILD_TOOLS "Build engine tools" NO)
+
+if(BUILD_TOOLS)
+	add_subdirectory(MeshEditor)
+	set_property(TARGET MeshEditor PROPERTY FOLDER "Tools")
+endif()

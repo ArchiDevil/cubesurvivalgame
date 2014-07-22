@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Materials doc</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="block">
+            <div class="first">
+                <img src="img1.png">
+            </div>
+            <div class="second">
+                <p><strong>diffuseColor: color(<span class="text-red">R</span>, <span class="text-green">G</span>, <span class="text-blue">B</span>)</strong></p>
+                <p>Use this property to set diffuse color for material. Diffuse color is used while lighting calculation.</p>
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img2.png">
+            </div>
+            <div class="second">
+                <p><strong>specularColor: color(<span class="text-red">R</span>, <span class="text-green">G</span>, <span class="text-blue">B</span>)</strong></p>
+                <p><strong>specularIntensity: {real}</strong></p>
+                <p>Use this property to set specular color for material. Specular color is used while lighting calculation.</p>
+                <p>Specular intensity is used to define angle of specular component. Less is darker specular component.</p>
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img3.png">
+            </div>
+            <div class="second">
+                <p><strong>reflective: {boolean}</strong></p>
+                <p>If reflective property is true, material will reflect environment. Using this property can decrease FPS on low-end video systems.</p>
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img4.png">
+            </div>
+            <div class="second">
+                <p><strong>transparent: {boolean}</strong></p>
+                <p><strong>transparency: {real}</strong></p>
+                <p>Use this property to define material's transparency properties. If transparent set to true, you can use transparency property.</p>
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img5.png">
+            </div>
+            <div class="second">
+                <p><strong>diffuseMap: {texture}</strong></p>
+                <p><strong>diffuseMap: array({textures})</strong></p>
+                <p>Diffuse map is a property to control you diffuse colors for every pixel of object. You can also use array of textures if you use DX10+/OpenGL3.3+ API and three texture coordinates in you vertex.</p>
+
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img6.png">
+            </div>
+            <div class="second">
+                <p><strong>normalMap: {texture}</strong></p>
+                <p><strong>normalMap: array({textures})</strong></p>
+                <p>Diffuse map is a property to control you diffuse colors for every pixel of object. You can also use array of textures if you use DX10+/OpenGL3.3+ API and three texture coordinates in you vertex.</p>
+
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img7.png">
+            </div>
+            <div class="second">
+                <p><strong>luminosityColor: color(<span class="text-red">R</span>, <span class="text-green">G</span>, <span class="text-blue">B</span>)</strong></p>
+                <p>Use this property to set luminosity color for material. Useful for light sources. Material doesn't affect any lights around.</p>
+
+            </div>
+        </div>
+        <div class="block">
+            <div class="first">
+                <img src="img8.png">
+            </div>
+            <div class="second">
+                <p><strong>specularMap: {texture}</strong></p>
+                <p><strong>specularMap: array({textures})</strong></p>
+                <p>Specular map map is a property to control you specular intensity for every pixel of object. You can also use array of textures if you use DX10+/OpenGL3.3+ API and three texture coordinates in you vertex.</p>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<materials>
+    <material name="worldChunk">
+		<custom>
+			<shader name="land.fx" api="ignored now"/>
+		</custom>
+    </material>
+</materials>

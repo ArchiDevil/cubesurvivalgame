@@ -1,0 +1,4 @@
+[[18.7.2014] 23:30:54]	ERROR: Unable to get filenames from resources/gamedata/blocks/\, may be directory is not exist or it's empty.
+[[18.7.2014] 23:30:54]	ERROR: Unable to load gui/inventory_back.png, loaded empty texture.
+[[18.7.2014] 23:30:54]	ERROR: Unable to get filenames from resources\gamedata\Items\, may be directory is not exist or it's empty.
+[[18.7.2014] 23:30:54]	ERROR: Unable to load , loaded empty texture.

@@ -1,0 +1,9 @@
+<materials>
+    <material name="genericEntity">
+		<params>
+			<param name="diffuseMap" type="texture2D">
+				<texture>other/error.png</texture>
+			</param>
+		</params>
+    </material>
+</materials>

@@ -1,0 +1,9 @@
+<materials>
+    <material name="error">
+		<params>
+			<param name="diffuseMap" type="texture2D">
+				<texture>other/error.dds</texture>
+			</param>
+		</params>
+    </material>
+</materials>

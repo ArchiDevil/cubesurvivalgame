@@ -1,0 +1,11 @@
+<materials>
+    <material name="cube">
+		<params>
+			<param name="diffuseMap" type="texture2D">
+				<texture>selectedCube.png</texture>
+			</param>
+			<param name="useLighting" value="false"/>
+			<param name="isTransparent" value="true"/>
+		</params>
+    </material>
+</materials>
