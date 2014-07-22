@@ -52,6 +52,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshEditor", "MeshEditor\Me
 		{24B0BEA4-9C47-4D15-8062-E915E0B30EB4} = {24B0BEA4-9C47-4D15-8062-E915E0B30EB4}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml2", "..\3rdparty\tinyxml2\tinyxml2.vcxproj", "{216BB37E-A490-44D6-91C9-6CBA15BBC35C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,16 @@ Global
 		{8193267D-74F6-45E2-882A-5BB01CA6DA81}.Release|Any CPU.ActiveCfg = Release|Win32
 		{8193267D-74F6-45E2-882A-5BB01CA6DA81}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{8193267D-74F6-45E2-882A-5BB01CA6DA81}.Release|Win32.ActiveCfg = Release|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Debug|Win32.Build.0 = Debug|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Release|Win32.ActiveCfg = Release|Win32
+		{216BB37E-A490-44D6-91C9-6CBA15BBC35C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
