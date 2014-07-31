@@ -16,7 +16,7 @@ cChunkStreamer::~cChunkStreamer() {}
 
 bool cChunkStreamer::Check( int x, int y ) const
 {
-	return std::ifstream(BuildFileName(x, y)) != nullptr;
+	return (bool)std::ifstream(BuildFileName(x, y));
 }
 
 void cChunkStreamer::Load( int x, int y ) const
