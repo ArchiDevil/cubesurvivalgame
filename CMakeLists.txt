@@ -9,5 +9,18 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 cmake_policy(SET CMP0018 NEW)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_subdirectory(3rdparty/tinyxml2)
+
+set(JSONCPP_WITH_TESTS "OFF")
+set(OLD_CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+set(CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/jsoncpp")
+add_subdirectory(3rdparty/jsoncpp)
+set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
+
+set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
+
 add_subdirectory(src)
