@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "GameObject.h"
 #include "PhysicsEntity.h"
@@ -10,13 +11,9 @@
 
 class cSimplePhysicsEngine;
 
-using std::shared_ptr;
-using std::vector;
-using std::list;
-
-typedef shared_ptr<GameObject>		GameObjectPtr;
-typedef shared_ptr<PhysicsEntity>	PhysicsEntityPtr;
-typedef shared_ptr<ItemEntity>		ItemEntityPtr;
+typedef std::shared_ptr<GameObject>		GameObjectPtr;
+typedef std::shared_ptr<PhysicsEntity>	PhysicsEntityPtr;
+typedef std::shared_ptr<ItemEntity>		ItemEntityPtr;
 
 class cEntityManager
 {
@@ -32,7 +29,7 @@ public:
 	void					 DrawAll(Vector3F lightPos);
 
 private:
-	list<GameObjectPtr>		 GameObjects;
+	std::list<GameObjectPtr> GameObjects;
 	ShiftEngine::MaterialPtr entityMaterial;
 
 };
