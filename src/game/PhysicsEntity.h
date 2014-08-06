@@ -7,8 +7,6 @@ using ShiftEngine::MeshNode;
 
 class PhysicsEntity : public GameObject
 {
-	friend class cEntityManager;
-
 public:
 	PhysicsEntity(pPhysObject _obj, MeshNode * meshNode);
 	virtual ~PhysicsEntity();
