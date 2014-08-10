@@ -10,22 +10,39 @@ ShiftEngine::MeshData::MeshData( D3D10VDPtr _vertexDeclaration, ID3D10Buffer * _
 }
 
 ShiftEngine::MeshData::MeshData( const MeshData & ref )
-{
-	this->indicesCount = ref.indicesCount;
-	this->vertexSize = ref.vertexSize;
-	this->verticesCount = ref.verticesCount;
-	
-	this->IndexBuffer = ref.IndexBuffer;
-	if(this->IndexBuffer)
+	: indicesCount(ref.indicesCount)
+	, vertexSize(ref.vertexSize)
+	, verticesCount(ref.verticesCount)
+	, vertexDeclaration(ref.vertexDeclaration)
+	, vertexSemantic(ref.vertexSemantic)
+{	
+	IndexBuffer = ref.IndexBuffer;
+	if(IndexBuffer)
 		IndexBuffer->AddRef();
 
-	this->VertexBuffer = ref.VertexBuffer;
-	if(this->VertexBuffer)
+	VertexBuffer = ref.VertexBuffer;
+	if(VertexBuffer)
+		VertexBuffer->AddRef();
+}
+
+ShiftEngine::MeshData& ShiftEngine::MeshData::operator = (const MeshData & ref)
+{
+	indicesCount = ref.indicesCount;
+	vertexSize = ref.vertexSize;
+	verticesCount = ref.verticesCount;
+
+	IndexBuffer = ref.IndexBuffer;
+	if (IndexBuffer)
+		IndexBuffer->AddRef();
+
+	VertexBuffer = ref.VertexBuffer;
+	if (VertexBuffer)
 		VertexBuffer->AddRef();
 
-	this->vertexDeclaration = ref.vertexDeclaration;
+	vertexDeclaration = ref.vertexDeclaration;
+	vertexSemantic = ref.vertexSemantic;
 
-	this->vertexSemantic = ref.vertexSemantic;
+	return *this;
 }
 
 ShiftEngine::MeshData::~MeshData()
@@ -113,23 +130,18 @@ int ShiftEngine::MeshData::Draw( ID3D10Device * device )
 	if(!vertexSize || !verticesCount)
 		return 0;
 
-	if(indicesCount > 0)
+	unsigned int stride = vertexSize;
+	unsigned int offset = 0;
+	device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+	if (indicesCount > 0)
 	{
-		unsigned int stride = vertexSize;
-		unsigned int offset = 0;
-		device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
 		device->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 		device->DrawIndexed(indicesCount, 0, 0);
-
-		return indicesCount / 3;
 	}
 	else
 	{
-		unsigned int stride = vertexSize;
-		unsigned int offset = 0;
-		device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
 		device->Draw(verticesCount, 0);
-
-		return verticesCount / 3;
 	}
+
+	return indicesCount / 3;
 }

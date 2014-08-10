@@ -16,6 +16,7 @@ namespace ShiftEngine
 	{
 		MeshData(D3D10VDPtr _vertexDeclaration = nullptr, ID3D10Buffer * _VB = nullptr, ID3D10Buffer * _IB = nullptr);
 		MeshData(const MeshData & ref);
+		MeshData& operator = (const MeshData & ref);
 		~MeshData();
 
 		bool CreateBuffers(bool dynamic, const void * vData, size_t vSize, 
