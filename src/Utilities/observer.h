@@ -12,7 +12,7 @@ public:
 	observer() {}
 	~observer() {}
 	
-	virtual void procEvent(T event) = 0;
+	virtual bool handleEvent(const T & event) = 0;
 	
 protected:
 	notifier<T> * cur_notifier;	//may be observe more than one notifier?

@@ -19,14 +19,14 @@ public:
 		observers.push_back(obs);
 	}
 	
-	void de_subscribe(observer<T> * obs)
+	void unsubscribe(observer<T> * obs)
 	{
-		std::remove(observers.begin(), observers.end(), obs);
+		observers.remove(obs);
 	}
 	
 	virtual void notifyAll() = 0;
 	
 protected:
-	std::list<observer<T> *> observers;
+	std::list<observer<T>*> observers;
 	
 };
