@@ -24,4 +24,9 @@ set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
 
 set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
 
+if(MSVC)
+	add_definitions(-DUNICODE -D_UNICODE)
+	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
+endif()
+
 add_subdirectory(src)

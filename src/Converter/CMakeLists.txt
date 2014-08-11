@@ -4,10 +4,6 @@ project(Converter)
 
 file(GLOB_RECURSE SOURCE *.cpp)
 file(GLOB_RECURSE HEADERS *.h)
-		
-if(MSVC)
-	add_definitions(-DUNICODE -D_UNICODE)
-endif()
 
 add_executable(Converter ${SOURCE} ${HEADERS})
 add_dependencies(Converter Utilities)

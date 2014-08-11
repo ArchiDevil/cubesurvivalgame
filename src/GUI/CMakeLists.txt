@@ -26,11 +26,6 @@ set(SRC GUI.h
 		Objects/Textbox.cpp
 		Objects/Textbox.h
 		Objects/Window.h)
-				
-if(MSVC)
-	add_definitions(-DUNICODE -D_UNICODE)
-	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
-endif()
 
 include_directories($ENV{DXSDK_DIR}/include)
 

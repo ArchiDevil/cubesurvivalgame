@@ -3,10 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 file(GLOB_RECURSE SRC *.cpp)
 file(GLOB_RECURSE HDR *.h)
 
-if(MSVC)
-	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
-endif()
-
 include_directories($ENV{DXSDK_DIR}/include)
 link_directories($ENV{DXSDK_DIR}/lib/x86)
 

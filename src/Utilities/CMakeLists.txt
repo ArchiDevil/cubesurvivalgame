@@ -12,10 +12,5 @@ if(NOT WIN32)
 							cRegWorker.h)
 endif()
 
-if(MSVC)
-	add_definitions(-DUNICODE -D_UNICODE)
-	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
-endif()
-
 add_library(Utilities STATIC ${SRC} ${HDR})
 #elseif (CMAKE_COMPILER_IS_GNUCXX)
