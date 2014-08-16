@@ -4,7 +4,7 @@
 #include "../game.h"
 #include "../../utilities/ut.h"
 #include "../../utilities/iniloader.h"
-#include "../../utilities/dinput.h"
+#include "../../utilities/InputEngine.h"
 
 using MathLib::Vector3D;
 using MathLib::Vector2D;

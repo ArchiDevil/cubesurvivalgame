@@ -2,7 +2,7 @@
 
 #include "world/world.h"
 #include "player/player.h"
-#include "Items/cItemManager.h"
+#include "Items/ItemManager.h"
 #include "EntityManager.h"
 
 using MathLib::Vector3I;
@@ -11,12 +11,12 @@ using MathLib::Vector3D;
 class cPlayer;
 class cWorld;
 class cEntityManager;
-class cItemManager;
+class ItemManager;
 
 class cGameEventHandler
 {
 public:
-	void Initialize(cPlayer * _p, cWorld * _c, cEntityManager * _em, cItemManager * _im);
+	void Initialize(cPlayer * _p, cWorld * _c, cEntityManager * _em, ItemManager * _im);
 
 	//world events
 	void onBlockRemoved(BlockType bt, Vector3I Pos);	//вызывается при удалении блока
@@ -25,8 +25,8 @@ public:
 	//player events
 	void onPlayerMoves();								//вызывается при движении игрока
 	void onPlayerAttack();								//при атаке игроком
-	bool onPlayerPicksItem(cItem * item);				//игрок берет предмет
-	void onPlayerDropsItem(cItem * item);				//игрок бросает айтим
+	bool onPlayerPicksItem(Item * item);				//игрок берет предмет
+	void onPlayerDropsItem(Item * item);				//игрок бросает айтим
 	
 private:
 	//use some more
@@ -34,5 +34,5 @@ private:
 	cPlayer * pPlayer;
 	cWorld * pWorld;
 	cEntityManager * pEM;
-	cItemManager * pIM;
+	ItemManager * pIM;
 };

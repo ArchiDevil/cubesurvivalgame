@@ -1,21 +1,22 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 
-class cToolItem : public cItem
+class FoodItem : public Item
 {
 public:
-	cToolItem(cItemUsingsHandler * _handler, 
+	FoodItem(ItemUsingsHandler * _handler, 
 			  const std::string & _Name, 
 			  const std::string & _Desc,
 			  ShiftEngine::MeshDataPtr data,
 			  ShiftEngine::TexturePtr ptr)
-		: cItem(_handler, ptr, data, _Name, _Desc) {}
+		: Item(_handler, ptr, data, _Name, _Desc) {}
 
-	~cToolItem() {}
+	~FoodItem() {}
 
 	bool Use()
 	{
+		//restore player's hunger
 		return false;
 	}
 

@@ -1,22 +1,22 @@
-#include "cItemUsingHandler.h"
+#include "ItemUsingHandler.h"
 
-#include "Items/cArmorItem.h"
-#include "Items/cBlockItem.h"
-#include "Items/cMiscItem.h"
-#include "Items/cPotionItem.h"
-#include "Items/cToolItem.h"
-#include "Items/cWeaponItem.h"
+#include "Items/ArmorItem.h"
+#include "Items/BlockItem.h"
+#include "Items/MiscItem.h"
+#include "Items/PotionItem.h"
+#include "Items/ToolItem.h"
+#include "Items/WeaponItem.h"
 
-cItemUsingsHandler::cItemUsingsHandler( cPlayer * _p, cWorld * _w )
+ItemUsingsHandler::ItemUsingsHandler( cPlayer * _p, cWorld * _w )
 	: pPlayer(_p), pWorld(_w)
 {
 }
 
-cItemUsingsHandler::~cItemUsingsHandler()
+ItemUsingsHandler::~ItemUsingsHandler()
 {
 }
 
-bool cItemUsingsHandler::UseBlockItem( cBlockItem * block )
+bool ItemUsingsHandler::UseBlockItem( BlockItem * block )
 {
 	if(block->GetBlockID() == ID_AIR) return false;
 
@@ -39,7 +39,7 @@ bool cItemUsingsHandler::UseBlockItem( cBlockItem * block )
 	return false;
 }
 
-bool cItemUsingsHandler::UsePotionItem( cPotionItem * potion )
+bool ItemUsingsHandler::UsePotionItem( PotionItem * potion )
 {
 	int newHP = pPlayer->GetHealth() + potion->GetHealthPoints();
 	int newFP = pPlayer->GetLongFatique() + potion->GetFatiquePoints();

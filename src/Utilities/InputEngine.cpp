@@ -1,13 +1,13 @@
-#include "dinput.h"
+#include "InputEngine.h"
 
-#if defined (WIN32) || (_WIN32)
-
-cInputEngine::cInputEngine() :
-mouse(nullptr), keyboard(nullptr), di(nullptr)
-{}
+cInputEngine::cInputEngine() 
+	: mouse(nullptr), keyboard(nullptr), di(nullptr)
+{
+}
 
 cInputEngine::~cInputEngine()
-{}
+{
+}
 
 bool cInputEngine::Initialize( HWND hWnd, HINSTANCE hInstance )
 {
@@ -105,5 +105,3 @@ void cInputEngine::ProcEvent( MSG msg )
 {
 
 }
-
-#endif

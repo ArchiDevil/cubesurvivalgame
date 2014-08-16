@@ -1,24 +1,24 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 
-class cItem;
-class cItemUsingsHandler;
+class Item;
+class ItemUsingsHandler;
 
-class cWeaponItem : public cItem
+class WeaponItem : public Item
 {
 public:
-	cWeaponItem(cItemUsingsHandler * _handler,
+	WeaponItem(ItemUsingsHandler * _handler,
 				const std::string & _Name,
 				const std::string & _Desc,
 				ShiftEngine::MeshDataPtr data,
 				ShiftEngine::TexturePtr ptr,
 				const int _damageCount = 0)
-		: cItem(_handler, ptr, data, _Name, _Desc), 
+		: Item(_handler, ptr, data, _Name, _Desc), 
 		damageCount(_damageCount)
 	{}
 
-	~cWeaponItem() {}
+	~WeaponItem() {}
 
 	int GetDamageCount() const
 	{

@@ -22,7 +22,7 @@ public:
 	~cEntityManager();
 
 	void					 Initialize();
-	ItemEntityPtr			 CreateItemEntity(Vector3D Position, Vector3D Velocity, cItem * item);
+	ItemEntityPtr			 CreateItemEntity(Vector3D Position, Vector3D Velocity, Item * item);
 	GameObjectPtr			 FindEntityByPos(Vector3F Position);
 	vector<ItemEntity *>	 FindItemsNearPlayer(Vector3F playerPos);
 	void					 Update(double dt, const Vector3F & sunPos);

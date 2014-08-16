@@ -1,6 +1,6 @@
 #include "cEventProc.h"
 
-void cGameEventHandler::Initialize( cPlayer * _p, cWorld * _c, cEntityManager * _em, cItemManager * _im )
+void cGameEventHandler::Initialize( cPlayer * _p, cWorld * _c, cEntityManager * _em, ItemManager * _im )
 {
 	this->pPlayer = _p;
 	this->pWorld = _c;
@@ -50,12 +50,12 @@ void cGameEventHandler::onPlayerMoves()
 	}
 }
 
-bool cGameEventHandler::onPlayerPicksItem( cItem * item )
+bool cGameEventHandler::onPlayerPicksItem( Item * item )
 {
 	return pPlayer->GetInventoryPtr()->AddItem(item);
 }
 
-void cGameEventHandler::onPlayerDropsItem( cItem * item )
+void cGameEventHandler::onPlayerDropsItem( Item * item )
 {
 	if(!pPlayer->GetInventoryPtr()->RemoveItem(item))
 	{

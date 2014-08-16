@@ -1,22 +1,22 @@
 #pragma once
 
 #include "PhysicsEntity.h"
-#include "Items/cItem.h"
+#include "Items/Item.h"
 
-class cItem;
+class Item;
 class PhysicsEntity;
 
 class ItemEntity : public PhysicsEntity
 {
 public:
-	ItemEntity(cItem * _item, pPhysObject _obj, ShiftEngine::MeshNode * meshNode);
+	ItemEntity(Item * _item, pPhysObject _obj, ShiftEngine::MeshNode * meshNode);
 	~ItemEntity();
 
-	cItem * GetItemPtr() const;
+	Item * GetItemPtr() const;
 
 	virtual void Update( double dt );
 
 private:
-	cItem * item;
+	Item * item;
 
 };

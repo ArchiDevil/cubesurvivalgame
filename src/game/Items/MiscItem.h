@@ -1,20 +1,20 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 
-class cItem;
+class Item;
 
-class cMiscItem : public cItem
+class MiscItem : public Item
 {
 public:
-	cMiscItem(cItemUsingsHandler * _handler,
+	MiscItem(ItemUsingsHandler * _handler,
 		const std::string & _Name,
 		const std::string & _Desc,
 		ShiftEngine::MeshDataPtr data,
 		ShiftEngine::TexturePtr ptr)
-		: cItem(_handler, ptr, data, _Name, _Desc) {}
+		: Item(_handler, ptr, data, _Name, _Desc) {}
 
-	~cMiscItem() {}
+	~MiscItem() {}
 
 	bool Use() 
 	{

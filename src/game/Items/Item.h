@@ -4,20 +4,20 @@
 
 #include "../../GraphicsEngine/D3D10Texture.h"
 #include "../../GraphicsEngine/cMesh.h"
-#include "../cItemUsingHandler.h"
+#include "../ItemUsingHandler.h"
 
-class cItemUsingsHandler;
+class ItemUsingsHandler;
 
-class cItem
+class Item
 {
 public:
-	cItem(cItemUsingsHandler * _handler, 
+	Item(ItemUsingsHandler * _handler, 
 		  ShiftEngine::TexturePtr ptr, 
 		  ShiftEngine::MeshDataPtr data, 
 		  const std::string & _Name = "NULL", 
 		  const std::string & _Desc = "NULL");
 
-	virtual ~cItem();
+	virtual ~Item();
 
 	std::string GetDescription() const;
 	std::string GetName() const;
@@ -34,7 +34,7 @@ public:
 	virtual bool Use() = 0;
 
 protected:
-	cItemUsingsHandler * handler;
+	ItemUsingsHandler * handler;
 	const ShiftEngine::TexturePtr texture;
 	ShiftEngine::MeshDataPtr mesh;
 

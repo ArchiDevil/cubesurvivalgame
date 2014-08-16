@@ -15,7 +15,7 @@ cGame::cGame()
 cGame::~cGame()
 {
 	delete invScreen;
-	delete ItemManager;
+	delete ItemMgr;
 	delete GameEventHandler;
 	delete World;
 	delete Player;
