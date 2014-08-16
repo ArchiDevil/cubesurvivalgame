@@ -30,7 +30,7 @@ bool gameState::initState()
 	::utils::filesystem::CreateDir(L"saves\\players\\");
 	::utils::filesystem::CreateDir(L"saves\\worlds\\tempWorld\\");
 
-	//инициализируем модуль, отвечающий за мир
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
@@ -40,16 +40,16 @@ bool gameState::initState()
 	pGame->invScreen = new InventoryScreen(3, 5, Vector2D(200, 200), 2);
 	MainLog.Message("InvScr has been initialized");
 
-	pGame->ItemManager = new cItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
-	pGame->ItemManager->Initialize(L"resources\\gamedata\\Items");
+	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
+	pGame->ItemMgr->Initialize(L"resources\\gamedata\\Items");
 	MainLog.Message("Items have been loaded");
 
-	//инициализируем игрока
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	pGame->Player->Initialize(pGame->World->GetDataStorage());
 	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
-	pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemManager->GetItemByName("empty"));
-	pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(pGame->ItemManager->GetItemByName("empty"), 1));
-	pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(pGame->ItemManager->GetItemByName("empty"), 1));
+	pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemMgr->GetItemByName("empty"));
+	pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
+	pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pGame->Player, pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
@@ -65,7 +65,7 @@ bool gameState::initState()
 		Sleep(0);
 	});
 
-	pGame->GameEventHandler->Initialize(pGame->Player, pGame->World, pGame->EntityManager, pGame->ItemManager);
+	pGame->GameEventHandler->Initialize(pGame->Player, pGame->World, pGame->EntityManager, pGame->ItemMgr);
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
 	auto settings = pCtxMgr->GetParameters();
@@ -287,7 +287,7 @@ void gameState::ProcessInput( double /*dt*/ )
 	if(InputEngine->IsMouseUp(LButton))
 	{
 		Vector3D vec = pGame->Player->GetSelectedBlockPtr()->GetPositions().solid;
-		if(vec.z > -1) //z не бывает меньше 0
+		if(vec.z > -1) //z пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 0
 		{
 			vec3<int> pos = vec3<int>(floor(vec.x), floor(vec.y), floor(vec.z));
 			auto block = pGame->World->GetDataStorage()->GetBlock(pos.x, pos.y, pos.z)->TypeID;

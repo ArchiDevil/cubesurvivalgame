@@ -1,28 +1,28 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 #include "../GameObject.h"
 #include "../world/datatypes.h"
 
 #include "../../GraphicsEngine/ShiftEngine.h"
 
-class cItem;
-class cItemUsingsHandler;
+class Item;
+class ItemUsingsHandler;
 
-class cBlockItem : public cItem
+class BlockItem : public Item
 {
 public:
-	cBlockItem(cItemUsingsHandler * _handler, 
+	BlockItem(ItemUsingsHandler * _handler, 
 			   const std::string & _Name, 
 			   const std::string & _Desc,
 			   ShiftEngine::TexturePtr ptr, 
 			   BlockType _id)
-		: cItem(_handler, ptr, ShiftEngine::Utilities::createCube(), _Name, _Desc), BlockID(_id)
+		: Item(_handler, ptr, ShiftEngine::Utilities::createCube(), _Name, _Desc), BlockID(_id)
 	{
 		//mesh->SetScale(D3DXVECTOR3(0.4f, 0.4f, 0.4f)); //TEMPORARY COMMENTED
 	}
 
-	~cBlockItem() {}
+	~BlockItem() {}
 
 	BlockType GetBlockID() const
 	{

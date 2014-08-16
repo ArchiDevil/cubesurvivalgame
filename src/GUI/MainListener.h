@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Listener.h"
-#include "../Utilities/dinput.h"
+#include "../Utilities/InputEngine.h"
 
 namespace SimpleGUI
 {

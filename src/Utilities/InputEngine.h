@@ -1,8 +1,8 @@
 #pragma once
 
-#if defined (WIN32) || (_WIN32)
-
 #include <Windows.h>
+
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 #include "ut.h"
@@ -55,5 +55,3 @@ private:
 	HWND hWnd;
 
 };
-
-#endif

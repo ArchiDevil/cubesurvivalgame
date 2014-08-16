@@ -16,7 +16,7 @@ bool cInventory::IsExist( std::string & Name ) const
 	return false;
 }
 
-bool cInventory::IsExist( cItem * it ) const
+bool cInventory::IsExist( Item * it ) const
 {
 	for (auto iter = Items.begin(); iter != Items.end(); iter++)
 		if((*iter).Item == it && (*iter).count > 0)
@@ -30,7 +30,7 @@ SlotUnit cInventory::GetItemInSlot( int slot ) const
 	return Items[slot];
 }
 
-void cInventory::SetItemInSlot( int slot, cItem * it )
+void cInventory::SetItemInSlot( int slot, Item * it )
 {
 	Items[slot].Item = it;
 	Items[slot].count = 1;
@@ -82,7 +82,7 @@ void cInventory::ResetEmpty()
 			Items[i].Item = nullptr;
 }
 
-bool cInventory::AddItem( cItem * it )
+bool cInventory::AddItem( Item * it )
 {
 	//first we must find if this item exist in inventory
 
@@ -110,7 +110,7 @@ bool cInventory::AddItem( cItem * it )
 	}
 }
 
-bool cInventory::RemoveItem( cItem * it )
+bool cInventory::RemoveItem( Item * it )
 {
 	for (int i = 0; i < InventorySize; i++)
 	{
@@ -126,7 +126,7 @@ bool cInventory::RemoveItem( cItem * it )
 	return false;
 }
 
-void cInventory::SetEmptyItem( cItem * it )
+void cInventory::SetEmptyItem( Item * it )
 {
 	empty = it;
 }

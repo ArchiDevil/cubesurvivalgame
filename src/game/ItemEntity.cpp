@@ -1,6 +1,6 @@
 #include "ItemEntity.h"
 
-ItemEntity::ItemEntity( cItem * item, pPhysObject _obj, ShiftEngine::MeshNode * meshNode )
+ItemEntity::ItemEntity( Item * item, pPhysObject _obj, ShiftEngine::MeshNode * meshNode )
 	: item(item), PhysicsEntity(_obj, meshNode)
 {
 }
@@ -9,7 +9,7 @@ ItemEntity::~ItemEntity()
 {
 }
 
-cItem * ItemEntity::GetItemPtr() const
+Item * ItemEntity::GetItemPtr() const
 {
 	return item;
 }

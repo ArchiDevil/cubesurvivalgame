@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 
 class cItemUsingsHandler;
 
-class cPotionItem : public cItem
+class PotionItem : public Item
 {
 public:
-	cPotionItem(cItemUsingsHandler * _handler,
+	PotionItem(ItemUsingsHandler * _handler,
 				const std::string & _Name,
 				const std::string & _Desc,
 				ShiftEngine::TexturePtr ptr,
@@ -16,10 +16,10 @@ public:
 				int _fp = 0,
 				int _hnp = 0,
 				int _hd = 0)
-		: cItem(_handler, ptr, data, _Name, _Desc), healthPoints(_hp),
+		: Item(_handler, ptr, data, _Name, _Desc), healthPoints(_hp),
 			fatiquePoints(_fp), hungerPoints(_hnp), healthDamage(_hd) {}
 
-	~cPotionItem() {}
+	~PotionItem() {}
 
 	bool Use() 
 	{

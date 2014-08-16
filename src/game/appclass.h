@@ -23,7 +23,7 @@
 
 #include "../utilities/timer.h"
 #include "../utilities/cRegWorker.h"
-#include "../utilities/dinput.h"
+#include "../utilities/InputEngine.h"
 #include "../utilities/iniloader.h"
 
 #include "game.h"

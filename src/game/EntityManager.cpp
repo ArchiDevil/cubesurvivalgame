@@ -22,7 +22,7 @@ void cEntityManager::Initialize()
 	entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
 }
 
-ItemEntityPtr cEntityManager::CreateItemEntity( Vector3D Position, Vector3D Velocity, cItem * item )
+ItemEntityPtr cEntityManager::CreateItemEntity( Vector3D Position, Vector3D Velocity, Item * item )
 {
 	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(*item->GetMesh(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), entityMaterial.get());
 	ItemEntity * it = new ItemEntity(item, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);

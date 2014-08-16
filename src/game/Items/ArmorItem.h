@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cItem.h"
+#include "Item.h"
 
 class cItem;
 class cItemUsingsHandler;
@@ -14,10 +14,10 @@ enum bodyParts
 	BP_hands
 };
 
-class cArmorItem : public cItem
+class ArmorItem : public Item
 {
 public:
-	cArmorItem(cItemUsingsHandler * _handler,
+	ArmorItem(ItemUsingsHandler * _handler,
 			   const std::string & _Name,
 			   const std::string & _Desc,
 			   ShiftEngine::MeshDataPtr data,
@@ -25,13 +25,13 @@ public:
 			   bodyParts _part,
 			   const int _armorCount = 0,
 			   const int _warmPoints = 0)
-		: cItem(_handler, ptr, data, _Name, _Desc), 
+		: Item(_handler, ptr, data, _Name, _Desc), 
 		armorCount(_armorCount),
 		warmPoints(_warmPoints),
 		part(_part)
 	{}
 
-	~cArmorItem() {}
+	~ArmorItem() {}
 
 	int GetArmorCount() const
 	{

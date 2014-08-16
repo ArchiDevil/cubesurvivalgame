@@ -2,19 +2,19 @@
 
 #include <array>
 
-#include "..\Items\cItem.h"
+#include "..\Items\Item.h"
 
 const int InventorySize = 10;
 
-class cItem;
+class Item;
 enum ItemTypes;
 
 using std::array;
 
 struct SlotUnit
 {
-	SlotUnit(cItem * ptr = nullptr, int _count = 0) : Item(ptr), count(_count) {};
-	cItem * Item;
+	SlotUnit(Item * ptr = nullptr, int _count = 0) : Item(ptr), count(_count) {};
+	Item * Item;
 	int count;
 };
 
@@ -24,22 +24,22 @@ public:
 	cInventory();
 	~cInventory();
 
-	bool AddItem(cItem * it);					//добавляет предмет в инвентарь, true, если получилось, false, если нельзя добавить
-	bool RemoveItem(cItem * it);				//удаляет предмет из инвентаря
+	bool AddItem(Item * it);					//добавляет предмет в инвентарь, true, если получилось, false, если нельзя добавить
+	bool RemoveItem(Item * it);				//удаляет предмет из инвентаря
 
 	int GetFirstFreeSlotIndex() const;			//находит первый свободный слот и возвращает его индекс
 
 	void ResetEmpty();							//сбрасывает все нулевые предметы в слотах
-	void SetEmptyItem(cItem * it);				//устанавливает нулевой предмет
+	void SetEmptyItem(Item * it);				//устанавливает нулевой предмет
 
 	bool IsExist(std::string & Name) const;		//проверяет - существует ли в инвентаре предмет с таким именем
 	bool IsExist(ItemTypes Type) const;			//проверяет - существует ли в инвентаре предмет такого типа
-	bool IsExist(cItem * it) const;				//проверяет - существует ли вообще подобный предмет
+	bool IsExist(Item * it) const;				//проверяет - существует ли вообще подобный предмет
 
 	SlotUnit GetItemInSlot(int slot) const;		//отдает предмет из слота
 	int GetCountFromSlot(int slot) const;		//отдает количество предметов в слоте
 
-	void SetItemInSlot(int slot, cItem * it);	//устанавливает предмет в слот
+	void SetItemInSlot(int slot, Item * it);	//устанавливает предмет в слот
 	void SetCountInSlot(int slot, int count);	//устанавливает количество предметов в слоте
 
 	SlotUnit GetLeftHandItem() const;			//возвращает предмет из левой руки
@@ -51,7 +51,7 @@ public:
 private:
 	array<SlotUnit, InventorySize> Items;
 
-	cItem * empty;
+	Item * empty;
 	SlotUnit leftItemHand;
 	SlotUnit rightItemHand;
 
