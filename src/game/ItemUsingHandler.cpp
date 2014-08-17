@@ -42,11 +42,9 @@ bool ItemUsingsHandler::UseBlockItem( BlockItem * block )
 bool ItemUsingsHandler::UsePotionItem( PotionItem * potion )
 {
 	int newHP = pPlayer->GetHealth() + potion->GetHealthPoints();
-	int newFP = pPlayer->GetLongFatique() + potion->GetFatiquePoints();
 	int HungP = pPlayer->GetHunger() + potion->GetHungerPoints();
 
 	pPlayer->SetHealth(newHP);
-	pPlayer->SetLongFatique(newFP);
 	pPlayer->SetHunger(HungP);
 
 	//how to use quality?
