@@ -89,26 +89,6 @@ void cPlayer::FindSelectedBlock( const Vector3D & LOOK )
 	}
 }
 
-void cPlayer::LevelUp()
-{
-	Stats.sLevel++;
-}
-
-int cPlayer::GetHunger() const
-{
-	return Stats.iHunger;
-}
-
-int cPlayer::GetHealth() const
-{
-	return Stats.iHealth;
-}
-
-int cPlayer::GetFastFatique() const
-{
-	return Stats.iFastFatique;
-}
-
 float cPlayer::GetSpeed() const
 {
 	return fSpeed;
@@ -149,11 +129,6 @@ void cPlayer::ResetVelocities()
 	PlayerBox.GetPtr()->Velocities = Vector3D();
 }
 
-int cPlayer::GetLongFatique() const
-{
-	return Stats.iLongFatique;
-}
-
 cInventory * cPlayer::GetInventoryPtr()
 {
 	return Inventory;
@@ -164,22 +139,32 @@ void cPlayer::SetVelocities( const Vector3D & velocities )
 	PlayerBox.GetPtr()->Velocities = velocities;
 }
 
-void cPlayer::SetHunger( int hungerLevel )
+unsigned cPlayer::GetHunger() const
 {
-	Stats.iHunger = hungerLevel;
+	return Stats.hunger;
 }
 
-void cPlayer::SetHealth( int healthLevel )
+unsigned cPlayer::GetHealth() const
 {
-	Stats.iHealth = healthLevel;
+	return Stats.health;
 }
 
-void cPlayer::SetLongFatique( int fatiqueLevel )
+unsigned cPlayer::GetTemperature() const
 {
-	Stats.iLongFatique = fatiqueLevel;
+	return Stats.temperature;
 }
 
-void cPlayer::SetFastFatique( int fatiqueLevel )
+void cPlayer::SetHunger(int hunger)
 {
-	Stats.iFastFatique = fatiqueLevel;
+	Stats.hunger = hunger;
+}
+
+void cPlayer::SetHealth(int health)
+{
+	Stats.health = health;
+}
+
+void cPlayer::SetTemperature(int temperature)
+{
+	Stats.temperature = temperature;
 }

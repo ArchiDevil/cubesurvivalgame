@@ -8,30 +8,16 @@
 
 class cInventory;
 
-struct playerRPGStats
+struct playerStats
 {
-	playerRPGStats()
-		: iHunger(100), iHealth(100), iLongFatique(100), iFastFatique(100), iMana(100),	iWeight(70), 
-		iStrength(10), iAgility(10), iStamina(10), iIntelligency(10), iDefense(0), iAttack(0),
-		sLevel(1), iExperience(0), sProfCoint(0), sStatsCoint(0)
-	{};
+	playerStats()
+		: hunger(100), health(100), temperature(100)
+	{
+	}
 
-	unsigned int iHunger;
-	unsigned int iHealth;
-	unsigned int iLongFatique;
-	unsigned int iFastFatique;
-	unsigned int iMana;
-	unsigned int iWeight;			//вес игрока?
-	unsigned int iStrength;
-	unsigned int iAgility;
-	unsigned int iStamina;
-	unsigned int iIntelligency;
-	unsigned int iDefense;
-	unsigned int iAttack;
-
-	unsigned int sLevel;			//уровень героя
-	unsigned int iExperience;		//опыт 
-	unsigned int sProfCoint, sStatsCoint;
+	unsigned int hunger;
+	unsigned int temperature;
+	unsigned int health;
 };
 
 class cPlayer
@@ -44,10 +30,9 @@ public:
 	void LevelUp();
 
 	//Getters
-	int GetHunger() const;
-	int GetHealth() const;
-	int GetLongFatique() const;
-	int GetFastFatique() const;
+	unsigned GetHunger() const;
+	unsigned GetHealth() const;
+	unsigned GetTemperature() const;
 	float GetSpeed() const;
 	float GetHeight() const;
 	Vector3D GetPosition();
@@ -63,19 +48,16 @@ public:
 	void SetPosition(const Vector3D & vec);
 	void SetVelocities(const Vector3D & velocities);
 	void ResetVelocities();
-	void SetHunger(int hungerLevel);
-	void SetHealth(int healthLevel);
-	void SetLongFatique(int fatiqueLevel);
-	void SetFastFatique(int fatiqueLevel);
+	void SetHunger(int hunger);
+	void SetHealth(int health);
+	void SetTemperature(int temperature);
 
 private:
-	void UpdateStats();								//updating RPG stats after level up
-
 	cWorldStorage * pWorldStorage;
 	cSelectedBlock SelectedBlock;
 	cInventory * Inventory;
 	pPhysObject PlayerBox;
-	playerRPGStats Stats;
+	playerStats Stats;
 
 	float fSpeed;
 	float PlayerHeight;
