@@ -2,9 +2,11 @@
 
 #include "../appState.h"
 #include "../game.h"
-#include "../../utilities/ut.h"
-#include "../../utilities/iniloader.h"
-#include "../../utilities/InputEngine.h"
+#include "../Console.h"
+
+#include <Utilities/ut.h>
+#include <Utilities/iniloader.h>
+#include <Utilities/InputEngine.h>
 
 using MathLib::Vector3D;
 using MathLib::Vector2D;
@@ -12,7 +14,7 @@ using MathLib::Vector2D;
 class gameState : public appState
 {
 public:
-	gameState(cGame * _game, IniWorker * iw);
+	gameState(IniWorker * iw);
 	~gameState();
 
 	virtual bool initState();
@@ -24,10 +26,9 @@ public:
 
 private:
 	void ProcessInput(double dt);
-
-	bool inventoryFlag;
-
-	cGame * pGame;
 	IniWorker * pIniLoader;
+	//Console console;
+
+	//bool isConsoleState;
 
 };

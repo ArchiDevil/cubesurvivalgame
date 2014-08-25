@@ -1,6 +1,6 @@
 #include "cEventProc.h"
 
-void cGameEventHandler::Initialize( cPlayer * _p, cWorld * _c, cEntityManager * _em, ItemManager * _im )
+void cGameEventHandler::Initialize( cPlayer * _p, cWorld * _c, EntityManager * _em, ItemManager * _im )
 {
 	this->pPlayer = _p;
 	this->pWorld = _c;

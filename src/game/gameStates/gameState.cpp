@@ -2,8 +2,8 @@
 
 #include <thread>
 
-#include "../../GraphicsEngine/Renderer.h"
-#include "../../GraphicsEngine/ShaderManager.h"
+#include <GraphicsEngine/Renderer.h>
+#include <GraphicsEngine/ShaderManager.h>
 
 std::thread worldThread;
 volatile bool exitFlag = false;
@@ -12,8 +12,8 @@ volatile bool exitFlag = false;
 const double AccelerationMultiplier = 30.0f;
 //END OF TEMPORARY
 
-gameState::gameState( cGame * _game, IniWorker * iw )
-	: pGame(_game), pIniLoader(iw), inventoryFlag(false)
+gameState::gameState(IniWorker * iw )
+	: pIniLoader(iw)/*, isConsoleState(false)*/
 {
 }
 
@@ -23,28 +23,29 @@ gameState::~gameState()
 
 bool gameState::initState()
 {
+	LostIsland::CreateGame();
+
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+	cGame * pGame = LostIsland::GetGamePtr();
+
+	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
+	MainLog.Message("Physics initialized");
 
 	::utils::filesystem::CreateDir(L"saves\\worlds\\");
 	::utils::filesystem::CreateDir(L"saves\\players\\");
 	::utils::filesystem::CreateDir(L"saves\\worlds\\tempWorld\\");
 
-	//�������������� ������, ���������� �� ���
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, pGame->environmentMgr, L"tempWorld");
 	MainLog.Message("World Manager has been initialized");
 
-	pGame->invScreen = new InventoryScreen(3, 5, Vector2D(200, 200), 2);
-	MainLog.Message("InvScr has been initialized");
-
 	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
 	pGame->ItemMgr->Initialize(L"resources\\gamedata\\Items");
 	MainLog.Message("Items have been loaded");
 
-	//�������������� ������
 	pGame->Player->Initialize(pGame->World->GetDataStorage());
 	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
 	pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemMgr->GetItemByName("empty"));
@@ -55,17 +56,17 @@ bool gameState::initState()
 	pGame->gameHud->Initialize(pGame->Player, pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
 	MainLog.Message("HUD has been created");
 
-	pGame->EntityManager->Initialize();
-	MainLog.Message("Entity manager created");
+	pGame->EntityMgr->CreateCrafterEntity(Vector3F(13.0f, 0.0f, 90.0f), "campfire");
+	pGame->EntityMgr->CreateProducerEntity(Vector3F(15.0f, 0.0f, 90.0f), "fishnet");
 
 	worldThread = std::thread([&]
 	{
 		while(!exitFlag) 
-			pGame->World->ProcessLoading();
+			LostIsland::GetGamePtr()->World->ProcessLoading();
 		Sleep(0);
 	});
 
-	pGame->GameEventHandler->Initialize(pGame->Player, pGame->World, pGame->EntityManager, pGame->ItemMgr);
+	pGame->GameEventHandler->Initialize(pGame->Player, pGame->World, pGame->EntityMgr, pGame->ItemMgr);
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
 	auto settings = pCtxMgr->GetParameters();
@@ -80,18 +81,19 @@ bool gameState::initState()
 bool gameState::update( double dt )
 {
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+	cGame * pGame = LostIsland::GetGamePtr();
 
 	ProcessInput(dt);
 	Vector3F sunPos = pGame->environmentMgr->GetSkyPtr()->GetSunPos();
 	cSimplePhysicsEngine::GetInstance().Update(dt);
-	pGame->EntityManager->Update(dt, sunPos);
+	pGame->EntityMgr->Update(dt, sunPos);
 	pGame->environmentMgr->Update(dt * 0.0, pGame->Player->GetPosition());
 	
 	D3DXVECTOR3 vec = pScene->GetActiveCamera()->GetLookVector();
 	Vector3D pos = Vector3D(vec.x, vec.y, vec.z);
 	pGame->Player->FindSelectedBlock(pos);
 
-	auto items = pGame->EntityManager->FindItemsNearPlayer(pGame->Player->GetPosition());
+	auto items = pGame->EntityMgr->FindItemsNearPlayer(pGame->Player->GetPosition());
 	for (auto iter = items.begin(); iter != items.end(); iter++)
 	{
 		if(pGame->GameEventHandler->onPlayerPicksItem((*iter)->GetItemPtr()))
@@ -117,6 +119,7 @@ bool gameState::render( double dt )
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
+	cGame * pGame = LostIsland::GetGamePtr();
 
 	Vector3F sunPos = pGame->environmentMgr->GetSkyPtr()->GetSunPos();
 	Vector3D playerPos = pGame->Player->GetPosition();
@@ -168,6 +171,9 @@ bool gameState::render( double dt )
 	for (int i = 0; i < infoSize ; i++)
 		pFntMgr->DrawTextTL(di[i].str(), 0, 0 + i*32);
 
+	//if(isConsoleState)
+	//	console.Draw();
+
 	pCtxMgr->EndScene();
 
 	return true; //return false if something wrong
@@ -189,13 +195,15 @@ void gameState::onSuspend()
 
 void gameState::onResume()
 {
+	cGame * pGame = LostIsland::GetGamePtr();
+
 	if(worldThread.joinable())
 		worldThread.join();
 	exitFlag = false;
 	worldThread = std::thread([&]
 	{
 		while(!exitFlag) 
-			pGame->World->ProcessLoading();
+			LostIsland::GetGamePtr()->World->ProcessLoading();
 		Sleep(0);
 	});
 }
@@ -206,8 +214,23 @@ void gameState::ProcessInput( double /*dt*/ )
 	cSimplePhysicsEngine * PhysicsEngine = &cSimplePhysicsEngine::GetInstance();
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+	cGame * pGame = LostIsland::GetGamePtr();
 
 	InputEngine->GetKeys();
+
+	//if(InputEngine->IsKeyUp(DIK_GRAVE))
+	//{
+	//	console.ProcessInputKey('a');
+	//	isConsoleState = !isConsoleState;
+	//}
+
+	//if(isConsoleState)
+	//{
+	//	if(InputEngine->IsKeyUp(DIK_RETURN))
+	//		console.HandleCommand();
+
+	//	return;
+	//}
 
 	D3DXVECTOR3 vec1 = pScene->GetActiveCamera()->GetLookVector();
 	Vector3D vecNew = Vector3D(vec1.x, vec1.y, vec1.z);
@@ -272,11 +295,6 @@ void gameState::ProcessInput( double /*dt*/ )
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
 	}
 
-	if(InputEngine->IsKeyUp(DIK_I))
-	{
-		inventoryFlag = !inventoryFlag;
-	}
-
 	if(InputEngine->IsMouseMoved())
 	{
 		MouseInfo mouseInfo = InputEngine->GetMouseInfo();
@@ -287,7 +305,7 @@ void gameState::ProcessInput( double /*dt*/ )
 	if(InputEngine->IsMouseUp(LButton))
 	{
 		Vector3D vec = pGame->Player->GetSelectedBlockPtr()->GetPositions().solid;
-		if(vec.z > -1) //z �� ������ ������ 0
+		if(vec.z > -1) //z не может быть меньше 0
 		{
 			vec3<int> pos = vec3<int>(floor(vec.x), floor(vec.y), floor(vec.z));
 			auto block = pGame->World->GetDataStorage()->GetBlock(pos.x, pos.y, pos.z)->TypeID;

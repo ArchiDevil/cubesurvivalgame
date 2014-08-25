@@ -16,7 +16,7 @@ Vector3F GameObject::GetPosition() const
 	return SceneNode->GetPosition();
 }
 
-void GameObject::SetPosition( Vector3F & Position )
+void GameObject::SetPosition( const Vector3F & Position )
 {
 	SceneNode->SetPosition(Vector3F(Position.x, Position.y, Position.z));
 }

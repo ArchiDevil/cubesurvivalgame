@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Item.h"
-#include "../GameObject.h"
 #include "../world/datatypes.h"
 
 #include "../../GraphicsEngine/ShiftEngine.h"

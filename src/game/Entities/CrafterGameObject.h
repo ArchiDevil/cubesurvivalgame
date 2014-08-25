@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UsableGameObject.h"
-#include "Items/Item.h"
+#include "../Items/Item.h"
 
 class CrafterGameObject : public UsableGameObject
 {
@@ -13,7 +13,7 @@ class CrafterGameObject : public UsableGameObject
 	};
 
 public:
-	CrafterGameObject(ShiftEngine::MeshNode * meshNode);
+	CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs);
 	virtual ~CrafterGameObject();
 
 	// UsableGameObject
@@ -30,5 +30,7 @@ private:
 	//and player should be available to take item from crafter
 
 	CrafterState state;
+	const uint32_t craftingTime;
+	uint32_t elapsedTime;
 	Item * storedItem;
 };

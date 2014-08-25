@@ -3,20 +3,20 @@
 #include "world/world.h"
 #include "player/player.h"
 #include "Items/ItemManager.h"
-#include "EntityManager.h"
+#include "Entities/EntityManager.h"
 
 using MathLib::Vector3I;
 using MathLib::Vector3D;
 
 class cPlayer;
 class cWorld;
-class cEntityManager;
+class EntityManager;
 class ItemManager;
 
 class cGameEventHandler
 {
 public:
-	void Initialize(cPlayer * _p, cWorld * _c, cEntityManager * _em, ItemManager * _im);
+	void Initialize(cPlayer * _p, cWorld * _c, EntityManager * _em, ItemManager * _im);
 
 	//world events
 	void onBlockRemoved(BlockType bt, Vector3I Pos);	//вызывается при удалении блока
@@ -33,6 +33,6 @@ private:
 
 	cPlayer * pPlayer;
 	cWorld * pWorld;
-	cEntityManager * pEM;
+	EntityManager * pEM;
 	ItemManager * pIM;
 };

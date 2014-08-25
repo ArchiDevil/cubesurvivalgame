@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PhysicsEntity.h"
-#include "Items/Item.h"
+#include "../Items/Item.h"
 
 class Item;
 class PhysicsEntity;

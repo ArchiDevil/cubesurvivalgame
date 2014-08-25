@@ -11,16 +11,15 @@ double AllTime = 0.0f;
 
 Log PerformanceLog("Performance.log");
 
-Application::Application( int Width, int Height, LPCWSTR AppName ) 
-	: cApplication(Width, Height, AppName), Game(new cGame)
+Application::Application( int Width, int Height, LPCWSTR AppName )
+	: cApplication(Width, Height, AppName)
 {
-//	MainCanvas			= new Canvas;
+	//	MainCanvas			= new Canvas;
 }
 
 Application::~Application()
 {
-//	delete MainCanvas;
-	delete Game;
+	//	delete MainCanvas;
 }
 
 bool Application::Initialize()
@@ -62,16 +61,13 @@ bool Application::Initialize()
 	else
 		MainLog.Message("Input system has been initialized");
 
-//	MainCanvas->SetSize(settings.screenWidth, settings.screenHeight);
-
-	cSimplePhysicsEngine::GetInstance().Initialize(Game->World->GetDataStorage());
-	MainLog.Message("Physics initialized");
+	//	MainCanvas->SetSize(settings.screenWidth, settings.screenHeight);
 
 	////////////////////////////
 	/// GAME STRUCTURES INIT ///
 	////////////////////////////
 
-	gameState * state = new gameState(Game, &SettingsLoader);
+	gameState * state = new gameState(&SettingsLoader);
 	statesStack.push(state);
 
 	state->initState();
@@ -110,7 +106,7 @@ bool Application::Frame()
 		maxFPS = curFPS;
 	if(curFPS < minFPS)
 		minFPS = curFPS;
-	
+
 	if(!statesStack.empty())
 	{
 		if(statesStack.top()->isDead())
@@ -124,7 +120,7 @@ bool Application::Frame()
 				statesStack.top()->onResume();
 			return true;		//skip frame
 		}
-		
+
 		if(!statesStack.top()->update(elapsedTime))		//use current state
 			return false;
 		if(!statesStack.top()->render(elapsedTime))
@@ -182,7 +178,7 @@ void Application::SaveTechInfo()
 	PerformanceLog.Message("Processor name: " + utils::WStrToStr(RegistryWorker.GetString(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"ProcessorNameString")));
 	PerformanceLog.Message("Frequency = " + std::to_string(RegistryWorker.GetInteger(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"~MHz")) + " MHz");
 
-	//получаем количество оперативной памяти в системе и её загруженность 
+	//получаем количество оперативной памяти в системе и её загруженность
 	//после, записываем все это в файл
 	MEMORYSTATUSEX memoryStatus;
 	memoryStatus.dwLength = sizeof(memoryStatus);

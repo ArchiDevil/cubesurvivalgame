@@ -1,7 +1,8 @@
 #pragma once
 
+#include <SimplePhysicsEngine/types.h>
+
 #include "GameObject.h"
-#include "../SimplePhysicsEngine/types.h"
 
 using ShiftEngine::MeshNode;
 

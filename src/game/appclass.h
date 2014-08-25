@@ -38,15 +38,12 @@ public:
 	Application( int Width, int Height, LPCWSTR AppName );
 	~Application();
 
-	bool Initialize();
-	bool Frame();
-	void Shutdown();
-
+	bool Initialize() override;
+	bool Frame() override;
+	void Shutdown() override;
 	void Stop();
 	void Activate();
-
-	void ProcessMessage(MSG msg);
-
+	void ProcessMessage(MSG msg) override;
 	void PushState(appState * state);
 
 private:
@@ -55,13 +52,8 @@ private:
 	//////////////////////////
 	// TECHNICAL STRUCTURES //
 	//////////////////////////
-	Canvas					* MainCanvas;		//canvas
-	MainListener			* GUIListener;		//gui listener
-
-	/////////////////////
-	// GAME STRUCTURES //
-	/////////////////////
-	cGame					* Game;				//main game class
+	Canvas *				MainCanvas;			//canvas
+	MainListener *			GUIListener;		//gui listener
 
 	//////////////////////
 	// OTHER STRUCTURES //
