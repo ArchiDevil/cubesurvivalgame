@@ -2,12 +2,12 @@
 
 #include <list>
 
-#include "../game/world/cWorldStorage.h"
+#include <game/world/cWorldStorage.h>
 #include "PhysicsFunctions.h"
 #include "types.h"
 #include "CollisionShouter.h"
 
-#include "../Utilities/singleton.h"
+#include <Utilities/singleton.h>
 
 class cWorldStorage;
 
@@ -21,7 +21,7 @@ public:
 	void Update( double dt = 0.0f );
 
 	pPhysObject GetPlayerBBox();
-	pPhysObject CreateEntity(Vector3D & Position, Vector3D & Velocity);
+	pPhysObject CreateEntity(const Vector3D & Position, const Vector3D & Velocity);
 
 	void ChangePlayerFreeState();			//позволяет игроку летать
 	bool IsPlayerFree() const;				//возвращает возможность полета для игрока

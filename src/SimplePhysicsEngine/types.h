@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../MathLib/math.h"
-#include "../Utilities/cRefcounted.h"
+#include <MathLib/math.h>
+#include <Utilities/cRefcounted.h>
 
 using MathLib::Vector3D;
 

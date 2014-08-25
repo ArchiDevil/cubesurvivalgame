@@ -39,7 +39,7 @@ bool cSimplePhysicsEngine::IsPlayerFree() const
 	return FreeMode;
 }
 
-pPhysObject cSimplePhysicsEngine::CreateEntity( Vector3D & Position, Vector3D & Velocity )
+pPhysObject cSimplePhysicsEngine::CreateEntity( const Vector3D & Position, const Vector3D & Velocity )
 {
 	pPhysObject out(new PhysObject(Position, Velocity));
 	PhysEntities.push_back(out);

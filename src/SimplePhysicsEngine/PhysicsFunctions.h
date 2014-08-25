@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../MathLib/math.h"
-#include "../game/world/cWorldStorage.h"
+#include <MathLib/math.h>
+#include <game/world/cWorldStorage.h>
 
 using MathLib::Vector3D;
 
