@@ -28,8 +28,14 @@ void cText::CreateAll( const std::string & str, ID3D10Device * dev )
 	mesh.verticesCount = str.size() * 4;
 	mesh.indicesCount = str.size() * 6;
 
-	long * indices = new long[mesh.indicesCount];
-	TextPoint * vertices = new TextPoint[mesh.verticesCount];
+	static std::vector<long> indicesPool(200);
+	static std::vector<TextPoint> verticesPool(100);
+
+	if (mesh.indicesCount > indicesPool.size())
+		indicesPool.resize(mesh.indicesCount);
+
+	if (mesh.verticesCount > verticesPool.size())
+		verticesPool.resize(mesh.verticesCount);
 
 	int vertSh = 0;
 	int indSh = 0;
@@ -47,12 +53,12 @@ void cText::CreateAll( const std::string & str, ID3D10Device * dev )
 		int OffsetX	= cp->XOffset;
 		int OffsetY	= cp->YOffset;
 
-		indices[indSh++] = vertSh;
-		indices[indSh++] = vertSh + 1;
-		indices[indSh++] = vertSh + 2;	//first triangle
-		indices[indSh++] = vertSh;
-		indices[indSh++] = vertSh + 2;
-		indices[indSh++] = vertSh + 3;	//second triangle
+		indicesPool[indSh++] = vertSh;
+		indicesPool[indSh++] = vertSh + 1;
+		indicesPool[indSh++] = vertSh + 2;	//first triangle
+		indicesPool[indSh++] = vertSh;
+		indicesPool[indSh++] = vertSh + 2;
+		indicesPool[indSh++] = vertSh + 3;	//second triangle
 
 		/*
 		0   1
@@ -65,38 +71,35 @@ void cText::CreateAll( const std::string & str, ID3D10Device * dev )
 		*/
 
 		//upper left
-		vertices[vertSh].tu		= (float) CharX / (float) fontPtr->Width;
-		vertices[vertSh].tv		= (float) CharY / (float) fontPtr->Height;
-		vertices[vertSh].x		= (float) CurX + OffsetX;
-		vertices[vertSh++].y	= (float) OffsetY;
+		verticesPool[vertSh].tu	 = (float) CharX / (float) fontPtr->Width;
+		verticesPool[vertSh].tv  = (float)CharY / (float)fontPtr->Height;
+		verticesPool[vertSh].x   = (float)CurX + OffsetX;
+		verticesPool[vertSh++].y = (float)OffsetY;
 
 		//upper right
-		vertices[vertSh].tu		= (float) (CharX + Width) / (float) fontPtr->Width;
-		vertices[vertSh].tv		= (float) CharY / (float) fontPtr->Height;
-		vertices[vertSh].x		= (float) Width + CurX + OffsetX;
-		vertices[vertSh++].y	= (float) OffsetY;
+		verticesPool[vertSh].tu  = (float)(CharX + Width) / (float)fontPtr->Width;
+		verticesPool[vertSh].tv  = (float)CharY / (float)fontPtr->Height;
+		verticesPool[vertSh].x   = (float)Width + CurX + OffsetX;
+		verticesPool[vertSh++].y = (float)OffsetY;
 
 		//lower right
-		vertices[vertSh].tu		= (float) (CharX + Width) / (float) fontPtr->Width;
-		vertices[vertSh].tv		= (float) (CharY + Height) / (float) fontPtr->Height;
-		vertices[vertSh].x		= (float) Width + CurX + OffsetX;
-		vertices[vertSh++].y	= (float) Height + OffsetY;
+		verticesPool[vertSh].tu  = (float)(CharX + Width) / (float)fontPtr->Width;
+		verticesPool[vertSh].tv  = (float)(CharY + Height) / (float)fontPtr->Height;
+		verticesPool[vertSh].x   = (float)Width + CurX + OffsetX;
+		verticesPool[vertSh++].y = (float)Height + OffsetY;
 
 		//lower left
-		vertices[vertSh].tu		= (float) CharX / (float) fontPtr->Width;
-		vertices[vertSh].tv		= (float) (CharY + Height) / (float) fontPtr->Height;
-		vertices[vertSh].x		= (float) CurX + OffsetX;
-		vertices[vertSh++].y	= (float) Height + OffsetY;
+		verticesPool[vertSh].tu  = (float)CharX / (float)fontPtr->Width;
+		verticesPool[vertSh].tv  = (float)(CharY + Height) / (float)fontPtr->Height;
+		verticesPool[vertSh].x   = (float)CurX + OffsetX;
+		verticesPool[vertSh++].y = (float)Height + OffsetY;
 
 		CurX += cp->XAdvance;
 	}
 
-	mesh.CreateBuffers(false, vertices, vertSh * sizeof(TextPoint), indices, indSh * sizeof(long), dev);
+	mesh.CreateBuffers(false, verticesPool.data(), vertSh * sizeof(TextPoint), indicesPool.data(), indSh * sizeof(long), dev);
 
 	mesh.vertexSize = sizeof(TextPoint);
 	mesh.vertexSemantic = &ShiftEngine::plainSpriteVertexSemantic;
 	mesh.vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::plainSpriteVertexSemantic);
-
-	delete [] indices;
-	delete [] vertices;
 }

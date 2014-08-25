@@ -112,7 +112,7 @@ void ShiftEngine::Sprite::CreateBuffers( Vector2F & LT, Vector2F & RB )
 void ShiftEngine::Sprite::SetSizeInPixels( int x, int y )
 {
 	if(texture)
-		SetScale(Vector2F((float)texture->GetWidth() / x, (float)texture->GetHeight() / y));
+		SetScale(Vector2F((float)x / texture->GetWidth(), (float)y / texture->GetHeight()));
 }
 
 void ShiftEngine::Sprite::LoadShader()
