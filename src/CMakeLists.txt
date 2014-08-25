@@ -22,7 +22,6 @@ set_property(TARGET SimplePhysicsEngine PROPERTY FOLDER "Game")
 set_property(TARGET Game 				PROPERTY FOLDER "Game")
 set_property(TARGET Converter  			PROPERTY FOLDER "Tools")
 
-
 option(BUILD_TOOLS "Build engine tools" NO)
 
 if(BUILD_TOOLS)
