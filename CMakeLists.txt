@@ -30,7 +30,7 @@ if(MSVC)
 	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
 endif()
 
-include_directories(src)
+include_directories(${RootDir})
 add_subdirectory(src)
 
 if(BUILD_TESTS)
