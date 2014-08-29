@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include "../../GraphicsEngine/ShiftEngine.h"
+#include <GraphicsEngine/ShiftEngine.h>
 
 ItemManager::ItemManager( cPlayer * _p, cWorld * _w, typesStorage * _ts )
 	: handler(_p, _w), ts(_ts) {}
@@ -16,17 +16,6 @@ void ItemManager::Initialize( const std::wstring & PathName )
 }
 
 void ItemManager::LoadDefinitions( const std::wstring & path )
-{
-	Items["empty"] = new MiscItem(nullptr, "null", "null", nullptr, nullptr);	//empty item
-
-	std::wstring str = path;
-
-	auto filenames = ::utils::CollectFileNames(path, L"itm");
-	for(auto iter = filenames.begin(); iter != filenames.end(); iter++)
-		LoadItem(str + *iter);
-}
-
-void ItemManager::LoadItem( const std::wstring & filename )
 {
 }
 
@@ -48,12 +37,17 @@ void ItemManager::LoadBlocks()
 	}
 }
 
-Item * ItemManager::GetItemByName( const std::string & Name )
-{
-	return Items[Name];
-}
-
 Item * ItemManager::GetBlockItem( BlockType type )
 {
 	return Blocks[(int)type];
+}
+
+Item * ItemManager::GetItemById(uint64_t itemId)
+{
+
+}
+
+uint64_t ItemManager::GetItemId(std::string & ItemName)
+{
+
 }

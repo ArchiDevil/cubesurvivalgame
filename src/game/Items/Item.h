@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "../../GraphicsEngine/D3D10Texture.h"
-#include "../../GraphicsEngine/cMesh.h"
+#include <GraphicsEngine/D3D10Texture.h>
+#include <GraphicsEngine/cMesh.h>
 #include "../ItemUsingHandler.h"
 
 class ItemUsingsHandler;

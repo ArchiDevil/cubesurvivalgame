@@ -19,10 +19,10 @@ std::wstring utils::StrToWStr( const std::string & str )
 	return std::wstring(str.begin(), str.end());
 }
 
-vector<wstring> utils::CollectFileNames( const wstring & Path, const wstring & Extension /*= L"*"*/ )
+std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring & Path, const std::wstring & Extension /*= L"*"*/)
 {
 #if defined (WIN32) || (_WIN32)
-	wstring bufferPath = Path;
+	std::wstring bufferPath = Path;
 	//check path here
 	if(bufferPath[bufferPath.size() - 1] != L'\\')
 		bufferPath.push_back(L'\\');
@@ -99,9 +99,9 @@ bool utils::IsNumber( const std::wstring & str )
 
 bool utils::filesystem::CreateDir( const std::wstring & directoryName )
 {
-
 #ifdef WIN32
 	return ::CreateDirectory(directoryName.c_str(), NULL);
+#else
+	return false;
 #endif
-
 }

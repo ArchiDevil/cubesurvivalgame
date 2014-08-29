@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <sstream>
+
 #define waterLevel 70
 
 cWorld::cWorld()
@@ -39,7 +41,7 @@ void cWorld::Initialize( unsigned int ChunksPerSide, int CentralChunkX, int Cent
 	SetWorldName(worldName);
 
 	std::wstring BlockPath = L"resources/gamedata/blocks/";
-	TypesStorage->loadTypes(::utils::CollectFileNames(BlockPath, L"blk"));
+	TypesStorage->loadTypes(utils::filesystem::CollectFileNames(BlockPath, L"blk"));
 
 	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, WorldStorage->GetChunkWidth(), WorldStorage->GetChunkHeight(), TypesStorage);
 

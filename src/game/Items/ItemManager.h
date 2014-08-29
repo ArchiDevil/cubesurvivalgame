@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 
-#include "../../utilities/ut.h"
+#include <utilities/ut.h>
 
 #include "Item.h"
 #include "BlockItem.h"
@@ -28,15 +28,17 @@ public:
 	~ItemManager();
 
 	void Initialize(const std::wstring & PathName);
-	Item * GetItemByName(const std::string & Name);
 	Item * GetBlockItem(BlockType type);
+
+	Item * GetItemById(uint64_t itemId);
+	uint64_t GetItemId(std::string & ItemName);
 
 private:
 	void LoadDefinitions(const std::wstring & path);
-	void LoadItem(const std::wstring & filename);
 	void LoadBlocks();
 
-	std::map<std::string, Item *> Items;
+	std::map<uint64_t, Item*> Items;
+
 	std::vector<Item *> Blocks;
 	typesStorage * ts;
 	ItemUsingsHandler handler;

@@ -1,22 +1,14 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 #include <vector>
-#include <cstdint>
-#include <cassert>
-
-using std::vector;
-using std::wstring;
-using std::string;
 
 namespace utils
 {
-	string WStrToStr(const wstring & str);
-	wstring StrToWStr(const string & str);
-	vector<wstring> CollectFileNames(const wstring & Path, const wstring & Extension = L"*");
-	wstring ExtractExtension( const wstring & filename );
-	wstring ExtractName( const wstring & filename );
+	std::string WStrToStr(const std::wstring & str);
+	std::wstring StrToWStr(const std::string & str);
+	std::wstring ExtractExtension(const std::wstring & filename);
+	std::wstring ExtractName(const std::wstring & filename);
 	bool IsNumber(const std::string & str);
 	bool IsNumber(const std::wstring & str);
 
@@ -25,6 +17,7 @@ namespace utils
 		bool CreateDir(const std::wstring & directoryName);
 		bool CheckDir(const std::wstring & directoryName);
 		bool DeleteDir(const std::wstring & directoryName);
+		std::vector<std::wstring> CollectFileNames(const std::wstring & Path, const std::wstring & Extension = L"*");
 	}
 }
 

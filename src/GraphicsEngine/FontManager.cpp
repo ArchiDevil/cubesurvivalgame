@@ -139,8 +139,8 @@ void ShiftEngine::FontManager::LoadFonts()
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
 	//TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
 	PathSettings pPaths = pCntMng->GetPaths();
-	auto fontsNames = ::utils::CollectFileNames(pPaths.FontsPath, L"fnt2");
-	auto fontsTextureNames = ::utils::CollectFileNames(pPaths.TexturePath + L"fonts\\");
+	auto fontsNames = utils::filesystem::CollectFileNames(pPaths.FontsPath, L"fnt2");
+	auto fontsTextureNames = utils::filesystem::CollectFileNames(pPaths.TexturePath + L"fonts\\");
 
 	if(fontsNames.size() == 0 || fontsTextureNames.size() == 0 || fontsNames.size() != fontsTextureNames.size())
 		MainLog.FatalError("Unable to load textures for fonts");

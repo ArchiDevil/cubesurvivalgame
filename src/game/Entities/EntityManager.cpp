@@ -115,7 +115,7 @@ GameObjectPtr EntityManager::CreateEntity(const std::string & entityId)
 void EntityManager::LoadEntities()
 {
 	std::wstring pathPrefix = L"resources/gamedata/entities/";
-	auto files = utils::CollectFileNames(pathPrefix);
+	auto files = utils::filesystem::CollectFileNames(pathPrefix);
 
 	Json::Reader reader;
 	for (auto & file : files)
