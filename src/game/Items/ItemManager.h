@@ -5,16 +5,6 @@
 #include <vector>
 #include <fstream>
 
-#include <utilities/ut.h>
-
-#include "Item.h"
-#include "BlockItem.h"
-#include "MiscItem.h"
-#include "ArmorItem.h"
-#include "PotionItem.h"
-#include "WeaponItem.h"
-#include "ToolItem.h"
-
 #include "../world/typesStorage.h"
 #include "../ItemUsingHandler.h"
 #include "../world/world.h"
@@ -31,13 +21,14 @@ public:
 	Item * GetBlockItem(BlockType type);
 
 	Item * GetItemById(uint64_t itemId);
-	uint64_t GetItemId(std::string & ItemName);
+	uint64_t GetItemId(const std::string & ItemName);
 
 private:
 	void LoadDefinitions(const std::wstring & path);
 	void LoadBlocks();
 
-	std::map<uint64_t, Item*> Items;
+	std::map<uint64_t, Item*> HashItem;
+	std::map<std::string, uint64_t> NameHash;
 
 	std::vector<Item *> Blocks;
 	typesStorage * ts;

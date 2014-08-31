@@ -15,7 +15,7 @@ namespace utils
 	namespace filesystem
 	{
 		bool CreateDir(const std::wstring & directoryName);
-		bool CheckDir(const std::wstring & directoryName);
+		bool IsDirectory(const std::wstring & directoryName);
 		bool DeleteDir(const std::wstring & directoryName);
 		std::vector<std::wstring> CollectFileNames(const std::wstring & Path, const std::wstring & Extension = L"*");
 	}

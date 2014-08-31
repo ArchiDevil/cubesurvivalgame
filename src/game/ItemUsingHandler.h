@@ -1,15 +1,12 @@
 #pragma once
 
-#include "Items/Item.h"
+#include <SimplePhysicsEngine/PhysicsEngine.h>
+
 #include "player/player.h"
-#include "../SimplePhysicsEngine/PhysicsEngine.h"
 
 class Item;
 
 class BlockItem;
-class ToolItem;
-class PotionItem;
-class ArmorItem;
 class MiscItem;
 class WeaponItem;
 
@@ -24,7 +21,6 @@ public:
 	~ItemUsingsHandler();
 
 	bool UseBlockItem(BlockItem * block);
-	bool UsePotionItem(PotionItem * potion);
 
 private:
 	cPlayer * pPlayer;

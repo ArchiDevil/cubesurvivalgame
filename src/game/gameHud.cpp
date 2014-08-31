@@ -29,8 +29,8 @@ void gameHUD::Initialize( cPlayer * pPlayer, int sw, int sh )
 
 void gameHUD::Draw()
 {
-	liHandItem->SetTexture(pPlayer->GetInventoryPtr()->GetLeftHandItem().Item->GetTexturePtr());
+	//liHandItem->SetTexture(pPlayer->GetInventoryPtr()->GetLeftHandItem().Item->GetTexturePtr());
 	liHandI->Draw();
 	crosshair->Draw();
-	liHandItem->Draw();
+	//liHandItem->Draw();
 }

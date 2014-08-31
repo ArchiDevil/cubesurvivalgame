@@ -105,3 +105,19 @@ bool utils::filesystem::CreateDir( const std::wstring & directoryName )
 	return false;
 #endif
 }
+
+bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
+{
+#ifdef WIN32
+	DWORD ftyp = GetFileAttributes(directoryName.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;
+
+	return false;
+#else
+	return false;
+#endif
+}

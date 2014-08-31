@@ -22,12 +22,6 @@ public:
 	std::string GetDescription() const;
 	std::string GetName() const;
 
-	int GetDurability() const;
-	void SetDurability(int _durability);
-
-	int GetQuality() const { return quality; }
-	void SetQuality(int val) { quality = val; }
-
 	ShiftEngine::TexturePtr GetTexturePtr();
 	ShiftEngine::MeshDataPtr * GetMesh();
 	
@@ -41,8 +35,6 @@ protected:
 private:
 	const std::string Description;
 	const std::string Name;
-	int durability;
-	int quality;
 
 	//does it need cost?
 };

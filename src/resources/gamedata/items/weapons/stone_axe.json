@@ -1,0 +1,7 @@
+{
+	"id": 			"stone_axe",
+	"description": 	"",
+	"type": 		"weapon",
+	"damage": 		20,
+	"icon": 		"stone_axe.png"
+}

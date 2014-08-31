@@ -1,0 +1,7 @@
+{
+	"id":			"raw_fish",
+	"description": 	"",
+	"type": 		"food",
+	"hunger":		5,
+	"icon": 		"raw_fish.png"
+}

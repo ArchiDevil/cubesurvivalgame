@@ -1,10 +1,7 @@
 #include "ItemUsingHandler.h"
 
-#include "Items/ArmorItem.h"
 #include "Items/BlockItem.h"
 #include "Items/MiscItem.h"
-#include "Items/PotionItem.h"
-#include "Items/ToolItem.h"
 #include "Items/WeaponItem.h"
 
 ItemUsingsHandler::ItemUsingsHandler( cPlayer * _p, cWorld * _w )
@@ -37,17 +34,4 @@ bool ItemUsingsHandler::UseBlockItem( BlockItem * block )
 	}
 
 	return false;
-}
-
-bool ItemUsingsHandler::UsePotionItem( PotionItem * potion )
-{
-	int newHP = pPlayer->GetHealth() + potion->GetHealthPoints();
-	int HungP = pPlayer->GetHunger() + potion->GetHungerPoints();
-
-	pPlayer->SetHealth(newHP);
-	pPlayer->SetHunger(HungP);
-
-	//how to use quality?
-
-	return true;
 }

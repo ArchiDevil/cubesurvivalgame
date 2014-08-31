@@ -43,14 +43,14 @@ bool gameState::initState()
 	MainLog.Message("World Manager has been initialized");
 
 	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
-	pGame->ItemMgr->Initialize(L"resources\\gamedata\\Items");
+	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
 	pGame->Player->Initialize(pGame->World->GetDataStorage());
 	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
-	pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemMgr->GetItemByName("empty"));
-	pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
-	pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
+	//pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemMgr->GetItemByName("empty"));
+	//pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
+	//pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pGame->Player, pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);

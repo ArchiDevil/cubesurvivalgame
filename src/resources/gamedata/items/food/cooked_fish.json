@@ -1,0 +1,7 @@
+{
+	"id":			"cooked_fish",
+	"description": 	"",
+	"type": 		"food",
+	"hunger":		25,
+	"icon": 		"cooked_fish.png"
+}
