@@ -4,7 +4,6 @@
 
 #include <GraphicsEngine/D3D10Texture.h>
 #include <GraphicsEngine/cMesh.h>
-#include "../ItemUsingHandler.h"
 
 class ItemUsingsHandler;
 
@@ -12,10 +11,10 @@ class Item
 {
 public:
 	Item(ItemUsingsHandler * _handler, 
-		  ShiftEngine::TexturePtr ptr, 
-		  ShiftEngine::MeshDataPtr data, 
-		  const std::string & _Name = "NULL", 
-		  const std::string & _Desc = "NULL");
+		  ShiftEngine::TexturePtr icon, 
+		  ShiftEngine::MeshDataPtr mesh, 
+		  const std::string & _Name, 
+		  const std::string & _Desc);
 
 	virtual ~Item();
 
@@ -25,16 +24,15 @@ public:
 	ShiftEngine::TexturePtr GetTexturePtr();
 	ShiftEngine::MeshDataPtr * GetMesh();
 	
-	virtual bool Use() = 0;
+	virtual bool UseInWorld() = 0;
+	virtual bool UseOnPlayer() = 0;
 
 protected:
 	ItemUsingsHandler * handler;
-	const ShiftEngine::TexturePtr texture;
+	const ShiftEngine::TexturePtr icon;
 	ShiftEngine::MeshDataPtr mesh;
 
-private:
 	const std::string Description;
 	const std::string Name;
 
-	//does it need cost?
 };

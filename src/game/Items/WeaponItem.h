@@ -13,24 +13,31 @@ public:
 				const std::string & _Desc,
 				ShiftEngine::MeshDataPtr data,
 				ShiftEngine::TexturePtr ptr,
-				const int _damageCount = 0)
-		: Item(_handler, ptr, data, _Name, _Desc), 
-		damageCount(_damageCount)
-	{}
+				int damageCount)
+		: Item(_handler, ptr, data, _Name, _Desc)
+		, damageCount(damageCount)
+	{
+	}
 
-	~WeaponItem() {}
+	~WeaponItem()
+	{
+	}
 
 	int GetDamageCount() const
 	{
 		return damageCount;
 	}
 
-	virtual bool Use() 
+	bool UseOnPlayer() override
+	{
+		return false;
+	}
+
+	bool UseInWorld() override
 	{
 		throw std::exception("The method or operation is not implemented.");
 		return false;
 	}
-
 
 private:
 	const int damageCount;

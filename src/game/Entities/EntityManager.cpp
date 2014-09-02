@@ -3,8 +3,11 @@
 #include <vector>
 #include <algorithm>
 
+#include <GraphicsEngine/ShiftEngine.h>
 #include <GraphicsEngine/D3D10ContextManager.h>
 #include <GraphicsEngine/SceneGraph/SceneGraph.h>
+
+#include <Utilities/ut.h>
 
 using namespace ShiftEngine;
 

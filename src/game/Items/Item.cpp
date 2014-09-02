@@ -1,8 +1,15 @@
 #include "Item.h"
 
-Item::Item( ItemUsingsHandler * _handler, ShiftEngine::TexturePtr ptr, ShiftEngine::MeshDataPtr data, 
-			 const std::string & _Name /*= "NULL"*/, const std::string & _Desc /*= "NULL"*/ )
-			 : Name(_Name), Description(_Desc), texture(ptr), mesh(data), handler(_handler)
+Item::Item( ItemUsingsHandler * _handler
+		   , ShiftEngine::TexturePtr icon
+		   , ShiftEngine::MeshDataPtr mesh
+		   , const std::string & _Name
+		   , const std::string & _Desc)
+	: Name(_Name)
+	, Description(_Desc)
+	, icon(icon)
+	, mesh(mesh)
+	, handler(_handler)
 {
 }
 
@@ -22,7 +29,7 @@ std::string Item::GetDescription() const
 
 ShiftEngine::TexturePtr Item::GetTexturePtr()
 {
-	return texture;
+	return icon;
 }
 
 ShiftEngine::MeshDataPtr * Item::GetMesh()

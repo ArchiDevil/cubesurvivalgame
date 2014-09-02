@@ -12,15 +12,21 @@ public:
 		const std::string & _Desc,
 		ShiftEngine::MeshDataPtr data,
 		ShiftEngine::TexturePtr ptr)
-		: Item(_handler, ptr, data, _Name, _Desc) {}
-
-	~MiscItem() {}
-
-	bool Use() 
+		: Item(_handler, ptr, data, _Name, _Desc)
 	{
-		return true;
 	}
 
-private:
+	~MiscItem()
+	{
+	}
 
+	bool UseOnPlayer() override
+	{
+		return false;
+	}
+
+	bool UseInWorld() override
+	{
+		return false;
+	}
 };

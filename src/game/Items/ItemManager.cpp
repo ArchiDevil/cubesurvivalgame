@@ -4,6 +4,7 @@
 #include "BlockItem.h"
 #include "MiscItem.h"
 #include "WeaponItem.h"
+#include "FoodItem.h"
 
 #include <cassert>
 

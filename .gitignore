@@ -31,3 +31,4 @@
 # My own
 /build/
 /bin/
+*.log

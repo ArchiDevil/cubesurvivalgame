@@ -316,5 +316,5 @@ void gameState::ProcessInput( double /*dt*/ )
 	}
 
 	if(InputEngine->IsMouseUp(RButton))
-		pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->Use();
+		pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->UseInWorld();
 }
