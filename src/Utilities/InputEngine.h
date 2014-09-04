@@ -7,7 +7,6 @@
 
 #include "ut.h"
 #include "singleton.h"
-#include "notifier.h"
 
 enum InputEvents
 {
