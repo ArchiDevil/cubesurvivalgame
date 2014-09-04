@@ -1,38 +1,26 @@
 #pragma once
 
-#include "world/world.h"
-#include "player/player.h"
-#include "Items/ItemManager.h"
-#include "Entities/EntityManager.h"
+#include <cstdint>
 
-using MathLib::Vector3I;
-using MathLib::Vector3D;
+#include <MathLib/math.h>
 
 class cPlayer;
 class cWorld;
 class EntityManager;
 class ItemManager;
 
+enum BlockType : unsigned char;
+
 class cGameEventHandler
 {
 public:
-	void Initialize(cPlayer * _p, cWorld * _c, EntityManager * _em, ItemManager * _im);
-
 	//world events
-	void onBlockRemoved(BlockType bt, Vector3I Pos);	//вызывается при удалении блока
-	void onBlockAdded(BlockType bt);					//вызывается при добавлении блока
+	void onBlockRemoved(BlockType bt, MathLib::Vector3I Pos);	//вызывается при удалении блока
+	void onBlockAdded(BlockType bt);							//вызывается при добавлении блока
 
 	//player events
-	void onPlayerMoves();								//вызывается при движении игрока
-	void onPlayerAttack();								//при атаке игроком
-	bool onPlayerPicksItem(Item * item);				//игрок берет предмет
-	void onPlayerDropsItem(Item * item);				//игрок бросает айтим
-	
-private:
-	//use some more
-
-	cPlayer * pPlayer;
-	cWorld * pWorld;
-	EntityManager * pEM;
-	ItemManager * pIM;
+	void onPlayerMoves();										//вызывается при движении игрока
+	void onPlayerAttack();										//при атаке игроком
+	bool onPlayerPicksItem(uint64_t itemId);					//игрок берет предмет
+	void onPlayerDropsItem(uint64_t itemId);					//игрок бросает айтим
 };

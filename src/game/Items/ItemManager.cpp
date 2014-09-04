@@ -5,6 +5,7 @@
 #include "MiscItem.h"
 #include "WeaponItem.h"
 #include "FoodItem.h"
+#include "EntityItem.h"
 
 #include <cassert>
 
@@ -13,9 +14,14 @@
 #include <GraphicsEngine/ShiftEngine.h>
 
 ItemManager::ItemManager( cPlayer * _p, cWorld * _w, typesStorage * _ts )
-	: handler(_p, _w), ts(_ts) {}
+	: ts(_ts)
+	, handler(_p, _w)
+{
+}
 
-ItemManager::~ItemManager() {}
+ItemManager::~ItemManager() 
+{
+}
 
 void ItemManager::Initialize( const std::wstring & PathName )
 {
@@ -37,8 +43,7 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 		//load this file, yeah
 		std::ifstream stream(utils::WStrToStr(path + file));
 		Json::Reader reader;
-		Json::Value root;
-		Json::Value buffer, null;
+		Json::Value root, null;
 		reader.parse(stream, root);
 
 		//check required properties
@@ -50,8 +55,7 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 
 		for (auto & key : required)
 		{
-			buffer = root.get(key, null);
-			if (buffer.empty())
+			if (root.get(key, null).empty())
 			{
 				errorFlag = true;
 				MainLog.Error("Unable to get required key " + key + " from " + utils::WStrToStr(file));
@@ -60,10 +64,10 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 
 		if (errorFlag) continue;
 
-		std::string id, type, description, icon;
+		std::string id, type, description, iconName;
 		id = root.get("id", null).asString();
 		type = root.get("type", null).asString();
-		icon = root.get("icon", null).asString();
+		iconName = root.get("icon", null).asString();
 		description = root.get("description", null).asString();
 
 		hash::fnv<64> hasher;
@@ -74,7 +78,6 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 			MainLog.Error("Hash collision on: " + id);
 			++hash;
 		}
-		HashItem[hash] = nullptr;
 
 		auto nameIter = NameHash.find(id);
 		if (nameIter != NameHash.end())
@@ -83,7 +86,32 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 		}
 		NameHash[id] = hash;
 
-		MainLog.Message("ID: " + id + "; TYPE: " + type + "; ICON: " + icon + "; DESC: " + description + "; HASH: " + std::to_string(hash));
+		auto cubeMesh = ShiftEngine::Utilities::createCube();
+		auto iconTexture = ShiftEngine::GetContextManager()->LoadTexture(utils::StrToWStr(iconName));
+
+		if (type == "misc")
+		{
+			HashItem[hash] = new MiscItem(&handler, id, description, cubeMesh, iconTexture);
+		}
+		else if (type == "weapon")
+		{
+			int damageCount = root.get("damage", null).asInt();
+			HashItem[hash] = new WeaponItem(&handler, id, description, cubeMesh, iconTexture, damageCount);
+		}
+		else if (type == "food")
+		{
+			int hungerCount = root.get("hunger", null).asInt();
+			HashItem[hash] = new FoodItem(&handler, id, description, cubeMesh, iconTexture, hungerCount);
+		}
+		else if (type == "entity")
+		{
+			std::string entityId = root.get("entity", null).asString();
+			HashItem[hash] = new EntityItem(&handler, id, description, cubeMesh, iconTexture, entityId);
+		}
+		else
+		{
+			MainLog.Error("Unable to resolve item type: " + type);
+		}
 	}
 }
 

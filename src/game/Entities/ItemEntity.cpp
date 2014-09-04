@@ -1,17 +1,13 @@
 #include "ItemEntity.h"
 
-ItemEntity::ItemEntity( Item * item, pPhysObject _obj, ShiftEngine::MeshNode * meshNode )
-	: item(item), PhysicsEntity(_obj, meshNode)
+ItemEntity::ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
+	: itemId(itemId)
+	, PhysicsEntity(_obj, meshNode)
 {
 }
 
 ItemEntity::~ItemEntity()
 {
-}
-
-Item * ItemEntity::GetItemPtr() const
-{
-	return item;
 }
 
 void ItemEntity::Update( double dt )
@@ -25,4 +21,9 @@ void ItemEntity::Update( double dt )
 //	D3DXVECTOR3 pos = Mesh.GetPosition();
 //	pos.z += 0.1f;
 //	Mesh.SetPosition(pos);
+}
+
+uint64_t ItemEntity::GetItemId() const
+{
+	return itemId;
 }

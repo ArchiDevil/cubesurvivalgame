@@ -9,6 +9,8 @@
 
 #include <Utilities/ut.h>
 
+#include "../game.h"
+
 using namespace ShiftEngine;
 
 EntityManager::EntityManager()
@@ -23,11 +25,14 @@ EntityManager::~EntityManager()
 {
 }
 
-ItemEntityPtr EntityManager::CreateItemEntity( const Vector3D & Position, const Vector3D & Velocity, Item * item )
+ItemEntityPtr EntityManager::CreateItemEntity(const Vector3D & Position, const Vector3D & Velocity, uint64_t itemId)
 {
-	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(*item->GetMesh(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), entityMaterial.get());
-	std::shared_ptr<ItemEntity> out = std::make_shared<ItemEntity>(item, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);
-	meshNode->GetMaterialPtr()->SetDiffuseTexture(out->GetItemPtr()->GetTexturePtr());
+	auto pGame = LostIsland::GetGamePtr();
+	auto * item = pGame->ItemMgr->GetItemById(itemId);
+
+	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), entityMaterial.get());
+	std::shared_ptr<ItemEntity> out = std::make_shared<ItemEntity>(itemId, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);
+	meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
 	meshNode->SetScale(Vector3F(0.4f, 0.4f, 0.4f));
 	GameObjects.push_back(out);
 	return out;

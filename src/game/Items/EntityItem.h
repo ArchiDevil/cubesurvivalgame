@@ -4,41 +4,41 @@
 
 class Item;
 
-class FoodItem : public Item
+class EntityItem : public Item
 {
 public:
-	FoodItem(ItemUsingsHandler * handler
+	EntityItem(ItemUsingsHandler * handler
 		, const std::string & name
 		, const std::string & desc
 		, ShiftEngine::MeshDataPtr data
 		, ShiftEngine::TexturePtr ptr
-		, int hunger)
+		, const std::string & entityId)
 		: Item(handler, ptr, data, name, desc)
-		, hunger(hunger)
+		, entityId(entityId)
 	{
 	}
 
 	bool UseOnPlayer() override
 	{
-		return handler->UseFoodItem(this);
+		return false;
 	}
 
 	bool UseInWorld() override
 	{
-		return false;
+		return handler->UseEntityItem(this);
 	}
 
 	ItemType GetType() const override
 	{
-		return IT_Food;
+		return IT_Entity;
 	}
 
-	int GetHunger() const
+	const std::string & GetEntityId() const
 	{
-		return hunger;
+		return entityId;
 	}
 
 private:
-	const int hunger;
+	const std::string entityId;
 
 };

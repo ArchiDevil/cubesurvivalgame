@@ -3,13 +3,13 @@
 #include "Items/BlockItem.h"
 #include "Items/MiscItem.h"
 #include "Items/WeaponItem.h"
+#include "Items/EntityItem.h"
+#include "Items/FoodItem.h"
 
-ItemUsingsHandler::ItemUsingsHandler( cPlayer * _p, cWorld * _w )
-	: pPlayer(_p), pWorld(_w)
-{
-}
+#include "player/player.h"
 
-ItemUsingsHandler::~ItemUsingsHandler()
+ItemUsingsHandler::ItemUsingsHandler( cPlayer * pPlayer, cWorld * pWorld )
+	: pPlayer(pPlayer), pWorld(pWorld)
 {
 }
 
@@ -33,5 +33,20 @@ bool ItemUsingsHandler::UseBlockItem( BlockItem * block )
 		return true;
 	}
 
+	return false;
+}
+
+bool ItemUsingsHandler::UseEntityItem(EntityItem * item)
+{
+	return false;
+}
+
+bool ItemUsingsHandler::UseFoodItem(FoodItem * item)
+{
+	return false;
+}
+
+bool ItemUsingsHandler::UseWeaponItem(WeaponItem * item)
+{
 	return false;
 }

@@ -1,15 +1,16 @@
 #include "Item.h"
 
-Item::Item( ItemUsingsHandler * _handler
-		   , ShiftEngine::TexturePtr icon
-		   , ShiftEngine::MeshDataPtr mesh
-		   , const std::string & _Name
-		   , const std::string & _Desc)
-	: Name(_Name)
-	, Description(_Desc)
+Item::Item(ItemUsingsHandler * handler
+	, ShiftEngine::TexturePtr icon
+	, ShiftEngine::MeshDataPtr mesh
+	, const std::string & name
+	, const std::string & desc)
+
+	: handler(handler)
+	, name(name)
+	, description(desc)
 	, icon(icon)
 	, mesh(mesh)
-	, handler(_handler)
 {
 }
 
@@ -17,22 +18,22 @@ Item::~Item()
 {
 }
 
-std::string Item::GetName() const
+const std::string & Item::GetName() const
 {
-	return Name;
+	return name;
 }
 
-std::string Item::GetDescription() const
+const std::string & Item::GetDescription() const
 {
-	return Description;
+	return description;
 }
 
-ShiftEngine::TexturePtr Item::GetTexturePtr()
+ShiftEngine::TexturePtr Item::GetTexturePtr() const
 {
 	return icon;
 }
 
-ShiftEngine::MeshDataPtr * Item::GetMesh()
+ShiftEngine::MeshDataPtr Item::GetMesh() const
 {
-	return &mesh;
+	return mesh;
 }

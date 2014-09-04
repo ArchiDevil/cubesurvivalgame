@@ -13,6 +13,8 @@ Log PerformanceLog("Performance.log");
 
 Application::Application( int Width, int Height, LPCWSTR AppName )
 	: cApplication(Width, Height, AppName)
+	, MainCanvas(nullptr)
+	, GUIListener(nullptr)
 {
 	//	MainCanvas			= new Canvas;
 }

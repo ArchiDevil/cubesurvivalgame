@@ -1,19 +1,21 @@
 #pragma once
 
-#include "../../MathLib/math.h"
 #include "../world/world.h"
 #include "cSelectedBlock.h"
-#include "cInventory.h"
-#include "../../SimplePhysicsEngine/PhysicsEngine.h"
+
+#include <MathLib/math.h>
+#include <SimplePhysicsEngine/PhysicsEngine.h>
 
 class cInventory;
+class ItemManager;
 
 struct playerStats
 {
 	playerStats()
-		: hunger(100), health(100), temperature(100)
-	{
-	}
+		: hunger(100)
+		, health(100)
+		, temperature(100)
+	{}
 
 	unsigned int hunger;
 	unsigned int temperature;
@@ -26,8 +28,7 @@ public:
 	cPlayer();
 	~cPlayer();
 
-	void Initialize(cWorldStorage * Land);
-	void LevelUp();
+	void Initialize(cWorldStorage * Land, ItemManager * pItemManager);
 
 	//Getters
 	unsigned GetHunger() const;
@@ -55,7 +56,7 @@ public:
 private:
 	cWorldStorage * pWorldStorage;
 	cSelectedBlock SelectedBlock;
-	cInventory * Inventory;
+	std::unique_ptr<cInventory> Inventory;
 	pPhysObject PlayerBox;
 	playerStats Stats;
 

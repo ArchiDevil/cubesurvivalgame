@@ -1,21 +1,24 @@
 #include "player.h"
 
+#include "../Items/ItemManager.h"
+#include "cInventory.h"
+
 const float BlockRadius = 4.0f;	//насколько далеко можно выделять блок
 
-cPlayer::cPlayer() : 
-	pWorldStorage(nullptr), fSpeed(3.0f), PlayerHeight(1.6f) 
+cPlayer::cPlayer() 
+	: pWorldStorage(nullptr)
+	, fSpeed(3.0f)
+	, PlayerHeight(1.6f) 
 {
-	Inventory = new cInventory;
 }
 
 cPlayer::~cPlayer() 
 {
-	if(Inventory)
-		delete Inventory;
 }
 
-void cPlayer::Initialize( cWorldStorage * Land )
+void cPlayer::Initialize( cWorldStorage * Land, ItemManager * pItemManager )
 {
+	Inventory.reset(new cInventory(pItemManager));
 	pWorldStorage = Land;
 	PlayerBox = cSimplePhysicsEngine::GetInstance().GetPlayerBBox();
 	SelectedBlock.Initialize();
@@ -131,7 +134,7 @@ void cPlayer::ResetVelocities()
 
 cInventory * cPlayer::GetInventoryPtr()
 {
-	return Inventory;
+	return Inventory.get();
 }
 
 void cPlayer::SetVelocities( const Vector3D & velocities )

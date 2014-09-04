@@ -5,9 +5,9 @@
 CrafterGameObject::CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs)
 	: UsableGameObject(meshNode)
 	, state(Empty)
-	, storedItem(nullptr)
 	, craftingTime(craftingTimeMs)
 	, elapsedTime(0)
+	, storedItem(nullptr)
 {
 }
 
@@ -26,7 +26,7 @@ void CrafterGameObject::Activate()
 	{
 	case Empty:
 		{
-			auto rhItem = pInventory->GetRightHandItem();
+			/*auto rhItem = pInventory->GetRightHandItem();
 			if (rhItem.Item && rhItem.count != 0)
 			{
 				storedItem = rhItem.Item;
@@ -35,7 +35,7 @@ void CrafterGameObject::Activate()
 				state = Crafting;
 				elapsedTime = 0;
 				MainLog.Message("Crafting started");
-			}
+			}*/
 			break;
 		}
 	case Crafting:

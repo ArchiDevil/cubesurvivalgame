@@ -130,8 +130,8 @@ int cChunksStorage::GetChunkNumPointer( int WorldX, int WorldY )
 WorldChunk * cChunksStorage::GetChunkPtr( int WorldX, int WorldY )
 {
 	int ss2 = (ChunksPerSide + 1) / 2;
-	assert(abs(WorldX - CenterChunkX <= ss2));
-	assert(abs(WorldY - CenterChunkY <= ss2));
+	assert(abs(WorldX - CenterChunkX) <= ss2);
+	assert(abs(WorldY - CenterChunkY) <= ss2);
 
 	return &Chunks[GetChunkNumPointer(WorldX, WorldY)];
 }

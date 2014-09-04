@@ -1,21 +1,18 @@
 #pragma once
 
-#include "../GraphicsEngine/Sprite.h"
-#include "player/player.h"
+#include <GraphicsEngine/Sprite.h>
 
 class gameHUD
 {
 public:
 	gameHUD();
-	~gameHUD();
 
-	void Initialize(cPlayer * pPlayer, int sw, int sh);
+	void Initialize(int sw, int sh);
 	void Draw();
 
 private:
-	ShiftEngine::Sprite * crosshair;
-	ShiftEngine::Sprite * liHandItem;
-	ShiftEngine::Sprite * liHandI; // обводка
-	cPlayer * pPlayer;
+	std::unique_ptr<ShiftEngine::Sprite> crosshair;
+	std::unique_ptr<ShiftEngine::Sprite> liHandItem;
+	std::unique_ptr<ShiftEngine::Sprite> liHandI;
 
 };

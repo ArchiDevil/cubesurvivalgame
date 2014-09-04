@@ -3,29 +3,19 @@
 #include "Item.h"
 
 class Item;
-class ItemUsingsHandler;
 
 class WeaponItem : public Item
 {
 public:
-	WeaponItem(ItemUsingsHandler * _handler,
-				const std::string & _Name,
-				const std::string & _Desc,
-				ShiftEngine::MeshDataPtr data,
-				ShiftEngine::TexturePtr ptr,
-				int damageCount)
-		: Item(_handler, ptr, data, _Name, _Desc)
+	WeaponItem(ItemUsingsHandler * handler
+		, const std::string & name
+		, const std::string & desc
+		, ShiftEngine::MeshDataPtr data
+		, ShiftEngine::TexturePtr ptr
+		, int damageCount)
+		: Item(handler, ptr, data, name, desc)
 		, damageCount(damageCount)
 	{
-	}
-
-	~WeaponItem()
-	{
-	}
-
-	int GetDamageCount() const
-	{
-		return damageCount;
 	}
 
 	bool UseOnPlayer() override
@@ -35,8 +25,17 @@ public:
 
 	bool UseInWorld() override
 	{
-		throw std::exception("The method or operation is not implemented.");
-		return false;
+		return handler->UseWeaponItem(this);
+	}
+
+	ItemType GetType() const
+	{
+		return IT_Weapon;
+	}
+
+	int GetDamageCount() const
+	{
+		return damageCount;
 	}
 
 private:

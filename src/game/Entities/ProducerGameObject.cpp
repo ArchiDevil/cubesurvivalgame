@@ -1,13 +1,14 @@
 #include "ProducerGameObject.h"
 
 #include "../game.h"
+#include "../player/cInventory.h"
 
 ProducerGameObject::ProducerGameObject(ShiftEngine::MeshNode * meshNode, Item * producedItem, uint32_t cycleTime)
 	: UsableGameObject(meshNode)
-	, produceType(producedItem)
+	, state(Producing)
 	, cycleTime(cycleTime)
 	, elapsedTime(0)
-	, state(Producing)
+	, produceType(producedItem)
 {
 }
 

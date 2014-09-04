@@ -1,49 +1,54 @@
 #include "cInventory.h"
 
-cInventory::cInventory() {}
+#include "../Items/ItemManager.h"
+#include "../Items/Item.h"
 
-cInventory::~cInventory() {}
-
-bool cInventory::IsExist( std::string & Name ) const
+cInventory::cInventory(ItemManager * pItemMgr)
+	: pItemMgr(pItemMgr)
 {
-	for (int i = 0; i < InventorySize ; i++)
-	{
-		if(Items[i].Item->GetName() == Name)
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
-bool cInventory::IsExist( Item * it ) const
+cInventory::~cInventory()
 {
-	for (auto iter = Items.begin(); iter != Items.end(); iter++)
-		if((*iter).Item == it && (*iter).count > 0)
+}
+
+bool cInventory::IsExist(std::string & Name) const
+{
+	for (int i = 0; i < InventorySize; i++)
+		if (pItemMgr->GetItemById(Items[i].itemId)->GetName() == Name)
 			return true;
 
 	return false;
 }
 
-SlotUnit cInventory::GetItemInSlot( int slot ) const
+bool cInventory::IsExist(uint64_t itemId) const
+{
+	for (auto & item : Items)
+		if (item.itemId == itemId)
+			return true;
+
+	return false;
+}
+
+SlotUnit cInventory::GetItemInSlot(int slot) const
 {
 	return Items[slot];
 }
 
-void cInventory::SetItemInSlot( int slot, Item * it )
+void cInventory::SetItemInSlot(int slot, uint64_t itemId)
 {
-	Items[slot].Item = it;
+	Items[slot].itemId = itemId;
 	Items[slot].count = 1;
 }
 
-int cInventory::GetCountFromSlot( int slot ) const
+int cInventory::GetCountFromSlot(int slot) const
 {
 	return Items[slot].count;
 }
 
-void cInventory::SetCountInSlot( int slot, int count )
+void cInventory::SetCountInSlot(int slot, int count)
 {
-	Items[slot].count = count; 
+	Items[slot].count = count;
 }
 
 SlotUnit cInventory::GetLeftHandItem() const
@@ -51,7 +56,7 @@ SlotUnit cInventory::GetLeftHandItem() const
 	return leftItemHand;
 }
 
-void cInventory::SetLeftItemHand( SlotUnit val )
+void cInventory::SetLeftItemHand(SlotUnit val)
 {
 	leftItemHand = val;
 }
@@ -61,7 +66,7 @@ SlotUnit cInventory::GetRightHandItem() const
 	return rightItemHand;
 }
 
-void cInventory::SetRightItemHand( SlotUnit val )
+void cInventory::SetRightItemHand(SlotUnit val)
 {
 	rightItemHand = val;
 }
@@ -69,38 +74,27 @@ void cInventory::SetRightItemHand( SlotUnit val )
 int cInventory::GetFirstFreeSlotIndex() const
 {
 	for (int i = 0; i < InventorySize; i++)
-		if(Items[i].count == 0)
+		if (Items[i].count == 0)
 			return i;
 
 	return -1;
 }
 
-void cInventory::ResetEmpty()
+bool cInventory::AddItem(uint64_t itemId)
 {
-	for (int i = 0; i < InventorySize ; i++)
-		if(Items[i].count == 0)
-			Items[i].Item = nullptr;
-}
-
-bool cInventory::AddItem( Item * it )
-{
-	//first we must find if this item exist in inventory
-
-	for (int i = 0; i < InventorySize; i++)
+	for (auto & item : Items)
 	{
-		if(Items[i].Item == it)
+		if (item.itemId == itemId)
 		{
-			Items[i].count++;
+			++item.count;
 			return true;
 		}
 	}
 
-	//if not exist
-	
 	int slotIndex = GetFirstFreeSlotIndex();
-	if(slotIndex != -1)
+	if (slotIndex != -1)
 	{
-		Items[slotIndex].Item = it;
+		Items[slotIndex].itemId = itemId;
 		Items[slotIndex].count = 1;
 		return true;
 	}
@@ -110,23 +104,18 @@ bool cInventory::AddItem( Item * it )
 	}
 }
 
-bool cInventory::RemoveItem( Item * it )
+bool cInventory::RemoveItem(uint64_t itemId)
 {
-	for (int i = 0; i < InventorySize; i++)
+	for (auto & item : Items)
 	{
-		if(Items[i].Item == it)
+		if (item.itemId == itemId)
 		{
-			if(--Items[i].count == 0)
+			if (--item.count == 0)
 			{
-				Items[i].Item = nullptr;
+				item.itemId = 0;
 			}
 			return true;
 		}
 	}
 	return false;
-}
-
-void cInventory::SetEmptyItem( Item * it )
-{
-	empty = it;
 }

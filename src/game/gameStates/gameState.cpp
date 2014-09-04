@@ -5,6 +5,8 @@
 #include <GraphicsEngine/Renderer.h>
 #include <GraphicsEngine/ShaderManager.h>
 
+#include "../player/cInventory.h"
+
 std::thread worldThread;
 volatile bool exitFlag = false;
 
@@ -32,9 +34,9 @@ bool gameState::initState()
 	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
 	MainLog.Message("Physics initialized");
 
-	::utils::filesystem::CreateDir(L"saves\\worlds\\");
-	::utils::filesystem::CreateDir(L"saves\\players\\");
-	::utils::filesystem::CreateDir(L"saves\\worlds\\tempWorld\\");
+	::utils::filesystem::CreateDir(L"saves/worlds/");
+	::utils::filesystem::CreateDir(L"saves/players/");
+	::utils::filesystem::CreateDir(L"saves/worlds/tempWorld/");
 
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
@@ -46,14 +48,13 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
-	pGame->Player->Initialize(pGame->World->GetDataStorage());
+	pGame->Player->Initialize(pGame->World->GetDataStorage(), pGame->ItemMgr);
 	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
-	//pGame->Player->GetInventoryPtr()->SetEmptyItem(pGame->ItemMgr->GetItemByName("empty"));
-	//pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
-	//pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(pGame->ItemMgr->GetItemByName("empty"), 1));
+	pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(0, 1));
+	pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(0, 1));
 	MainLog.Message("Player has been initialized");
 
-	pGame->gameHud->Initialize(pGame->Player, pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
+	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
 	MainLog.Message("HUD has been created");
 
 	pGame->EntityMgr->CreateCrafterEntity(Vector3F(13.0f, 0.0f, 90.0f), "campfire");
@@ -66,7 +67,6 @@ bool gameState::initState()
 		Sleep(0);
 	});
 
-	pGame->GameEventHandler->Initialize(pGame->Player, pGame->World, pGame->EntityMgr, pGame->ItemMgr);
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
 	auto settings = pCtxMgr->GetParameters();
@@ -96,10 +96,10 @@ bool gameState::update( double dt )
 	auto items = pGame->EntityMgr->FindItemsNearPlayer(pGame->Player->GetPosition());
 	for (auto iter = items.begin(); iter != items.end(); iter++)
 	{
-		if(pGame->GameEventHandler->onPlayerPicksItem((*iter)->GetItemPtr()))
+		if(pGame->GameEventHandler->onPlayerPicksItem((*iter)->GetItemId()))
 		{
 			(*iter)->Delete();
-			pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit((*iter)->GetItemPtr(), 
+			pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit((*iter)->GetItemId(), 
 				pGame->Player->GetInventoryPtr()->GetLeftHandItem().count + 1));
 		}
 	}
@@ -285,9 +285,9 @@ void gameState::ProcessInput( double /*dt*/ )
 	if(InputEngine->IsKeyUp(DIK_F))
 		PhysicsEngine->ChangePlayerFreeState();
 
-	static bool Wflag = false;
 	if(InputEngine->IsKeyUp(DIK_V))
-	{
+	{	
+		static bool Wflag = false;
 		Wflag = !Wflag;
 		if(Wflag)
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Wireframe);
@@ -315,6 +315,6 @@ void gameState::ProcessInput( double /*dt*/ )
 		}
 	}
 
-	if(InputEngine->IsMouseUp(RButton))
-		pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->UseInWorld();
+	//if(InputEngine->IsMouseUp(RButton))
+	//	pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->UseInWorld();
 }

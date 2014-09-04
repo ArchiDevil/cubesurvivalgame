@@ -1,36 +1,41 @@
 #include "gameHud.h"
 
-gameHUD::gameHUD() : crosshair(nullptr), liHandItem(nullptr),
-	liHandI(nullptr), pPlayer(nullptr)
+#include "game.h"
+#include "player/cInventory.h"
+
+gameHUD::gameHUD() 
+	: crosshair(nullptr)
+	, liHandItem(nullptr)
+	, liHandI(nullptr)
 {
 }
 
-gameHUD::~gameHUD()
+void gameHUD::Initialize( int sw, int sh )
 {
-	delete crosshair;
-	delete liHandItem;
-	delete liHandI;
-}
-
-void gameHUD::Initialize( cPlayer * pPlayer, int sw, int sh )
-{
-	this->pPlayer = pPlayer;
-	crosshair = new ShiftEngine::Sprite(L"gui/cross.png");
+	crosshair.reset(new ShiftEngine::Sprite(L"gui/cross.png"));
 	crosshair->SetPosition(Vector2F((float)sw / 2, (float)sh / 2));
 
-	liHandItem = new ShiftEngine::Sprite(L"");
+	liHandItem.reset(new ShiftEngine::Sprite(L""));
 	liHandItem->SetPosition(Vector2F(sw - 70.0, sh - 70.0));
 	liHandItem->SetScale(Vector2F(1.4f, 1.4f));
 
-	liHandI = new ShiftEngine::Sprite(L"gui/selectcube.png");
+	liHandI.reset(new ShiftEngine::Sprite(L"gui/selectcube.png"));
 	liHandI->SetPosition(Vector2F(sw - 70.0, sh - 70.0));
 	liHandI->SetScale(Vector2F(1.4f, 1.4f));
 }
 
 void gameHUD::Draw()
 {
-	//liHandItem->SetTexture(pPlayer->GetInventoryPtr()->GetLeftHandItem().Item->GetTexturePtr());
+	auto pGame = LostIsland::GetGamePtr();
+	auto pItemMgr = pGame->ItemMgr;
+	uint64_t itemId = pGame->Player->GetInventoryPtr()->GetLeftHandItem().itemId;
+
+	if (itemId)
+		liHandItem->SetTexture(pItemMgr->GetItemById(itemId)->GetTexturePtr());
+	else
+		liHandItem->SetTexture(nullptr);
+
 	liHandI->Draw();
 	crosshair->Draw();
-	//liHandItem->Draw();
+	liHandItem->Draw();
 }

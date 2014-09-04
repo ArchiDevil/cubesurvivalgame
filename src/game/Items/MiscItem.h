@@ -16,10 +16,6 @@ public:
 	{
 	}
 
-	~MiscItem()
-	{
-	}
-
 	bool UseOnPlayer() override
 	{
 		return false;
@@ -28,5 +24,10 @@ public:
 	bool UseInWorld() override
 	{
 		return false;
+	}
+
+	ItemType GetType() const override
+	{
+		return IT_Misc;
 	}
 };
