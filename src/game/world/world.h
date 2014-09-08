@@ -5,7 +5,7 @@
 #include <vector>
 #include <mutex>
 
-#include "../../Utilities/ut.h"
+#include <Utilities/ut.h>
 
 #include "worldGenerator/cWorldGenerator.h"
 #include "../Environment/EnvironmentManager.h"
@@ -41,7 +41,7 @@ public:
 	cWorld();
 	~cWorld();
 
-	void						Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, cEnvironmentManager * envMgr, const std::wstring & worldName);
+	void						Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, cEnvironmentManager * envMgr, const std::string & worldName);
 	void						Unload();
 	void						GenerateChunk(int x, int y);
 	void						ProcessLoading();
@@ -55,8 +55,8 @@ public:
 	typesStorage *				GetTypesStorage();
 	bool						HaveSolidsNear(int x, int y, int z);
 
-	void 						SetWorldName(const std::wstring & worldName);
-	std::wstring 				GetWorldName() const;
+	void						SetWorldName(const std::string & worldName);
+	std::string					GetWorldName() const;
 	
 	//Loaders
 	void						ShiftChunkX(int ShiftingValue);
@@ -77,16 +77,16 @@ private:
 
 	float						GetInterpolatedHeight(int x, int y);
 
-	cWorldStorage *				WorldStorage;
-	cChunksStorage *			ChunksStorage;
-	cWorldGenerator *			Generator;
-	cChunkStreamer *			Streamer;
-	cTesselator *				Tesselator;
-	typesStorage *				TypesStorage;
+	std::unique_ptr<cWorldStorage>		WorldStorage;
+	std::unique_ptr<cChunksStorage>		ChunksStorage;
+	std::unique_ptr<cWorldGenerator>	Generator;
+	std::unique_ptr<cChunkStreamer>		Streamer;
+	std::unique_ptr<cTesselator>		Tesselator;
+	std::unique_ptr<typesStorage>		TypesStorage;
 
-	std::mutex				    critSect;
-	std::mutex				    updatingSection;
+	std::mutex							critSect;
+	std::mutex							updatingSection;
 
-	std::deque<LoadQuery>		loadingQueue;
-	std::wstring 				worldName;
+	std::deque<LoadQuery>				loadingQueue;
+	std::string 						worldName;
 };

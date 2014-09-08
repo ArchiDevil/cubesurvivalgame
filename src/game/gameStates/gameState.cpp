@@ -41,7 +41,7 @@ bool gameState::initState()
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
-	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, pGame->environmentMgr, L"tempWorld");
+	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, pGame->environmentMgr, "tempWorld");
 	MainLog.Message("World Manager has been initialized");
 
 	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());

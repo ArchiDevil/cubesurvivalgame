@@ -46,7 +46,7 @@ void cWorldGenerator::GenerateHeightMap( int size )
 	}
 }
 
-void cWorldGenerator::LoadHeightMap( const std::wstring & filename )
+void cWorldGenerator::LoadHeightMap( const std::string & filename )
 {
 	std::ifstream in;
 	in.open(filename, std::ios_base::binary);
@@ -69,7 +69,7 @@ void cWorldGenerator::LoadHeightMap( const std::wstring & filename )
 	}
 }
 
-void cWorldGenerator::SaveHeightMap( const std::wstring & filename )
+void cWorldGenerator::SaveHeightMap( const std::string & filename )
 {
 	::CreateDirectory(L"saves/tempWorld", nullptr);
 

@@ -6,13 +6,13 @@
 
 cWorld::cWorld()
 {
-	Generator		= new cWorldGenerator;
-	WorldStorage	= new cWorldStorage;
-	ChunksStorage	= new cChunksStorage;
-	Streamer		= new cChunkStreamer(WorldStorage);
-	Tesselator		= new cTesselator;
-		Tesselator->SetCriticalSection(&critSect);
-	TypesStorage	= new typesStorage;
+	Generator.reset(new cWorldGenerator);
+	WorldStorage.reset(new cWorldStorage);
+	ChunksStorage.reset(new cChunksStorage);
+	Streamer.reset(new cChunkStreamer(WorldStorage.get()));
+	Tesselator.reset(new cTesselator);
+	Tesselator->SetCriticalSection(&critSect);
+	TypesStorage.reset(new typesStorage);
 }
 
 cWorld::~cWorld()
@@ -24,16 +24,9 @@ cWorld::~cWorld()
 	for (int i = 0; i < size ; i++)
 		if(chunks[i].GetStatus() > CS_EMPTY)
 			Streamer->Save(chunks[i].GetWorldX(), chunks[i].GetWorldY());
-
-	delete Generator;
-	delete WorldStorage;
-	delete ChunksStorage;
-	delete Streamer;
-	delete Tesselator;
-	delete TypesStorage;
 }
 
-void cWorld::Initialize( unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, cEnvironmentManager * envMgr, const std::wstring & worldName )
+void cWorld::Initialize( unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, cEnvironmentManager * envMgr, const std::string & worldName )
 {
 	if(ChunksPerSide % 2 == 0)
 		ChunksPerSide++;		//необходимо для нечетного числа в чанках
@@ -43,7 +36,7 @@ void cWorld::Initialize( unsigned int ChunksPerSide, int CentralChunkX, int Cent
 	std::wstring BlockPath = L"resources/gamedata/blocks/";
 	TypesStorage->loadTypes(utils::filesystem::CollectFileNames(BlockPath, L"blk"));
 
-	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, WorldStorage->GetChunkWidth(), WorldStorage->GetChunkHeight(), TypesStorage);
+	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, WorldStorage->GetChunkWidth(), WorldStorage->GetChunkHeight(), TypesStorage.get());
 
 	unsigned int size = ChunksPerSide * WorldStorage->GetChunkWidth() * ChunksPerSide
 		* WorldStorage->GetChunkWidth() * WorldStorage->GetChunkHeight();
@@ -55,14 +48,13 @@ void cWorld::Initialize( unsigned int ChunksPerSide, int CentralChunkX, int Cent
 
 	FillQueue(CentralChunkX, CentralChunkY, ChunksPerSide);
 
-	std::wostringstream str;
-	str << L"saves\\worlds\\" << worldName << L"\\" << worldName << L".lihm";
+	std::ostringstream str;
+	str << "saves/worlds/" << worldName << "/" << worldName << ".lihm";
 	Generator->LoadHeightMap(str.str());
 	Generator->GetNoise()->SetFrequency(0.001);
 	Generator->GetNoise()->SetOctaves(8);
 
-	Tesselator->Initialize(WorldStorage, ChunksStorage, Generator);
-//	Renderer->Initialize(ChunksStorage, TypesStorage, envMgr);
+	Tesselator->Initialize(WorldStorage.get(), ChunksStorage.get(), Generator.get());
 }
 
 void cWorld::Unload()
@@ -104,11 +96,13 @@ void cWorld::GenerateChunk( int WorldX, int WorldY )
 	{
 		for(int j = FromY; j < ToY; j++)
 		{
-			Generator->GetNoise()->SetFrequency(0.001);
-			Generator->GetNoise()->SetOctaves(8);
+			Generator->GetNoise()->SetFrequency(0.007);
+			Generator->GetNoise()->SetOctaves(5);
 
-			double noise = Generator->GetNoise()->SimplexNoise(i, j) * 40.0f;
-			unsigned int kMax = noise + 70 + GetInterpolatedHeight(i, j);
+			double noise = Generator->GetNoise()->SimplexNoise(i, j) * 10.0f;
+			double distance = MathLib::distance(Vector2F(), Vector2F(i, j)) / 400.0;
+			int result = (noise + 90) * (1.0 - distance);
+			unsigned int kMax = result < 3 ? 3 : result; //+ GetInterpolatedHeight(i, j);
 
  			unsigned int PTR = WorldStorage->GetIndex(i, j, 0);
  			WorldStorage->WorldData[PTR].TypeID = ID_WROOT;
@@ -289,12 +283,12 @@ void cWorld::ProcessLoading()
 
 cChunksStorage * cWorld::GetChunksStorage()
 {
-	return ChunksStorage;
+	return ChunksStorage.get();
 }
 
 cWorldStorage * cWorld::GetDataStorage()
 {
-	return WorldStorage;
+	return WorldStorage.get();
 }
 
 bool cWorld::PlaceBlock( int x, int y, int z, BlockType type )
@@ -474,21 +468,14 @@ void cWorld::ComputeUpsideLight( int WorldX, int WorldY )
 			unsigned int z = startZ;
 			int PTR = WorldStorage->GetIndex(x, y, z);
 
-			while(WorldStorage->WorldData[PTR].TypeID == ID_AIR || WorldStorage->WorldData[PTR].TypeID == ID_WATER)
-			{
-				WorldStorage->WorldData[PTR].LightValue = MAX_SUN_LIGHT_INDEX;
-				PTR--;
-			}
-			//int waterLight = MAX_SUN_LIGHT_INDEX - 1;
-			//if(WorldStorage->WorldData[PTR].TypeID == ID_WATER)
-			//{
-			//	while(WorldStorage->WorldData[PTR].TypeID == ID_WATER && waterLight >= 0)
-			//	{
-			//		WorldStorage->WorldData[PTR].LightValue = waterLight;
-			//		waterLight--;
-			//		PTR--;
-			//	}
-			//}
+			while(WorldStorage->WorldData[PTR].TypeID == ID_AIR)
+				WorldStorage->WorldData[PTR--].LightValue = MAX_SUN_LIGHT_INDEX;
+
+			int waterLight = MAX_SUN_LIGHT_INDEX - 1;
+
+			if (WorldStorage->WorldData[PTR].TypeID == ID_WATER)
+				while (WorldStorage->WorldData[PTR].TypeID == ID_WATER && waterLight >= 0)
+					WorldStorage->WorldData[PTR--].LightValue = waterLight--;
 		}
 	}
 }
@@ -634,15 +621,15 @@ void cWorld::FillQueue( int centralX, int centralY, int cps )
 
 typesStorage * cWorld::GetTypesStorage()
 {
-	return TypesStorage;
+	return TypesStorage.get();
 }
 
-void cWorld::SetWorldName( const std::wstring & worldName )
+void cWorld::SetWorldName( const std::string & worldName )
 {
 	this->worldName = worldName;
 }
 
-std::wstring cWorld::GetWorldName() const
+std::string cWorld::GetWorldName() const
 {
 	return worldName;
 }
