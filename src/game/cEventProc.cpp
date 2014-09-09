@@ -15,33 +15,45 @@ void cGameEventHandler::onBlockAdded(BlockType /*bt*/)
 {
 }
 
-void cGameEventHandler::onPlayerMoves()
+void cGameEventHandler::onPlayerMoves( double dt )
 {
-	//static int PlayerCX = 0;
-	//static int PlayerCY = 0;
-	//static int prePlayerCX = PlayerCX;
-	//static int prePlayerCY = PlayerCY;
+	static int PlayerCX = 0;
+	static int PlayerCY = 0;
+	static int prePlayerCX = PlayerCX;
+	static int prePlayerCY = PlayerCY;
+
+	auto pGame = LostIsland::GetGamePtr();
+
+	auto playerPosition = pGame->Player->GetPosition() + (*pGame->Player->GetVelocitiesPtr() * dt);
+	int worldBounds = 180;
+	if (playerPosition.x > worldBounds ||
+		playerPosition.x < -worldBounds)
+		pGame->Player->GetVelocitiesPtr()->x = 0.0;
+		
+	if (playerPosition.y > worldBounds ||
+		playerPosition.y < -worldBounds)
+		pGame->Player->GetVelocitiesPtr()->y = 0.0;
 
 	//prePlayerCX = PlayerCX;
 	//prePlayerCY = PlayerCY;
 
-	//PlayerCX = (int)floor(pPlayer->GetPosition().x / (int)pWorld->GetDataStorage()->GetChunkWidth());
-	//PlayerCY = (int)floor(pPlayer->GetPosition().y / (int)pWorld->GetDataStorage()->GetChunkWidth());
+	//PlayerCX = (int)floor(pGame->Player->GetPosition().x / (int)pGame->World->GetDataStorage()->GetChunkWidth());
+	//PlayerCY = (int)floor(pGame->Player->GetPosition().y / (int)pGame->World->GetDataStorage()->GetChunkWidth());
 
-	//if(PlayerCX != prePlayerCX)
+	//if (PlayerCX != prePlayerCX)
 	//{
-	//	if(PlayerCX - prePlayerCX < 0)
-	//		pWorld->ShiftChunkX(-1);
-	//	if(PlayerCX - prePlayerCX > 0)
-	//		pWorld->ShiftChunkX(1);
+	//	if (PlayerCX - prePlayerCX < 0)
+	//		pGame->World->ShiftChunkX(-1);
+	//	if (PlayerCX - prePlayerCX > 0)
+	//		pGame->World->ShiftChunkX(1);
 	//}
 
-	//if(PlayerCY != prePlayerCY)
+	//if (PlayerCY != prePlayerCY)
 	//{
-	//	if(PlayerCY - prePlayerCY < 0)
-	//		pWorld->ShiftChunkY(-1);
-	//	if(PlayerCY - prePlayerCY > 0)
-	//		pWorld->ShiftChunkY(1);
+	//	if (PlayerCY - prePlayerCY < 0)
+	//		pGame->World->ShiftChunkY(-1);
+	//	if (PlayerCY - prePlayerCY > 0)
+	//		pGame->World->ShiftChunkY(1);
 	//}
 }
 

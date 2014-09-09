@@ -19,7 +19,7 @@ public:
 	void onBlockAdded(BlockType bt);							//вызывается при добавлении блока
 
 	//player events
-	void onPlayerMoves();										//вызывается при движении игрока
+	void onPlayerMoves(double dt);								//вызывается при движении игрока
 	void onPlayerAttack();										//при атаке игроком
 	bool onPlayerPicksItem(uint64_t itemId);					//игрок берет предмет
 	void onPlayerDropsItem(uint64_t itemId);					//игрок бросает айтим

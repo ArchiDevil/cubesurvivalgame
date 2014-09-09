@@ -208,7 +208,7 @@ void gameState::onResume()
 	});
 }
 
-void gameState::ProcessInput( double /*dt*/ )
+void gameState::ProcessInput( double dt )
 {
 	cInputEngine * InputEngine = &cInputEngine::GetInstance();
 	cSimplePhysicsEngine * PhysicsEngine = &cSimplePhysicsEngine::GetInstance();
@@ -276,7 +276,7 @@ void gameState::ProcessInput( double /*dt*/ )
 	}
 
 	if(moveFlag)
-		pGame->GameEventHandler->onPlayerMoves();
+		pGame->GameEventHandler->onPlayerMoves(dt);
 
 	if(InputEngine->IsKeyDown(DIK_SPACE))
 		if (!PhysicsEngine->IsPlayerFree() && PhysicsEngine->IsPlayerCollidesWithWorld())
@@ -302,18 +302,18 @@ void gameState::ProcessInput( double /*dt*/ )
 		pScene->GetActiveCamera()->LookUpDown(-mouseInfo.deltaY * 0.2f);
 	}
 
-	if(InputEngine->IsMouseUp(LButton))
-	{
-		Vector3D vec = pGame->Player->GetSelectedBlockPtr()->GetPositions().solid;
-		if(vec.z > -1) //z не может быть меньше 0
-		{
-			vec3<int> pos = vec3<int>(floor(vec.x), floor(vec.y), floor(vec.z));
-			auto block = pGame->World->GetDataStorage()->GetBlock(pos.x, pos.y, pos.z)->TypeID;
+	//if(InputEngine->IsMouseUp(LButton))
+	//{
+	//	Vector3D vec = pGame->Player->GetSelectedBlockPtr()->GetPositions().solid;
+	//	if(vec.z > -1) //z не может быть меньше 0
+	//	{
+	//		vec3<int> pos = vec3<int>(floor(vec.x), floor(vec.y), floor(vec.z));
+	//		auto block = pGame->World->GetDataStorage()->GetBlock(pos.x, pos.y, pos.z)->TypeID;
 
-			if(pGame->World->RemoveBlock(pos.x, pos.y, pos.z))
-				pGame->GameEventHandler->onBlockRemoved(block, pos);
-		}
-	}
+	//		if(pGame->World->RemoveBlock(pos.x, pos.y, pos.z))
+	//			pGame->GameEventHandler->onBlockRemoved(block, pos);
+	//	}
+	//}
 
 	//if(InputEngine->IsMouseUp(RButton))
 	//	pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->UseInWorld();
