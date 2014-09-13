@@ -3,13 +3,36 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include "../observer.h"
+
 enum AppState
 {
 	AS_Running,
 	AS_Inactive
 };
 
-class cSystem
+enum SystemKey
+{
+	SK_BACKSPACE,
+	SK_ENTER,
+	SK_ESC,
+	SK_TAB,
+	SK_CHAR
+};
+
+struct SystemKeyMessage
+{
+	SystemKeyMessage(SystemKey system_key = SK_CHAR, unsigned long character = 0) 
+		: system_key(system_key)
+		, character(character)
+	{
+	}
+
+	SystemKey system_key;
+	unsigned long character;
+};
+
+class cSystem : public notifier<SystemKeyMessage>
 {
 public:
 	cSystem();
@@ -31,4 +54,4 @@ private:
 
 static cSystem * System;
 
-LRESULT CALLBACK WndProc(HWND windowHandle, UINT msg, WPARAM wParam, LPARAM lParam); //MUST BE OUTSIDE!!!
+LRESULT CALLBACK WndProc(HWND windowHandle, UINT msg, WPARAM wParam, LPARAM lParam);

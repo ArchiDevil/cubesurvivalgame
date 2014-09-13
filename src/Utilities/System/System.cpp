@@ -1,12 +1,16 @@
 #include "System.h"
 
 cSystem::cSystem()
-	: State(AS_Running), WindowHandler(0), WindowInstance(0)
+	: State(AS_Running)
+	, WindowHandler(0)
+	, WindowInstance(0)
 {
 	System = this;
 }
 
-cSystem::~cSystem() {}
+cSystem::~cSystem() 
+{
+}
 
 HWND cSystem::GetHWND() const
 {
@@ -33,6 +37,27 @@ LRESULT CALLBACK cSystem::MessageHandler( HWND windowHandle, UINT msg, WPARAM wP
 		if(wParam == WA_INACTIVE)
 			State = AS_Inactive;
 		break;
+	case WM_CHAR:
+		long key = wParam;
+		switch (key)
+		{
+		case 0x08: 
+			notifyAll(SystemKeyMessage(SK_BACKSPACE));
+			break;
+		case 0x0A:
+		case 0x0D:
+			notifyAll(SystemKeyMessage(SK_ENTER));
+			break;
+		case 0x1B:
+			notifyAll(SystemKeyMessage(SK_ESC));
+			break;
+		case 0x09:
+			notifyAll(SystemKeyMessage(SK_TAB));
+			break;
+		default:
+			notifyAll(SystemKeyMessage(SK_CHAR, key));
+			break;
+		}
 	default:
 		break;
 	}

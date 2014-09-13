@@ -11,9 +11,14 @@ class notifier
 public:
 	notifier() {}
 	~notifier() {}
+
 	void subscribe(observer<T> * obs) {observers.push_back(obs);}
 	void unsubscribe(observer<T> * obs) {observers.remove(obs);}
-	virtual void notifyAll() = 0;
+	virtual void notifyAll(const T& ev)
+	{
+		for(auto * object : observers)
+			object->handleEvent(ev);
+	}
 	
 protected:
 	std::list<observer<T>*> observers;
