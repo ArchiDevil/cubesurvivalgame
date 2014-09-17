@@ -15,4 +15,6 @@ private:
 	std::unique_ptr<ShiftEngine::Sprite> liHandItem;
 	std::unique_ptr<ShiftEngine::Sprite> liHandI;
 
+	size_t width, height;
+
 };

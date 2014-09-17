@@ -51,24 +51,9 @@ void cInventory::SetCountInSlot(int slot, int count)
 	Items[slot].count = count;
 }
 
-SlotUnit cInventory::GetLeftHandItem() const
+SlotUnit * cInventory::GetHandPtr()
 {
-	return leftItemHand;
-}
-
-void cInventory::SetLeftItemHand(SlotUnit val)
-{
-	leftItemHand = val;
-}
-
-SlotUnit cInventory::GetRightHandItem() const
-{
-	return rightItemHand;
-}
-
-void cInventory::SetRightItemHand(SlotUnit val)
-{
-	rightItemHand = val;
+	return &handItem;
 }
 
 int cInventory::GetFirstFreeSlotIndex() const

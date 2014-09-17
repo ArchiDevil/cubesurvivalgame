@@ -50,15 +50,16 @@ bool gameState::initState()
 
 	pGame->Player->Initialize(pGame->World->GetDataStorage(), pGame->ItemMgr);
 	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
-	pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit(0, 1));
-	pGame->Player->GetInventoryPtr()->SetRightItemHand(SlotUnit(0, 1));
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
 	MainLog.Message("HUD has been created");
 
-	pGame->EntityMgr->CreateCrafterEntity(Vector3F(13.0f, 0.0f, 90.0f), "campfire");
-	pGame->EntityMgr->CreateProducerEntity(Vector3F(15.0f, 0.0f, 90.0f), "fishnet");
+	pGame->EntityMgr->CreateEntity(Vector3F(13.0f, 0.0f, 90.0f), "campfire");
+	pGame->EntityMgr->CreateEntity(Vector3F(15.0f, 0.0f, 90.0f), "fishnet");
+
+	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
+	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
 	worldThread = std::thread([&]
 	{
@@ -80,6 +81,9 @@ bool gameState::initState()
 
 bool gameState::update( double dt )
 {
+	static double accumulatedTime = 0.0;
+	accumulatedTime += dt;
+
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	cGame * pGame = LostIsland::GetGamePtr();
 
@@ -99,17 +103,21 @@ bool gameState::update( double dt )
 		if(pGame->GameEventHandler->onPlayerPicksItem((*iter)->GetItemId()))
 		{
 			(*iter)->Delete();
-			pGame->Player->GetInventoryPtr()->SetLeftItemHand(SlotUnit((*iter)->GetItemId(), 
-				pGame->Player->GetInventoryPtr()->GetLeftHandItem().count + 1));
+			pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = (*iter)->GetItemId();
+			pGame->Player->GetInventoryPtr()->GetHandPtr()->count++;
 		}
 	}
 
 	Vector3D vectemp = pGame->Player->GetPosition();
 	pScene->GetActiveCamera()->SetPosition((float)vectemp.x, (float)vectemp.y, (float)vectemp.z + pGame->Player->GetHeight());
 
-	::SetCursorPos(600, 400);
+	if ((int)accumulatedTime % 10 == 0)
+	{
+		pGame->Player->SetHunger(pGame->Player->GetHunger() - 1);
+		accumulatedTime++;
+	}
 
-	//pGame->World->ProcessLoading();
+	::SetCursorPos(600, 400);
 
 	return true;
 }
@@ -127,7 +135,7 @@ bool gameState::render( double dt )
 
 #if defined (DEBUG) || (_DEBUG)
 
-	const int infoSize = 8;
+	const int infoSize = 11;
 	std::ostringstream di[infoSize];
 
 	di[0] << "FPS: " << pRenderer->GetFPS();
@@ -138,16 +146,22 @@ bool gameState::render( double dt )
 	di[5] << "Texture bindings: " << pRenderer->GetTextureBindings();
 	di[6] << "Draw calls: " << pRenderer->GetDrawCalls();
 	di[7] << "Selected block pos: " << freePos.x << " " << freePos.y << " " << freePos.z;
+	di[8] << "Health: " << pGame->Player->GetHealth();
+	di[9] << "Warmth: " << pGame->Player->GetTemperature();
+	di[10] << "Hunger: " << pGame->Player->GetHunger();
 
 #endif
 
 #if defined (NDEBUG) || (_NDEBUG)
 
-	const int infoSize = 2;
+	const int infoSize = 5;
 	std::ostringstream di[infoSize];
 	di[0] << "FPS: " << pRenderer->GetFPS();
 	di[1] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
 		<< pGame->environmentMgr->GetTime().getMinutes();
+	di[2] << "Health: " << pGame->Player->GetHealth();
+	di[3] << "Warmth: " << pGame->Player->GetTemperature();
+	di[4] << "Hunger: " << pGame->Player->GetHunger();
 
 #endif
 
@@ -208,7 +222,7 @@ void gameState::onResume()
 	});
 }
 
-void gameState::ProcessInput( double dt )
+void gameState::ProcessInput(double dt)
 {
 	cInputEngine * InputEngine = &cInputEngine::GetInstance();
 	cSimplePhysicsEngine * PhysicsEngine = &cSimplePhysicsEngine::GetInstance();
@@ -234,16 +248,16 @@ void gameState::ProcessInput( double dt )
 
 	D3DXVECTOR3 vec1 = pScene->GetActiveCamera()->GetLookVector();
 	Vector3D vecNew = Vector3D(vec1.x, vec1.y, vec1.z);
-	if(!PhysicsEngine->IsPlayerFree())
+	if (!PhysicsEngine->IsPlayerFree())
 		vecNew.z = 0.0f;
 	vecNew = MathLib::Normalize(vecNew);
 	vec1 = pScene->GetActiveCamera()->GetRightVector();
 	Vector3D vecRight = Vector3D(vec1.x, vec1.y, 0);
 
-	if(InputEngine->IsKeyDown(DIK_ESCAPE))
+	if (InputEngine->IsKeyDown(DIK_ESCAPE))
 		this->kill();
 
-	if(InputEngine->IsKeyDown(DIK_LSHIFT)) //HACK: temporary
+	if (InputEngine->IsKeyDown(DIK_LSHIFT)) //HACK: temporary
 	{
 		vecNew *= AccelerationMultiplier;
 		vecRight *= AccelerationMultiplier;
@@ -263,44 +277,47 @@ void gameState::ProcessInput( double dt )
 		moveFlag = true;
 	}
 
-	if(InputEngine->IsKeyDown(DIK_A))
+	if (InputEngine->IsKeyDown(DIK_A))
 	{
 		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() - vecRight * pGame->Player->GetSpeed());
 		moveFlag = true;
 	}
 
-	if(InputEngine->IsKeyDown(DIK_D))
+	if (InputEngine->IsKeyDown(DIK_D))
 	{
 		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() + vecRight * pGame->Player->GetSpeed());
 		moveFlag = true;
 	}
 
-	if(moveFlag)
+	if (moveFlag)
 		pGame->GameEventHandler->onPlayerMoves(dt);
 
-	if(InputEngine->IsKeyDown(DIK_SPACE))
+	if (InputEngine->IsKeyDown(DIK_SPACE))
 		if (!PhysicsEngine->IsPlayerFree() && PhysicsEngine->IsPlayerCollidesWithWorld())
 			pGame->Player->GetVelocitiesPtr()->z += 5.0f;
 
-	if(InputEngine->IsKeyUp(DIK_F))
+	if (InputEngine->IsKeyUp(DIK_F))
 		PhysicsEngine->ChangePlayerFreeState();
 
-	if(InputEngine->IsKeyUp(DIK_V))
-	{	
+	if (InputEngine->IsKeyUp(DIK_V))
+	{
 		static bool Wflag = false;
 		Wflag = !Wflag;
-		if(Wflag)
+		if (Wflag)
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Wireframe);
 		else
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
 	}
 
-	if(InputEngine->IsMouseMoved())
+	if (InputEngine->IsMouseMoved())
 	{
 		MouseInfo mouseInfo = InputEngine->GetMouseInfo();
 		pScene->GetActiveCamera()->LookLeftRight(-mouseInfo.deltaX * 0.2f);
 		pScene->GetActiveCamera()->LookUpDown(-mouseInfo.deltaY * 0.2f);
 	}
+
+	if(InputEngine->IsMouseUp(LButton))
+		pGame->GameEventHandler->onPlayerUsesItem(false);
 
 	//if(InputEngine->IsMouseUp(LButton))
 	//{
@@ -315,6 +332,7 @@ void gameState::ProcessInput( double dt )
 	//	}
 	//}
 
-	//if(InputEngine->IsMouseUp(RButton))
-	//	pGame->Player->GetInventoryPtr()->GetLeftHandItem().Item->UseInWorld();
+	if (InputEngine->IsMouseUp(RButton))
+		pGame->GameEventHandler->onPlayerUsesItem(true);
+
 }

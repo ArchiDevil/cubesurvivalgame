@@ -32,5 +32,5 @@ private:
 	CrafterState state;
 	const uint32_t craftingTime;
 	uint32_t elapsedTime;
-	Item * storedItem;
+	uint64_t storedItem;
 };

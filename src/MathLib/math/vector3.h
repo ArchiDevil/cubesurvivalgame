@@ -69,7 +69,7 @@ namespace MathLib
 			return *this;
 		}
 
-		template<typename T2> operator vec3<T2>()
+		template<typename T2> operator vec3<T2>() const
 		{
 			return vec3<T2>((T2)x, (T2)y, (T2)z);
 		}

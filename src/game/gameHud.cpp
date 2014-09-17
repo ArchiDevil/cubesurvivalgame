@@ -12,6 +12,9 @@ gameHUD::gameHUD()
 
 void gameHUD::Initialize( int sw, int sh )
 {
+	width = sw;
+	height = sh;
+
 	crosshair.reset(new ShiftEngine::Sprite(L"gui/cross.png"));
 	crosshair->SetPosition(Vector2F((float)sw / 2, (float)sh / 2));
 
@@ -28,7 +31,8 @@ void gameHUD::Draw()
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto pItemMgr = pGame->ItemMgr;
-	uint64_t itemId = pGame->Player->GetInventoryPtr()->GetLeftHandItem().itemId;
+	uint64_t itemId = pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId;
+	int itemCount = pGame->Player->GetInventoryPtr()->GetHandPtr()->count;
 
 	if (itemId)
 		liHandItem->SetTexture(pItemMgr->GetItemById(itemId)->GetTexturePtr());
@@ -38,4 +42,5 @@ void gameHUD::Draw()
 	liHandI->Draw();
 	crosshair->Draw();
 	liHandItem->Draw();
+	ShiftEngine::GetContextManager()->GetFontManager()->DrawTextTL(std::to_string(itemCount), width - 70, height - 70);
 }

@@ -12,7 +12,10 @@ enum ItemTypes;
 
 struct SlotUnit
 {
-	SlotUnit(uint64_t itemId = 0, int count = 0) : itemId(itemId), count(count) {};
+	SlotUnit(uint64_t itemId = 0, int count = 0) 
+		: itemId(itemId), count(count)
+	{}
+
 	uint64_t itemId;
 	int count;
 };
@@ -38,18 +41,12 @@ public:
 	void SetItemInSlot(int slot, uint64_t itemId);	//устанавливает предмет в слот
 	void SetCountInSlot(int slot, int count);		//устанавливает количество предметов в слоте
 
-	SlotUnit GetLeftHandItem() const;				//возвращает предмет из левой руки
-	SlotUnit GetRightHandItem() const;				//возвращает предмет из правой руки
-
-	void SetLeftItemHand(SlotUnit val);				//устанавливает предмет в левую руку
-	void SetRightItemHand(SlotUnit val);			//устанавливает предмет в правую руку
+	SlotUnit * GetHandPtr();						//возвращает предмет из левой руки
 
 private:
 	ItemManager * pItemMgr;
 
 	std::array<SlotUnit, InventorySize> Items;
 
-	SlotUnit leftItemHand;
-	SlotUnit rightItemHand;
-
+	SlotUnit handItem;
 };

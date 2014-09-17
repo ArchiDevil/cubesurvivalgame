@@ -43,7 +43,8 @@ bool ItemUsingsHandler::UseEntityItem(EntityItem * item)
 
 bool ItemUsingsHandler::UseFoodItem(FoodItem * item)
 {
-	return false;
+	pPlayer->SetHunger(pPlayer->GetHunger() + item->GetHunger());
+	return true;
 }
 
 bool ItemUsingsHandler::UseWeaponItem(WeaponItem * item)

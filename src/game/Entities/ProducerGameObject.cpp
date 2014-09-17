@@ -24,9 +24,8 @@ void ProducerGameObject::Activate()
 	if(state == Done)
 	{
 		// example of code for now
-		SlotUnit item = pInventory->GetRightHandItem();
-		item.count += 100;
-		pInventory->SetRightItemHand(item);
+		SlotUnit * item = pInventory->GetHandPtr();
+		item->count += 100;
 		MainLog.Message("Added item into right hand");
 		state = Producing;
 		elapsedTime = 0;

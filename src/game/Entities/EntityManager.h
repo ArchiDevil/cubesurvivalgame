@@ -46,7 +46,7 @@ public:
 	~EntityManager();
 
 	ItemEntityPtr			CreateItemEntity(const Vector3D & Position, const Vector3D & Velocity, uint64_t itemId);
-	GameObjectPtr			CreateEntity(const std::string & entityId);
+	GameObjectPtr			CreateEntity(const MathLib::Vector3F & position, const std::string & entityId);
 	CrafterPtr				CreateCrafterEntity(const Vector3F & Position, const std::string & id);
 	ProducerPtr				CreateProducerEntity(const Vector3F & Position, const std::string & id);
 	vector<ItemEntity *>	FindItemsNearPlayer(const Vector3F & playerPos);

@@ -15,12 +15,13 @@ class cGameEventHandler
 {
 public:
 	//world events
-	void onBlockRemoved(BlockType bt, MathLib::Vector3I Pos);	//вызывается при удалении блока
-	void onBlockAdded(BlockType bt);							//вызывается при добавлении блока
+	void onBlockRemoved(BlockType bt, MathLib::Vector3I Pos);	
+	void onBlockAdded(BlockType bt);							
 
 	//player events
-	void onPlayerMoves(double dt);								//вызывается при движении игрока
-	void onPlayerAttack();										//при атаке игроком
-	bool onPlayerPicksItem(uint64_t itemId);					//игрок берет предмет
-	void onPlayerDropsItem(uint64_t itemId);					//игрок бросает айтим
+	void onPlayerMoves(double dt);
+	void onPlayerAttack();
+	bool onPlayerPicksItem(uint64_t itemId);
+	void onPlayerDropsItem(uint64_t itemId);
+	void onPlayerUsesItem(bool self);
 };

@@ -1,13 +1,14 @@
 #include "CrafterGameObject.h"
 
 #include "../game.h"
+#include "../player/cInventory.h"
 
 CrafterGameObject::CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs)
 	: UsableGameObject(meshNode)
 	, state(Empty)
 	, craftingTime(craftingTimeMs)
 	, elapsedTime(0)
-	, storedItem(nullptr)
+	, storedItem(0)
 {
 }
 
@@ -26,16 +27,16 @@ void CrafterGameObject::Activate()
 	{
 	case Empty:
 		{
-			/*auto rhItem = pInventory->GetRightHandItem();
-			if (rhItem.Item && rhItem.count != 0)
+			SlotUnit * rhItem = pInventory->GetHandPtr();
+			if (rhItem->itemId != 0)
 			{
-				storedItem = rhItem.Item;
-				rhItem.count--;
-				pInventory->SetRightItemHand(rhItem);
+				storedItem = rhItem->itemId;
+				if (--rhItem->count == 0)
+					rhItem->itemId = 0;
 				state = Crafting;
 				elapsedTime = 0;
 				MainLog.Message("Crafting started");
-			}*/
+			}
 			break;
 		}
 	case Crafting:

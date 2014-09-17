@@ -2,7 +2,7 @@
 	<material name="default">
 		<params>
 			<param name="diffuseMap" type="texture2D">
-				<texture>fishnet.jpg</texture>
+				<texture>fishnet.png</texture>
 			</param>
 		</params>
     </material>

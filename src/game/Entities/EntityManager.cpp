@@ -115,8 +115,24 @@ ProducerPtr EntityManager::CreateProducerEntity(const Vector3F & Position, const
 	return nullptr;
 }
 
-GameObjectPtr EntityManager::CreateEntity(const std::string & entityId)
+GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
 {
+	//stupid implementation now
+	//for future needs, there's may be tuple with different types, needed for different entities
+	auto crafters_iter = crafters.find(entityId);
+	if (crafters_iter != crafters.end())
+		return CreateCrafterEntity(position, entityId);
+
+	auto producers_iter = producers.find(entityId);
+	if (producers_iter != producers.end())
+		return CreateProducerEntity(position, entityId);
+
+	uint64_t itemId = LostIsland::GetGamePtr()->ItemMgr->GetItemId(entityId);
+	if (itemId)
+		return CreateItemEntity(position, Vector3D(), itemId);
+
+	MainLog.Error("Unable to find entity: " + entityId);
+
 	return nullptr;
 }
 

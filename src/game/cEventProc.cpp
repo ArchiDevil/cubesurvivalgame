@@ -74,3 +74,21 @@ void cGameEventHandler::onPlayerDropsItem( uint64_t itemId )
 	pos.z += 10.0f;
 	LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), itemId);
 }
+
+void cGameEventHandler::onPlayerUsesItem(bool self)
+{
+	auto * pGame = LostIsland::GetGamePtr();
+	SlotUnit * pHand = pGame->Player->GetInventoryPtr()->GetHandPtr();
+	if (pHand->itemId)
+	{
+		auto * pItem = pGame->ItemMgr->GetItemById(pHand->itemId);
+		bool useResult = false;
+		if (self && pItem->UseOnPlayer()) 
+			useResult = true;
+		else if (!self && pItem->UseInWorld()) 
+			useResult = true;
+		if (useResult)
+			if (--pHand->count == 0)
+				pHand->itemId = 0;
+	}
+}
