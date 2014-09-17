@@ -58,8 +58,8 @@ LRESULT CALLBACK cSystem::MessageHandler( HWND windowHandle, UINT msg, WPARAM wP
 			notifyAll(SystemKeyMessage(SK_CHAR, key));
 			break;
 		}
-	default:
-		break;
+	/*default:
+		break;*/
 	}
 	return ::DefWindowProc(windowHandle, msg, wParam, lParam); //это если ничего из вышеперечисленного не подошло
 }
