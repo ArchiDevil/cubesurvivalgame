@@ -4,20 +4,25 @@
 
 #include "game.h"
 
-class Console
+#include <Utilities/observer.h>
+#include <Utilities/InputEngine.h>
+
+class Console : public observer<InputEvent>
 {
 public:
-	Console();
+	Console(size_t screenWidth, size_t screenHeight);
 	~Console();
 
 	void HandleCommand();
-	void ProcessInputKey(uint32_t key);
+	void ProcessInputKey(long key);
 	void Draw();
+
+	bool handleEvent(const InputEvent & event) override;
 
 private:
 	std::vector<std::string> Tokenize(const std::string & input) const;
 
 	std::string inputBuffer;
-	ShiftEngine::Sprite * background;
+	size_t screenWidth, screenHeight;
 
 };

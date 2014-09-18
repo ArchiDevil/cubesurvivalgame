@@ -63,6 +63,8 @@ bool Application::Initialize()
 	else
 		MainLog.Message("Input system has been initialized");
 
+	cInputEngine::GetInstance().subscribe(&System);
+
 	//	MainCanvas->SetSize(settings.screenWidth, settings.screenHeight);
 
 	////////////////////////////

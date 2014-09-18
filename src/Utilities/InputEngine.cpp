@@ -101,7 +101,21 @@ bool cInputEngine::IsMouseMoved()
 	return false;
 }
 
-void cInputEngine::ProcEvent( MSG msg )
+bool cInputEngine::handleEvent(const SystemKeyMessage & keyEvent)
 {
-
+	switch (keyEvent.system_key)
+	{
+	case SK_BACKSPACE:
+	case SK_ENTER:
+	case SK_ESC:
+	case SK_TAB:
+		notifyAll(InputEvent(IE_SpecialKey, keyEvent.system_key));
+		break;
+	case SK_CHAR:
+		notifyAll(InputEvent(IE_SystemKey, keyEvent.character));
+		return true;
+	default:
+		return false;
+	}
+	return false;
 }

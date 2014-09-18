@@ -12,8 +12,8 @@ public:
 	notifier() {}
 	~notifier() {}
 
-	void subscribe(observer<T> * obs) {observers.push_back(obs);}
-	void unsubscribe(observer<T> * obs) {observers.remove(obs);}
+	void add_observer(observer<T> * obs) {observers.push_back(obs);}
+	void remove_observer(observer<T> * obs) {observers.remove(obs);}
 	virtual void notifyAll(const T& ev)
 	{
 		for(auto * object : observers)
@@ -30,6 +30,10 @@ class observer
 public:
 	observer() {}
 	~observer() {}
+
+	void subscribe(notifier<T> * notifier) {if(notifier) notifier->add_observer(this);}
+	void unsubscribe(notifier<T> * notifier) {if(notifier) notifier->remove_observer(this);}
+
 	virtual bool handleEvent(const T & event) = 0;
 	
 protected:

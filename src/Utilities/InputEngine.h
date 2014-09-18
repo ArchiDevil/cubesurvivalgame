@@ -6,17 +6,33 @@
 #include <dinput.h>
 
 #include "ut.h"
+#include "observer.h"
 #include "singleton.h"
+#include "System/System.h"
 
-enum InputEvents
+enum InputEventType
 {
 	IE_MouseUp,
 	IE_MouseDown,
 	IE_KeyDown,
 	IE_KeyUp,
+	IE_SystemKey,
+	IE_SpecialKey,
 };
 
-class cInputEngine : public singleton<cInputEngine>//, public notifier<InputEvents>
+struct InputEvent
+{
+	InputEvent(InputEventType type, long key) 
+		: type(type), key(key) {}
+
+	InputEventType type;
+	long key;
+};
+
+class cInputEngine 
+	: public singleton<cInputEngine>
+	, public notifier<InputEvent>
+	, public observer<SystemKeyMessage>
 {
 public:
 	cInputEngine();
@@ -33,9 +49,7 @@ public:
 	bool IsKeyUp(unsigned char Key);
 	MouseInfo GetMouseInfo();
 
-	void ProcEvent(MSG msg);
-
-	//virtual void notifyAll();
+	bool handleEvent(const SystemKeyMessage & keyEvent) override;
 
 private:
 	IDirectInput8 * di; //DirectInput указатель

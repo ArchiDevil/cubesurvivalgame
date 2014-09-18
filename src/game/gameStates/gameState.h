@@ -27,8 +27,8 @@ public:
 private:
 	void ProcessInput(double dt);
 	IniWorker * pIniLoader;
-	//Console console;
+	Console console;
 
-	//bool isConsoleState;
+	bool isConsoleState;
 
 };

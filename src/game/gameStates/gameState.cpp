@@ -15,7 +15,7 @@ const double AccelerationMultiplier = 30.0f;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw )
-	: pIniLoader(iw)/*, isConsoleState(false)*/
+	: pIniLoader(iw), isConsoleState(false), console(800, 600)
 {
 }
 
@@ -30,6 +30,8 @@ bool gameState::initState()
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
+
+	console.subscribe(&cInputEngine::GetInstance());
 
 	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
 	MainLog.Message("Physics initialized");
@@ -185,8 +187,8 @@ bool gameState::render( double dt )
 	for (int i = 0; i < infoSize ; i++)
 		pFntMgr->DrawTextTL(di[i].str(), 0, 0 + i*32);
 
-	//if(isConsoleState)
-	//	console.Draw();
+	if(isConsoleState)
+		console.Draw();
 
 	pCtxMgr->EndScene();
 
@@ -232,19 +234,18 @@ void gameState::ProcessInput(double dt)
 
 	InputEngine->GetKeys();
 
-	//if(InputEngine->IsKeyUp(DIK_GRAVE))
-	//{
-	//	console.ProcessInputKey('a');
-	//	isConsoleState = !isConsoleState;
-	//}
+	if(InputEngine->IsKeyUp(DIK_GRAVE))
+	{
+		isConsoleState = !isConsoleState;
+	}
 
-	//if(isConsoleState)
-	//{
-	//	if(InputEngine->IsKeyUp(DIK_RETURN))
-	//		console.HandleCommand();
+	if(isConsoleState)
+	{
+		if(InputEngine->IsKeyUp(DIK_RETURN))
+			console.HandleCommand();
 
-	//	return;
-	//}
+		return;
+	}
 
 	D3DXVECTOR3 vec1 = pScene->GetActiveCamera()->GetLookVector();
 	Vector3D vecNew = Vector3D(vec1.x, vec1.y, vec1.z);
