@@ -49,7 +49,7 @@ void SimpleGUI::Skinner::DrawButton( Button * but )
 		ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
 		Point textPos;
 
-		auto prevFont = pFntMgr->GetCurrentFont();
+		auto prevFont = pFntMgr->GetCurrentFontName();
 		pFntMgr->SetFont(L"guiDefault");
 
 		textPos.x = pos.x + (size.x / 2) - pFntMgr->GetStringWidth(text) / 2;
@@ -87,7 +87,7 @@ void SimpleGUI::Skinner::DrawTextbox( Textbox * textbox, const std::string & str
 	
 	ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
 
-	auto prevFont = pFntMgr->GetCurrentFont();
+	auto prevFont = pFntMgr->GetCurrentFontName();
 	pFntMgr->SetFont(L"guiDefault");
 
 	int stringWidth = pFntMgr->GetStringWidth(string);
@@ -136,7 +136,7 @@ void SimpleGUI::Skinner::DrawListRow( TableRow * row )
 		str = "-> " + str;
 
 	ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
-	auto prevFont = pFntMgr->GetCurrentFont();
+	auto prevFont = pFntMgr->GetCurrentFontName();
 	pFntMgr->SetFont(L"guiDefault");
 	ShiftEngine::gRect rect;
 	rect.bottom = (float)row->GetPosition().y + (float)row->GetSize().y;
@@ -164,7 +164,7 @@ void SimpleGUI::Skinner::DrawLabel( Text * label )
 	Point textPosition = label->GetPosition();
 	
 	ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
-	auto prevFont = pFntMgr->GetCurrentFont();
+	auto prevFont = pFntMgr->GetCurrentFontName();
 	pFntMgr->SetFont(L"guiDefault");
 	pFntMgr->DrawTextTL(label->GetText(), textPosition.x, textPosition.y);
 	pFntMgr->SetFont(prevFont);

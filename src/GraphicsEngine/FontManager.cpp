@@ -6,6 +6,8 @@
 
 ShiftEngine::FontManager::FontManager()
 	: currentFont(L"")
+	, pCurrentFont(nullptr)
+	, TextShader(nullptr)
 {
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
 	TextShader = pCntMng->LoadShader(L"text.fx");
@@ -14,15 +16,14 @@ ShiftEngine::FontManager::FontManager()
 
 void ShiftEngine::FontManager::Shutdown()
 {
-	for (auto iter = Fonts.begin(); iter != Fonts.end(); iter++)
-		delete iter->second;
 }
 
 void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y)
 {
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
 	ID3D10Device *pContext = pCntMng->GetDevicePointer();
-	if(Text.size() == 0)
+
+	if (!pCurrentFont || !Text.size())
 		return;
 
 	auto cbs = pCntMng->GetBlendingState();
@@ -30,12 +31,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 	auto crs = pCntMng->GetRasterizerState();
 	pCntMng->SetRasterizerState(RS_Normal);
 
-	auto fontIter = Fonts.find(currentFont);
-
-	if(fontIter == Fonts.end())
-		return;
-
-	cText tex(Text, fontIter->second, pCntMng->GetDevicePointer());
+	cText tex(Text, pCurrentFont, pCntMng->GetDevicePointer());
 
 	D3DXMATRIX mat, matOrtho, matT;
 	D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
@@ -51,13 +47,12 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 	vec.w = 16000.0f;
 
 	TextShader->SetVectorConstantByName("Rect", (float*)vec);
-	TextShader->SetTextureByName("FontTexture", fontIter->second->GetTexturePtr());
+	TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
 	TextShader->Apply(true);
 
 	tex.Draw(pCntMng->GetDevicePointer());
 	
 	pCntMng->SetRasterizerState(crs);
-
 	pCntMng->SetBlendingState(cbs);
 
 	//for fix a lot of DXDEBUG warnings
@@ -67,18 +62,14 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y, const ShiftEngine::gRect & rect)
 {
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
-	if(Text.size() == 0)
+
+	if (!pCurrentFont || !Text.size())
 		return;
 	
 	auto crs = pCntMng->GetRasterizerState();
 	pCntMng->SetRasterizerState(RS_Normal);
 
-	auto font = Fonts.find(currentFont);
-
-	if(font == Fonts.end())
-		return;
-
-	cText tex(Text, font->second, pCntMng->GetDevicePointer());
+	cText tex(Text, pCurrentFont, pCntMng->GetDevicePointer());
 
 	D3DXMATRIX mat, matOrtho, matT;
 	D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
@@ -94,7 +85,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 	vec.w = rect.bottom;
 
 	TextShader->SetVectorConstantByName("Rect", (float*)vec);
-	TextShader->SetTextureByName("FontTexture", font->second->GetTexturePtr());
+	TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
 	TextShader->Apply(true);
 	tex.Draw(pCntMng->GetDevicePointer());
 
@@ -106,26 +97,23 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 
 int ShiftEngine::FontManager::GetFontHeight()
 {
-	auto elem = Fonts.find(currentFont);
-
-	if(elem == Fonts.end())
+	if(!pCurrentFont)
 		return 0;
 	else
-		return elem->second->LineHeight;
+		return pCurrentFont->LineHeight;
 }
 
 int ShiftEngine::FontManager::GetStringWidth( const std::string & string )
 {
-	auto elem = Fonts.find(currentFont);
 	int result = 0;
 
-	if(elem == Fonts.end())
+	if (!pCurrentFont)
 		return 0;
 
 	for (auto iter = string.cbegin(); iter != string.cend(); iter++)
 	{
-		auto cp = elem->second->GetCharacterPtr((*iter));
-		if(cp->Height == 0)
+		auto cp = pCurrentFont->GetCharacterPtr((*iter));
+		if(!cp->Height)
 			return 0;
 
 		result += cp->XAdvance;
@@ -153,7 +141,7 @@ void ShiftEngine::FontManager::LoadFonts()
 		cFont * font = new cFont;
 		if(!font->Initialize(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator)))
 			MainLog.Error("Unable to load font: " + utils::WStrToStr(*fontNamesIterator));
-		Fonts[::utils::ExtractName(*fontNamesIterator)] = font;
+		Fonts[::utils::ExtractName(*fontNamesIterator)].reset(font);
 		++textureNamesIterator;
 		++fontNamesIterator;
 	}
@@ -161,10 +149,21 @@ void ShiftEngine::FontManager::LoadFonts()
 
 void ShiftEngine::FontManager::SetFont( const std::wstring & fontName )
 {
-	currentFont = fontName;
+	auto iter = Fonts.find(fontName);
+	if (iter != Fonts.end())
+	{
+		currentFont = fontName;
+		pCurrentFont = iter->second.get();
+	}
+	else
+	{
+		pCurrentFont = nullptr;
+		currentFont.clear();
+		MainLog.Error("Unable to find font: " + utils::WStrToStr(fontName));
+	}
 }
 
-std::wstring ShiftEngine::FontManager::GetCurrentFont() const
+std::wstring ShiftEngine::FontManager::GetCurrentFontName() const
 {
 	return currentFont;
 }

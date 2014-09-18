@@ -1,7 +1,8 @@
 #pragma once
 
-#include <map>
 #include "TextLib/cText.h"
+
+#include <map>
 
 namespace ShiftEngine
 {
@@ -18,14 +19,13 @@ namespace ShiftEngine
 		int GetStringWidth(const std::string & string);
 
 		void SetFont(const std::wstring & fontName);
-		std::wstring GetCurrentFont() const;
+		std::wstring GetCurrentFontName() const;
 
 	private:
 		void LoadFonts();
-		std::map<std::wstring, cFont *> Fonts;
-
+		std::map<std::wstring, std::unique_ptr<cFont>> Fonts;
+		cFont * pCurrentFont;
 		std::wstring currentFont;
-
 		IProgramPtr TextShader;
 	};
 }

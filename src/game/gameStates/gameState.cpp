@@ -57,9 +57,6 @@ bool gameState::initState()
 	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
 	MainLog.Message("HUD has been created");
 
-	pGame->EntityMgr->CreateEntity(Vector3F(13.0f, 0.0f, 90.0f), "campfire");
-	pGame->EntityMgr->CreateEntity(Vector3F(15.0f, 0.0f, 90.0f), "fishnet");
-
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 

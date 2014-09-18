@@ -7,6 +7,12 @@ cInputEngine::cInputEngine()
 
 cInputEngine::~cInputEngine()
 {
+	if(keyboard) 
+		keyboard->Release();
+	if(mouse) 
+		mouse->Release();
+	if(di) 
+		di->Release();
 }
 
 bool cInputEngine::Initialize( HWND hWnd, HINSTANCE hInstance )
