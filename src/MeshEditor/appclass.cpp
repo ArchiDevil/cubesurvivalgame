@@ -42,15 +42,15 @@ bool Application::Initialize()
 	path.FontsPath				= SettingsLoader->GetWString("FontsPath");
 
 	//инициализируем графический движок
-	cGraphicsEngine::GetInstance().Initialize(GetHWND(), settings, path);
-	MainLog.Message(L"DirectX has been initialized");
+	ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND());
+	MainLog.Message("DirectX has been initialized");
 
-	ShiftEngine::SceneGraphInstance->AddCameraSceneNode(settings.screenWidth, settings.screenHeight, settings.zNear, settings.zFar, 75.0f);
+	ShiftEngine::GetSceneGraph()->AddCameraSceneNode();
 
 	if(!cInputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
-		MainLog.Message(L"Unable to create DIDevice");
+		MainLog.Message("Unable to create DIDevice");
 	else
-		MainLog.Message(L"Input system has been initialized");
+		MainLog.Message("Input system has been initialized");
 
 	MainCanvas = new SimpleGUI::Canvas();
 	GUIListener = new SimpleGUI::MainListener(MainCanvas, &(cInputEngine::GetInstance()), charQueue);
@@ -63,14 +63,14 @@ bool Application::Initialize()
 	state->initState();
 
 	mainTimer.Start();
-	cGraphicsEngine::GetInstance().SetAlphaBlending(true);
+	ShiftEngine::GetContextManager()->SetBlendingState(ShiftEngine::BS_AlphaEnabled);
 
 	return true;
 }
 
 void Application::Shutdown()
 {
-	cGraphicsEngine::GetInstance().Shutdown();
+	ShiftEngine::GetContextManager()->Shutdown();
 }
 
 bool Application::Frame()
@@ -133,9 +133,6 @@ void Application::Activate()
 {
 	mainTimer.Start();
 	statesStack.top()->onResume();
-
-
-
 }
 
 void Application::ProcessMessage( MSG msg )

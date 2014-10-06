@@ -26,7 +26,7 @@ bool cMenuState::render( double dt )
 {
 	auto t = cInputEngine::GetInstance().GetMouseInfo();
 
-	cGraphicsEngine & ge = cGraphicsEngine::GetInstance();
+	auto ge = ShiftEngine::GetContextManager();
 
 	std::ostringstream di[1];
 	di[0] << "Alpha build number 55, for testing purposes only";
@@ -35,14 +35,16 @@ bool cMenuState::render( double dt )
 	// RENDER //
 	////////////
 
-	cGraphicsEngine::GetInstance().BeginScene();
-
+	ge->BeginScene();
+	auto font = ge->GetFontManager()->GetCurrentFontName();
+	ge->GetFontManager()->SetFont(L"2");
 	for (int i = 0; i < 1 ; i++)
-		cGraphicsEngine::GetInstance().DrawTextTL(di[i].str(), 0, 0 + i*18, L"2");
+		ge->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i*18);
 
 	pCanvas->Render(pSkinner);
 
-	cGraphicsEngine::GetInstance().EndScene();
+	ge->GetFontManager()->SetFont(font);
+	ge->EndScene();
 
 	return true;
 }
@@ -94,25 +96,25 @@ void cMenuState::CreateGUI()
 	butNext->SetSize(120, 20);
 	butNext->SetText("Next");
 	butNext->SetClickHandler(
-	[=] (int mb, int innerX, int innerY)
-	{
-		if(utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
-		   utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
-		   utils::IsNumber(tbZ->GetText()) && tbZ->GetText() != L"")
-			pApp->PushState(new cWorkState(utils::StrToInt(utils::WStrToStr(tbX->GetText())), 
-											utils::StrToInt(utils::WStrToStr(tbY->GetText())), 
-											utils::StrToInt(utils::WStrToStr(tbZ->GetText())), 
-											pCanvas, 
-											pSkinner));
-	}
-		);
+		[=] (int mb, int innerX, int innerY)
+		{
+			if(utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
+				utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
+				utils::IsNumber(tbZ->GetText()) && tbZ->GetText() != L"")
+				pApp->PushState(new cWorkState(std::stoi(utils::WStrToStr(tbX->GetText())), 
+				std::stoi(utils::WStrToStr(tbY->GetText())), 
+				std::stoi(utils::WStrToStr(tbZ->GetText())), 
+				pCanvas, 
+				pSkinner));
+		}
+	);
 
 	// creating load list
 
 	SimpleGUI::List * loadingList = new SimpleGUI::List(pCanvas);
 	loadingList->SetPosition(400, 150);
 	loadingList->SetSize(160, 240);
-	auto files = utils::CollectFileNames(L"saves", L"block");
+	auto files = utils::filesystem::CollectFileNames(L"saves", L"block");
 	for (int i = 0; i < files.size() ; i++)
 	{
 		loadingList->GetTable()->AddRow(utils::WStrToStr(files[i]));
@@ -128,8 +130,8 @@ void cMenuState::CreateGUI()
 		if(loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
 		{
 			pApp->PushState(new cWorkState(utils::StrToWStr("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()),
-											pCanvas,
-											pSkinner));
+				pCanvas,
+				pSkinner));
 		}
 	}
 	);

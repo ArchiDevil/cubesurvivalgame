@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../GraphicsEngine/cGraphicEngine.h"
-
-#include "../MathLib/math.h"
+#include <GraphicsEngine/ShiftEngine.h>
+#include <MathLib/math.h>
 
 #define UNDO_MAX 10
 
@@ -72,13 +71,13 @@ private:
 	int x_size, y_size, z_size;									//размер рабочей области
 	Block * Elements;											//массив элементов (одномерный)
 
-	ShiftEngine::StaticMeshNode * bbox;
-	ShiftEngine::StaticMeshNode * plane;
-	ShiftEngine::StaticMeshNode * mesh;
+	ShiftEngine::MeshNode * bbox;
+	ShiftEngine::MeshNode * plane;
+	ShiftEngine::MeshNode * mesh;
 
-	ShiftEngine::cMaterial ColorMaterial;
-	ShiftEngine::cMaterial GeometryMaterial;
-	cTexturePtr GridTexture;
+	ShiftEngine::Material ColorMaterial;
+	ShiftEngine::Material GeometryMaterial;
+	ShiftEngine::TexturePtr GridTexture;
 
 	//массив "отмен" для Ctlr+Z операции	
 	Block * ElementsUndo[UNDO_MAX];

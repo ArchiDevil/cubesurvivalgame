@@ -3,6 +3,8 @@
 #include <cassert>
 #include <vector>
 
+#include <Utilities/ut.h>
+
 #define AO_DEBUG
 
 cWorkspace::cWorkspace( int _x, int _y, int _z )
@@ -16,9 +18,7 @@ cWorkspace::cWorkspace( int _x, int _y, int _z )
 	{
 		ElementsUndo[i] = new Block[x_size * y_size * z_size];
 		for (int j = 0; j < x_size * y_size * z_size ; j++)
-		{
 			ElementsUndo[i][j] = Block();
-		}
 	}
 }
 
@@ -27,9 +27,7 @@ cWorkspace::~cWorkspace()
 	delete [] Elements;
 
 	for (int i = 0; i < UNDO_MAX ; i++)
-	{
 		delete [] ElementsUndo[i];
-	}
 }
 
 void cWorkspace::Initialize()
@@ -37,7 +35,7 @@ void cWorkspace::Initialize()
 	Tesselate();
 	CreateBBox();
 	CreatePlane();
-	MainLog.Message(L"Workspace initialized");
+	MainLog.Message("Workspace initialized");
 }
 
 void cWorkspace::ResizeWithoutSaved( int new_x, int new_y, int new_z )
@@ -105,13 +103,13 @@ void cWorkspace::Update()
 	if(!tesselated)
 		Tesselate();
 
-	plane->SetScale(Vector3F(x_size * 2.0f, y_size * 2.0f, 1.0f));
-	plane->SetPosition(Vector3F((float)x_size / 2 - (float)x_size, (float)y_size / 2 - (float)y_size, 0.0f));
+	//plane->SetScale(Vector3F(x_size * 2.0f, y_size * 2.0f, 1.0f));
+	//plane->SetPosition(Vector3F((float)x_size / 2 - (float)x_size, (float)y_size / 2 - (float)y_size, 0.0f));
 
-	if(bboxShow)
-		bbox->SetVisibility(true);
-	else
-		bbox->SetVisibility(false);
+	//if(bboxShow)
+	//	bbox->SetVisibility(true);
+	//else
+	//	bbox->SetVisibility(false);
 }
 
 Block & cWorkspace::GetElem( int x, int y, int z )
@@ -170,28 +168,16 @@ float cWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float z1,
 	//calculating maximum shadow factor
 	float maxShadowFactor = 0.0f;
 	for (float i = x1; i <= x2; i++)
-	{
 		for (float j = y1; j <= y2; j++)
-		{
 			for (float k = z1; k <= z2; k++)
-			{
 				maxShadowFactor += pow(MathLib::distance(center, Vector3F(i, j, k)) / maxDist, 2);
-			}
-		}
-	}
+
 	for (float i = x1; i <= x2; i++)
-	{
 		for (float j = y1; j <= y2; j++)
-		{
 			for (float k = z1; k <= z2; k++)
-			{
 				if(GetElem(i, j, k).exist)
-				{
 					shadowFactor += pow(MathLib::distance(center, Vector3F(i, j, k)) / maxDist, 2);
-				}
-			}
-		}
-	}
+
 	//dividing
 	return 1.0f - shadowFactor / maxShadowFactor;
 #else
@@ -201,7 +187,7 @@ float cWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float z1,
 
 void cWorkspace::Tesselate()
 {
-	MeshData * cd = new MeshData;
+	ShiftEngine::MeshData * cd = new ShiftEngine::MeshData;
 	std::vector<wVertex> vertices;
 	std::vector<long> indices;
 	int ind_index = 0;
@@ -377,27 +363,31 @@ void cWorkspace::Tesselate()
 
 	cd->CreateBuffers(true, vertices.data(), sizeof(wVertex) * vertices.size(), 
 						indices.data(), sizeof(long) * indices.size(), 
-						cGraphicsEngine::GetInstance().GetDevicePointer());
+						ShiftEngine::GetContextManager()->GetDevicePointer());
 
+	ShiftEngine::MeshDataPtr meshData = ShiftEngine::MeshDataPtr(cd);
+	
 	if(!mesh)
 	{
-		std::vector<ShiftEngine::InputElement> i;
-		i.push_back(ShiftEngine::InputElement("POSITION", 3));
-		i.push_back(ShiftEngine::InputElement("NORMAL", 3));
-		i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
-		i.push_back(ShiftEngine::InputElement("COLOR", 3));
-		i.push_back(ShiftEngine::InputElement("AO", 1));
+		ShiftEngine::VertexSemantic *sem = new ShiftEngine::VertexSemantic;
+		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
+		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
+		sem->addSemantic(ShiftEngine::ET_FLOAT, 2, ShiftEngine::ES_Texcoord);
+		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
+		//i.push_back(ShiftEngine::InputElement("AO", 1));
+		ShiftEngine::GetContextManager()->RegisterVertexSemantic(*sem);
+		cd->vertexSemantic = sem;
 
-		GridTexture = cGraphicsEngine::GetInstance().LoadTexture(L"gridCell.png");
-		this->GeometryMaterial = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"wsShaderGeometry.fx", i));
-		GeometryMaterial.SetTexture(GridTexture, "gridTex");
-		this->ColorMaterial = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"wsShaderColor.fx", i));
+		GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
+		this->GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
+		GeometryMaterial.SetDiffuseTexture(GridTexture);
+		this->ColorMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderColor.fx"));
 
-		mesh = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(std::shared_ptr<MeshData>(cd), MathLib::AABB(Vector3F(), Vector3F(x_size, y_size, z_size)), GeometryMaterial);
+		mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB(Vector3F(), Vector3F(x_size, y_size, z_size)), &GeometryMaterial);
 	}
 	else
 	{
-		mesh->SetData(std::shared_ptr<MeshData>(cd));
+		mesh->SetDataPtr(meshData);
 	}
 
 	tesselated = true;
@@ -424,7 +414,7 @@ void cWorkspace::Save( const std::wstring & filename )
 	std::ofstream stream(buff);
 
 	if(!stream || stream.fail())
-		MainLog.Error(false, L"Unable to save " + buff);
+		MainLog.Error("Unable to save " + utils::WStrToStr(buff));
 
 	stream.write(reinterpret_cast<char *>(&h), sizeof(Header));
 
@@ -454,7 +444,7 @@ void cWorkspace::Load( const std::wstring & filename )
 
 	if(!stream || stream.fail())
 	{
-		MainLog.Error(false, L"Unable to load " + buff);
+		MainLog.Error("Unable to load " + utils::WStrToStr(buff));
 		return;
 	}
 
@@ -543,7 +533,7 @@ void cWorkspace::CreatePlane()
 		D3DXVECTOR2 Texcoord;
 	};
 
-	MeshData * temp = new MeshData;
+	ShiftEngine::MeshData * temp = new ShiftEngine::MeshData;
 
 	temp->indicesCount = 6;
 	temp->verticesCount = 4;
@@ -559,41 +549,41 @@ void cWorkspace::CreatePlane()
 	long ind[6] = {0, 1, 2, 0, 2, 3};
 
 	temp->CreateBuffers(false, ver, sizeof(PlaneVertex) * 4,
-									ind, sizeof(long) * 6, cGraphicsEngine::GetInstance().GetDevicePointer());
+		ind, sizeof(long) * 6, ShiftEngine::GetContextManager()->GetDevicePointer());
 
-	std::vector<ShiftEngine::InputElement> i;
-	i.push_back(ShiftEngine::InputElement("POSITION", 3));
-	i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
-	ShiftEngine::cMaterial PlaneShader = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"plane.fx", i));
-	PlaneShader.SetTexture(cGraphicsEngine::GetInstance().LoadTexture(L"plane.png"), "Texture"); 
+	//std::vector<ShiftEngine::InputElement> i;
+	//i.push_back(ShiftEngine::InputElement("POSITION", 3));
+	//i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
+	//ShiftEngine::cMaterial PlaneShader = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"plane.fx", i));
+	//PlaneShader.SetTexture(cGraphicsEngine::GetInstance().LoadTexture(L"plane.png"), "Texture"); 
 
-	plane = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(std::shared_ptr<MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), PlaneShader);
+	//plane = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(std::shared_ptr<MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), PlaneShader);
 }
 
 void cWorkspace::CreateBBox()
 {
-	if(!bbox)
-	{
-		MeshDataPtr temp = ShiftEngine::utils::createCube(cGraphicsEngine::GetInstance().GetDevicePointer());
-		std::vector<ShiftEngine::InputElement> i;
-		i.push_back(ShiftEngine::InputElement("POSITION", 3));
-		i.push_back(ShiftEngine::InputElement("NORMAL", 3));
-		i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
-		ShiftEngine::cMaterial BboxShader = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"bbox.fx", i));
-		bbox = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(temp, MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), BboxShader);
+	//if(!bbox)
+	//{
+	//	MeshDataPtr temp = ShiftEngine::utils::createCube(cGraphicsEngine::GetInstance().GetDevicePointer());
+	//	std::vector<ShiftEngine::InputElement> i;
+	//	i.push_back(ShiftEngine::InputElement("POSITION", 3));
+	//	i.push_back(ShiftEngine::InputElement("NORMAL", 3));
+	//	i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
+	//	ShiftEngine::cMaterial BboxShader = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"bbox.fx", i));
+	//	bbox = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(temp, MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), BboxShader);
 
-		Vector3F newScale = Vector3F((float)x_size + 0.1f, (float)y_size + 0.1f, (float)z_size + 0.1f);
-		bbox->SetScale(newScale);
-		Vector3F hp = Vector3F(this->GetHalfSize().x, this->GetHalfSize().y, 0.0f);
-		bbox->SetPosition(hp);
-	}
-	else
-	{
-		Vector3F newScale = Vector3F((float)x_size + 0.1f, (float)y_size + 0.1f, (float)z_size + 0.1f);
-		bbox->SetScale(newScale);
-		Vector3F hp = Vector3F(this->GetHalfSize().x, this->GetHalfSize().y, 0.0f);
-		bbox->SetPosition(hp);
-	}
+	//	Vector3F newScale = Vector3F((float)x_size + 0.1f, (float)y_size + 0.1f, (float)z_size + 0.1f);
+	//	bbox->SetScale(newScale);
+	//	Vector3F hp = Vector3F(this->GetHalfSize().x, this->GetHalfSize().y, 0.0f);
+	//	bbox->SetPosition(hp);
+	//}
+	//else
+	//{
+	//	Vector3F newScale = Vector3F((float)x_size + 0.1f, (float)y_size + 0.1f, (float)z_size + 0.1f);
+	//	bbox->SetScale(newScale);
+	//	Vector3F hp = Vector3F(this->GetHalfSize().x, this->GetHalfSize().y, 0.0f);
+	//	bbox->SetPosition(hp);
+	//}
 }
 
 void cWorkspace::ShowBoundingBox()
@@ -624,10 +614,10 @@ void cWorkspace::VanishColor( bool flag )
 {
 	if(flag)
 	{
-		mesh->SetMaterial(GeometryMaterial);
+		mesh->SetMaterial(&GeometryMaterial);
 	}
 	else
 	{
-		mesh->SetMaterial(ColorMaterial);
+		mesh->SetMaterial(&ColorMaterial);
 	}
 }
