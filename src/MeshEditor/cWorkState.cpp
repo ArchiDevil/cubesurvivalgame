@@ -153,10 +153,9 @@ bool cWorkState::render( double dt )
 	pContextManager->BeginScene();
 
 	pSceneGraph->DrawAll(dt);
-
 	auto font = pContextManager->GetFontManager()->GetCurrentFontName();
 	pContextManager->GetFontManager()->SetFont(L"2");
-	for (int i = 0; i < 1 ; i++)
+	for (int i = 0; i < infoSize; i++)
 		pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i*18);
 
 	pCanvas->Render(pSkinner);
@@ -166,17 +165,9 @@ bool cWorkState::render( double dt )
 	return true; //return false if something wrong
 }
 
-void cWorkState::onKill()
-{
-}
-
-void cWorkState::onSuspend()
-{
-}
-
-void cWorkState::onResume()
-{
-}
+void cWorkState::onKill(){}
+void cWorkState::onSuspend(){}
+void cWorkState::onResume(){}
 
 void cWorkState::CreateGUI()
 {
@@ -291,160 +282,151 @@ void cWorkState::CreateGUI()
 
 bool cWorkState::ProcessInput( double ElapsedTime )
 {
-//	auto &InputEngine = cInputEngine::GetInstance();
-//
-//	InputEngine.GetKeys();
-//
-//	auto mouseInfo = InputEngine.GetMouseInfo();
-//
-//	Vector3F nearV, farV;
-//	//ShiftEngine::GetContextManager()->GetUnprojectedVector(Vector2F((float)mouseInfo.clientX, (float)mouseInfo.clientY), nearV, farV);
-//	Vector3F dir = MathLib::Normalize(farV - nearV);
-//
-//	if(geometryMode)
-//	{
-//		if(InputEngine.IsMouseUp(LButton) && SimpleGUI::HoveredControl == pCanvas)
-//		{
-//			D3DXVECTOR3 camPos = ShiftEngine::SceneGraphInstance->GetActiveCamera()->GetPosition();
-//			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
-//
-//			for (float mult = 0.0f; mult < distance*2.0f; mult += 0.05f)
-//			{
-//				Vector3F temp = dir * mult + nearV;
-//				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
-//				{
-//					Workspace->SaveToUndo();
-//					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = false;
-//					break;
-//				}
-//			}
-//		}
-//
-//		if(InputEngine.IsMouseUp(RButton))
-//		{
-//			if(lenghtOfMove < threshold )
-//			{	
-//				D3DXVECTOR3 camPos = ShiftEngine::SceneGraphInstance->GetActiveCamera()->GetPosition();
-//				float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
-//				//calculate new position
-//				for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
-//				{
-//					Vector3F temp = dir * mult + (nearV);
-//					if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
-//					{
-//						mult -= 0.1f;
-//						temp = dir * mult + nearV;
-//						auto vector = Workspace->GetHalfSize();
-//						vector *= 2.0f;
-//						if(temp.x >= 0.0f && temp.x <= vector.x &&
-//							temp.y >= 0.0f && temp.y <= vector.y &&
-//							temp.z >= 0.0f && temp.z <= vector.z)
-//						{
-//							Workspace->SaveToUndo();
-//							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = true;
-//							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = Vector3F(0.9f, 0.9f, 0.9f);
-//							break;
-//						}
-//						else
-//						{
-//							break;
-//						}
-//					}
-//				}
-//			}
-//			flag = false;
-//			lenghtOfMove = 0.0f;
-//		}
-//	}
-//	else
-//	{
-//		if(InputEngine.IsMouseUp(LButton))
-//		{
-//			D3DXVECTOR3 camPos = ShiftEngine::SceneGraphInstance->GetActiveCamera()->GetPosition();
-//			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
-//
-//			for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.05f)
-//			{
-//				Vector3F temp = dir * mult + nearV;
-//				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
-//				{
-//					Workspace->SaveToUndo();
-//					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = curBrush.Color;
-//					break;
-//				}
-//			}
-//		}
-//	}
-//
-//	if(InputEngine.IsMouseDown(RButton))
-//	{
-//		if(!flag)
-//		{
-//			oldCoordinates = Vector2I(mouseInfo.absoluteX, mouseInfo.absoluteY);
-//		}
-//		flag = true;
-//	}
-//
-//	if(InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
-//	{
-//		//flag = true;
-//		
-//		x_angle += -mouseInfo.deltaX * SensivityMultiplier;
-//		if(y_angle + -mouseInfo.deltaY * SensivityMultiplier < 179.0f
-//			&& y_angle + -mouseInfo.deltaY * SensivityMultiplier > 1.0f)
-//		{
-//			y_angle += -mouseInfo.deltaY * SensivityMultiplier;
-//		}
-//	}
-//
-//	R += static_cast<float>(- mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
-//
-//	if(InputEngine.IsKeyUp(DIK_ESCAPE))
-//	{
-//#if defined DEBUG || _DEBUG
-//		this->kill();
-//#else
-//		return false;
-//#endif
-//	}
-//
-//	if(InputEngine.IsKeyUp(DIK_SPACE))
-//	{
-//		geometryMode = !geometryMode;
-//		if(geometryMode)
-//			MoveToGeometryMode();
-//		else
-//			MoveToColorMode();
-//	}
-//
-//#if defined DEBUG || _DEBUG
-//
-//	if(InputEngine.IsKeyDown(DIK_V))
-//		cGraphicsEngine::GetInstance().SetWireframe(true);
-//	else if(InputEngine.IsKeyUp(DIK_V))
-//		cGraphicsEngine::GetInstance().SetWireframe(false);
-//
-//	static bool showBbox = false;
-//
-//	if (InputEngine.IsKeyUp(DIK_F))
-//		showBbox = !showBbox;
-//
-//	if(showBbox)
-//		Workspace->ShowBoundingBox();
-//	else
-//		Workspace->HideBoundingBox();
-//
-//	if(InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_A))
-//	{
-//		double tempCounter = 0.0;
-//		Workspace->Resize(2, 2, 2, 2, 2, 2); 
-//		Workspace->ShowBoundingBox(); 
-//	}
-//
-//#endif
-//
-//	if(InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_Z))
-//		Workspace->Undo();
+	auto &InputEngine = cInputEngine::GetInstance();
+
+	InputEngine.GetKeys();
+
+	auto mouseInfo = InputEngine.GetMouseInfo();
+
+	Vector3F nearV, farV;
+	//ShiftEngine::GetContextManager()->GetUnprojectedVector(Vector2F((float)mouseInfo.clientX, (float)mouseInfo.clientY), nearV, farV);
+	Vector3F dir = MathLib::Normalize(farV - nearV);
+
+	if(geometryMode)
+	{
+		if(InputEngine.IsMouseUp(LButton) && SimpleGUI::HoveredControl == pCanvas)
+		{
+			D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
+
+			for (float mult = 0.0f; mult < distance*2.0f; mult += 0.05f)
+			{
+				Vector3F temp = dir * mult + nearV;
+				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+				{
+					Workspace->SaveToUndo();
+					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = false;
+					break;
+				}
+			}
+		}
+
+		if(InputEngine.IsMouseUp(RButton))
+		{
+			if(lenghtOfMove < threshold )
+			{	
+				D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+				float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
+				//calculate new position
+				for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
+				{
+					Vector3F temp = dir * mult + (nearV);
+					if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+					{
+						mult -= 0.1f;
+						temp = dir * mult + nearV;
+						auto vector = Workspace->GetHalfSize();
+						vector *= 2.0f;
+						if(temp.x >= 0.0f && temp.x <= vector.x &&
+							temp.y >= 0.0f && temp.y <= vector.y &&
+							temp.z >= 0.0f && temp.z <= vector.z)
+						{
+							Workspace->SaveToUndo();
+							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = true;
+							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = Vector3F(0.9f, 0.9f, 0.9f);
+							break;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
+			}
+			flag = false;
+			lenghtOfMove = 0.0f;
+		}
+	}
+	else
+	{
+		if(InputEngine.IsMouseUp(LButton))
+		{
+			D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
+
+			for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.05f)
+			{
+				Vector3F temp = dir * mult + nearV;
+				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+				{
+					Workspace->SaveToUndo();
+					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = curBrush.Color;
+					break;
+				}
+			}
+		}
+	}
+
+	if(InputEngine.IsMouseDown(RButton))
+	{
+		if(!flag)
+		{
+			oldCoordinates = Vector2I(mouseInfo.absoluteX, mouseInfo.absoluteY);
+		}
+		flag = true;
+	}
+
+	if(InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
+	{
+		//flag = true;
+		
+		x_angle += -mouseInfo.deltaX * SensivityMultiplier;
+		if(y_angle + -mouseInfo.deltaY * SensivityMultiplier < 179.0f
+			&& y_angle + -mouseInfo.deltaY * SensivityMultiplier > 1.0f)
+		{
+			y_angle += -mouseInfo.deltaY * SensivityMultiplier;
+		}
+	}
+
+	R += static_cast<float>(- mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
+
+	if(InputEngine.IsKeyUp(DIK_ESCAPE))
+	{
+#if defined DEBUG || _DEBUG
+		this->kill();
+#endif
+	}
+
+	if(InputEngine.IsKeyUp(DIK_SPACE))
+	{
+		geometryMode = !geometryMode;
+		if(geometryMode)
+			MoveToGeometryMode();
+		else
+			MoveToColorMode();
+	}
+
+#if defined DEBUG || _DEBUG
+
+	if(InputEngine.IsKeyDown(DIK_V))
+		ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RS_Wireframe);
+	else if(InputEngine.IsKeyUp(DIK_V))
+		ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RS_Normal);
+
+	static bool showBbox = false;
+
+	if (InputEngine.IsKeyUp(DIK_F))
+		showBbox = !showBbox;
+
+	if(showBbox)
+		Workspace->ShowBoundingBox();
+	else
+		Workspace->HideBoundingBox();
+
+#endif
+
+	if(InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_Z))
+		Workspace->Undo();
 
 	return true;
 }

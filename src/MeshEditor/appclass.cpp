@@ -36,10 +36,11 @@ bool Application::Initialize()
 
 	//загружаем данные о путях
 	ShiftEngine::PathSettings path;
-	path.MeshPath				= SettingsLoader->GetWString("MeshPath");
-	path.TexturePath			= SettingsLoader->GetWString("TexturePath");
-	path.ShaderPath				= SettingsLoader->GetWString("ShaderPath");
-	path.FontsPath				= SettingsLoader->GetWString("FontsPath");
+	path.MeshPath		= SettingsLoader->GetWString("MeshPath");
+	path.TexturePath	= SettingsLoader->GetWString("TexturePath");
+	path.ShaderPath		= SettingsLoader->GetWString("ShaderPath");
+	path.FontsPath		= SettingsLoader->GetWString("FontsPath");
+	path.MaterialsPath	= SettingsLoader->GetWString("MaterialsPath");
 
 	//инициализируем графический движок
 	ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND());

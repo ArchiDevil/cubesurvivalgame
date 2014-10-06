@@ -103,8 +103,8 @@ void cWorkspace::Update()
 	if(!tesselated)
 		Tesselate();
 
-	//plane->SetScale(Vector3F(x_size * 2.0f, y_size * 2.0f, 1.0f));
-	//plane->SetPosition(Vector3F((float)x_size / 2 - (float)x_size, (float)y_size / 2 - (float)y_size, 0.0f));
+	plane->SetScale(Vector3F(x_size * 2.0f, y_size * 2.0f, 1.0f));
+	plane->SetPosition(Vector3F((float)x_size / 2 - (float)x_size, (float)y_size / 2 - (float)y_size, 0.0f));
 
 	//if(bboxShow)
 	//	bbox->SetVisibility(true);
@@ -419,15 +419,9 @@ void cWorkspace::Save( const std::wstring & filename )
 	stream.write(reinterpret_cast<char *>(&h), sizeof(Header));
 
 	for (int i = 0; i < x_size ; i++)
-	{
 		for (int j = 0; j < y_size ; j++)
-		{
 			for (int k = 0; k < z_size ; k++)
-			{
 				stream.write(reinterpret_cast<char *>(&GetElem(i, j, k)), sizeof(Block));
-			}
-		}
-	}
 }
 
 void cWorkspace::Load( const std::wstring & filename )
@@ -453,15 +447,9 @@ void cWorkspace::Load( const std::wstring & filename )
 	ResizeWithoutSaved(h.size[0], h.size[1], h.size[2]);
 
 	for (int i = 0; i < x_size ; i++)
-	{
 		for (int j = 0; j < y_size ; j++)
-		{
 			for (int k = 0; k < z_size ; k++)
-			{
 				stream.read(reinterpret_cast<char *>(&GetElem(i, j, k)), sizeof(Block));
-			}
-		}
-	}
 }
 
 void cWorkspace::SaveToUndo()
@@ -488,21 +476,15 @@ int cWorkspace::GetIndex( int x, int y, int z ) const
 
 void cWorkspace::Undo()
 {
-	if(curAction - 1 < 0)
+	if(curAction-1 < 0)
 		return;
 
 	int newPos = (--curAction) % UNDO_MAX;
 
 	for (int i = 0; i < x_size; i++)
-	{
 		for (int j = 0; j < y_size; j++)
-		{
 			for (int k = 0; k < z_size; k++)
-			{
 				Elements[GetIndex(i, j, k)] = ElementsUndo[newPos][GetIndex(i, j, k)];
-			}
-		}
-	}
 
 	Tesselate();
 }
@@ -523,41 +505,29 @@ void cWorkspace::SetColor( Vector3F & color )
 void cWorkspace::CreatePlane()
 {
 	if(plane)
-	{
 		return;
-	}
-
-	struct PlaneVertex
-	{
-		D3DXVECTOR3 Pos;
-		D3DXVECTOR2 Texcoord;
-	};
 
 	ShiftEngine::MeshData * temp = new ShiftEngine::MeshData;
 
 	temp->indicesCount = 6;
 	temp->verticesCount = 4;
-	temp->vertexSize = sizeof(PlaneVertex);
-	//some buffer calculations here
-	PlaneVertex ver[] = 
+	temp->vertexSize = sizeof(ShiftEngine::DefaultVertex);
+	ShiftEngine::DefaultVertex ver[] = 
 	{
-		{D3DXVECTOR3(0.0f, 0.0f, 0.0f),	D3DXVECTOR2(0.0f, 0.0f)},
-		{D3DXVECTOR3(0.0f, 1.0f, 0.0f),	D3DXVECTOR2(0.0f, 1.0f)},
-		{D3DXVECTOR3(1.0f, 1.0f, 0.0f),	D3DXVECTOR2(1.0f, 1.0f)},
-		{D3DXVECTOR3(1.0f, 0.0f, 0.0f),	D3DXVECTOR2(1.0f, 0.0f)},
+		{0.0f, 0.0f, 0.0f,		0.0f, 0.0f, 1.0f,		0.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f,		0.0f, 0.0f, 1.0f,		0.0f, 1.0f},
+		{1.0f, 1.0f, 0.0f,		0.0f, 0.0f, 1.0f,		1.0f, 1.0f},
+		{1.0f, 0.0f, 0.0f,		0.0f, 0.0f, 1.0f,		1.0f, 0.0f},
 	};
 	long ind[6] = {0, 1, 2, 0, 2, 3};
 
-	temp->CreateBuffers(false, ver, sizeof(PlaneVertex) * 4,
+	temp->CreateBuffers(false, ver, sizeof(ShiftEngine::DefaultVertex) * 4,
 		ind, sizeof(long) * 6, ShiftEngine::GetContextManager()->GetDevicePointer());
 
-	//std::vector<ShiftEngine::InputElement> i;
-	//i.push_back(ShiftEngine::InputElement("POSITION", 3));
-	//i.push_back(ShiftEngine::InputElement("TEXCOORD", 2));
-	//ShiftEngine::cMaterial PlaneShader = ShiftEngine::cMaterial(cGraphicsEngine::GetInstance().LoadShader(L"plane.fx", i));
-	//PlaneShader.SetTexture(cGraphicsEngine::GetInstance().LoadTexture(L"plane.png"), "Texture"); 
-
-	//plane = ShiftEngine::SceneGraphInstance->AddStaticMeshNode(std::shared_ptr<MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), PlaneShader);
+	ShiftEngine::Material PlaneShader;
+	temp->vertexSemantic = &ShiftEngine::defaultVertexSemantic;
+	PlaneShader.SetDiffuseTexture(ShiftEngine::GetContextManager()->LoadTexture(L"plane.png")); 
+	plane = ShiftEngine::GetSceneGraph()->AddMeshNode(std::shared_ptr<ShiftEngine::MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), &PlaneShader);
 }
 
 void cWorkspace::CreateBBox()
@@ -613,11 +583,7 @@ int cWorkspace:: GetMaxSize() const
 void cWorkspace::VanishColor( bool flag )
 {
 	if(flag)
-	{
 		mesh->SetMaterial(&GeometryMaterial);
-	}
 	else
-	{
 		mesh->SetMaterial(&ColorMaterial);
-	}
 }
