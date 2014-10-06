@@ -3,7 +3,7 @@
 #include "../GUI/GUI.h"
 
 #include "cAppStateBase.h"
-#include "cWorkspace.h"
+#include "BlockWorkspace.h"
 #include "appclass.h"
 
 class Application;
@@ -14,12 +14,12 @@ struct Brush
 	Vector3F Color;
 };
 
-class cWorkState : public appState
+class WorkState : public appState
 {
 public:
-	cWorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-	cWorkState(const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-	~cWorkState();
+	WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
+	WorkState(const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
+	~WorkState();
 
 	virtual bool initState();
 	virtual bool update( double dt );
@@ -37,7 +37,7 @@ private:
 	bool ProcessInput(double ElapsedTime);
 	void ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val);
 
-	cWorkspace * Workspace;
+	BlockWorkspace * Workspace;
 	SimpleGUI::Canvas * pCanvas;
 	SimpleGUI::Skinner * pSkinner;
 

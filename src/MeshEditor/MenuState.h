@@ -9,11 +9,11 @@
 
 class Application;
 
-class cMenuState : public appState
+class MenuState : public appState
 {
 public:
-	cMenuState(SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner, Application * _pApp);
-	~cMenuState();
+	MenuState(SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner, Application * _pApp);
+	~MenuState();
 
 	virtual bool initState();
 	virtual bool update( double dt );

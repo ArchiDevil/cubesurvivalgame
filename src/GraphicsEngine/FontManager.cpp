@@ -12,6 +12,8 @@ ShiftEngine::FontManager::FontManager()
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
 	TextShader = pCntMng->LoadShader(L"text.fx");
 	LoadFonts();
+	if (!Fonts.empty())
+		currentFont = Fonts.begin()->first;
 }
 
 void ShiftEngine::FontManager::Shutdown()

@@ -2,7 +2,7 @@
 
 #include <stack>
 
-#include "../Utilities/System/Application.h"
+#include <Utilities/System/Application.h>
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <Utilities/timer.h>
@@ -10,8 +10,8 @@
 #include <Utilities/InputEngine.h>
 #include <Utilities/iniloader.h>
 
-#include "cMenuState.h"
-#include "cWorkState.h"
+#include "MenuState.h"
+#include "WorkState.h"
 
 class Application : public cApplication
 {

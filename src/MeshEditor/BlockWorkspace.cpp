@@ -1,4 +1,4 @@
-#include "cWorkspace.h"
+#include "BlockWorkspace.h"
 
 #include <cassert>
 #include <vector>
@@ -7,7 +7,7 @@
 
 #define AO_DEBUG
 
-cWorkspace::cWorkspace( int _x, int _y, int _z )
+BlockWorkspace::BlockWorkspace( int _x, int _y, int _z )
 	: x_size(_x), y_size(_y), z_size(_z), curAction(0), bboxShow(false),
 	bbox(nullptr), plane(nullptr), mesh(nullptr), tesselated(false)
 {
@@ -22,7 +22,7 @@ cWorkspace::cWorkspace( int _x, int _y, int _z )
 	}
 }
 
-cWorkspace::~cWorkspace()
+BlockWorkspace::~BlockWorkspace()
 {
 	delete [] Elements;
 
@@ -30,15 +30,16 @@ cWorkspace::~cWorkspace()
 		delete [] ElementsUndo[i];
 }
 
-void cWorkspace::Initialize()
+void BlockWorkspace::Initialize()
 {
 	Tesselate();
 	CreateBBox();
 	CreatePlane();
+	ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
 	MainLog.Message("Workspace initialized");
 }
 
-void cWorkspace::ResizeWithoutSaved( int new_x, int new_y, int new_z )
+void BlockWorkspace::ResizeWithoutSaved( int new_x, int new_y, int new_z )
 {
 	x_size = new_x;
 	y_size = new_y;
@@ -52,7 +53,7 @@ void cWorkspace::ResizeWithoutSaved( int new_x, int new_y, int new_z )
 	curAction = 0;
 }
 
-void cWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown)
+void BlockWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown)
 {
 	int x_new = x_size + Xup + Xdown;
 	int y_new = y_size + Yup + Ydown;
@@ -84,12 +85,12 @@ void cWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdo
 	createUndo(x_size * y_size * z_size);
 }
 
-int cWorkspace::GetIndexNew(int x, int y, int z, int xSize, int ySize, int zSize)
+int BlockWorkspace::GetIndexNew(int x, int y, int z, int xSize, int ySize, int zSize)
 {
 	return x * zSize * ySize + y * zSize + z;
 }
 
-void cWorkspace::createUndo(int sizeElementsUndo)
+void BlockWorkspace::createUndo(int sizeElementsUndo)
 {
 	for (int i = 0; i < UNDO_MAX ; i++)
 	{
@@ -98,7 +99,7 @@ void cWorkspace::createUndo(int sizeElementsUndo)
 	}
 }
 
-void cWorkspace::Update()
+void BlockWorkspace::Update()
 {
 	if(!tesselated)
 		Tesselate();
@@ -112,7 +113,7 @@ void cWorkspace::Update()
 	//	bbox->SetVisibility(false);
 }
 
-Block & cWorkspace::GetElem( int x, int y, int z )
+Block & BlockWorkspace::GetElem( int x, int y, int z )
 {
 	if(x < x_size && x >= 0 && y < y_size && y >= 0 && z < z_size && z >= 0)
 	{
@@ -131,7 +132,7 @@ Block & cWorkspace::GetElem( int x, int y, int z )
 	}
 }
 
-Block cWorkspace::GetElem( int x, int y, int z ) const
+Block BlockWorkspace::GetElem( int x, int y, int z ) const
 {
 	if(x < x_size && x >= 0 && y < y_size && y >= 0 && z < z_size && z >= 0)
 	{
@@ -151,7 +152,7 @@ Block cWorkspace::GetElem( int x, int y, int z ) const
 
 #define maxShadowFactor2 23.1364880
 
-float cWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float z1, float z2 )
+float BlockWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float z1, float z2 )
 {
 #ifdef AO_DEBUG
 	//checking maximum distance here
@@ -185,19 +186,19 @@ float cWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float z1,
 #endif
 }
 
-void cWorkspace::Tesselate()
+void BlockWorkspace::Tesselate()
 {
 	ShiftEngine::MeshData * cd = new ShiftEngine::MeshData;
 	std::vector<wVertex> vertices;
 	std::vector<long> indices;
 	int ind_index = 0;
 
-	const Vector3F FRONT	= Vector3F(-1.0f, 0.0f, 0.0f);
-	const Vector3F BACK		= Vector3F(1.0f, 0.0f, 0.0f);
-	const Vector3F LEFT		= Vector3F(0.0f, -1.0f, 0.0f);
-	const Vector3F RIGHT	= Vector3F(0.0f, 1.0f, 0.0f);
-	const Vector3F DOWN		= Vector3F(0.0f, 0.0f, -1.0f);
-	const Vector3F UP		= Vector3F(0.0f, 0.0f, 1.0f);
+	const Vector3F FRONT = Vector3F(-1.0f, 0.0f, 0.0f);
+	const Vector3F BACK = Vector3F(1.0f, 0.0f, 0.0f);
+	const Vector3F LEFT = Vector3F(0.0f, -1.0f, 0.0f);
+	const Vector3F RIGHT = Vector3F(0.0f, 1.0f, 0.0f);
+	const Vector3F DOWN = Vector3F(0.0f, 0.0f, -1.0f);
+	const Vector3F UP = Vector3F(0.0f, 0.0f, 1.0f);
 
 	for (float x = 0.0f; x < (float)x_size ; x++)
 	{
@@ -212,16 +213,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x - 1), (int)floor(y), (int)floor(z)).exist)
 					{
 						float AOFactor = GetAOFactor(x - 1, x - 1, y - 2, y + 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x, y,		z),		FRONT, Vector2F(0.0f, 0.0f), block.color, AOFactor));
-
-						AOFactor = GetAOFactor(x - 1, x - 1, y - 1, y + 2, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x, y + 1,	z),		FRONT, Vector2F(1.0f, 0.0f), block.color, AOFactor));
-
-						AOFactor = GetAOFactor(x - 1, x - 1, y - 2, y + 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x, y,		z + 1),	FRONT, Vector2F(0.0f, 1.0f), block.color, AOFactor));
-
-						AOFactor = GetAOFactor(x - 1, x - 1, y - 1, y + 2, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x, y + 1,	z + 1),	FRONT, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x, y,		z),		FRONT, Vector2F(0.0f, 0.0f), block.color * AOFactor));
+																														 
+						AOFactor = GetAOFactor(x - 1, x - 1, y - 1, y + 2, z - 2, z + 1);								 
+						vertices.push_back(wVertex(Vector3F(x, y + 1,	z),		FRONT, Vector2F(1.0f, 0.0f), block.color * AOFactor));
+																														 
+						AOFactor = GetAOFactor(x - 1, x - 1, y - 2, y + 1, z - 1, z + 2);								 
+						vertices.push_back(wVertex(Vector3F(x, y,		z + 1),	FRONT, Vector2F(0.0f, 1.0f), block.color * AOFactor));
+																														 
+						AOFactor = GetAOFactor(x - 1, x - 1, y - 1, y + 2, z - 1, z + 2);								 
+						vertices.push_back(wVertex(Vector3F(x, y + 1,	z + 1),	FRONT, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 3);
@@ -236,16 +237,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x + 1), (int)floor(y), (int)floor(z)).exist)
 					{
 						float AOFactor = GetAOFactor(x + 1, x + 1, y - 2, y + 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1, y,		z),		BACK, Vector2F(0.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1, y,		z),		BACK, Vector2F(0.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x + 1, x + 1, y - 1, y + 2, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1, y + 1,	z),		BACK, Vector2F(1.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1, y + 1,	z),		BACK, Vector2F(1.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x + 1, x + 1, y - 2, y + 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x + 1, y,		z + 1), BACK, Vector2F(0.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1, y,		z + 1), BACK, Vector2F(0.0f, 1.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x + 1, x + 1, y - 1, y + 2, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x + 1, y + 1,	z + 1), BACK, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1, y + 1,	z + 1), BACK, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 2);
@@ -260,16 +261,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x), (int)floor(y - 1), (int)floor(z)).exist)
 					{
 						float AOFactor = GetAOFactor(x - 2, x + 1, y - 1, y - 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x,		y,	z),		LEFT, Vector2F(0.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y,	z),		LEFT, Vector2F(0.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 1, y - 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y,	z),		LEFT, Vector2F(1.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y,	z),		LEFT, Vector2F(1.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 2, x + 1, y - 1, y - 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x,		y,	z + 1),	LEFT, Vector2F(0.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y,	z + 1),	LEFT, Vector2F(0.0f, 1.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 1, y - 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y,	z + 1),	LEFT, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y,	z + 1),	LEFT, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 2);
@@ -284,16 +285,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x), (int)floor(y + 1), (int)floor(z)).exist)
 					{
 						float AOFactor = GetAOFactor(x - 2, x + 1, y + 1, y + 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z),		RIGHT, Vector2F(0.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z),		RIGHT, Vector2F(0.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y + 1, y + 1, z - 2, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z),		RIGHT, Vector2F(1.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z),		RIGHT, Vector2F(1.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 2, x + 1, y + 1, y + 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z + 1),	RIGHT, Vector2F(0.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z + 1),	RIGHT, Vector2F(0.0f, 1.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y + 1, y + 1, z - 1, z + 2);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z + 1),	RIGHT, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z + 1),	RIGHT, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 3);
@@ -308,16 +309,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x), (int)floor(y), (int)floor(z - 1)).exist)
 					{
 						float AOFactor = GetAOFactor(x - 2, x + 1, y - 2, y + 1, z + 1, z - 1);
-						vertices.push_back(wVertex(Vector3F(x,		y,		z),	DOWN, Vector2F(0.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y,		z),	DOWN, Vector2F(0.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 2, y + 1, z + 1, z - 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y,		z),	DOWN, Vector2F(1.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y,		z),	DOWN, Vector2F(1.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 2, x + 1, y - 1, y + 2, z + 1, z - 1);
-						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z),	DOWN, Vector2F(0.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z),	DOWN, Vector2F(0.0f, 1.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 1, y + 2, z + 1, z - 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z),	DOWN, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z),	DOWN, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 3);
@@ -332,16 +333,16 @@ void cWorkspace::Tesselate()
 					if(!GetElem((int)floor(x), (int)floor(y), (int)floor(z + 1)).exist)
 					{
 						float AOFactor = GetAOFactor(x - 2, x + 1, y - 2, y + 1, z + 1, z + 1);
-						vertices.push_back(wVertex(Vector3F(x,		y,		z + 1),	UP, Vector2F(0.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y,		z + 1),	UP, Vector2F(0.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 2, y + 1, z + 1, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y,		z + 1),	UP, Vector2F(1.0f, 0.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y,		z + 1),	UP, Vector2F(1.0f, 0.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 2, x + 1, y - 1, y + 2, z + 1, z + 1);
-						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z + 1),	UP, Vector2F(0.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x,		y + 1,	z + 1),	UP, Vector2F(0.0f, 1.0f), block.color * AOFactor));
 
 						AOFactor = GetAOFactor(x - 1, x + 2, y - 1, y + 2, z + 1, z + 1);
-						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z + 1),	UP, Vector2F(1.0f, 1.0f), block.color, AOFactor));
+						vertices.push_back(wVertex(Vector3F(x + 1,	y + 1,	z + 1),	UP, Vector2F(1.0f, 1.0f), block.color * AOFactor));
 
 						indices.push_back(ind_index + 0);
 						indices.push_back(ind_index + 2);
@@ -374,9 +375,9 @@ void cWorkspace::Tesselate()
 		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
 		sem->addSemantic(ShiftEngine::ET_FLOAT, 2, ShiftEngine::ES_Texcoord);
 		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-		//i.push_back(ShiftEngine::InputElement("AO", 1));
 		ShiftEngine::GetContextManager()->RegisterVertexSemantic(*sem);
 		cd->vertexSemantic = sem;
+		cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(*sem);
 
 		GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
 		this->GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
@@ -393,12 +394,12 @@ void cWorkspace::Tesselate()
 	tesselated = true;
 }
 
-void cWorkspace::SetNotTesselated()
+void BlockWorkspace::SetNotTesselated()
 {
 	tesselated = false;
 }
 
-void cWorkspace::Save( const std::wstring & filename )
+void BlockWorkspace::Save( const std::wstring & filename )
 {
 	struct Header
 	{
@@ -424,7 +425,7 @@ void cWorkspace::Save( const std::wstring & filename )
 				stream.write(reinterpret_cast<char *>(&GetElem(i, j, k)), sizeof(Block));
 }
 
-void cWorkspace::Load( const std::wstring & filename )
+void BlockWorkspace::Load( const std::wstring & filename )
 {
 	struct Header
 	{
@@ -442,7 +443,7 @@ void cWorkspace::Load( const std::wstring & filename )
 		return;
 	}
 
-	stream.read(reinterpret_cast<char *>(&h), sizeof(Header));
+	stream.read(reinterpret_cast<char*>(&h), sizeof(Header));
 
 	ResizeWithoutSaved(h.size[0], h.size[1], h.size[2]);
 
@@ -452,7 +453,7 @@ void cWorkspace::Load( const std::wstring & filename )
 				stream.read(reinterpret_cast<char *>(&GetElem(i, j, k)), sizeof(Block));
 }
 
-void cWorkspace::SaveToUndo()
+void BlockWorkspace::SaveToUndo()
 {
 	int newPos = curAction % UNDO_MAX;
 
@@ -469,12 +470,12 @@ void cWorkspace::SaveToUndo()
 	curAction++;
 }
 
-int cWorkspace::GetIndex( int x, int y, int z ) const
+int BlockWorkspace::GetIndex( int x, int y, int z ) const
 {
 	return x * z_size * y_size + y * z_size + z;
 }
 
-void cWorkspace::Undo()
+void BlockWorkspace::Undo()
 {
 	if(curAction-1 < 0)
 		return;
@@ -489,12 +490,12 @@ void cWorkspace::Undo()
 	Tesselate();
 }
 
-Vector3F cWorkspace::GetHalfSize() const
+Vector3F BlockWorkspace::GetHalfSize() const
 {
 	return Vector3F((float)x_size / 2, (float)y_size / 2, (float)z_size / 2);
 }
 
-void cWorkspace::SetColor( Vector3F & color )
+void BlockWorkspace::SetColor( Vector3F & color )
 {
 	for (int i = 0; i < x_size ; i++)
 		for (int j = 0; j < y_size ; j++)
@@ -502,7 +503,7 @@ void cWorkspace::SetColor( Vector3F & color )
 				GetElem(i, j, k).color = color;
 }
 
-void cWorkspace::CreatePlane()
+void BlockWorkspace::CreatePlane()
 {
 	if(plane)
 		return;
@@ -523,14 +524,14 @@ void cWorkspace::CreatePlane()
 
 	temp->CreateBuffers(false, ver, sizeof(ShiftEngine::DefaultVertex) * 4,
 		ind, sizeof(long) * 6, ShiftEngine::GetContextManager()->GetDevicePointer());
-
-	ShiftEngine::Material PlaneShader;
+	temp->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::defaultVertexSemantic);
 	temp->vertexSemantic = &ShiftEngine::defaultVertexSemantic;
-	PlaneShader.SetDiffuseTexture(ShiftEngine::GetContextManager()->LoadTexture(L"plane.png")); 
-	plane = ShiftEngine::GetSceneGraph()->AddMeshNode(std::shared_ptr<ShiftEngine::MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), &PlaneShader);
+
+	ShiftEngine::MaterialPtr planeMtl = ShiftEngine::GetContextManager()->LoadMaterial(L"plane.mtl", L"editorPlane");
+	plane = ShiftEngine::GetSceneGraph()->AddMeshNode(std::shared_ptr<ShiftEngine::MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), planeMtl.get());
 }
 
-void cWorkspace::CreateBBox()
+void BlockWorkspace::CreateBBox()
 {
 	//if(!bbox)
 	//{
@@ -556,31 +557,31 @@ void cWorkspace::CreateBBox()
 	//}
 }
 
-void cWorkspace::ShowBoundingBox()
+void BlockWorkspace::ShowBoundingBox()
 {
 	bboxShow = true;
 }
 
-void cWorkspace::HideBoundingBox()
+void BlockWorkspace::HideBoundingBox()
 {
 	bboxShow = false;
 }
 
-bool cWorkspace::IsBBoxShowed() const
+bool BlockWorkspace::IsBBoxShowed() const
 {
 	return bboxShow;
 }
-int cWorkspace:: GetCurAction() const
+int BlockWorkspace:: GetCurAction() const
 {
 	return curAction;
 }
 
-int cWorkspace:: GetMaxSize() const
+int BlockWorkspace:: GetMaxSize() const
 {
 	return max(x_size, max(y_size, z_size));
 }
 
-void cWorkspace::VanishColor( bool flag )
+void BlockWorkspace::VanishColor( bool flag )
 {
 	if(flag)
 		mesh->SetMaterial(&GeometryMaterial);

@@ -1,28 +1,28 @@
-#include "cMenuState.h"
+#include "MenuState.h"
 
-cMenuState::cMenuState( SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner, Application * _pApp )
+MenuState::MenuState( SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner, Application * _pApp )
 	: pCanvas(_pCanvas), pSkinner(_pSkinner), pApp(_pApp)
 {
 }
 
-cMenuState::~cMenuState()
+MenuState::~MenuState()
 {
 }
 
-bool cMenuState::initState()
+bool MenuState::initState()
 {
 	CreateGUI();
 	return true;
 }
 
-bool cMenuState::update( double dt )
+bool MenuState::update( double dt )
 {
 	if(!ProcessInput())
 		return false;
 	return true;
 }
 
-bool cMenuState::render( double dt )
+bool MenuState::render( double dt )
 {
 	auto t = cInputEngine::GetInstance().GetMouseInfo();
 
@@ -49,11 +49,11 @@ bool cMenuState::render( double dt )
 	return true;
 }
 
-void cMenuState::onKill(){}
-void cMenuState::onSuspend(){}
-void cMenuState::onResume(){}
+void MenuState::onKill(){}
+void MenuState::onSuspend(){}
+void MenuState::onResume(){}
 
-void cMenuState::CreateGUI()
+void MenuState::CreateGUI()
 {
 	SimpleGUI::Image * back = new SimpleGUI::Image(pCanvas, L"MainMenuBack.png");
 	back->SetSize(160, 280);
@@ -101,7 +101,7 @@ void cMenuState::CreateGUI()
 			if(utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
 				utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
 				utils::IsNumber(tbZ->GetText()) && tbZ->GetText() != L"")
-				pApp->PushState(new cWorkState(std::stoi(utils::WStrToStr(tbX->GetText())), 
+				pApp->PushState(new WorkState(std::stoi(utils::WStrToStr(tbX->GetText())), 
 				std::stoi(utils::WStrToStr(tbY->GetText())), 
 				std::stoi(utils::WStrToStr(tbZ->GetText())), 
 				pCanvas, 
@@ -129,7 +129,7 @@ void cMenuState::CreateGUI()
 	{
 		if(loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
 		{
-			pApp->PushState(new cWorkState(utils::StrToWStr("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()),
+			pApp->PushState(new WorkState(utils::StrToWStr("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()),
 				pCanvas,
 				pSkinner));
 		}
@@ -137,7 +137,7 @@ void cMenuState::CreateGUI()
 	);
 }
 
-bool cMenuState::ProcessInput()
+bool MenuState::ProcessInput()
 {
 	auto &InputEngine = cInputEngine::GetInstance();
 

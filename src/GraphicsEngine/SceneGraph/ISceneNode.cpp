@@ -11,15 +11,13 @@ ShiftEngine::ISceneNode::ISceneNode( const MathLib::AABB & _bbox )
       Position(0.0f, 0.0f, 0.0f), parent(nullptr), bbox(_bbox),
 	  pSceneGraph(nullptr)
 {
+	CreateWorldMatrix();
 }
 
 ShiftEngine::ISceneNode::~ISceneNode()
 {
-    for(auto iter = children.begin();
-            iter != children.end(); iter++)
-    {
-        (*iter)->release();
-    }
+    for(auto child : children)
+        child->release();
 }
 
 void ShiftEngine::ISceneNode::AddChild(ISceneNode * node)
@@ -97,14 +95,8 @@ void ShiftEngine::ISceneNode::Draw( RenderQueue & rq )
     this->PushToRQ(rq);
 
     if(!children.empty())
-    {
-        for (auto iter = children.begin();
-                iter != children.end();
-                ++iter)
-        {
-            (*iter)->Draw(rq);
-        }
-    }
+        for (auto child : children)
+			child->Draw(rq);
 }
 
 D3DXMATRIX ShiftEngine::ISceneNode::GetWorldMatrix() const

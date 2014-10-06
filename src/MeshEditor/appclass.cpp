@@ -58,7 +58,7 @@ bool Application::Initialize()
 
 	Skin->Initialize();
 
-	cMenuState * state = new cMenuState(MainCanvas, Skin, this);
+	MenuState * state = new MenuState(MainCanvas, Skin, this);
 	statesStack.push(state);
 
 	state->initState();

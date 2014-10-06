@@ -14,20 +14,24 @@ struct Block													//описывает структуру кубика в модели
 
 struct wVertex													//служебное для движка
 {
-	wVertex(const Vector3F & pos, const Vector3F & normal, const Vector2F & tex, const Vector3F & col, float _AOFactor) 
-		: Position(pos), Normal(normal), Texcoord(tex), Color(col), AOFactor(_AOFactor) {};
+	wVertex(const Vector3F & pos, const Vector3F & normal, const Vector2F & tex, const Vector3F & col) 
+		: Position(pos)
+		, Normal(normal)
+		, Texcoord(tex)
+		, Color(col)
+	{}
+
 	Vector3F Position;
 	Vector3F Normal;
 	Vector2F Texcoord;
 	Vector3F Color;
-	float	AOFactor;
 };
 
-class cWorkspace												//отвечает за работу с моделью
+class BlockWorkspace												//отвечает за работу с моделью
 {
 public:
-	cWorkspace(int _x, int _y, int _z);							//конструктор принимает размеры модели по трем осям
-	~cWorkspace();
+	BlockWorkspace(int _x, int _y, int _z);							//конструктор принимает размеры модели по трем осям
+	~BlockWorkspace();
 
 	void Initialize();
 

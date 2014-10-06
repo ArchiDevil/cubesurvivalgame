@@ -1,4 +1,4 @@
-#include "cWorkState.h"
+#include "WorkState.h"
 
 #include "../GraphicsEngine/Renderer.h"
 
@@ -53,27 +53,27 @@ const float CGA_colors[16][3] = {
 	{1.0f, 1.0f, 1.0f},
 };
 
-cWorkState::cWorkState( int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner ) 
+WorkState::WorkState( int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner ) 
 	: pCanvas(_pCanvas), pSkinner(_pSkinner), flag(false), geometryMode(true)
 {
-	Workspace = new cWorkspace(x_size, y_size, z_size);
+	Workspace = new BlockWorkspace(x_size, y_size, z_size);
 	FillByDefault();
 }
 
-cWorkState::cWorkState( const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner )
+WorkState::WorkState( const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner )
 	: pCanvas(_pCanvas), pSkinner(_pSkinner), flag(false), geometryMode(true)
 {
-	Workspace = new cWorkspace(1, 1, 1);
+	Workspace = new BlockWorkspace(1, 1, 1);
 	Workspace->Load(loadFile);
 }
 
-cWorkState::~cWorkState()
+WorkState::~WorkState()
 {
 	if(Workspace)
 		delete Workspace;
 }
 
-bool cWorkState::initState()
+bool WorkState::initState()
 {
 	pCanvas->RemoveAllChildrens();
 	Workspace->Initialize();
@@ -83,7 +83,7 @@ bool cWorkState::initState()
 	return true;
 }
 
-bool cWorkState::update( double dt )
+bool WorkState::update( double dt )
 {
 	if(!ProcessInput(dt))
 		return false;
@@ -122,7 +122,7 @@ bool cWorkState::update( double dt )
 	return true; //return false if something wrong
 }
 
-bool cWorkState::render( double dt )
+bool WorkState::render( double dt )
 {
 	auto t = cInputEngine::GetInstance().GetMouseInfo();
 
@@ -165,11 +165,11 @@ bool cWorkState::render( double dt )
 	return true; //return false if something wrong
 }
 
-void cWorkState::onKill(){}
-void cWorkState::onSuspend(){}
-void cWorkState::onResume(){}
+void WorkState::onKill(){}
+void WorkState::onSuspend(){}
+void WorkState::onResume(){}
 
-void cWorkState::CreateGUI()
+void WorkState::CreateGUI()
 {
 	int screenWidth = ShiftEngine::GetContextManager()->GetParameters().screenWidth;
 	int screenHeight = ShiftEngine::GetContextManager()->GetParameters().screenHeight;
@@ -280,7 +280,7 @@ void cWorkState::CreateGUI()
 	});
 }
 
-bool cWorkState::ProcessInput( double ElapsedTime )
+bool WorkState::ProcessInput( double ElapsedTime )
 {
 	auto &InputEngine = cInputEngine::GetInstance();
 
@@ -431,7 +431,7 @@ bool cWorkState::ProcessInput( double ElapsedTime )
 	return true;
 }
 
-void cWorkState::FillByDefault()
+void WorkState::FillByDefault()
 {
 	Block a;
 	a.exist = true;
@@ -447,7 +447,7 @@ void cWorkState::FillByDefault()
 				Workspace->GetElem(i, j, k) = a;
 }
 
-void cWorkState::MoveToGeometryMode()
+void WorkState::MoveToGeometryMode()
 {
 	auto childs = pCanvas->GetChildrenList();
 	for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
@@ -457,7 +457,7 @@ void cWorkState::MoveToGeometryMode()
 	Workspace->VanishColor(true);
 }
 
-void cWorkState::MoveToColorMode()
+void WorkState::MoveToColorMode()
 {
 	auto childs = pCanvas->GetChildrenList();
 	for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
@@ -467,7 +467,7 @@ void cWorkState::MoveToColorMode()
 	Workspace->VanishColor(false);
 }
 
-void cWorkState::ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val)
+void WorkState::ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val)
 {
 	char buffer[4] = {0};
 	sprintf(buffer, "%d", val->GetValue());
