@@ -13,6 +13,8 @@
 #include "ProducerGameObject.h"
 #include "CrafterGameObject.h"
 
+#include "../events.h"
+
 class cSimplePhysicsEngine;
 
 typedef std::shared_ptr<GameObject>				GameObjectPtr;
@@ -49,8 +51,9 @@ public:
 	GameObjectPtr			CreateEntity(const MathLib::Vector3F & position, const std::string & entityId);
 	CrafterPtr				CreateCrafterEntity(const Vector3F & Position, const std::string & id);
 	ProducerPtr				CreateProducerEntity(const Vector3F & Position, const std::string & id);
-	vector<ItemEntity *>	FindItemsNearPlayer(const Vector3F & playerPos);
 	void					Update(double dt, const Vector3F & sunPos);
+
+	bool					DispatchEvent(IGameEvent * ev);
 
 private:
 	void					LoadEntities();

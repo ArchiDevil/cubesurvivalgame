@@ -17,23 +17,34 @@ Console::~Console()
 void Console::HandleCommand()
 {
 	auto tokens = Tokenize(inputBuffer);
+	inputBuffer.clear();
 	if(tokens.empty())
 		return;
 
 	std::string commandName = tokens[0];
 	auto * pGame = LostIsland::GetGamePtr();
 
-	if(commandName == "spawn_entity")
+	if (commandName == "spawn_entity")
 	{
-		if(tokens.size() != 2)
-			MainLog.Error("Wrong arguments: spawn_entity [entity_name]");
+		if (tokens.size() != 5)
+		{
+			MainLog.Error("Wrong arguments: spawn_entity [entity_name] [pos_x] [pos_y] [pos_z]");
+			return;
+		}
 
-		pGame->EntityMgr->CreateEntity(Vector3F(), tokens[1]);
+		float x_pos = std::stof(tokens[2]);
+		float y_pos = std::stof(tokens[3]);
+		float z_pos = std::stof(tokens[4]);
+
+		pGame->EntityMgr->CreateEntity(Vector3F(x_pos, y_pos, z_pos), tokens[1]);
 	}
-	if(commandName == "add_item")
+	else if(commandName == "add_item")
 	{
-		if(tokens.size() != 3)
-			MainLog.Error("Wrong arguments: add_item [item_name] [count]");
+		if (tokens.size() != 2)
+		{
+			MainLog.Error("Wrong arguments: add_item [item_name]");
+			return;
+		}
 
 		unsigned int count = std::stoul(tokens[2]);
 
@@ -48,19 +59,26 @@ void Console::HandleCommand()
 
 void Console::Draw()
 {
-	ShiftEngine::GetContextManager()->GetFontManager()->DrawTextTL(">> " + inputBuffer, 10, screenHeight - 30);
+	auto * pFontManager = ShiftEngine::GetContextManager()->GetFontManager();
+	auto currentFont = pFontManager->GetCurrentFontName();
+	pFontManager->SetFont(L"2");
+	pFontManager->DrawTextTL(">> " + inputBuffer, 10, screenHeight - 20);
+	pFontManager->SetFont(currentFont);
 }
 
 std::vector<std::string> Console::Tokenize(const std::string & input) const
 {
 	std::stringstream ss;
 	std::vector<std::string> out;
-	while(ss << input)
+	ss << input;
+
+	while (!ss.eof())
 	{
 		std::string buffer;
 		ss >> buffer;
 		out.push_back(buffer);
 	}
+
 	return out;
 }
 
@@ -78,6 +96,15 @@ bool Console::handleEvent(const InputEvent & event)
 	{
 	case IE_SystemKey:
 		ProcessInputKey((char)event.key);
+		return true;
+	case IE_SpecialKey:
+		if (event.key == SK_BACKSPACE)
+			if (inputBuffer.size()) 
+				inputBuffer.pop_back();
+
+		if (event.key == SK_ENTER)
+			HandleCommand();
+
 		return true;
 	default:
 		return false;

@@ -18,7 +18,7 @@ public:
 	~ItemManager();
 
 	void Initialize(const std::wstring & PathName);
-	Item * GetBlockItem(BlockType type);
+	uint64_t GetBlockItem(BlockType type);
 
 	Item * GetItemById(uint64_t itemId);
 	uint64_t GetItemId(const std::string & ItemName);
@@ -30,7 +30,6 @@ private:
 	std::map<uint64_t, Item*> HashItem;
 	std::map<std::string, uint64_t> NameHash;
 
-	std::vector<Item *> Blocks;
 	typesStorage * ts;
 	ItemUsingsHandler handler;
 

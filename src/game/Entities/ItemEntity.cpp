@@ -1,5 +1,8 @@
 #include "ItemEntity.h"
 
+#include "../game.h"
+#include "../player/cInventory.h"
+
 ItemEntity::ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
 	: itemId(itemId)
 	, PhysicsEntity(_obj, meshNode)
@@ -18,9 +21,14 @@ void ItemEntity::Update( double dt )
 	rot.z += dt;
 	SceneNode->SetRotation(rot);
 
-//	D3DXVECTOR3 pos = Mesh.GetPosition();
-//	pos.z += 0.1f;
-//	Mesh.SetPosition(pos);
+	cGame * pGame = LostIsland::GetGamePtr();
+	auto ppos = pGame->Player->GetPosition();
+	if (MathLib::distance((Vector3F)ppos, GetPosition()) < 1.0f)
+	{
+		pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = itemId;
+		pGame->Player->GetInventoryPtr()->GetHandPtr()->count++;
+		this->Delete();
+	}
 }
 
 uint64_t ItemEntity::GetItemId() const

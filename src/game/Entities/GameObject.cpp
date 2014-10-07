@@ -35,3 +35,8 @@ ShiftEngine::MeshNode * GameObject::GetSceneNode()
 {
 	return SceneNode;
 }
+
+bool GameObject::OnGameEvent(IGameEvent * ev)
+{
+	return false;
+}

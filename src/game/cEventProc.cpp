@@ -5,10 +5,12 @@
 
 void cGameEventHandler::onBlockRemoved( BlockType bt, Vector3I Pos )
 {
-	//if(bt == ID_GRASS)
-	//	pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(ID_DIRT));
-	//else
-	//	pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(bt));
+	auto * pEM = LostIsland::GetGamePtr()->EntityMgr;
+	auto * pIM = LostIsland::GetGamePtr()->ItemMgr;
+	if (bt == ID_GRASS)
+		pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(ID_DIRT));
+	else
+		pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(bt));
 }
 
 void cGameEventHandler::onBlockAdded(BlockType /*bt*/)

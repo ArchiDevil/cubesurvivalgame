@@ -96,17 +96,6 @@ bool gameState::update( double dt )
 	Vector3D pos = Vector3D(vec.x, vec.y, vec.z);
 	pGame->Player->FindSelectedBlock(pos);
 
-	auto items = pGame->EntityMgr->FindItemsNearPlayer(pGame->Player->GetPosition());
-	for (auto iter = items.begin(); iter != items.end(); iter++)
-	{
-		if(pGame->GameEventHandler->onPlayerPicksItem((*iter)->GetItemId()))
-		{
-			(*iter)->Delete();
-			pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = (*iter)->GetItemId();
-			pGame->Player->GetInventoryPtr()->GetHandPtr()->count++;
-		}
-	}
-
 	Vector3D vectemp = pGame->Player->GetPosition();
 	pScene->GetActiveCamera()->SetPosition((float)vectemp.x, (float)vectemp.y, (float)vectemp.z + pGame->Player->GetHeight());
 
@@ -137,17 +126,19 @@ bool gameState::render( double dt )
 	const int infoSize = 11;
 	std::ostringstream di[infoSize];
 
-	di[0] << "FPS: " << pRenderer->GetFPS();
-	di[1] << "Player pos: " << playerPos.x << " " << playerPos.y << " " << playerPos.z;
-	di[2] << "Shader changes: " << pRenderer->GetShaderChanges();
-	di[3] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
-	di[4] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
-	di[5] << "Texture bindings: " << pRenderer->GetTextureBindings();
-	di[6] << "Draw calls: " << pRenderer->GetDrawCalls();
-	di[7] << "Selected block pos: " << freePos.x << " " << freePos.y << " " << freePos.z;
-	di[8] << "Health: " << pGame->Player->GetHealth();
-	di[9] << "Warmth: " << pGame->Player->GetTemperature();
-	di[10] << "Hunger: " << pGame->Player->GetHunger();
+	di[0] << "Health: " << pGame->Player->GetHealth();
+	di[1] << "Warmth: " << pGame->Player->GetTemperature();
+	di[2] << "Hunger: " << pGame->Player->GetHunger();
+
+	di[3] << "FPS: " << pRenderer->GetFPS();
+	di[4] << "Player pos: " << playerPos.x << " " << playerPos.y << " " << playerPos.z;
+	di[5] << "Shader changes: " << pRenderer->GetShaderChanges();
+	di[6] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
+	di[7] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
+	di[8] << "Texture bindings: " << pRenderer->GetTextureBindings();
+	di[9] << "Draw calls: " << pRenderer->GetDrawCalls();
+	di[10] << "Selected block pos: " << freePos.x << " " << freePos.y << " " << freePos.z;
+
 
 #endif
 
@@ -155,12 +146,14 @@ bool gameState::render( double dt )
 
 	const int infoSize = 5;
 	std::ostringstream di[infoSize];
-	di[0] << "FPS: " << pRenderer->GetFPS();
-	di[1] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
+	di[0] << "Health: " << pGame->Player->GetHealth();
+	di[1] << "Warmth: " << pGame->Player->GetTemperature();
+	di[2] << "Hunger: " << pGame->Player->GetHunger();
+
+	di[3] << "FPS: " << pRenderer->GetFPS();
+	di[4] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
 		<< pGame->environmentMgr->GetTime().getMinutes();
-	di[2] << "Health: " << pGame->Player->GetHealth();
-	di[3] << "Warmth: " << pGame->Player->GetTemperature();
-	di[4] << "Hunger: " << pGame->Player->GetHunger();
+
 
 #endif
 
@@ -305,6 +298,12 @@ void gameState::ProcessInput(double dt)
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Wireframe);
 		else
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
+	}
+
+	if (InputEngine->IsKeyUp(DIK_E))
+	{
+		// create use event
+		//pGame->EntityMgr->DispatchEvent();
 	}
 
 	if (InputEngine->IsMouseMoved())

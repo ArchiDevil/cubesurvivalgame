@@ -1,16 +1,20 @@
 #pragma once
 
-enum GameEvent
+enum GameEventTypes
 {
-	//World events
-	ChunkUnload,			//on chunk unloading or deleting from world
-	ChunkLoad,				//on chunk loading or creating
-	ChunkChanged,			//on chunk changing by player or another thing
+	//Entity events
+	PlayerUsesEntity,
+};
 
-	//Physics events
-	PlayerCollidesWithItem,	//on player standing on item
+struct IGameEvent
+{
+	virtual GameEventTypes GetType() const = 0;
+};
 
-	//Items events
-	PlayerPickItem,			//on player picking item
-
+struct UseEvent : public IGameEvent
+{
+	GameEventTypes GetType() const override
+	{
+		return PlayerUsesEntity;
+	}
 };

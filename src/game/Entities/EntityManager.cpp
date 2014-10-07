@@ -40,29 +40,17 @@ ItemEntityPtr EntityManager::CreateItemEntity(const Vector3D & Position, const V
 
 void EntityManager::Update( double dt, const Vector3F & sunPos )
 {
-	for (auto iter = GameObjects.begin(); iter != GameObjects.end(); iter++)
+	auto iter = GameObjects.begin();
+	while (iter != GameObjects.end())
 	{
 		(*iter)->Update(dt);
 		(*iter)->GetSceneNode()->GetMaterialPtr()->SetNamedParam("lightPos", sunPos);
 
-		if((*iter)->MustBeDeleted())
+		if ((*iter)->MustBeDeleted())
 			iter = GameObjects.erase(iter);
+		else
+			++iter;
 	}
-}
-
-vector<ItemEntity *> EntityManager::FindItemsNearPlayer( const Vector3F & playerPos )
-{
-	vector<ItemEntity*> out;
-	for (auto & item : GameObjects)
-	{
-		if(MathLib::distance(item->GetPosition(), playerPos) < 2.0f)
-		{
-			ItemEntity * ptr = dynamic_cast<ItemEntity*>(item.get());
-			if(ptr) 
-				out.push_back(ptr);
-		}
-	}
-	return out;
 }
 
 CrafterPtr EntityManager::CreateCrafterEntity(const Vector3F & Position, const std::string & id)
@@ -219,3 +207,11 @@ void EntityManager::LoadEntities()
 		}
 	}
 }
+
+//bool EntityManager::DispatchEvent(IGameEvent * ev)
+//{
+//	for (auto elem : GameObjects)
+//	{
+//		elem->OnGameEvent();
+//	}
+//}

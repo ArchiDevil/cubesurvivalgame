@@ -120,22 +120,35 @@ void ItemManager::LoadBlocks()
 	static_assert(ID_END == 7U, "Update loop!");
 	std::vector<std::wstring> textures = ts->getTexturesNames();
 
+	hash::fnv<64> hasher;
+	uint64_t hash = hasher("0");
+
 	Item * blockAir = new BlockItem(&handler, "0", "0", nullptr, ID_AIR);
-	Blocks.push_back(blockAir);
+	HashItem[hash] = blockAir;
+	NameHash["0"] = hash;
 
 	assert(ShiftEngine::GetContextManager() != 0);
 
 	for (int index = (int)ID_WROOT; index <= (int)ID_SAND; index++)
 	{
-		Item * block = new BlockItem(&handler, std::to_string(index), std::to_string(index), 
+		hasher.offset(hasher.INIT);
+		std::string blockName = std::to_string(index);
+		hash = hasher(blockName);
+		Item * block = new BlockItem(&handler, blockName, blockName,
 			ShiftEngine::GetContextManager()->LoadTexture(textures[index - 1]), (BlockType)index);
-		Blocks.push_back(block);
+		HashItem[hash] = block;
+		NameHash[blockName] = hash;
 	}
 }
 
-Item * ItemManager::GetBlockItem( BlockType type )
+uint64_t ItemManager::GetBlockItem( BlockType type )
 {
-	return Blocks[(int)type];
+	std::string blockName = std::to_string((int)type);
+	auto iter = NameHash.find(blockName);
+	if (iter != NameHash.end())
+		return iter->second;
+
+	return 0;
 }
 
 Item * ItemManager::GetItemById(uint64_t itemId)

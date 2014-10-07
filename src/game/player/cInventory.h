@@ -26,7 +26,7 @@ public:
 	cInventory(ItemManager * pItemMgr);
 	~cInventory();
 
-	bool AddItem(uint64_t itemId);					//добавляет предмет в инвентарь, true, если получилось, false, если нельзя добавить
+	bool AddItem(uint64_t itemId);					//добавляет предмет в инвентарь
 	bool RemoveItem(uint64_t itemId);				//удаляет предмет из инвентаря
 
 	int GetFirstFreeSlotIndex() const;				//находит первый свободный слот и возвращает его индекс
@@ -45,8 +45,6 @@ public:
 
 private:
 	ItemManager * pItemMgr;
-
 	std::array<SlotUnit, InventorySize> Items;
-
 	SlotUnit handItem;
 };

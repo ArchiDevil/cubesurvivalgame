@@ -3,6 +3,8 @@
 #include <MathLib/math.h>
 #include <GraphicsEngine/SceneGraph/MeshNode.h>
 
+#include "../events.h"
+
 class GameObject
 {
 public:
@@ -12,6 +14,7 @@ public:
 	virtual Vector3F GetPosition() const;
 	virtual void SetPosition(const Vector3F & Position);
 	virtual void Update(double dt) = 0;
+	virtual bool OnGameEvent(IGameEvent * ev);
 
 	ShiftEngine::MeshNode * GetSceneNode();
 
