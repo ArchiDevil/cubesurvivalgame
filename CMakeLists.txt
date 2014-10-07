@@ -44,4 +44,3 @@ if(BUILD_TESTS)
 	set_property(TARGET UnitTests PROPERTY FOLDER "Tests")
 	set_property(TARGET runUnitTests PROPERTY FOLDER "Tests")
 endif()
-
