@@ -1,0 +1,10 @@
+<materials>
+    <material name="editorPlane">
+		<params>
+			<param name="diffuseMap" type="texture2D">
+				<texture>plane.png</texture>
+			</param>
+			<param name="specularColor" value="rgb(0.0, 0.0, 0.0)"/>
+		</params>
+    </material>
+</materials>

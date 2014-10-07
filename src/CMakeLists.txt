@@ -22,7 +22,7 @@ set_property(TARGET SimplePhysicsEngine PROPERTY FOLDER "Game")
 set_property(TARGET Game 				PROPERTY FOLDER "Game")
 set_property(TARGET Converter  			PROPERTY FOLDER "Tools")
 
-option(BUILD_TOOLS "Build engine tools" NO)
+option(BUILD_TOOLS "Build engine tools" YES)
 
 if(BUILD_TOOLS)
 	add_subdirectory(MeshEditor)
