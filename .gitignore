@@ -31,4 +31,8 @@
 # My own
 /build/
 /bin/
+/3rdparty/fxc/
+/3rdparty/gtest-1.7.0/
+/3rdparty/jsoncpp/
+/3rdparty/tinyxml2/
 *.log
