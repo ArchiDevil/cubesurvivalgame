@@ -11,7 +11,7 @@ std::thread worldThread;
 volatile bool exitFlag = false;
 
 //TEMPORARY
-const double AccelerationMultiplier = 30.0f;
+const double AccelerationMultiplier = 10.0;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw )
@@ -72,6 +72,8 @@ bool gameState::initState()
 	auto settings = pCtxMgr->GetParameters();
 	pScene->AddCameraSceneNode();
 	pScene->SetAmbientColor(Vector3F(0.4f, 0.4f, 0.4f));
+	pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
+	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
 	MainLog.Message("End of game state initializing");
 
@@ -91,13 +93,11 @@ bool gameState::update( double dt )
 	cSimplePhysicsEngine::GetInstance().Update(dt);
 	pGame->EntityMgr->Update(dt, sunPos);
 	pGame->environmentMgr->Update(dt * 0.0, pGame->Player->GetPosition());
-	
-	D3DXVECTOR3 vec = pScene->GetActiveCamera()->GetLookVector();
-	Vector3D pos = Vector3D(vec.x, vec.y, vec.z);
-	pGame->Player->FindSelectedBlock(pos);
 
 	Vector3D vectemp = pGame->Player->GetPosition();
-	pScene->GetActiveCamera()->SetPosition((float)vectemp.x, (float)vectemp.y, (float)vectemp.z + pGame->Player->GetHeight());
+	auto camPos = pScene->GetActiveCamera()->GetPosition();
+	camPos.z = vectemp.z + 10.0f;
+	pScene->GetActiveCamera()->SetPosition(camPos);
 
 	if ((int)accumulatedTime % 10 == 0)
 	{
@@ -117,44 +117,34 @@ bool gameState::render( double dt )
 	ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
 	cGame * pGame = LostIsland::GetGamePtr();
 
-	Vector3F sunPos = pGame->environmentMgr->GetSkyPtr()->GetSunPos();
+	auto camPos = pScene->GetActiveCamera()->GetPosition();
 	Vector3D playerPos = pGame->Player->GetPosition();
 	auto freePos = pGame->Player->GetSelectedBlockPtr()->GetPositions().free;
 
 #if defined (DEBUG) || (_DEBUG)
-
 	const int infoSize = 11;
 	std::ostringstream di[infoSize];
 
 	di[0] << "Health: " << pGame->Player->GetHealth();
 	di[1] << "Warmth: " << pGame->Player->GetTemperature();
 	di[2] << "Hunger: " << pGame->Player->GetHunger();
-
 	di[3] << "FPS: " << pRenderer->GetFPS();
-	di[4] << "Player pos: " << playerPos.x << " " << playerPos.y << " " << playerPos.z;
+	di[4] << "Camera pos: " << camPos.x << " " << camPos.y << " " << camPos.z;
 	di[5] << "Shader changes: " << pRenderer->GetShaderChanges();
 	di[6] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
 	di[7] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
 	di[8] << "Texture bindings: " << pRenderer->GetTextureBindings();
 	di[9] << "Draw calls: " << pRenderer->GetDrawCalls();
 	di[10] << "Selected block pos: " << freePos.x << " " << freePos.y << " " << freePos.z;
-
-
-#endif
-
-#if defined (NDEBUG) || (_NDEBUG)
-
+#else
 	const int infoSize = 5;
 	std::ostringstream di[infoSize];
 	di[0] << "Health: " << pGame->Player->GetHealth();
 	di[1] << "Warmth: " << pGame->Player->GetTemperature();
 	di[2] << "Hunger: " << pGame->Player->GetHunger();
-
 	di[3] << "FPS: " << pRenderer->GetFPS();
 	di[4] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
 		<< pGame->environmentMgr->GetTime().getMinutes();
-
-
 #endif
 
 	////////////
@@ -237,55 +227,45 @@ void gameState::ProcessInput(double dt)
 		return;
 	}
 
-	D3DXVECTOR3 vec1 = pScene->GetActiveCamera()->GetLookVector();
-	Vector3D vecNew = Vector3D(vec1.x, vec1.y, vec1.z);
-	if (!PhysicsEngine->IsPlayerFree())
-		vecNew.z = 0.0f;
-	vecNew = MathLib::Normalize(vecNew);
-	vec1 = pScene->GetActiveCamera()->GetRightVector();
-	Vector3D vecRight = Vector3D(vec1.x, vec1.y, 0);
+	D3DXVECTOR3 tempVec = pScene->GetActiveCamera()->GetUpVector();
+	tempVec.z = 0.0f;
+	Vector3F upCam = MathLib::Normalize(Vector3F(tempVec.x, tempVec.y, tempVec.z));
+	tempVec = pScene->GetActiveCamera()->GetRightVector();
+	Vector3D rightCam(tempVec.x, tempVec.y, 0);
 
 	if (InputEngine->IsKeyDown(DIK_ESCAPE))
 		this->kill();
 
+	double cameraSpeed = 10.0;
 	if (InputEngine->IsKeyDown(DIK_LSHIFT)) //HACK: temporary
 	{
-		vecNew *= AccelerationMultiplier;
-		vecRight *= AccelerationMultiplier;
+		cameraSpeed *= AccelerationMultiplier;
 	}
 
-	bool moveFlag = false;
+	auto camPos = pScene->GetActiveCamera()->GetPosition();
+	Vector3F newCamPos(camPos.x, camPos.y, camPos.z);
 
 	if (InputEngine->IsKeyDown(DIK_W))
 	{
-		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() + vecNew * pGame->Player->GetSpeed());
-		moveFlag = true;
+		newCamPos += upCam * dt * cameraSpeed;
 	}
 
 	if (InputEngine->IsKeyDown(DIK_S))
 	{
-		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() - vecNew * pGame->Player->GetSpeed());
-		moveFlag = true;
+		newCamPos -= upCam * dt * cameraSpeed;
 	}
 
 	if (InputEngine->IsKeyDown(DIK_A))
 	{
-		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() - vecRight * pGame->Player->GetSpeed());
-		moveFlag = true;
+		newCamPos -= rightCam * dt * cameraSpeed;
 	}
 
 	if (InputEngine->IsKeyDown(DIK_D))
 	{
-		pGame->Player->SetVelocities(*pGame->Player->GetVelocitiesPtr() + vecRight * pGame->Player->GetSpeed());
-		moveFlag = true;
+		newCamPos += rightCam * dt * cameraSpeed;
 	}
 
-	if (moveFlag)
-		pGame->GameEventHandler->onPlayerMoves(dt);
-
-	if (InputEngine->IsKeyDown(DIK_SPACE))
-		if (!PhysicsEngine->IsPlayerFree() && PhysicsEngine->IsPlayerCollidesWithWorld())
-			pGame->Player->GetVelocitiesPtr()->z += 5.0f;
+	pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
 
 	if (InputEngine->IsKeyUp(DIK_F))
 		PhysicsEngine->ChangePlayerFreeState();
@@ -299,37 +279,4 @@ void gameState::ProcessInput(double dt)
 		else
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
 	}
-
-	if (InputEngine->IsKeyUp(DIK_E))
-	{
-		// create use event
-		//pGame->EntityMgr->DispatchEvent();
-	}
-
-	if (InputEngine->IsMouseMoved())
-	{
-		MouseInfo mouseInfo = InputEngine->GetMouseInfo();
-		pScene->GetActiveCamera()->LookLeftRight(-mouseInfo.deltaX * 0.2f);
-		pScene->GetActiveCamera()->LookUpDown(-mouseInfo.deltaY * 0.2f);
-	}
-
-	if(InputEngine->IsMouseUp(LButton))
-		pGame->GameEventHandler->onPlayerUsesItem(false);
-
-	//if(InputEngine->IsMouseUp(LButton))
-	//{
-	//	Vector3D vec = pGame->Player->GetSelectedBlockPtr()->GetPositions().solid;
-	//	if(vec.z > -1) //z не может быть меньше 0
-	//	{
-	//		vec3<int> pos = vec3<int>(floor(vec.x), floor(vec.y), floor(vec.z));
-	//		auto block = pGame->World->GetDataStorage()->GetBlock(pos.x, pos.y, pos.z)->TypeID;
-
-	//		if(pGame->World->RemoveBlock(pos.x, pos.y, pos.z))
-	//			pGame->GameEventHandler->onBlockRemoved(block, pos);
-	//	}
-	//}
-
-	if (InputEngine->IsMouseUp(RButton))
-		pGame->GameEventHandler->onPlayerUsesItem(true);
-
 }

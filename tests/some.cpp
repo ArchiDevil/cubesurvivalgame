@@ -11,6 +11,7 @@ namespace Microsoft
 		{
 			template<> static std::wstring ToString<Point>(const Point& t) { std::wostringstream s; s << t.x << " " << t.y << "\n"; return s.str(); }
 			template<> static std::wstring ToString<Vector3F>(const Vector3F& t) { std::wostringstream s; s << t.x << " " << t.y << " " << t.z << "\n"; return s.str(); }
+			template<> static std::wstring ToString<qaFloat>(const qaFloat& t) { std::wostringstream s; s << t.vector.x << " " << t.vector.y << " " << t.vector.z << " " << t.w; return s.str(); }
 		}
 	}
 }

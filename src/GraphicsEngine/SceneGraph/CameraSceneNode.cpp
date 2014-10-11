@@ -5,10 +5,16 @@
 ShiftEngine::CameraSceneNode::CameraSceneNode(D3DXVECTOR3 _pos, 
 											  D3DXVECTOR3 _up, 
 											  D3DXVECTOR3 _right)
-	: UP(_up), POS(_pos), RIGHT(_right),
-	LOOK(0.0f, 1.0f, 0.0f), POS_ZERO (0.0f, 0.0f, 0.0f),
-	Angles(0.0f, 0.0f, 0.0f), ISceneNode(MathLib::AABB()),
-	zNear(0), zFar(0), FOV(0), Frustum(nullptr), ViewAngle(0)
+	: UP(_up)
+	, POS(_pos)
+	, RIGHT(_right)
+	, LOOK(0.0f, 1.0f, 0.0f)
+	, ISceneNode(MathLib::AABB())
+	, zNear(0)
+	, zFar(0)
+	, FOV(0)
+	, Frustum(nullptr)
+	, ViewAngle(0)
 {
 }
 
@@ -21,17 +27,13 @@ void ShiftEngine::CameraSceneNode::Initialize(float _screenWidth, float _screenH
 	zNear = _zNear;
 	zFar = _zFar;
 	FOV = _FOV;
+	screenWidth = _screenWidth;
+	screenHeight = _screenHeight;
 	
 	D3DXVECTOR3 LOOK_POS;
 	LOOK_POS = LOOK + POS;
 	D3DXMatrixLookAtRH(&matView, &POS, &LOOK_POS, &UP);
-	// установка матрицы проекции
-	D3DXMatrixPerspectiveFovRH(
-		&matProj,
-		(float)D3DX_PI * _FOV / 180,	// вертикальный угол обзора
-		_screenWidth / _screenHeight,	// отношение сторон экрана
-		_zNear,							// координата ближней плоскости обрезки
-		_zFar);							// дальняя плоскость обрезки
+	RebuildProjMatrix();
 
 	Frustum = new CameraFrustum;
 }
@@ -65,26 +67,6 @@ void ShiftEngine::CameraSceneNode::MoveForwardBackward(float units)
 	POS += LOOK * units;
 }
 
-void ShiftEngine::CameraSceneNode::LookLeftRight(float angle)
-{
-	D3DXMATRIX TEMP;
-	D3DXMatrixLookAtRH(&TEMP, &POS_ZERO, &LOOK, &UP);
-	D3DXMatrixRotationAxis(&TEMP, &UP, angle * static_cast<float>(0.0175));
-	D3DXVec3TransformCoord(&LOOK, &LOOK, &TEMP);
-	D3DXVec3TransformCoord(&RIGHT, &RIGHT, &TEMP);
-}
-
-void ShiftEngine::CameraSceneNode::LookUpDown(float angle)
-{
-	D3DXMATRIX TEMP;
-	if (ViewAngle + angle > MAX_ANGLE || ViewAngle + angle < -MAX_ANGLE)
-		return;
-	ViewAngle += angle;
-	D3DXMatrixLookAtRH(&TEMP, &POS_ZERO, &LOOK, &UP);
-	D3DXMatrixRotationAxis(&TEMP, &RIGHT, angle * static_cast<float>(0.0175));
-	D3DXVec3TransformCoord(&LOOK, &LOOK, &TEMP);
-}
-
 void ShiftEngine::CameraSceneNode::Update()
 {
 	D3DXVECTOR3 LOOK_POS = LOOK + POS;
@@ -102,14 +84,14 @@ D3DXVECTOR3 ShiftEngine::CameraSceneNode::GetRightVector() const
 	return RIGHT;
 }
 
-ShiftEngine::CameraFrustum * ShiftEngine::CameraSceneNode::GetFrustumPtr()
-{
-	return Frustum;
-}
-
 D3DXVECTOR3 ShiftEngine::CameraSceneNode::GetPosition() const
 {
 	return POS;
+}
+
+ShiftEngine::CameraFrustum * ShiftEngine::CameraSceneNode::GetFrustumPtr()
+{
+	return Frustum;
 }
 
 void ShiftEngine::CameraSceneNode::LookAt( D3DXVECTOR3 point )
@@ -118,21 +100,96 @@ void ShiftEngine::CameraSceneNode::LookAt( D3DXVECTOR3 point )
 	D3DXVec3Normalize(&LOOK, &point);
 }
 
-D3DXVECTOR3 ShiftEngine::CameraSceneNode::GetAngles() const
-{
-	return Angles;
-}
-
 void ShiftEngine::CameraSceneNode::PushToRQ( RenderQueue & rq )
 {
 }
 
-D3DXMATRIX & ShiftEngine::CameraSceneNode::GetProjectionMatrix()
+const D3DXMATRIX & ShiftEngine::CameraSceneNode::GetProjectionMatrix() const
 {
 	return matProj;
 }
 
-D3DXMATRIX & ShiftEngine::CameraSceneNode::GetViewMatrix()
+const D3DXMATRIX & ShiftEngine::CameraSceneNode::GetViewMatrix() const
 {
 	return matView;
+}
+
+D3DXVECTOR3 ShiftEngine::CameraSceneNode::GetUpVector() const
+{
+	return UP;
+}
+
+float ShiftEngine::CameraSceneNode::GetZNear() const
+{
+	return zNear;
+}
+
+float ShiftEngine::CameraSceneNode::GetZFar() const
+{
+	return zFar;
+}
+
+float ShiftEngine::CameraSceneNode::GetFOV() const
+{
+	return FOV;
+}
+
+void ShiftEngine::CameraSceneNode::SetZFar(float val)
+{
+	zFar = val;
+	RebuildProjMatrix();
+}
+
+void ShiftEngine::CameraSceneNode::SetZNear(float val)
+{
+	zNear = val;
+	RebuildProjMatrix();
+}
+
+void ShiftEngine::CameraSceneNode::SetFOV(float val)
+{
+	FOV = val;
+	RebuildProjMatrix();
+}
+
+void ShiftEngine::CameraSceneNode::SetScreenWidth(float val)
+{
+	screenWidth = val;
+	RebuildProjMatrix();
+}
+
+void ShiftEngine::CameraSceneNode::SetScreenHeight(float val)
+{
+	screenHeight = val;
+	RebuildProjMatrix();
+}
+
+void ShiftEngine::CameraSceneNode::RebuildProjMatrix()
+{
+	// установка матрицы проекции
+	D3DXMatrixPerspectiveFovRH(
+		&matProj,
+		(float)D3DX_PI * FOV / 180,	// вертикальный угол обзора
+		screenWidth / screenHeight,	// отношение сторон экрана
+		zNear,						// координата ближней плоскости обрезки
+		zFar);						// дальн€€ плоскость обрезки
+}
+
+void ShiftEngine::CameraSceneNode::RotateByQuaternion(const MathLib::qaFloat & quat)
+{
+	// transform all vectors
+	Vector3F look(LOOK.x, LOOK.y, LOOK.z);
+	look = look * quat;
+	LOOK = D3DXVECTOR3(look.x, look.y, look.z);
+
+	Vector3F up(UP.x, UP.y, UP.z);
+	up = up * quat;
+	UP = D3DXVECTOR3(up.x, up.y, up.z);
+
+	Vector3F right(RIGHT.x, RIGHT.y, RIGHT.z);
+	right = right * quat;
+	RIGHT = D3DXVECTOR3(right.x, right.y, right.z);
+
+	D3DXVECTOR3 LOOK_POS = LOOK + POS;
+	D3DXMatrixLookAtRH(&matView, &POS, &LOOK_POS, &UP);
 }

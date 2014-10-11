@@ -1,8 +1,5 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include "math/vector2.h"
 #include "math/vector3.h"
 #include "math/vector4.h"
@@ -12,9 +9,16 @@
 #include "math/plane.h"
 #include "math/quaternion.h"
 #include "math/matrix.h"
-#include "math/matrixFuncs.h"
 
+#include "math/matrixFuncs.h"
 #include "math/vectorsFuncs.h"
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#ifndef M_PI
+	#define M_PI 3.14159265358979323846
+#endif
 
 namespace MathLib
 {
@@ -46,6 +50,15 @@ namespace MathLib
 
 	Vector3F GetPointOnSphere(Vector3F center, float radius, float xAngle, float yAngle);	//точка на сфере
 
-	double degrad(double degress);
-	double raddeg(double radians);
+	template<typename T>
+	T degrad(T degress)
+	{
+		return degress * T(M_PI) / T(180.0);
+	}
+
+	template<typename T>
+	T raddeg(T radians)
+	{
+		return radians * T(180.0) / T(M_PI);
+	}
 }

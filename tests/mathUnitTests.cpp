@@ -176,6 +176,7 @@ namespace UnitTests
 
 		TEST_METHOD(PlaneUnitTest)
 		{
+			Assert::Fail(L"Test is not implemented");
 		}
 
 		TEST_METHOD(MathLibTest)
@@ -213,23 +214,54 @@ namespace UnitTests
 
 		TEST_METHOD(QuaternionTests)
 		{
-			quaternion<float> qt = quaternion<float>(Vector3F(0.0f, 0.0f, 1.0f), (float)degrad(30.0));
-			quaternion<float> qt2 = quaternion<float>(Vector3F(0.0f, 1.0f, 0.0f), (float)degrad(30.0));
-			matrix<float, 3> mat;
-			Vector3F vec = Vector3F(1.0f, 0.0f, 0.0f);
+			// check operators
+			const qaFloat qtOp1 = quaternionFromVecAngle(vec3<float>(1.0f, 0.0f, 0.0f), degrad(30.0f));
+			const qaFloat qtOp2 = quaternionFromVecAngle(vec3<float>(0.0f, 1.0f, 0.0f), degrad(90.0f));
+			const float eps = std::numeric_limits<float>::epsilon();
 
-			qt.to_matrix(mat);
-			vec = mat * vec;
-			Assert::AreEqual(vec.y - 0.5f < std::numeric_limits<float>::epsilon(), true);
+			qaFloat result;
 
-			quaternion<float> qt_from_matrix(mat);
-			matrix<float, 3> mat2;
-			qt_from_matrix.to_matrix(mat2);
-			Assert::IsTrue(mat == mat2);
+			vec3<float> vector(1.0f, 0.0f, 0.0f);
+			matrix<float, 3> mat = qtOp2.to_matrix();
+			vec3<float> resVector = mat * vector;
+			Assert::AreEqual(vec3<float>(0.0f, 0.0f, 1.0f), resVector, L"Converting into matrix is not correct");
 
-			qt2 = qt2.normalize();
+			qaFloat q1 = quaternionFromVecAngle(vec3<float>(0.0f, 0.0f, 1.0f), degrad(30.0f));
+			qaFloat q2 = quaternionFromVecAngle(vec3<float>(0.0f, 0.0f, 1.0f), degrad(-30.0f));
+			q1 = q1.conjugate();
+			Assert::AreEqual(q1, q2, L"Conjugation is not valid");
 
-			Assert::Fail(L"Test is not implemented fully");
+			resVector = vector * qtOp2;
+			Assert::AreEqual(vec3<float>(0.0f, 0.0f, -1.0f), resVector, L"Transforming of vector is not correct");
+
+			mat = qtOp1.to_matrix();
+			result = quaternionFromMatrix(mat);
+			vec3<float> differenceVector = result.vector - qtOp1.vector;
+			if (differenceVector.x > eps
+				|| differenceVector.y > eps
+				|| differenceVector.z > eps)
+				Assert::Fail(L"Matrix transformations is not valid");
+
+			const qaFloat qtOpPlus1 = quaternionFromVecAngle(vec3<float>(0.0f, 1.0f, 0.0f), degrad(90.0f));
+			const qaFloat qtOpPlus2 = quaternionFromVecAngle(vec3<float>(0.0f, 1.0f, 0.0f), degrad(0.0f));
+			const qaFloat divQtOpPlus = qtOpPlus1 + qtOpPlus2;
+			resVector = vector * divQtOpPlus;
+			float sin_angle = sin(degrad(45.0f));
+			if (resVector.x - sin_angle > eps
+				|| -resVector.z - sin_angle > eps)
+				Assert::Fail(L"Plus operator is incorrect");
+
+			const qaFloat divQtOpMinus = qtOpPlus1 - qtOpPlus2;
+			resVector = vector * divQtOpMinus;
+			if (resVector.x - sin_angle > eps
+				|| -resVector.z - sin_angle > eps)
+				Assert::Fail(L"Minus operator is incorrect");
+
+			const qaFloat qtOpMult1 = quaternionFromVecAngle(vec3<float>(0.0f, 1.0f, 0.0f), degrad(90.0f));
+			const qaFloat qtOpMult2 = quaternionFromVecAngle(vec3<float>(1.0f, 0.0f, 0.0f), degrad(90.0f));
+			resVector = vector * (qtOpMult1 * qtOpMult2);
+			if (resVector.z + 1.0f > eps)
+				Assert::Fail(L"Mult operator is incorrect");
 		}
 	};
 }

@@ -3,6 +3,8 @@
 #include "ISceneNode.h"
 #include "CameraFrustum.h"
 
+#include <MathLib/math/quaternion.h>
+
 //REMOVE D3DX LIB !!!
 
 namespace ShiftEngine
@@ -20,49 +22,59 @@ namespace ShiftEngine
 
 		void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
 
-		void SetPosition(float x, float y, float z);	//ставит позицию для камеры
-		void SetPosition(const D3DXVECTOR3 & pos);		//ставит позицию для камеры
+		void SetPosition(float x, float y, float z);
+		void SetPosition(const D3DXVECTOR3 & pos);
 
-		void Update();									//делает пересборку матриц
+		void Update();
 
-		void MoveUpDown(float units);					//двигает камеру по вертикальной оси
-		void MoveLeftRight(float units);				//двигает камеру по правой оси 
-		void MoveForwardBackward(float units);			//двигает камеру по передней оси
+		void MoveUpDown(float units);
+		void MoveLeftRight(float units);
+		void MoveForwardBackward(float units);
+		void RotateByQuaternion(const MathLib::qaFloat & quat);
+		void LookAt(D3DXVECTOR3 point);
 
-		void LookLeftRight(float angle);				//вращает камеру по вертикальному вектору
-		void LookUpDown(float angle);					//вращает камеру по правому вектору
-		void LookAt(D3DXVECTOR3 point);					//undocumented
+		D3DXVECTOR3 GetLookVector() const;
+		D3DXVECTOR3 GetRightVector() const;
+		D3DXVECTOR3 GetPosition() const;
+		D3DXVECTOR3 GetUpVector() const;
 
-		D3DXVECTOR3 GetLookVector() const;				//возвращает вектор вгляда
-		D3DXVECTOR3 GetRightVector() const;				//возвращает правый вектор
-		D3DXVECTOR3 GetPosition() const;				//возвращает позицию камеры
-		D3DXVECTOR3 GetAngles() const;					//возвращает углы поворота
+		CameraFrustum * GetFrustumPtr();
 
-		CameraFrustum * GetFrustumPtr();				//возвращает указатель на фрустум
+		virtual void PushToRQ( RenderQueue & rq ) override;
 
-		virtual void PushToRQ( RenderQueue & rq );
+		const D3DXMATRIX & GetProjectionMatrix() const;
+		const D3DXMATRIX & GetViewMatrix() const;
 
-		D3DXMATRIX & GetProjectionMatrix();
-		D3DXMATRIX & GetViewMatrix();
+		float GetZNear() const;
+		float GetZFar() const;
+		float GetFOV() const;
+
+		void SetZNear(float val);
+		void SetZFar(float val);
+		void SetFOV(float val);
+		void SetScreenWidth(float val);
+		void SetScreenHeight(float val);
 
 	private:
+		void RebuildProjMatrix();
+
 		D3DXMATRIX matView;
 		D3DXMATRIX matProj;
 
 		float zNear;
 		float zFar;
 		float FOV;
-
+		float screenWidth;
+		float screenHeight;
 		CameraFrustum * Frustum;
 
-		float ViewAngle;								//угол вверх\вниз, нужно для ограничения обзора, чтобы нельзя было перевернуться через голову
+		float ViewAngle;
 		D3DXVECTOR3 Angles;
 
 		D3DXVECTOR3 UP;
 		D3DXVECTOR3 LOOK;
 		D3DXVECTOR3 POS;
 		D3DXVECTOR3 RIGHT;
-		D3DXVECTOR3 POS_ZERO;
 
 	};
 }

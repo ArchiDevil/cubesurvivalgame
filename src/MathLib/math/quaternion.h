@@ -4,12 +4,12 @@
 #include "vector3.h"
 
 /*
- * ѕреобразование улов Ёйлера в кватернион: 
- * D3DXQuaternionRotationYawPitchRoll() 
+ * ѕреобразование улов Ёйлера в кватернион:
+ * D3DXQuaternionRotationYawPitchRoll()
  *
- * —ферическа€ линейна€ интерпол€ци€: 
+ * —ферическа€ линейна€ интерпол€ци€:
  * D3DXQuaternionSlerp()
-*/
+ */
 
 namespace MathLib
 {
@@ -20,79 +20,46 @@ namespace MathLib
 		vec3<T> vector;
 		T w;
 
-		quaternion(T _x = 0.0, T _y = 0.0, T _z = 0.0, T _w = 1.0)
-			: vector(_x, _y, _z), w(_w) {}
+		quaternion()
+			: vector()
+			, w(T(1.0))
+		{
+		}
 
-		quaternion(const vec3<T> & axis, T angle)
-			: vector(axis * sin(angle / 2.0f)), w(cos(angle / 2.0f))
+		quaternion(T x, T y, T z, T w)
+			: vector(x, y, z)
+			, w(w) 
+		{
+		}
+
+		quaternion(const vec3<T> & vec)
+			: vector(vec)
+			, w(0)
 		{
 		}
 
 		/*
-		qroll =  [cos (y/2), (sin(y/2), 0, 0)] 
-		qpitch = [cos (q/2), (0, sin(q/2), 0)] 
-		qyaw =  [cos (f/2), (0, 0, sin(f/2))] 
+		qroll =  [cos (y/2), (sin(y/2), 0, 0)]
+		qpitch = [cos (q/2), (0, sin(q/2), 0)]
+		qyaw =  [cos (f/2), (0, 0, sin(f/2))]
 		q = qyaw qpitch qroll
 		*/
 
 		quaternion(float latitude, float longitude, float angle)
 		{
-			float sin_a = sin( angle / 2 );
-			float cos_a = cos( angle / 2 );
+			float sin_a = sin(angle / 2);
+			float cos_a = cos(angle / 2);
 
-			float sin_lat = sin( latitude );
-			float cos_lat = cos( latitude );
+			float sin_lat = sin(latitude);
+			float cos_lat = cos(latitude);
 
-			float sin_long = sin( longitude );
-			float cos_long = cos( longitude );
+			float sin_long = sin(longitude);
+			float cos_long = cos(longitude);
 
 			vector.x = sin_a * cos_lat * sin_long;
 			vector.y = sin_a * sin_lat;
 			vector.z = sin_a * sin_lat * cos_long;
 			w = cos_a;
-		}
-
-		quaternion(const matrix<T, 3> & ref)
-		{
-			float  tr, s, q[4];
-			int    i, j, k;
-
-			int nxt[3] = {1, 2, 0};
-
-			tr = ref.arr[0][0] + ref.arr[1][1] + ref.arr[2][2];
-
-			if (tr > 0.0)
-			{
-				s = sqrt (tr + 1.0);
-				w = s / 2.0;
-				s = 0.5 / s;
-				vector.x = (ref.arr[1][2] - ref.arr[2][1]) * s;
-				vector.y = (ref.arr[2][0] - ref.arr[0][2]) * s;
-				vector.z = (ref.arr[0][1] - ref.arr[1][0]) * s;
-			}
-			else
-			{
-				i = 0;
-				if (ref.arr[1][1] > ref.arr[0][0]) i = 1;
-				if (ref.arr[2][2] > ref.arr[i][i]) i = 2;
-				j = nxt[i];
-				k = nxt[j];
-
-				s = sqrt ((ref.arr[i][i] - (ref.arr[j][j] + ref.arr[k][k])) + 1.0);
-
-				q[i] = s * 0.5;
-
-				if (s != 0.0) s = 0.5 / s;
-
-				q[3] = (ref.arr[j][k] - ref.arr[k][j]) * s;
-				q[j] = (ref.arr[i][j] + ref.arr[j][i]) * s;
-				q[k] = (ref.arr[i][k] + ref.arr[k][i]) * s;
-
-				vector.x = q[0];
-				vector.y = q[1];
-				vector.z = q[2];
-				w = q[3];
-			}
 		}
 
 		/*
@@ -103,22 +70,14 @@ namespace MathLib
 		*/
 		quaternion operator + (const quaternion & ref) const
 		{
-			return quaternion(this->vector + ref.vec, this->w + ref.w);
+			vec3<T> result_vec = this->vector + ref.vector;
+			return quaternion(result_vec.x, result_vec.y, result_vec.z, this->w + ref.w);
 		}
 
 		quaternion operator - (const quaternion & ref) const
 		{
-			return quaternion(this->vector - ref.vec, this->w - ref.w);
-		}
-
-		quaternion operator * (const T scalar) const
-		{
-			return quaternion(this->vector * scalar, this->w * scalar);
-		}
-
-		quaternion operator / (const T scalar) const
-		{
-			return quaternion(this->vector / scalar, this->w / scalar);
+			vec3<T> result_vec = this->vector - ref.vector;
+			return quaternion(result_vec.x, result_vec.y, result_vec.z, this->w - ref.w);
 		}
 
 		/*
@@ -134,6 +93,31 @@ namespace MathLib
 			return out;
 		}
 
+		quaternion operator * (T scalar) const
+		{
+			quaternion<T> out = *this;
+			out.vector *= scalar;
+			out.w *= scalar;
+			return out;
+		}
+
+		friend vec3<T> operator * (const vec3<T> & left, const quaternion<T> & right)
+		{
+			quaternion<T> result = right * quaternion<T>(left) * right.inverse();
+			return result.to_vector();
+		}
+
+		bool operator == (const quaternion & ref) const
+		{
+			return this->vector == ref.vector
+				&& this->w == ref.w;
+		}
+
+		bool operator != (const quaternion & ref) const
+		{
+			return !(*this == ref);
+		}
+
 		T norm() const
 		{
 			return vector.x*vector.x + vector.y*vector.y + vector.z*vector.z + w*w;
@@ -145,12 +129,12 @@ namespace MathLib
 		}
 
 		/*
-		* «адает вращение обратное данному. 
+		* «адает вращение обратное данному.
 		* ќбратное вращение можно также получить, просто помен€в знак скал€рного "w" компонента на обратный.
 		*/
 		quaternion conjugate() const
 		{
-			return quaternion(-vector, this->w);
+			return quaternion(-vector.x, -vector.y, -vector.z, this->w);
 		}
 
 		/*
@@ -158,19 +142,19 @@ namespace MathLib
 		*/
 		quaternion inverse() const
 		{
-			return conjugate() / norm();
+			return conjugate() * (T(1.0) / norm());
 		}
 
 		/*
-		* —кал€рное произведение полезно тем, что дает косинус половины угла между двум€ кватернионами умноженную на их длину. 
-		* —оответственно скал€рное произведение двух единичных кватернионов даст косинус половины угла между двум€ ориентаци€ми. 
+		* —кал€рное произведение полезно тем, что дает косинус половины угла между двум€ кватернионами умноженную на их длину.
+		* —оответственно скал€рное произведение двух единичных кватернионов даст косинус половины угла между двум€ ориентаци€ми.
 		* ”гол между кватернионами это угол поворота из q  в  q' (по кратчайшей дуге).
 		*/
 		quaternion innerProduct(const quaternion & ref) const
 		{
-			return quaternion(vec3<T>(vector.x * ref.vector.x, 
-									  vector.y * ref.vector.y, 
-									  vector.z * ref.vector.z), w * ref.w);
+			return quaternion(vec3<T>(vector.x * ref.vector.x,
+				vector.y * ref.vector.y,
+				vector.z * ref.vector.z), w * ref.w);
 		}
 
 		quaternion normalize() const
@@ -179,14 +163,16 @@ namespace MathLib
 			return quaternion<T>(vector.x / module, vector.y / module, vector.z / module, w / module);
 		}
 
-		inline void to_matrix( matrix<float, 3> & m ) const
+		matrix<T, 3> to_matrix() const
 		{
 			float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-			float s  = 2.0f / norm();  // 4 mul 3 add 1 div
+			float s = 2.0f / norm();  // 4 mul 3 add 1 div
 			x2 = vector.x * s;    y2 = vector.y * s;    z2 = vector.z * s;
 			xx = vector.x * x2;   xy = vector.x * y2;   xz = vector.x * z2;
 			yy = vector.y * y2;   yz = vector.y * z2;   zz = vector.z * z2;
 			wx = w * x2;   wy = w * y2;   wz = w * z2;
+
+			matrix<T, 3> m;
 
 			m.arr[0][0] = 1.0f - (yy + zz);
 			m.arr[1][0] = xy - wz;
@@ -199,9 +185,71 @@ namespace MathLib
 			m.arr[0][2] = xz - wy;
 			m.arr[1][2] = yz + wx;
 			m.arr[2][2] = 1.0f - (xx + yy);
+
+			return m;
+		}
+
+		vec3<T> to_vector() const
+		{
+			return vector;
 		}
 	};
 
 	typedef quaternion<float> qaFloat;
 	typedef quaternion<double> qaDouble;
+
+	template<typename T>
+	quaternion<T> quaternionFromVecAngle(const vec3<T> & axis, float angle)
+	{
+		quaternion<T> out;
+		double sin_a = sin(angle * 0.5);
+		vec3<T> vec_a = axis * (T)sin_a;
+		return quaternion<T>(vec_a.x, vec_a.y, vec_a.z, cos(angle * 0.5f));
+	}
+
+	template<typename T>
+	quaternion<T> quaternionFromMatrix(const matrix<T, 3> & ref)
+	{
+		float  tr, s, q[4];
+		quaternion<T> out;
+
+		tr = ref.arr[0][0] + ref.arr[1][1] + ref.arr[2][2];
+
+		if (tr > 0.0)
+		{
+			s = sqrt(tr + 1.0);
+			out.w = s / 2.0;
+			s = 0.5 / s;
+			out.vector.x = (ref.arr[1][2] - ref.arr[2][1]) * s;
+			out.vector.y = (ref.arr[2][0] - ref.arr[0][2]) * s;
+			out.vector.z = (ref.arr[0][1] - ref.arr[1][0]) * s;
+		}
+		else
+		{
+			int i = 0, j, k;
+			int nxt[3] = { 1, 2, 0 };
+
+			i = 0;
+			if (ref.arr[1][1] > ref.arr[0][0]) i = 1;
+			if (ref.arr[2][2] > ref.arr[i][i]) i = 2;
+			j = nxt[i];
+			k = nxt[j];
+
+			s = sqrt((ref.arr[i][i] - (ref.arr[j][j] + ref.arr[k][k])) + 1.0);
+
+			q[i] = s * 0.5;
+
+			if (s != 0.0) s = 0.5 / s;
+
+			q[3] = (ref.arr[j][k] - ref.arr[k][j]) * s;
+			q[j] = (ref.arr[i][j] + ref.arr[j][i]) * s;
+			q[k] = (ref.arr[i][k] + ref.arr[k][i]) * s;
+
+			out.vector.x = q[0];
+			out.vector.y = q[1];
+			out.vector.z = q[2];
+			out.w = q[3];
+		}
+		return out;
+	}
 }

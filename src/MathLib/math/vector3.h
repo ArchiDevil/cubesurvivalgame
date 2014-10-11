@@ -7,8 +7,19 @@ namespace MathLib
 	template<typename T>
 	struct vec3
 	{
-		vec3() : x(0), y(0), z(0){};
-		vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z){};
+		vec3() 
+			: x(0)
+			, y(0)
+			, z(0)
+		{
+		}
+
+		vec3(T _x, T _y, T _z) 
+			: x(_x)
+			, y(_y)
+			, z(_z)
+		{
+		}
 
 		union
 		{
@@ -29,6 +40,11 @@ namespace MathLib
 			return el;
 		}
 
+		inline const T * ptr() const
+		{
+			return el;
+		}
+
 		inline vec3 & operator += (const vec3 & ref)
 		{
 			this->x += ref.x;
@@ -45,19 +61,12 @@ namespace MathLib
 			return *this;
 		}
 
-		inline vec3 & operator *= (float num)
+		template<typename D>
+		inline vec3 & operator *= (D num)
 		{
-			this->x *= num;
-			this->y *= num;
-			this->z *= num;
-			return *this;
-		}
-
-		inline vec3 & operator *= (double num)
-		{
-			this->x *= num;
-			this->y *= num;
-			this->z *= num;
+			this->x *= (T)num;
+			this->y *= (T)num;
+			this->z *= (T)num;
 			return *this;
 		}
 
