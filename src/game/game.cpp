@@ -3,7 +3,6 @@
 cGame::cGame()
 {
 	World				= new cWorld;
-	Player				= new cPlayer;
 	environmentMgr		= new cEnvironmentManager;
 	EntityMgr			= new EntityManager;
 	GameEventHandler	= new cGameEventHandler;

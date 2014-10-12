@@ -10,22 +10,21 @@ class WeaponItem;
 class EntityItem;
 class FoodItem;
 
-class cPlayer;
+class PlayerGameObject;
 class cSimplePhysicsEngine;
 class cWorld;
 
 class ItemUsingsHandler
 {
 public:
-	ItemUsingsHandler(cPlayer * pPlayer, cWorld * pWorld);
+	ItemUsingsHandler(PlayerGameObject * pPlayer, cWorld * pWorld);
 
-	bool UseBlockItem(BlockItem * item);
 	bool UseEntityItem(EntityItem * item);
 	bool UseFoodItem(FoodItem * item);
 	bool UseWeaponItem(WeaponItem * item);
 
 private:
-	cPlayer * pPlayer;
+	PlayerGameObject * pPlayer;
 	cWorld * pWorld;
 
 };

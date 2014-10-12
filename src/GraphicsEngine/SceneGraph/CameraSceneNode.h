@@ -24,6 +24,7 @@ namespace ShiftEngine
 
 		void SetPosition(float x, float y, float z);
 		void SetPosition(const D3DXVECTOR3 & pos);
+		void SetPosition(const Vector3F & pos);
 
 		void Update();
 
@@ -32,6 +33,7 @@ namespace ShiftEngine
 		void MoveForwardBackward(float units);
 		void RotateByQuaternion(const MathLib::qaFloat & quat);
 		void LookAt(D3DXVECTOR3 point);
+		void SetSphericalCoords(const D3DXVECTOR3 & lookPoint, float phi, float theta, float r);
 
 		D3DXVECTOR3 GetLookVector() const;
 		D3DXVECTOR3 GetRightVector() const;

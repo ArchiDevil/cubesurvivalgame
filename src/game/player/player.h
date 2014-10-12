@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../world/world.h"
+#include "../Entities/GameObject.h"
 #include "cSelectedBlock.h"
 
 #include <MathLib/math.h>
@@ -22,45 +22,28 @@ struct playerStats
 	unsigned int health;
 };
 
-class cPlayer
+class PlayerGameObject : public GameObject
 {
 public:
-	cPlayer();
-	~cPlayer();
+	PlayerGameObject(ShiftEngine::MeshNode * sceneNode);
+	~PlayerGameObject();
 
-	void Initialize(cWorldStorage * Land, ItemManager * pItemManager);
+	void Initialize(ItemManager * pItemManager);
 
 	//Getters
 	unsigned GetHunger() const;
 	unsigned GetHealth() const;
 	unsigned GetTemperature() const;
-	float GetSpeed() const;
-	float GetHeight() const;
-	Vector3D GetPosition();
-	Vector3D * GetVelocitiesPtr();
-	cSelectedBlock * GetSelectedBlockPtr();
 	cInventory * GetInventoryPtr();
-	
-	//something
-	void FindSelectedBlock(const Vector3D & LOOK);
 
-	//Setters
-	void SetPosition(float x, float y, float z);
-	void SetPosition(const Vector3D & vec);
-	void SetVelocities(const Vector3D & velocities);
-	void ResetVelocities();
 	void SetHunger(int hunger);
 	void SetHealth(int health);
 	void SetTemperature(int temperature);
 
-private:
-	cWorldStorage * pWorldStorage;
-	cSelectedBlock SelectedBlock;
-	std::unique_ptr<cInventory> Inventory;
-	pPhysObject PlayerBox;
-	playerStats Stats;
+	virtual void Update(double dt);
 
-	float fSpeed;
-	float PlayerHeight;
+private:
+	std::unique_ptr<cInventory> Inventory;
+	playerStats Stats;
 
 };

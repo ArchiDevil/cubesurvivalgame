@@ -4,7 +4,7 @@
 
 #include <MathLib/math.h>
 
-class cPlayer;
+class PlayerGameObject;
 class cWorld;
 class EntityManager;
 class ItemManager;

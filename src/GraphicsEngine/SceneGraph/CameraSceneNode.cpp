@@ -52,6 +52,13 @@ void ShiftEngine::CameraSceneNode::SetPosition(const D3DXVECTOR3 & pos)
 	POS.z = pos.z;
 }
 
+void ShiftEngine::CameraSceneNode::SetPosition(const Vector3F & pos)
+{
+	POS.x = pos.x;
+	POS.y = pos.y;
+	POS.z = pos.z;
+}
+
 void ShiftEngine::CameraSceneNode::MoveUpDown(float units)
 {
 	POS += UP * units;
@@ -189,6 +196,25 @@ void ShiftEngine::CameraSceneNode::RotateByQuaternion(const MathLib::qaFloat & q
 	Vector3F right(RIGHT.x, RIGHT.y, RIGHT.z);
 	right = right * quat;
 	RIGHT = D3DXVECTOR3(right.x, right.y, right.z);
+
+	D3DXVECTOR3 LOOK_POS = LOOK + POS;
+	D3DXMatrixLookAtRH(&matView, &POS, &LOOK_POS, &UP);
+}
+
+void ShiftEngine::CameraSceneNode::SetSphericalCoords(const D3DXVECTOR3 & lookPoint, float phi, float theta, float r)
+{
+	float x = r * sin(theta * 0.0175f) * cos(phi * 0.0175f);
+	float y = r * sin(theta * 0.0175f) * sin(phi * 0.0175f);
+	float z = r * cos(theta * 0.0175f);
+	POS = D3DXVECTOR3(x, y, z) + lookPoint;
+	LOOK = lookPoint - POS;
+	D3DXVec3Normalize(&LOOK, &LOOK);
+	// we assume that UP vector is always direct to up
+	UP = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	D3DXVec3Cross(&RIGHT, &LOOK, &UP);
+	D3DXVec3Normalize(&RIGHT, &RIGHT);
+	D3DXVec3Cross(&UP, &RIGHT, &LOOK);
+	D3DXVec3Normalize(&UP, &UP);
 
 	D3DXVECTOR3 LOOK_POS = LOOK + POS;
 	D3DXMatrixLookAtRH(&matView, &POS, &LOOK_POS, &UP);

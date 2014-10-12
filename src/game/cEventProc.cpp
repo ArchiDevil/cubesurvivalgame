@@ -3,38 +3,14 @@
 #include "player/cInventory.h"
 #include "game.h"
 
-void cGameEventHandler::onBlockRemoved( BlockType bt, Vector3I Pos )
-{
-	auto * pEM = LostIsland::GetGamePtr()->EntityMgr;
-	auto * pIM = LostIsland::GetGamePtr()->ItemMgr;
-	if (bt == ID_GRASS)
-		pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(ID_DIRT));
-	else
-		pEM->CreateItemEntity(Vector3D(Pos.x + 0.5f, Pos.y + 0.5f, Pos.z + 0.5f), Vector3D(0.0f, 0.0f, 2.5f), pIM->GetBlockItem(bt));
-}
-
-void cGameEventHandler::onBlockAdded(BlockType /*bt*/)
-{
-}
-
 void cGameEventHandler::onPlayerMoves( double dt )
 {
-	static int PlayerCX = 0;
-	static int PlayerCY = 0;
-	static int prePlayerCX = PlayerCX;
-	static int prePlayerCY = PlayerCY;
+	//static int PlayerCX = 0;
+	//static int PlayerCY = 0;
+	//static int prePlayerCX = PlayerCX;
+	//static int prePlayerCY = PlayerCY;
 
-	auto pGame = LostIsland::GetGamePtr();
-
-	auto playerPosition = pGame->Player->GetPosition() + (*pGame->Player->GetVelocitiesPtr() * dt);
-	int worldBounds = 180;
-	if (playerPosition.x > worldBounds ||
-		playerPosition.x < -worldBounds)
-		pGame->Player->GetVelocitiesPtr()->x = 0.0;
-		
-	if (playerPosition.y > worldBounds ||
-		playerPosition.y < -worldBounds)
-		pGame->Player->GetVelocitiesPtr()->y = 0.0;
+	//auto pGame = LostIsland::GetGamePtr();
 
 	//prePlayerCX = PlayerCX;
 	//prePlayerCY = PlayerCY;

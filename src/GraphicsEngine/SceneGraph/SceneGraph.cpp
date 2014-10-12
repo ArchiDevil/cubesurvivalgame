@@ -82,7 +82,7 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode()
 					ContextManager->GetParameters().screenHeight, 
 					ContextManager->GetParameters().zNear, 
 					ContextManager->GetParameters().zFar, 
-					75.0f);
+					60.0f);
 
 	if(!activeCamera)
 		activeCamera = cam;

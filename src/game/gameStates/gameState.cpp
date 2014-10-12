@@ -12,6 +12,9 @@ volatile bool exitFlag = false;
 
 //TEMPORARY
 const double AccelerationMultiplier = 10.0;
+float phi = 0.0f;
+float theta = -35.0f;
+float r = 20.0f;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw )
@@ -50,8 +53,10 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
-	pGame->Player->Initialize(pGame->World->GetDataStorage(), pGame->ItemMgr);
-	pGame->Player->SetPosition(0.0f, 0.0f, 100.0f);
+	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
+	pGame->Player = new PlayerGameObject(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), mat.get()));
+	pGame->Player->Initialize(pGame->ItemMgr);
+	pGame->Player->SetPosition(Vector3F(0.0f, 0.0f, 100.0f));
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
@@ -95,9 +100,7 @@ bool gameState::update( double dt )
 	pGame->environmentMgr->Update(dt * 0.0, pGame->Player->GetPosition());
 
 	Vector3D vectemp = pGame->Player->GetPosition();
-	auto camPos = pScene->GetActiveCamera()->GetPosition();
-	camPos.z = vectemp.z + 10.0f;
-	pScene->GetActiveCamera()->SetPosition(camPos);
+	pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(vectemp.x, vectemp.y, vectemp.z), phi, theta, r);
 
 	if ((int)accumulatedTime % 10 == 0)
 	{
@@ -119,10 +122,9 @@ bool gameState::render( double dt )
 
 	auto camPos = pScene->GetActiveCamera()->GetPosition();
 	Vector3D playerPos = pGame->Player->GetPosition();
-	auto freePos = pGame->Player->GetSelectedBlockPtr()->GetPositions().free;
 
 #if defined (DEBUG) || (_DEBUG)
-	const int infoSize = 11;
+	const int infoSize = 12;
 	std::ostringstream di[infoSize];
 
 	di[0] << "Health: " << pGame->Player->GetHealth();
@@ -135,7 +137,8 @@ bool gameState::render( double dt )
 	di[7] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
 	di[8] << "Texture bindings: " << pRenderer->GetTextureBindings();
 	di[9] << "Draw calls: " << pRenderer->GetDrawCalls();
-	di[10] << "Selected block pos: " << freePos.x << " " << freePos.y << " " << freePos.z;
+	di[10] << "Phi: " << phi;
+	di[11] << "Theta: " << theta;
 #else
 	const int infoSize = 5;
 	std::ostringstream di[infoSize];
@@ -213,6 +216,7 @@ void gameState::ProcessInput(double dt)
 	cGame * pGame = LostIsland::GetGamePtr();
 
 	InputEngine->GetKeys();
+	auto mouseInfo = InputEngine->GetMouseInfo();
 
 	if(InputEngine->IsKeyUp(DIK_GRAVE))
 	{
@@ -279,4 +283,20 @@ void gameState::ProcessInput(double dt)
 		else
 			pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
 	}
+
+	if (InputEngine->IsMouseMoved() && InputEngine->IsMouseDown(RButton))
+	{
+		theta -= mouseInfo.deltaY * dt * 10.0f;
+		phi += mouseInfo.deltaX * dt * 10.0f;
+		if (theta <= -35.0f)
+			theta = -35.0f;
+		if (theta >= -5.0f)
+			theta = -5.0f;
+	}
+
+	r -= mouseInfo.deltaZ * dt;
+	if (r > 30.0f)
+		r = 30.0f;
+	if (r < 5.0f)
+		r = 5.0f;
 }

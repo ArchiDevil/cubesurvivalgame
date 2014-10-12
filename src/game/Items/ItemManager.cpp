@@ -1,7 +1,6 @@
 #include "ItemManager.h"
 
 #include "Item.h"
-#include "BlockItem.h"
 #include "MiscItem.h"
 #include "WeaponItem.h"
 #include "FoodItem.h"
@@ -13,7 +12,7 @@
 #include <json/json.h>
 #include <GraphicsEngine/ShiftEngine.h>
 
-ItemManager::ItemManager( cPlayer * _p, cWorld * _w, typesStorage * _ts )
+ItemManager::ItemManager( PlayerGameObject * _p, cWorld * _w, typesStorage * _ts )
 	: ts(_ts)
 	, handler(_p, _w)
 {
@@ -26,7 +25,6 @@ ItemManager::~ItemManager()
 void ItemManager::Initialize( const std::wstring & PathName )
 {
 	LoadDefinitions(PathName);
-	LoadBlocks();
 }
 
 void ItemManager::LoadDefinitions( const std::wstring & path )
@@ -112,32 +110,6 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 		{
 			MainLog.Error("Unable to resolve item type: " + type);
 		}
-	}
-}
-
-void ItemManager::LoadBlocks()
-{
-	static_assert(ID_END == 7U, "Update loop!");
-	std::vector<std::wstring> textures = ts->getTexturesNames();
-
-	hash::fnv<64> hasher;
-	uint64_t hash = hasher("0");
-
-	Item * blockAir = new BlockItem(&handler, "0", "0", nullptr, ID_AIR);
-	HashItem[hash] = blockAir;
-	NameHash["0"] = hash;
-
-	assert(ShiftEngine::GetContextManager() != 0);
-
-	for (int index = (int)ID_WROOT; index <= (int)ID_SAND; index++)
-	{
-		hasher.offset(hasher.INIT);
-		std::string blockName = std::to_string(index);
-		hash = hasher(blockName);
-		Item * block = new BlockItem(&handler, blockName, blockName,
-			ShiftEngine::GetContextManager()->LoadTexture(textures[index - 1]), (BlockType)index);
-		HashItem[hash] = block;
-		NameHash[blockName] = hash;
 	}
 }
 
