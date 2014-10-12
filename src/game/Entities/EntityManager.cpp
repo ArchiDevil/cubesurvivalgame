@@ -208,10 +208,18 @@ void EntityManager::LoadEntities()
 	}
 }
 
-//bool EntityManager::DispatchEvent(IGameEvent * ev)
-//{
-//	for (auto elem : GameObjects)
-//	{
-//		elem->OnGameEvent();
-//	}
-//}
+PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
+{
+	if (LostIsland::GetGamePtr()->Player)
+	{
+		MainLog.Error("Player is already created");
+		return nullptr;
+	}
+	auto pCtxMgr = ShiftEngine::GetContextManager();
+	auto pScene = ShiftEngine::GetSceneGraph();
+	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
+	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), mat.get()));
+	GameObjects.push_back(player);
+	LostIsland::GetGamePtr()->Player = player.get();
+	return player;
+}

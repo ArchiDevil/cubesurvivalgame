@@ -1,10 +1,10 @@
 #pragma once
 
-#include "PhysicsEntity.h"
+#include "PhysicsGameObject.h"
 
-class PhysicsEntity;
+class PhysicsGameObject;
 
-class ItemEntity : public PhysicsEntity
+class ItemEntity : public PhysicsGameObject
 {
 public:
 	ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode);

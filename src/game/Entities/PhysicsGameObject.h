@@ -6,11 +6,11 @@
 
 using ShiftEngine::MeshNode;
 
-class PhysicsEntity : public GameObject
+class PhysicsGameObject : public GameObject
 {
 public:
-	PhysicsEntity(pPhysObject _obj, MeshNode * meshNode);
-	virtual ~PhysicsEntity();
+	PhysicsGameObject(pPhysObject _obj, MeshNode * meshNode);
+	virtual ~PhysicsGameObject();
 
 	virtual void Update(double dt);
 	virtual void SetPosition(Vector3D & position);

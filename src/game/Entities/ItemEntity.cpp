@@ -5,7 +5,7 @@
 
 ItemEntity::ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
 	: itemId(itemId)
-	, PhysicsEntity(_obj, meshNode)
+	, PhysicsGameObject(_obj, meshNode)
 {
 }
 
@@ -15,7 +15,7 @@ ItemEntity::~ItemEntity()
 
 void ItemEntity::Update( double dt )
 {
-	PhysicsEntity::Update(dt);
+	PhysicsGameObject::Update(dt);
 
 	Vector3F rot = SceneNode->GetRotation();
 	rot.z += dt;

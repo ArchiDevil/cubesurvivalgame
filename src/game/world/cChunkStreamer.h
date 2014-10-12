@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cWorldStorage.h"
+#include "WorldStorage.h"
 
 #include <string>
 
 class cChunkStreamer
 {
 public:
-	cChunkStreamer(cWorldStorage * _ws);
+	cChunkStreamer(WorldStorage * _ws);
 	~cChunkStreamer();
 
 	bool Check(int x, int y) const;
@@ -17,6 +17,6 @@ public:
 private:
 	std::string BuildFileName(int x, int y) const;
 
-	cWorldStorage * ws;
+	WorldStorage * ws;
 
 };

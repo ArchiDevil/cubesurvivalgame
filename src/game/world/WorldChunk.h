@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../GraphicsEngine/SceneGraph/MeshNode.h"
-#include "../../MathLib/math.h"
+#include <GraphicsEngine/SceneGraph/MeshNode.h>
+#include <MathLib/math.h>
 
 enum ChunkStatus
 {
@@ -11,22 +11,8 @@ enum ChunkStatus
 	//chunk filled with data
 	CS_FILLED,
 	
-	//upside-down light computed
-	CS_LIGHTDOWN,
-	
-	//all light in chunk computed
-	CS_LIGHTED,
-	
 	//chunk tesselated and can be drawn
 	CS_TESSELATED
-};
-
-struct LandVertex 
-{
-	Vector3F position;		// местоположение
-	Vector3F texcoord;		// UVW текстурные координаты
-	Vector3F normal;		// нормали
-	float color;			// цвет и солнечный свет
 };
 
 struct WaterVertex
@@ -61,21 +47,21 @@ class WorldChunk
 public:
 	WorldChunk();
 
-	void Initialize(ShiftEngine::MeshNode * _landNode, ShiftEngine::MeshNode * _waterNode, unsigned int chunkWidth, unsigned int chunkHeight);
+	void Initialize(ShiftEngine::MeshNode * _landNode, ShiftEngine::MeshNode * _waterNode, unsigned int chunkWidth);
 
-	int GetWorldX() const;				//возвращает позицию по X чанка
-	int GetWorldY() const;				//возвращает позицию по Y чанка
-	void SetWorldX(int _x);				//устанавливает позицию по X чанку
-	void SetWorldY(int _y);				//устанавливает позицию по Y чанку
+	int GetWorldX() const;
+	int GetWorldY() const;
+	void SetWorldX(int _x);
+	void SetWorldY(int _y);
 
-	ChunkStatus GetStatus() const;		//возвращает статус чанка
-	void SetStatus(ChunkStatus val);	//устанавливает статус чанку
-	
-	unsigned int GetPointer() const;	//возвращает указатель в массиве блоков
+	ChunkStatus GetStatus() const;
+	void SetStatus(ChunkStatus val);
 
-	void Show();						//показывает чанк :3
-	void Hide();						//прячет чанк :3
-	bool CanBeDrawn() const;			//можно ли рисовать этот чанк?
+	unsigned int GetPointer() const;
+
+	void Show();
+	void Hide();
+	bool CanBeDrawn() const;
 
 	ShiftEngine::MeshNode *		GetLandNode();
 	ShiftEngine::MeshNode *		GetWaterNode();
@@ -85,7 +71,7 @@ private:
 
 	int WorldX, WorldY;					//world position
 	unsigned int Pointer;				//pointer to WorldX * 16, WorldY * 16, 0
-	unsigned int chunkWidth, chunkHeight;
+	unsigned int chunkWidth;
 	ChunkStatus Status;
 
 	ShiftEngine::MeshNode * landNode;	//ONLY LANDSCAPE FOR NOW (it would be updated in future to batch)!

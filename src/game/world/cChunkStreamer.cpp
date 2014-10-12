@@ -4,8 +4,8 @@
 #include <sstream>
 #include <Windows.h>
 
-cChunkStreamer::cChunkStreamer( cWorldStorage * _ws ) :
-	ws(_ws)
+cChunkStreamer::cChunkStreamer( WorldStorage * ws ) 
+	: ws(ws)
 {
 	LPSECURITY_ATTRIBUTES at;
 	memset(&at, 0, sizeof(LPSECURITY_ATTRIBUTES));
@@ -16,7 +16,8 @@ cChunkStreamer::~cChunkStreamer() {}
 
 bool cChunkStreamer::Check( int x, int y ) const
 {
-	return (bool)std::ifstream(BuildFileName(x, y));
+	return false;
+	//return (bool)std::ifstream(BuildFileName(x, y));
 }
 
 void cChunkStreamer::Load( int x, int y ) const

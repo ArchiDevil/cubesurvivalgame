@@ -5,15 +5,14 @@
 WorldChunk::WorldChunk() 
 	: WorldX(0), WorldY(0), Pointer(0), Status(CS_EMPTY),
 	landNode(nullptr), waterNode(nullptr),
-	chunkHeight(128), chunkWidth(16)
+	chunkWidth(16)
 {
 }
 
-void WorldChunk::Initialize( ShiftEngine::MeshNode * _landNode, ShiftEngine::MeshNode * _waterNode, unsigned int _chunkWidth, unsigned int _chunkHeight )
+void WorldChunk::Initialize( ShiftEngine::MeshNode * _landNode, ShiftEngine::MeshNode * _waterNode, unsigned int _chunkWidth )
 {
 	this->landNode = _landNode;
 	this->waterNode = _waterNode;
-	this->chunkHeight = _chunkHeight;
 	this->chunkWidth = _chunkWidth;
 }
 

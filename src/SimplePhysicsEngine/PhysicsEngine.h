@@ -2,14 +2,14 @@
 
 #include <list>
 
-#include <game/world/cWorldStorage.h>
+//#include <game/world/cWorldStorage.h>
 #include "PhysicsFunctions.h"
 #include "types.h"
 #include "CollisionShouter.h"
 
 #include <Utilities/singleton.h>
 
-class cWorldStorage;
+//class cWorldStorage;
 
 class cSimplePhysicsEngine : public singleton<cSimplePhysicsEngine>		//may be define it as global?
 {
@@ -17,7 +17,7 @@ public:
 	cSimplePhysicsEngine();
 	~cSimplePhysicsEngine();
 
-	void Initialize(cWorldStorage * storage, double _Gravity = -9.81f);
+	//void Initialize(cWorldStorage * storage, double _Gravity = -9.81f);
 	void Update( double dt = 0.0f );
 
 	pPhysObject GetPlayerBBox();
@@ -36,7 +36,7 @@ private:
 	pPhysObject PlayerBBox;
 	CollisionListener cl;
 
-	cWorldStorage * WorldStorage;
+	//cWorldStorage * WorldStorage;
 	bool FreeMode;
 	bool PlayerCollidesWithWorld;
 	double Gravity;

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "blockInfo.h"
+//#include "blockInfo.h"
 
 class typesStorage
 {
@@ -12,13 +12,13 @@ public:
 
 	void loadTypes(std::vector<std::wstring> & vec);
 	std::vector<std::wstring> & getTexturesNames();
-	blockInfo * getTypeInfo(BlockType type);
+	//blockInfo * getTypeInfo(BlockType type);
 
 private:
 	int Load(std::wstring name);
 
 	std::vector<std::wstring> textureNames;
-	blockInfo types[ID_END];
+	//blockInfo types[ID_END];
 
 	// должен хранить: 
 	// типы блоков

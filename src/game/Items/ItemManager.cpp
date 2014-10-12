@@ -113,16 +113,6 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 	}
 }
 
-uint64_t ItemManager::GetBlockItem( BlockType type )
-{
-	std::string blockName = std::to_string((int)type);
-	auto iter = NameHash.find(blockName);
-	if (iter != NameHash.end())
-		return iter->second;
-
-	return 0;
-}
-
 Item * ItemManager::GetItemById(uint64_t itemId)
 {
 	auto iter = HashItem.find(itemId);

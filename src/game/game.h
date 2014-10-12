@@ -15,7 +15,7 @@ struct cGame
 	~cGame();
 
 	cWorld					* World;			//world class
-	PlayerGameObject					* Player;			//current player class
+	PlayerGameObject		* Player;			//current player class
 	EntityManager			* EntityMgr;		//entity manager
 	cGameEventHandler		* GameEventHandler;	//events handler
 	ItemManager				* ItemMgr;			//items handler

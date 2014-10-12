@@ -1,6 +1,8 @@
 #include "player.h"
 #include "cInventory.h"
 
+#include "../game.h"
+
 const float BlockRadius = 4.0f;	//насколько далеко можно выделять блок
 
 PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode)
@@ -54,5 +56,9 @@ void PlayerGameObject::SetTemperature(int temperature)
 
 void PlayerGameObject::Update(double dt)
 {
-	// throw std::exception("The method or operation is not implemented.");
+	auto pGame = LostIsland::GetGamePtr();
+	Vector3F position = this->GetPosition();
+	auto height = pGame->World->GetDataStorage()->GetFullHeight(position.x, position.y);
+	position.z = (float)height;
+	this->SetPosition(position);
 }

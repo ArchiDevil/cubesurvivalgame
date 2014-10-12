@@ -19,7 +19,7 @@ cChunksStorage::~cChunksStorage()
 	delete [] Chunks;
 }
 
-void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, unsigned int chunkHeight, typesStorage * ts )
+void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, typesStorage * ts )
 {
 	auto pTypes = ts;
 
@@ -29,18 +29,13 @@ void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int Center
 
 	D3D10ContextManager * pCtxMgr = GetContextManager();
 
-	TextureArray = pCtxMgr->GetTextureManager()->CreateTextureArray(pTypes->getTexturesNames());
-	//grassTexture = GraphicEngine->LoadTexture(L"grass1.png");
-
 	static VertexSemantic landSemantics;
 	landSemantics.addSemantic(ET_FLOAT, 3, ES_Position);
-	landSemantics.addSemantic(ET_FLOAT, 3, ES_Texcoord);
 	landSemantics.addSemantic(ET_FLOAT, 3, ES_Normal);
 	landSemantics.addSemantic(ET_FLOAT, 1, ES_Color);
 	pCtxMgr->RegisterVertexSemantic(landSemantics);
 	auto landIL = pCtxMgr->GetVertexDeclaration(landSemantics);
 	MaterialPtr worldChunkMtl = pCtxMgr->LoadMaterial(L"worldChunk.mtl", L"worldChunk");
-	worldChunkMtl->SetDiffuseTexture(TextureArray);
 
 	static VertexSemantic waterSemantics;
 	waterSemantics.addSemantic(ET_FLOAT, 3, ES_Position);
@@ -48,14 +43,6 @@ void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int Center
 	pCtxMgr->RegisterVertexSemantic(waterSemantics);
 	auto waterIL = pCtxMgr->GetVertexDeclaration(waterSemantics);
 	MaterialPtr waterChunkMtl = pCtxMgr->LoadMaterial(L"waterChunk.mtl", L"waterChunk");
-
-	//vec.clear();
-	//vec.push_back(InputElement("POSITION", 3));
-	//vec.push_back(InputElement("TEXCOORD", 2));
-	//vec.push_back(InputElement("ANIMVALUE", 1));
-	//cEffectPtr GrassShader = GraphicEngine->LoadShader(L"grass.fx", vec);
-	//grassMaterial = cMaterial(GrassShader);
-	//grassMaterial.SetTexture(grassTexture, "Diffuse");
 
 	Chunks = new WorldChunk[ChunksPerSide * ChunksPerSide];
 	for (int i = 0; i < ChunksPerSide * ChunksPerSide ; i++)
@@ -65,10 +52,9 @@ void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int Center
 		MeshDataPtr waterMesh = std::make_shared<MeshData>(waterIL);
 		waterMesh->vertexSemantic = &waterSemantics;
 		Chunks[i].Initialize(
-			GetSceneGraph()->AddMeshNode(landMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, chunkHeight)), worldChunkMtl.get()),
-			GetSceneGraph()->AddMeshNode(waterMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, chunkHeight)), waterChunkMtl.get()),
-			chunkWidth, 
-			chunkHeight);
+			GetSceneGraph()->AddMeshNode(landMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, 256.0f)), worldChunkMtl.get()),
+			GetSceneGraph()->AddMeshNode(waterMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, 256.0f)), waterChunkMtl.get()),
+			chunkWidth);
 	}
 
 	int LeftX, UpY, RightX, DownY;

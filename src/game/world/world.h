@@ -9,10 +9,10 @@
 
 #include "worldGenerator/cWorldGenerator.h"
 #include "../Environment/EnvironmentManager.h"
-#include "cWorldStorage.h"
+#include "worldStorage.h"
 #include "cChunksStorage.h"
 #include "cChunkStreamer.h"
-#include "Tesselator.h"
+#include "worldTesselator.h"
 
 #define NOTLOADED 0
 #define LOADED 1
@@ -23,8 +23,6 @@
 enum Action
 {
 	Load,
-	UpLight,
-	ScatterLight,
 	Tesselate
 };
 
@@ -41,16 +39,16 @@ public:
 	cWorld();
 	~cWorld();
 
-	void						Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, cEnvironmentManager * envMgr, const std::string & worldName);
+	void						Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName);
 	void						Unload();
 	void						GenerateChunk(int x, int y);
 	void						ProcessLoading();
 
-	bool						PlaceBlock(int x, int y, int z, BlockType type);
-	bool						RemoveBlock(int x, int y, int z);
+	//bool						PlaceBlock(int x, int y, int z, BlockType type);
+	//bool						RemoveBlock(int x, int y, int z);
 
 	//Getters
-	cWorldStorage *				GetDataStorage();
+	WorldStorage *				GetDataStorage();
 	cChunksStorage *			GetChunksStorage();
 	typesStorage *				GetTypesStorage();
 	bool						HaveSolidsNear(int x, int y, int z);
@@ -77,11 +75,11 @@ private:
 
 	float						GetInterpolatedHeight(int x, int y);
 
-	std::unique_ptr<cWorldStorage>		WorldStorage;
+	std::unique_ptr<WorldStorage>		DataStorage;
 	std::unique_ptr<cChunksStorage>		ChunksStorage;
 	std::unique_ptr<cWorldGenerator>	Generator;
 	std::unique_ptr<cChunkStreamer>		Streamer;
-	std::unique_ptr<cTesselator>		Tesselator;
+	std::unique_ptr<WorldTesselator>	Tesselator;
 	std::unique_ptr<typesStorage>		TypesStorage;
 
 	std::mutex							critSect;

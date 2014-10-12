@@ -1,13 +1,20 @@
 #include "game.h"
 
 cGame::cGame()
+	: World(nullptr)
+	, Player(nullptr)
+	, EntityMgr(nullptr)
+	, GameEventHandler(nullptr)
+	, ItemMgr(nullptr)
+	, environmentMgr(nullptr)
+	, gameHud(nullptr)
 {
 	World				= new cWorld;
 	environmentMgr		= new cEnvironmentManager;
 	EntityMgr			= new EntityManager;
 	GameEventHandler	= new cGameEventHandler;
 	gameHud				= new gameHUD;
-	//ItemManager			= new cItemManager;
+	//ItemManager		= new cItemManager;
 }
 
 cGame::~cGame()

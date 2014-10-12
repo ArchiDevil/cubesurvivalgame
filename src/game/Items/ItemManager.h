@@ -18,8 +18,6 @@ public:
 	~ItemManager();
 
 	void Initialize(const std::wstring & PathName);
-	uint64_t GetBlockItem(BlockType type);
-
 	Item * GetItemById(uint64_t itemId);
 	uint64_t GetItemId(const std::string & ItemName);
 

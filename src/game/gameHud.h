@@ -11,7 +11,6 @@ public:
 	void Draw();
 
 private:
-	std::unique_ptr<ShiftEngine::Sprite> crosshair;
 	std::unique_ptr<ShiftEngine::Sprite> liHandItem;
 	std::unique_ptr<ShiftEngine::Sprite> liHandI;
 

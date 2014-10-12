@@ -36,8 +36,8 @@ bool gameState::initState()
 
 	console.subscribe(&cInputEngine::GetInstance());
 
-	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
-	MainLog.Message("Physics initialized");
+	//cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
+	//MainLog.Message("Physics initialized");
 
 	::utils::filesystem::CreateDir(L"saves/worlds/");
 	::utils::filesystem::CreateDir(L"saves/players/");
@@ -46,17 +46,15 @@ bool gameState::initState()
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
-	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, pGame->environmentMgr, "tempWorld");
+	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, "tempWorld");
 	MainLog.Message("World Manager has been initialized");
 
 	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
-	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-	pGame->Player = new PlayerGameObject(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), mat.get()));
+	pGame->EntityMgr->CreatePlayer(Vector3F(0.0f, 0.0f, 100.0f));
 	pGame->Player->Initialize(pGame->ItemMgr);
-	pGame->Player->SetPosition(Vector3F(0.0f, 0.0f, 100.0f));
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
@@ -65,12 +63,12 @@ bool gameState::initState()
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
-	worldThread = std::thread([&]
-	{
-		while(!exitFlag) 
-			LostIsland::GetGamePtr()->World->ProcessLoading();
-		Sleep(0);
-	});
+	//worldThread = std::thread([&]
+	//{
+		//while(!exitFlag) 
+		//	LostIsland::GetGamePtr()->World->ProcessLoading();
+		//Sleep(0);
+	//});
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
@@ -108,7 +106,7 @@ bool gameState::update( double dt )
 		accumulatedTime++;
 	}
 
-	::SetCursorPos(600, 400);
+	pGame->World->ProcessLoading();
 
 	return true;
 }
@@ -124,7 +122,7 @@ bool gameState::render( double dt )
 	Vector3D playerPos = pGame->Player->GetPosition();
 
 #if defined (DEBUG) || (_DEBUG)
-	const int infoSize = 12;
+	const int infoSize = 10;
 	std::ostringstream di[infoSize];
 
 	di[0] << "Health: " << pGame->Player->GetHealth();
@@ -137,8 +135,6 @@ bool gameState::render( double dt )
 	di[7] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
 	di[8] << "Texture bindings: " << pRenderer->GetTextureBindings();
 	di[9] << "Draw calls: " << pRenderer->GetDrawCalls();
-	di[10] << "Phi: " << phi;
-	di[11] << "Theta: " << theta;
 #else
 	const int infoSize = 5;
 	std::ostringstream di[infoSize];

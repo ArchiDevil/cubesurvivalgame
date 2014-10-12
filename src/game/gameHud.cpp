@@ -4,8 +4,7 @@
 #include "player/cInventory.h"
 
 gameHUD::gameHUD() 
-	: crosshair(nullptr)
-	, liHandItem(nullptr)
+	: liHandItem(nullptr)
 	, liHandI(nullptr)
 {
 }
@@ -14,9 +13,6 @@ void gameHUD::Initialize( int sw, int sh )
 {
 	width = sw;
 	height = sh;
-
-	crosshair.reset(new ShiftEngine::Sprite(L"gui/cross.png"));
-	crosshair->SetPosition(Vector2F((float)sw / 2, (float)sh / 2));
 
 	liHandItem.reset(new ShiftEngine::Sprite(L""));
 	liHandItem->SetPosition(Vector2F(sw - 70.0, sh - 70.0));
@@ -40,7 +36,6 @@ void gameHUD::Draw()
 		liHandItem->SetTexture(nullptr);
 
 	liHandI->Draw();
-	crosshair->Draw();
 	liHandItem->Draw();
 	ShiftEngine::GetContextManager()->GetFontManager()->DrawTextTL(std::to_string(itemCount), width - 70, height - 70);
 }

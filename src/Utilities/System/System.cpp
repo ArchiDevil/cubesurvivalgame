@@ -112,8 +112,6 @@ bool cSystem::InitializeWindow( int Width, int Height, LPCWSTR AppName )
 	::ShowWindow(this->WindowHandler, SW_SHOW);	//покажем созданное окно
 	::UpdateWindow(this->WindowHandler);		//и обновим
 
-	::ShowCursor(NULL);
-
 	return true;
 }
 

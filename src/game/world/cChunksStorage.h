@@ -9,7 +9,7 @@ public:
 	cChunksStorage();
 	~cChunksStorage();
 
-	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, unsigned int chunkHeight, typesStorage * ts);		//инициализация :3
+	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, typesStorage * ts);	
 	void Unload();
 
 	int GetChunksPerSide();		//возвращает количество чанков на сторону мира

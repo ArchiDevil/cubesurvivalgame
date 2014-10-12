@@ -8,20 +8,22 @@
 #include <json/json.h>
 
 #include "GameObject.h"
-#include "PhysicsEntity.h"
+#include "PhysicsGameObject.h"
 #include "ItemEntity.h"
 #include "ProducerGameObject.h"
 #include "CrafterGameObject.h"
+#include "../player/player.h"
 
 #include "../events.h"
 
 class cSimplePhysicsEngine;
 
 typedef std::shared_ptr<GameObject>				GameObjectPtr;
-typedef std::shared_ptr<PhysicsEntity>			PhysicsEntityPtr;
+typedef std::shared_ptr<PhysicsGameObject>		PhysicsEntityPtr;
 typedef std::shared_ptr<ItemEntity>				ItemEntityPtr;
 typedef std::shared_ptr<CrafterGameObject>		CrafterPtr;
 typedef std::shared_ptr<ProducerGameObject>		ProducerPtr;
+typedef std::shared_ptr<PlayerGameObject>		PlayerPtr;
 
 class EntityManager
 {
@@ -51,6 +53,7 @@ public:
 	GameObjectPtr			CreateEntity(const MathLib::Vector3F & position, const std::string & entityId);
 	CrafterPtr				CreateCrafterEntity(const Vector3F & Position, const std::string & id);
 	ProducerPtr				CreateProducerEntity(const Vector3F & Position, const std::string & id);
+	PlayerPtr				CreatePlayer(const Vector3F & Position);
 	void					Update(double dt, const Vector3F & sunPos);
 
 	bool					DispatchEvent(IGameEvent * ev);
