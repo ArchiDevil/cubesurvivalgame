@@ -81,7 +81,6 @@ namespace MathLib
 	//D3DXMatrixAffineTransformation 
 	//D3DXMatrixAffineTransformation2D 
 	//D3DXMatrixDecompose
-	//D3DXMatrixInverse 
 
 	template <typename T>
 	matrix<T, 4> matrixIdentity()
@@ -174,86 +173,6 @@ namespace MathLib
 		out[3][1] = y;
 		out[3][2] = z;
 		return out;
-	}
-
-	template<typename T>
-	int matrixDeterminant(const matrix<T, 2> & mat)
-	{
-		return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-	}
-
-	template<typename T>
-	int matrixDeterminant(const matrix<T, 3> & mat)
-	{
-		matrix<T, 2> matrices[3];
-		matrices[0][0][0] = mat[1][1];
-		matrices[0][0][1] = mat[1][2];
-		matrices[0][1][0] = mat[2][1];
-		matrices[0][1][1] = mat[2][2];
-
-		matrices[1][0][0] = mat[1][0];
-		matrices[1][0][1] = mat[1][2];
-		matrices[1][1][0] = mat[2][0];
-		matrices[1][1][1] = mat[2][2];
-
-		matrices[2][0][0] = mat[1][0];
-		matrices[2][0][1] = mat[1][1];
-		matrices[2][1][0] = mat[2][0];
-		matrices[2][1][1] = mat[2][1];
-
-		return mat[0][0] * matrixDeterminant(matrices[0]) 
-			- mat[0][1] * matrixDeterminant(matrices[1]) 
-			+ mat[0][2] * matrixDeterminant(matrices[2]);
-	}
-
-	template<typename T>
-	int matrixDeterminant(const matrix<T, 4> & mat)
-	{
-		matrix<T, 3> matrices[4];
-		matrices[0][0][0] = mat[1][1];
-		matrices[0][0][1] = mat[1][2];
-		matrices[0][0][2] = mat[1][3];
-		matrices[0][1][0] = mat[2][1];
-		matrices[0][1][1] = mat[2][2];
-		matrices[0][1][2] = mat[2][3];
-		matrices[0][2][0] = mat[2][1];
-		matrices[0][2][1] = mat[2][2];
-		matrices[0][2][2] = mat[2][3];
-
-		matrices[1][0][0] = mat[1][0];
-		matrices[1][0][1] = mat[1][2];
-		matrices[1][0][2] = mat[1][3];
-		matrices[1][1][0] = mat[2][0];
-		matrices[1][1][1] = mat[2][2];
-		matrices[1][1][2] = mat[2][3];
-		matrices[1][2][0] = mat[2][0];
-		matrices[1][2][1] = mat[2][2];
-		matrices[1][2][2] = mat[2][3];
-
-		matrices[2][0][0] = mat[1][0];
-		matrices[2][0][1] = mat[1][1];
-		matrices[2][0][2] = mat[1][3];
-		matrices[2][1][0] = mat[2][0];
-		matrices[2][1][1] = mat[2][1];
-		matrices[2][1][2] = mat[2][3];
-		matrices[2][2][0] = mat[2][0];
-		matrices[2][2][1] = mat[2][1];
-		matrices[2][2][2] = mat[2][3];
-
-		matrices[3][0][0] = mat[1][0];
-		matrices[3][0][1] = mat[1][1];
-		matrices[3][0][2] = mat[1][2];
-		matrices[3][1][0] = mat[2][0];
-		matrices[3][1][1] = mat[2][1];
-		matrices[3][1][2] = mat[2][2];
-		matrices[3][2][0] = mat[2][0];
-		matrices[3][2][1] = mat[2][1];
-		matrices[3][2][2] = mat[2][2];
-
-		return mat[0][0] * matrixDeterminant(matrices[0]) 
-			- mat[0][1] * matrixDeterminant(matrices[1]) 
-			+ mat[0][2] * matrixDeterminant(matrices[2])
-			- mat[0][3] * matrixDeterminant(matrices[3]);
 	}
 
 	//D3DXMatrixLookAtLH 
