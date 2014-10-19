@@ -290,6 +290,19 @@ void gameState::ProcessInput(double dt)
 			theta = -5.0f;
 	}
 
+	if (InputEngine->IsMouseUp(LButton))
+	{
+		// do the raycasting and select any entity
+		mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
+		mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
+
+		Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
+		Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
+		Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
+
+		pGame->EntityMgr->SelectEntity(unprojectedRay);
+	}
+
 	r -= mouseInfo.deltaZ * dt;
 	if (r > 30.0f)
 		r = 30.0f;

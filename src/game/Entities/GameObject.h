@@ -15,7 +15,8 @@ public:
 	virtual void SetPosition(const Vector3F & Position);
 	virtual void Update(double dt) = 0;
 	virtual bool OnGameEvent(IGameEvent * ev);
-
+	virtual void Unselect();
+	virtual bool Select(const MathLib::Ray & unprojectedVector);
 	ShiftEngine::MeshNode * GetSceneNode();
 
 	//service methods

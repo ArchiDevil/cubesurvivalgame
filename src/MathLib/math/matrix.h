@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef D3D10_RENDER
+	#include <D3DX10.h>
+#endif
+
+#include "vector3.h"
+#include "vector4.h"
+
 namespace MathLib
 {
 	//graphics matrix
@@ -17,10 +24,19 @@ namespace MathLib
 
 		matrix(const matrix & ref)
 		{
-			for (int i = 0; i < E ; i++)
-				for (int j = 0; j < E ; j++)
+			for (int i = 0; i < E; i++)
+				for (int j = 0; j < E; j++)
 					arr[i][j] = ref.arr[i][j];
 		}
+
+#ifdef D3D10_RENDER
+		matrix(const D3DXMATRIX & ref)
+		{
+			for (int i = 0; i < E; i++)
+				for (int j = 0; j < E; j++)
+					arr[i][j] = ref(i, j);
+		}
+#endif
 
 		matrix operator + ( const matrix & ref ) const
 		{
@@ -53,9 +69,24 @@ namespace MathLib
 			{
 				float summ = 0;
 				for (int z = 0; z < r ; z++)
-				{
-					summ += this->arr[i][z] * ref.el[z];
-				}
+					summ += arr[i][z] * ref.el[z];
+				out.el[i] = summ;
+			}
+			return out;
+		}
+
+		vec4<T> operator * (const vec4<T> & ref) const
+		{
+			static_assert(E == 4, "Unable to multiply matrices with different sizes");
+			const int r = 4;	//number of rows in 2nd and columns in 1st matrices
+			const int m = E;	//number of rows in 1st matrix
+			vec4<T> out;
+
+			for (int i = 0; i < m; i++)
+			{
+				float summ = 0;
+				for (int z = 0; z < r; z++)
+					summ += arr[i][z] * ref.el[z];
 				out.el[i] = summ;
 			}
 			return out;
@@ -162,12 +193,8 @@ namespace MathLib
 		{
 			matrix<T, E> out;
 			for (int i = 0; i < E; i++)
-			{
 				for (int j = 0; j < E ; j++)
-				{
 					out[i][j] = arr[j][i];
-				}
-			}
 			return out;
 		}
         
@@ -192,39 +219,19 @@ namespace MathLib
                     out[i-1][j-1] = arr[i][j];
             
             return out;
-        }
-        
-        T determinant() const
-        {
-            if(E == 2)
-                return arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0];
-        
-            T result = (T)0.0;
-            for(size_t i = 0; i < E; ++i)
-                result += (-1 * (i % 2)) * minor(0, i).determinant();
-        }
-        
-        matrix<T, E> inverse() const
-        {
-            // http://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html
-            matrix<T, E> out;
-            // calculate matrix of minors
-            for(size_t i = 0; i < E; ++i)
-                for(size_t j = 0; j < E; ++j)
-                    out[i][j] = minor(i, j).determinant();
+		}
 
-            // calculate matrix of cofactors
-            for(size_t i = 0; i < E; ++i)
-                for(size_t j = 0; j < E; ++j)
-                    out[i][j] = (-1 * (i + j) % 2)) * out[i][j];
+		template<size_t newE>
+		matrix<T, newE> slice() const
+		{
+			static_assert(newE < E, "Wrong size");
+			matrix<T, newE> out;
+			for (size_t i = 0; i < newE; ++i)
+				for (size_t j = 0; j < newE; ++j)
+					out[i][j] = arr[i][j];
 
-            // adjugate
-            out = out.transpose();
-
-            // multiple by 1/det
-            out = out * (T)1.0/determinant();
-            return out;
-        }
+			return out;
+		}
 	}; 
 
 	typedef matrix<float, 3> mat3f;

@@ -55,17 +55,15 @@ public:
 	ProducerPtr				CreateProducerEntity(const Vector3F & Position, const std::string & id);
 	PlayerPtr				CreatePlayer(const Vector3F & Position);
 	void					Update(double dt, const Vector3F & sunPos);
-
+	void					SelectEntity(const MathLib::Ray &unprojectedVector);
 	bool					DispatchEvent(IGameEvent * ev);
 
 private:
 	void					LoadEntities();
 
 	std::list<GameObjectPtr> GameObjects;
+	GameObject * selectedEntity;
 	ShiftEngine::MaterialPtr entityMaterial;
-
-	//std::unordered_map<std::string, std::string> entitiesDb;
-
 	std::map<std::string, CrafterRepr> crafters;
 	std::map<std::string, ProducerRepr> producers;
 

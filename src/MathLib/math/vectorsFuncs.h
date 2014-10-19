@@ -7,19 +7,19 @@
 namespace MathLib
 {
 	template <typename T>
-	T dot( const vec2<T> & vec1, const vec2<T> & vec2 )
+	T dot(const vec2<T> & vec1, const vec2<T> & vec2)
 	{
 		return vec1.x*vec2.x + vec1.y*vec2.y;
 	}
 
 	template <typename T>
-	T dot( const vec3<T> & vec1, const vec3<T> & vec2 )
+	T dot(const vec3<T> & vec1, const vec3<T> & vec2)
 	{
 		return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z;
 	}
 
 	template <typename T>
-	T dot( const vec4<T> & vec1, const vec4<T> & vec2 )
+	T dot(const vec4<T> & vec1, const vec4<T> & vec2)
 	{
 		return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z + vec1.w*vec2.w;
 	}
@@ -55,21 +55,21 @@ namespace MathLib
 	template<typename T>
 	T angle(const vec2<T> &vec1, const vec2<T> &vec2)
 	{
-		return acos( (T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
+		return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
 	}
 
 	//угол между векторами
 	template<typename T>
 	T angle(const vec3<T> &vec1, const vec3<T> &vec2)
 	{
-		return acos( (T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
+		return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
 	}
 
 	//угол между векторами
 	template<typename T>
 	T angle(const vec4<T> &vec1, const vec4<T> &vec2)
 	{
-		return acos( (T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
+		return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
 	}
 
 	//возвращает единичный вектор, спроецированный на X
@@ -103,26 +103,48 @@ namespace MathLib
 	}
 
 	template<typename T>
-	T distance( const vec2<T> & arg1, const vec2<T> & arg2 )
+	T distance(const vec2<T> & arg1, const vec2<T> & arg2)
 	{
 		return (T)sqrt((T)(arg1.x - arg2.x)*(arg1.x - arg2.x) +
 			(T)(arg1.y - arg2.y)*(arg1.y - arg2.y));
 	}
 
 	template<typename T>
-	T distance( const vec3<T> & vec1, const vec3<T> & vec2 )
+	T distance(const vec3<T> & vec1, const vec3<T> & vec2)
 	{
 		return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
 			(T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
-			(T)(vec1.z - vec2.z)*(vec1.z - vec2.z) );
+			(T)(vec1.z - vec2.z)*(vec1.z - vec2.z));
 	}
 
 	template<typename T>
-	T distance( const vec4<T> & vec1, const vec4<T> & vec2 )
+	T distance(const vec4<T> & vec1, const vec4<T> & vec2)
 	{
 		return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
 			(T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
 			(T)(vec1.z - vec2.z)*(vec1.z - vec2.z) +
-			(T)(vec1.w - vec2.w)*(vec1.w - vec2.w) );
+			(T)(vec1.w - vec2.w)*(vec1.w - vec2.w));
+	}
+
+	template<typename T>
+	vec3<T> getUnprojectedVector(const vec3<T> & v, const matrix<T, 4> & projMat, const matrix<T, 4> & viewMat)
+	{
+		matrix<T, 4> rm = viewMat * projMat;
+		matrix<T, 4> resultMatrix = matrixInverse(rm);
+		Vector3F result;
+
+		D3D10_VIEWPORT vp;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		vp.Width = 1366;
+		vp.Height = 768;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+
+		result.x = (v.x - vp.TopLeftX) / vp.Width * 2.0f - 1.0f;
+		result.y = -(2.0f * (v.y - vp.TopLeftY) / vp.Height - 1.0f);
+		result.z = (v.z - vp.MinDepth) / (vp.MaxDepth - vp.MinDepth);
+		result = vec3Transform(result, resultMatrix);
+		return result;
 	}
 }

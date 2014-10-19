@@ -14,6 +14,7 @@
 using namespace ShiftEngine;
 
 EntityManager::EntityManager()
+	: selectedEntity(nullptr)
 {
 	IProgramPtr EntityShader = GetContextManager()->LoadShader(L"EntityShader.fx");
 	entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
@@ -218,8 +219,30 @@ PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 	auto pCtxMgr = ShiftEngine::GetContextManager();
 	auto pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 1.0f)), mat.get()));
+	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()));
 	GameObjects.push_back(player);
 	LostIsland::GetGamePtr()->Player = player.get();
 	return player;
+}
+
+void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
+{
+	bool selected = false;
+	for (auto & entity : GameObjects)
+	{
+		if (entity->Select(unprojectedRay))
+		{
+			if (selectedEntity) 
+				selectedEntity->Unselect();
+			selectedEntity = entity.get();
+			selected = true;
+			break;
+		}
+	}
+
+	if (!selected)
+	{
+		selectedEntity->Unselect();
+		selectedEntity = nullptr;
+	}
 }
