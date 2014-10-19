@@ -69,29 +69,34 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 			//UP
 
 			Vector3F color = colors[ws->GetBlockType(blockXstart + i, blockYstart + j, (unsigned int)height - 1)];
-			float colorModifier = 1.0f;
 			unsigned int targetedHeight = (unsigned int)height;
-			if (ws->GetBlockType(blockXstart + i - 1,	blockYstart + j,		targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i - 1,	blockYstart + j + 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i,		blockYstart + j + 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
+			BlockTypes blocks[3][3];
+			for (int w = -1; w <= 1; ++w)
+				for (int h = -1; h <= 1; ++h)
+					blocks[w + 1][h + 1] = ws->GetBlockType(blockXstart + i + w, blockYstart + j + h, targetedHeight);
+
+			float colorModifier = 1.0f;
+			if (blocks[0][1] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[0][2] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[1][2] != BT_Empty) colorModifier -= 0.25f;
 			vertices.push_back(PNC(Vector3F(i + 0.0f, j + 1.0f, height), NormUP, (color + randVector) * colorModifier));
 
 			colorModifier = 1.0f;
-			if (ws->GetBlockType(blockXstart + i + 1,	blockYstart + j + 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i + 1,	blockYstart + j,		targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i,		blockYstart + j + 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[2][2] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[2][1] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[1][2] != BT_Empty) colorModifier -= 0.25f;
 			vertices.push_back(PNC(Vector3F(i + 1.0f, j + 1.0f, height), NormUP, (color + randVector) * colorModifier));
 
 			colorModifier = 1.0f;
-			if (ws->GetBlockType(blockXstart + i,		blockYstart + j - 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i + 1,	blockYstart + j - 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i + 1,	blockYstart + j,		targetedHeight) != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[1][0] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[2][0] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[2][1] != BT_Empty) colorModifier -= 0.25f;
 			vertices.push_back(PNC(Vector3F(i + 1.0f, j + 0.0f, height), NormUP, (color + randVector) * colorModifier));
 
 			colorModifier = 1.0f;
-			if (ws->GetBlockType(blockXstart + i - 1,	blockYstart + j - 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i,		blockYstart + j - 1,	targetedHeight) != BT_Empty) colorModifier -= 0.25f;
-			if (ws->GetBlockType(blockXstart + i - 1,	blockYstart + j,		targetedHeight) != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[0][0] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[1][0] != BT_Empty) colorModifier -= 0.25f;
+			if (blocks[0][1] != BT_Empty) colorModifier -= 0.25f;
 			vertices.push_back(PNC(Vector3F(i + 0.0f, j + 0.0f, height), NormUP, (color + randVector) * colorModifier));
 
 			indices.push_back(curIndex + 0);

@@ -90,6 +90,11 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
 			{
 				DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Water, waterLevel - kMax + 1));
 			}
+			else if (kMax >= waterLevel && kMax <= waterLevel + 3)
+			{
+				DataStorage->SetColumn(i, j, 0, BlockColumn(BlockTypes::BT_Stone, waterLevel));
+				DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Sand, kMax - waterLevel + 2));
+			}
 			else
 			{
 				DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Dirt, 1));
