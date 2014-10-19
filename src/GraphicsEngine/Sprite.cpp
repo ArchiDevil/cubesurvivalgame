@@ -32,11 +32,13 @@ void ShiftEngine::Sprite::Draw()
 	if(!texture)
 		return;
 
+	auto settings = ShiftEngine::GetContextManager()->GetParameters();
+
 	D3DXMATRIX mat, scale, pos, rot;
 	D3DXMatrixTranslation(&pos, Position.x, Position.y, 0.0f);
 	D3DXMatrixScaling(&scale, Scale.x, Scale.y, 0.0f);
 	D3DXMatrixRotationZ(&rot, Rotation);
-	D3DXMatrixOrthoOffCenterRH(&mat, 0.0, 1024.0, 600.0, 0.0, 0.0, 1.0);
+	D3DXMatrixOrthoOffCenterRH(&mat, 0.0, settings.screenWidth, settings.screenHeight, 0.0, 0.0, 1.0);
 	mat = (scale * rot * pos) * mat;
 
 	SpriteShader->SetMatrixConstantByName("matRes", (float*)mat);

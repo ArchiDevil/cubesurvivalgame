@@ -1,6 +1,6 @@
 #include "WorkState.h"
 
-#include "../GraphicsEngine/Renderer.h"
+#include <GraphicsEngine/Renderer.h>
 
 //implement geometry & color view
 
@@ -32,35 +32,35 @@ const float threshold = 20.0f;
 //15 Ч €рко-белый			#FFFFFF
 
 const float CGA_colors[16][3] = {
-	{0.0f, 0.0f, 0.0f},
-	{0.0f, 0.0f, 0.666f},
-	{0.0f, 0.666f, 0.0f},
-	{0.0f, 0.666f, 0.666f},
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.666f },
+		{ 0.0f, 0.666f, 0.0f },
+		{ 0.0f, 0.666f, 0.666f },
 
-	{0.666f, 0.0f, 0.0f},
-	{0.666f, 0.0f, 0.666f},
-	{0.666f, 0.333f, 0.0f},
-	{0.666f, 0.666f, 0.666f},
+		{ 0.666f, 0.0f, 0.0f },
+		{ 0.666f, 0.0f, 0.666f },
+		{ 0.666f, 0.333f, 0.0f },
+		{ 0.666f, 0.666f, 0.666f },
 
-	{0.333f, 0.333f, 0.333f},
-	{0.333f, 0.333f, 1.0f},
-	{0.333f, 1.0f, 0.333f},
-	{0.333f, 1.0f, 1.0f},
+		{ 0.333f, 0.333f, 0.333f },
+		{ 0.333f, 0.333f, 1.0f },
+		{ 0.333f, 1.0f, 0.333f },
+		{ 0.333f, 1.0f, 1.0f },
 
-	{1.0f, 0.333f, 0.333f},
-	{1.0f, 0.333f, 1.0f},
-	{1.0f, 1.0f, 0.333f},
-	{1.0f, 1.0f, 1.0f},
+		{ 1.0f, 0.333f, 0.333f },
+		{ 1.0f, 0.333f, 1.0f },
+		{ 1.0f, 1.0f, 0.333f },
+		{ 1.0f, 1.0f, 1.0f },
 };
 
-WorkState::WorkState( int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner ) 
+WorkState::WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
 	: pCanvas(_pCanvas), pSkinner(_pSkinner), flag(false), geometryMode(true)
 {
 	Workspace = new BlockWorkspace(x_size, y_size, z_size);
 	FillByDefault();
 }
 
-WorkState::WorkState( const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner )
+WorkState::WorkState(const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
 	: pCanvas(_pCanvas), pSkinner(_pSkinner), flag(false), geometryMode(true)
 {
 	Workspace = new BlockWorkspace(1, 1, 1);
@@ -69,7 +69,7 @@ WorkState::WorkState( const std::wstring & loadFile, SimpleGUI::Canvas * _pCanva
 
 WorkState::~WorkState()
 {
-	if(Workspace)
+	if (Workspace)
 		delete Workspace;
 }
 
@@ -83,9 +83,9 @@ bool WorkState::initState()
 	return true;
 }
 
-bool WorkState::update( double dt )
+bool WorkState::update(double dt)
 {
-	if(!ProcessInput(dt))
+	if (!ProcessInput(dt))
 		return false;
 
 	float x = R * sin(y_angle * 0.0175f) * cos(x_angle * 0.0175f);
@@ -98,16 +98,16 @@ bool WorkState::update( double dt )
 
 	scg->GetActiveCamera()->SetPosition(D3DXVECTOR3(x, y, z) + addPos);
 	scg->GetActiveCamera()->LookAt(addPos - scg->GetActiveCamera()->GetPosition());
-	
-	static double tempCounter=0.0;
+
+	static double tempCounter = 0.0;
 	tempCounter += dt;
-	if(tempCounter > 3.0)
+	if (tempCounter > 3.0)
 	{
 		Workspace->HideBoundingBox();
 		tempCounter = 0.0;
 	}
 
-	if(flag)
+	if (flag)
 	{
 		auto & Input = cInputEngine::GetInstance();
 		newCoordinates = Vector2I(Input.GetMouseInfo().absoluteX, Input.GetMouseInfo().absoluteY);
@@ -122,7 +122,7 @@ bool WorkState::update( double dt )
 	return true; //return false if something wrong
 }
 
-bool WorkState::render( double dt )
+bool WorkState::render(double dt)
 {
 	auto t = cInputEngine::GetInstance().GetMouseInfo();
 
@@ -133,7 +133,7 @@ bool WorkState::render( double dt )
 
 	std::ostringstream di[infoSize];
 	di[0] << "Alpha build number 71, for testing purposes only";
-	if(geometryMode)
+	if (geometryMode)
 		di[1] << "Geometry";
 	else
 		di[1] << "Color";
@@ -156,7 +156,7 @@ bool WorkState::render( double dt )
 	auto font = pContextManager->GetFontManager()->GetCurrentFontName();
 	pContextManager->GetFontManager()->SetFont(L"2");
 	for (int i = 0; i < infoSize; i++)
-		pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i*18);
+		pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i * 18);
 
 	pCanvas->Render(pSkinner);
 	pContextManager->GetFontManager()->SetFont(font);
@@ -195,24 +195,24 @@ void WorkState::CreateGUI()
 	butSave->SetText("Save");
 
 	butSave->SetClickHandler(
-		[=] (int mb, int x, int y)
-		{
-			f->Show();
-			fname->Show();
-			butSaveOk->Show();
-		}
+		[=](int mb, int x, int y)
+	{
+		f->Show();
+		fname->Show();
+		butSaveOk->Show();
+	}
 	);
 
 	butSaveOk->SetClickHandler(
-		[=] (int mb, int x, int y )
-		{
-			const std::wstring rr= L".block";
-			Workspace->Save(L"saves/" + fname->GetText() + rr); 
-			f->Hide();
-			fname->Hide();
-			butSaveOk->Hide();
-			SimpleGUI::FocusedControl = nullptr;
-		}
+		[=](int mb, int x, int y)
+	{
+		const std::wstring rr = L".block";
+		Workspace->Save(L"saves/" + fname->GetText() + rr);
+		f->Hide();
+		fname->Hide();
+		butSaveOk->Hide();
+		SimpleGUI::FocusedControl = nullptr;
+	}
 	);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -280,7 +280,7 @@ void WorkState::CreateGUI()
 	});
 }
 
-bool WorkState::ProcessInput( double ElapsedTime )
+bool WorkState::ProcessInput(double ElapsedTime)
 {
 	auto &InputEngine = cInputEngine::GetInstance();
 
@@ -289,12 +289,15 @@ bool WorkState::ProcessInput( double ElapsedTime )
 	auto mouseInfo = InputEngine.GetMouseInfo();
 
 	Vector3F nearV, farV;
-	//ShiftEngine::GetContextManager()->GetUnprojectedVector(Vector2F((float)mouseInfo.clientX, (float)mouseInfo.clientY), nearV, farV);
+	mat4f viewMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetViewMatrix();
+	mat4f projMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetProjectionMatrix();
+	nearV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat);
+	farV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat);
 	Vector3F dir = MathLib::Normalize(farV - nearV);
 
-	if(geometryMode)
+	if (geometryMode)
 	{
-		if(InputEngine.IsMouseUp(LButton) && SimpleGUI::HoveredControl == pCanvas)
+		if (InputEngine.IsMouseUp(LButton) && SimpleGUI::HoveredControl == pCanvas)
 		{
 			D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
 			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
@@ -302,7 +305,7 @@ bool WorkState::ProcessInput( double ElapsedTime )
 			for (float mult = 0.0f; mult < distance*2.0f; mult += 0.05f)
 			{
 				Vector3F temp = dir * mult + nearV;
-				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+				if (Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
 				{
 					Workspace->SaveToUndo();
 					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = false;
@@ -311,23 +314,23 @@ bool WorkState::ProcessInput( double ElapsedTime )
 			}
 		}
 
-		if(InputEngine.IsMouseUp(RButton))
+		if (InputEngine.IsMouseUp(RButton))
 		{
-			if(lenghtOfMove < threshold )
-			{	
+			if (lenghtOfMove < threshold)
+			{
 				D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
 				float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
 				//calculate new position
 				for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
 				{
 					Vector3F temp = dir * mult + (nearV);
-					if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+					if (Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
 					{
 						mult -= 0.1f;
 						temp = dir * mult + nearV;
 						auto vector = Workspace->GetHalfSize();
 						vector *= 2.0f;
-						if(temp.x >= 0.0f && temp.x <= vector.x &&
+						if (temp.x >= 0.0f && temp.x <= vector.x &&
 							temp.y >= 0.0f && temp.y <= vector.y &&
 							temp.z >= 0.0f && temp.z <= vector.z)
 						{
@@ -349,7 +352,7 @@ bool WorkState::ProcessInput( double ElapsedTime )
 	}
 	else
 	{
-		if(InputEngine.IsMouseUp(LButton))
+		if (InputEngine.IsMouseUp(LButton))
 		{
 			D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
 			float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
@@ -357,7 +360,7 @@ bool WorkState::ProcessInput( double ElapsedTime )
 			for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.05f)
 			{
 				Vector3F temp = dir * mult + nearV;
-				if(Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+				if (Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
 				{
 					Workspace->SaveToUndo();
 					Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = curBrush.Color;
@@ -367,40 +370,36 @@ bool WorkState::ProcessInput( double ElapsedTime )
 		}
 	}
 
-	if(InputEngine.IsMouseDown(RButton))
+	if (InputEngine.IsMouseDown(RButton))
 	{
-		if(!flag)
-		{
+		if (!flag)
 			oldCoordinates = Vector2I(mouseInfo.absoluteX, mouseInfo.absoluteY);
-		}
 		flag = true;
 	}
 
-	if(InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
+	if (InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
 	{
 		//flag = true;
-		
-		x_angle += -mouseInfo.deltaX * SensivityMultiplier;
-		if(y_angle + -mouseInfo.deltaY * SensivityMultiplier < 179.0f
-			&& y_angle + -mouseInfo.deltaY * SensivityMultiplier > 1.0f)
-		{
-			y_angle += -mouseInfo.deltaY * SensivityMultiplier;
-		}
+
+		x_angle -= mouseInfo.deltaX * SensivityMultiplier;
+		if (y_angle - mouseInfo.deltaY * SensivityMultiplier < 179.0f
+			&& y_angle - mouseInfo.deltaY * SensivityMultiplier > 1.0f)
+			y_angle -= mouseInfo.deltaY * SensivityMultiplier;
 	}
 
-	R += static_cast<float>(- mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
+	R += static_cast<float>(-mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
 
-	if(InputEngine.IsKeyUp(DIK_ESCAPE))
+	if (InputEngine.IsKeyUp(DIK_ESCAPE))
 	{
 #if defined DEBUG || _DEBUG
 		this->kill();
 #endif
 	}
 
-	if(InputEngine.IsKeyUp(DIK_SPACE))
+	if (InputEngine.IsKeyUp(DIK_SPACE))
 	{
 		geometryMode = !geometryMode;
-		if(geometryMode)
+		if (geometryMode)
 			MoveToGeometryMode();
 		else
 			MoveToColorMode();
@@ -425,7 +424,7 @@ bool WorkState::ProcessInput( double ElapsedTime )
 
 #endif
 
-	if(InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_Z))
+	if (InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_Z))
 		Workspace->Undo();
 
 	return true;
@@ -451,7 +450,7 @@ void WorkState::MoveToGeometryMode()
 {
 	auto childs = pCanvas->GetChildrenList();
 	for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
-		if((*iter)->GetName() != "")
+		if ((*iter)->GetName() != "")
 			(*iter)->Hide();
 
 	Workspace->VanishColor(true);
@@ -461,7 +460,7 @@ void WorkState::MoveToColorMode()
 {
 	auto childs = pCanvas->GetChildrenList();
 	for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
-		if((*iter)->GetName() != "")
+		if ((*iter)->GetName() != "")
 			(*iter)->Show();
 
 	Workspace->VanishColor(false);
@@ -469,7 +468,5 @@ void WorkState::MoveToColorMode()
 
 void WorkState::ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val)
 {
-	char buffer[4] = {0};
-	sprintf(buffer, "%d", val->GetValue());
-	t->SetText(buffer);
+	t->SetText(std::to_string(val->GetValue()));
 }

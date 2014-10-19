@@ -12,25 +12,10 @@ struct Block													//описывает структуру кубика в модели
 	bool exist;													//флаг - существует ли здесь кубик
 };
 
-struct wVertex													//служебное для движка
-{
-	wVertex(const Vector3F & pos, const Vector3F & normal, const Vector2F & tex, const Vector3F & col) 
-		: Position(pos)
-		, Normal(normal)
-		, Texcoord(tex)
-		, Color(col)
-	{}
-
-	Vector3F Position;
-	Vector3F Normal;
-	Vector2F Texcoord;
-	Vector3F Color;
-};
-
-class BlockWorkspace												//отвечает за работу с моделью
+class BlockWorkspace											//отвечает за работу с моделью
 {
 public:
-	BlockWorkspace(int _x, int _y, int _z);							//конструктор принимает размеры модели по трем осям
+	BlockWorkspace(int _x, int _y, int _z);						//конструктор принимает размеры модели по трем осям
 	~BlockWorkspace();
 
 	void Initialize();
@@ -83,6 +68,8 @@ private:
 	ShiftEngine::Material GeometryMaterial;
 	ShiftEngine::TexturePtr GridTexture;
 
+	static ShiftEngine::VertexSemantic semantic;
+
 	//массив "отмен" для Ctlr+Z операции	
 	Block * ElementsUndo[UNDO_MAX];
 	void createUndo(int sizeElementsUndo);
@@ -92,4 +79,3 @@ private:
 
 	int curAction;
 };
-

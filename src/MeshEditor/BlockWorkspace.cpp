@@ -7,6 +7,8 @@
 
 #define AO_DEBUG
 
+ShiftEngine::VertexSemantic BlockWorkspace::semantic;
+
 BlockWorkspace::BlockWorkspace( int _x, int _y, int _z )
 	: x_size(_x), y_size(_y), z_size(_z), curAction(0), bboxShow(false),
 	bbox(nullptr), plane(nullptr), mesh(nullptr), tesselated(false)
@@ -20,6 +22,17 @@ BlockWorkspace::BlockWorkspace( int _x, int _y, int _z )
 		for (int j = 0; j < x_size * y_size * z_size ; j++)
 			ElementsUndo[i][j] = Block();
 	}
+
+	GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
+	GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
+	ColorMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderColor.fx"));
+	GeometryMaterial.SetDiffuseTexture(GridTexture);
+
+	semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
+	semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
+	semantic.addSemantic(ShiftEngine::ET_FLOAT, 2, ShiftEngine::ES_Texcoord);
+	semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
+	ShiftEngine::GetContextManager()->RegisterVertexSemantic(semantic);
 }
 
 BlockWorkspace::~BlockWorkspace()
@@ -188,6 +201,21 @@ float BlockWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float
 
 void BlockWorkspace::Tesselate()
 {
+	struct wVertex
+	{
+		wVertex(const Vector3F & pos, const Vector3F & normal, const Vector2F & tex, const Vector3F & col)
+			: Position(pos)
+			, Normal(normal)
+			, Texcoord(tex)
+			, Color(col)
+		{}
+
+		Vector3F Position;
+		Vector3F Normal;
+		Vector2F Texcoord;
+		Vector3F Color;
+	};
+
 	ShiftEngine::MeshData * cd = new ShiftEngine::MeshData;
 	std::vector<wVertex> vertices;
 	std::vector<long> indices;
@@ -367,29 +395,14 @@ void BlockWorkspace::Tesselate()
 						ShiftEngine::GetContextManager()->GetDevicePointer());
 
 	ShiftEngine::MeshDataPtr meshData = ShiftEngine::MeshDataPtr(cd);
-	
+
+	cd->vertexSemantic = &semantic;
+	cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(semantic);
+
 	if(!mesh)
-	{
-		ShiftEngine::VertexSemantic *sem = new ShiftEngine::VertexSemantic;
-		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
-		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
-		sem->addSemantic(ShiftEngine::ET_FLOAT, 2, ShiftEngine::ES_Texcoord);
-		sem->addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-		ShiftEngine::GetContextManager()->RegisterVertexSemantic(*sem);
-		cd->vertexSemantic = sem;
-		cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(*sem);
-
-		GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
-		this->GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
-		GeometryMaterial.SetDiffuseTexture(GridTexture);
-		this->ColorMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderColor.fx"));
-
 		mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB(Vector3F(), Vector3F(x_size, y_size, z_size)), &GeometryMaterial);
-	}
 	else
-	{
 		mesh->SetDataPtr(meshData);
-	}
 
 	tesselated = true;
 }
