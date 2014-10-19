@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
-
-file(GLOB_RECURSE SRC *.cpp *.h)
+file(GLOB SRC *.cpp *.h Objects/*.cpp Objects/*.h)
 
 include_directories($ENV{DXSDK_DIR}/include)
-
-add_library(GUI STATIC ${SRC})	# Создает исполняемый файл с именем main
+add_library(GUI STATIC ${SRC})
 add_dependencies(GUI GraphicsEngine MathLib Utilities)
+
+add_subdirectory(tests)

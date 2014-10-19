@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-file(GLOB_RECURSE SRC *.cpp)
-file(GLOB_RECURSE HDR *.h)
+file(GLOB_RECURSE SRC *.cpp *.h)
 
 set(DXSDK_LIBS  d3d10.lib
 				d3dx10.lib
@@ -15,7 +14,7 @@ include_directories(../../3rdparty/tinyxml2)
 
 link_directories($ENV{DXSDK_DIR}/lib/x86)
 
-add_library(GraphicsEngine STATIC ${SRC} ${HDR})
+add_library(GraphicsEngine STATIC ${SRC})
 
 if(NOT UNIX)
 	target_link_libraries(GraphicsEngine ${DXSDK_LIBS})

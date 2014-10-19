@@ -1,10 +1,7 @@
-#include "stdafx.h"
 #include "CppUnitTest.h"
 
-#include "../src/utilities/ut.h"
-
-//just for lulz
-#include "../src/Utilities/BlockStreamer.cpp"
+#include <Utilities/ut.h>
+#include <Utilities/BlockStreamer.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

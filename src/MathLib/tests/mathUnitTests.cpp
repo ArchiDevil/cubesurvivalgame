@@ -1,14 +1,21 @@
-#include "stdafx.h"
 #include "CppUnitTest.h"
-
-#include "some.cpp"
+#include "../math.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 using namespace MathLib;
 
+template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::Vector3F>(const MathLib::Vector3F& t)
+{ 
+	std::wostringstream s; s << t.x << " " << t.y << " " << t.z << "\n"; return s.str(); 
+}
+
+template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::qaFloat>(const MathLib::qaFloat& t)
+{ 
+	std::wostringstream s; s << t.vector.x << " " << t.vector.y << " " << t.vector.z << " " << t.w; return s.str(); 
+}
+
 namespace UnitTests
-{		
+{
 	TEST_CLASS(MathLibUnitTests)
 	{
 	public:		
@@ -26,71 +33,6 @@ namespace UnitTests
 		{
 			//OOBB oobb = OOBB(Vector3F(10.0f, 10.0f, 10.0f));
 			Assert::Fail(L"Test is not implemented");
-		}
-
-		TEST_METHOD(MatrixUnitTest)
-		{
-			matrix<float, 4> mat;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					mat[i][j] = (float)i + j;
-
-			Assert::AreEqual(mat[3][2], 5.0f);
-
-			matrix<float, 4> mat2;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					mat2[i][j] = -((float)i + j);
-
-			mat = mat + mat2;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					Assert::AreEqual(mat[i][j], 0.0f);
-
-			mat = mat - mat2;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					Assert::AreEqual(mat[i][j], (float)i + j);
-
-			mat = mat + 10.0f;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					Assert::AreEqual(mat[i][j], (float)i + j + 10.0f);
-
-			mat = mat - 10.0f;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					Assert::AreEqual(mat[i][j], (float)i + j);
-
-			mat = mat / 1.0f;
-			for (int i = 0; i < 4 ; i++)
-				for (int j = 0; j < 4 ; j++)
-					Assert::AreEqual(mat[i][j], (float)i + j);
-
-			matrix<float, 3> mat3ftype;
-			for (int i = 0; i < 3 ; i++)
-					mat3ftype[i][i] = 1.0f;
-			Vector3F vec = Vector3F(1.0f, 1.0f, 1.0f);
-			auto newVec = mat3ftype * vec;
-			for (int i = 0; i < 3 ; i++)
-				Assert::AreEqual(vec.el[i], 1.0f);
-
-			//transpose test
-			auto newmat = mat3ftype.transpose();
-			for (int i = 0; i < 3 ; i++)
-				Assert::AreEqual(newmat[i][i], 1.0f);
-
-			mat2 = mat2 * 0.0f;
-			Assert::AreEqual(mat2[0][0], 0.0f);
-			for (int i = 0; i < 4 ; i++)
-				mat2[i][i] = 1.0f;
-
-			auto mat3 = mat;
-			mat = mat * mat2;
-			Assert::IsTrue(mat == mat3);
-			Assert::IsFalse(mat == mat2);
-			Assert::IsTrue(mat != mat2);
-			Assert::IsFalse(mat != mat3);
 		}
 
 		TEST_METHOD(Vector2UnitTest)

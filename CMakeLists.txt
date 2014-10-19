@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(LostIsland)
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
-option(BUILD_TESTS "Generate projects for tests building" ON)
+option(BUILD_TESTS "Generate projects for tests building" OFF)
 
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -25,6 +25,53 @@ set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
 
 set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
 
+function(AddVSTest TestName Sources)
+    if(NOT BUILD_TESTS)
+        return()
+    endif()
+    
+    if(MSVC)
+        # define visual studio installation dir
+        if(MSVC10)
+            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS100COMNTOOLS})
+        elseif(MSVC11)
+            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS110COMNTOOLS})
+        elseif(MSVC12)
+            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS120COMNTOOLS})
+        endif()
+    else(MSVC)
+        message(ERROR "Unable to find visual studio installation path")
+    endif(MSVC)
+
+    include_directories(${VCINSTALLDIR}/UnitTest/include)
+    include_directories($ENV{DXSDK_DIR}/include)
+
+    link_directories(${VCINSTALLDIR}/UnitTest/lib)
+    link_directories($ENV{DXSDK_DIR}/lib/x86)
+    
+    foreach(arg ${ARGN})
+        list(APPEND Sources ${arg})
+    endforeach(arg)
+
+    add_library(${TestName} SHARED ${Sources})
+
+    set_target_properties(${TestName} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
+    set_target_properties(${TestName} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:WINDOWS")
+    set_target_properties(${TestName} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+    set_target_properties(${TestName} PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS")
+    set_property(TARGET ${TestName} PROPERTY FOLDER "Tests")
+endfunction(AddVSTest)
+
+function(VSTestLinkLibraries TestName LinkLibraries)
+    if(NOT BUILD_TESTS)
+        return()
+    endif()
+    foreach(arg ${ARGN})
+        list(APPEND LinkLibraries ${arg})
+    endforeach(arg)
+    target_link_libraries(${TestName} ${LinkLibraries})
+endfunction(VSTestLinkLibraries)
+
 if(MSVC)
 	add_definitions(-DUNICODE -D_UNICODE)
 	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
@@ -39,9 +86,5 @@ if(BUILD_TESTS)
 	#add_subdirectory(3rdparty/gtest-1.7.0)
 	#set_property(TARGET gtest PROPERTY FOLDER "Tests")
 	#set_property(TARGET gtest_main PROPERTY FOLDER "Tests")
-    
-	
-	add_subdirectory(tests)
-	set_property(TARGET UnitTests PROPERTY FOLDER "Tests")
 	#set_property(TARGET runUnitTests PROPERTY FOLDER "Tests")
 endif()
