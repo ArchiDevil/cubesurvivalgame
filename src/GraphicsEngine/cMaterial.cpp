@@ -204,3 +204,18 @@ const std::vector<ShiftEngine::engineUniforms> & ShiftEngine::Material::GetUnifo
 {
 	return knownUniforms;
 }
+
+void ShiftEngine::Material::SetDiffuseColor(const MathLib::Vector4F & diffuseColor)
+{
+	info.diffuseColor = diffuseColor;
+}
+
+void ShiftEngine::Material::SetSpecularColor(const MathLib::Vector4F & specularColor)
+{
+	info.specularColor = specularColor;
+}
+
+void ShiftEngine::Material::SetEmissionColor(const MathLib::Vector4F & emissionColor)
+{
+	info.emissionColor = emissionColor;
+}
