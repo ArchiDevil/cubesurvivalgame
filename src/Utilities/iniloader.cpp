@@ -26,8 +26,9 @@ std::string IniWorker::GetKey( const std::string & Key )
 {
 	if(data.find(Key) != data.end())
 		return data[Key];
-	else
-		MainLog.Error("Unable to get key for: " + Key);
+
+	MainLog.Error("Unable to get key for: " + Key);
+	return "";
 }
 
 int IniWorker::GetInteger( const std::string & Parameter )

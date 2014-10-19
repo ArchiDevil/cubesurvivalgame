@@ -100,7 +100,7 @@ bool utils::IsNumber( const std::wstring & str )
 bool utils::filesystem::CreateDir( const std::wstring & directoryName )
 {
 #ifdef WIN32
-	return ::CreateDirectory(directoryName.c_str(), NULL);
+	return ::CreateDirectory(directoryName.c_str(), NULL) != 0;
 #else
 	return false;
 #endif
