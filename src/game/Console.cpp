@@ -50,6 +50,21 @@ void Console::HandleCommand()
 
 		pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId(tokens[1]));
 	}
+	else if(commandName == "go")
+	{
+		if(tokens.size() != 4)
+		{
+			MainLog.Error("Wrong argument: go [pos_x] [pos_y] [pos_z]");
+			return;
+		}
+
+		float x_pos = std::stof(tokens[1]);
+		float y_pos = std::stof(tokens[2]);
+		float z_pos = std::stof(tokens[3]);
+
+		if(pGame->Player)
+			pGame->Player->Go(Vector3F(x_pos, y_pos, z_pos));
+	}
 	else
 	{
 		MainLog.Error("Unable to recognize command: " + commandName);

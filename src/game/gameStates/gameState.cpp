@@ -33,6 +33,7 @@ bool gameState::initState()
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
+	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F(0.0f, 0.0f, 0.0f)).get();
 
 	console.subscribe(&cInputEngine::GetInstance());
 

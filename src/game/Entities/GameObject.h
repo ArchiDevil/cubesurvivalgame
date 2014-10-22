@@ -5,6 +5,13 @@
 
 #include "../events.h"
 
+enum EntityState
+{
+	ES_Waiting,
+	ES_Rotating,
+	ES_Moving
+};
+
 class GameObject
 {
 public:
@@ -13,11 +20,12 @@ public:
 
 	virtual Vector3F GetPosition() const;
 	virtual void SetPosition(const Vector3F & Position);
-	virtual void Update(double dt) = 0;
+	virtual void Update(double dt);
 	virtual bool OnGameEvent(IGameEvent * ev);
 	virtual void Unselect();
 	virtual bool Select(const MathLib::Ray & unprojectedVector);
 	ShiftEngine::MeshNode * GetSceneNode();
+	virtual bool Go(const MathLib::Vector3F & target);
 
 	//service methods
 	bool MustBeDeleted() const;
@@ -26,5 +34,9 @@ public:
 protected:
 	ShiftEngine::MeshNode * SceneNode;
 	bool ToDelete;
+
+	EntityState currentState;
+	float targetRotationAngle;
+	MathLib::Vector3F targetPosition;
 
 };

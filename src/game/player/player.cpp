@@ -56,6 +56,8 @@ void PlayerGameObject::SetTemperature(int temperature)
 
 void PlayerGameObject::Update(double dt)
 {
+	GameObject::Update(dt);
+
 	auto pGame = LostIsland::GetGamePtr();
 	Vector3F position = this->GetPosition();
 	auto height = pGame->World->GetDataStorage()->GetFullHeight(position.x, position.y);
