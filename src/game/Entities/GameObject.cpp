@@ -65,13 +65,6 @@ void GameObject::Unselect()
 
 bool GameObject::Go(const MathLib::Vector3F & target)
 {
-	//find angle to rotate
-	auto angle = MathLib::angle(SceneNode->GetPosition() - target, Vector3F(0.0f, 1.0f, 0.0f));
-	//find direction to rotate
-	auto vec = MathLib::vec(SceneNode->GetPosition() - target, Vector3F(0.0f, 1.0f, 0.0f));
-	if(vec.z < 0.0f)
-		angle = -angle;
-	targetRotationAngle = angle;
 	targetPosition = target;
 	currentState = ES_Rotating;
 	return true;
@@ -83,17 +76,10 @@ void GameObject::Update(double dt)
 	{
 	case ES_Rotating:
 		{
-			//auto rot = SceneNode->GetRotation();
-			//if(abs(rot.z - targetRotationAngle) < 3.0f)
-			//{
-			//	rot.z = targetRotationAngle;
-				currentState = ES_Moving;
-			//}
-			//else
-			//{
-			//	rot.z += dt * 5.0f;
-			//}
-			//SceneNode->SetRotation(rot);
+			Vector3F start(1.0f, 0.0f, 0.0f);
+			auto rotQuat = MathLib::shortest_arc(start, SceneNode->GetPosition() - targetPosition);
+			SceneNode->SetRotation(rotQuat.to_vector());
+			currentState = ES_Moving;
 			break;
 		}
 	case ES_Moving:

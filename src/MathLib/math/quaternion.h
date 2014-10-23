@@ -252,4 +252,32 @@ namespace MathLib
 		}
 		return out;
 	}
+
+	template<typename T>
+	quaternion<T> shortest_arc(const vec3<T> & from, const vec3<T> & to)
+	{
+		quaternion<T> out;
+		auto c = MathLib::vec(from, to);
+		out.vector = c;
+		out.w = MathLib::dot(from, to);
+		out = out.normalize();
+        out.w += 1.0f;      // reducing angle to halfangle
+        if( out.w <= 0.00001f ) // angle close to PI
+        {
+            if((from.z * from.z) > (from.x * from.x))
+			{
+				out.vector.x = 0.0;
+				out.vector.y = from.z;
+				out.vector.z = -from.y;
+			}
+            else 
+			{
+				out.vector.x = from.y;
+				out.vector.y = -from.x;
+				out.vector.z = 0.0;
+			}
+        }
+		out = out.normalize();
+		return out;
+	}
 }
