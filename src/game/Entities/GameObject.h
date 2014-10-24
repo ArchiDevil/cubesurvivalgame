@@ -25,7 +25,7 @@ public:
 	virtual void Unselect();
 	virtual bool Select(const MathLib::Ray & unprojectedVector);
 	ShiftEngine::MeshNode * GetSceneNode();
-	virtual bool Go(const MathLib::Vector3F & target);
+	virtual bool Go(const MathLib::Vector2F & target);
 
 	//service methods
 	bool MustBeDeleted() const;
@@ -37,6 +37,6 @@ protected:
 
 	EntityState currentState;
 	float targetRotationAngle;
-	MathLib::Vector3F targetPosition;
+	MathLib::Vector2F targetPosition;
 
 };
