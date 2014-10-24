@@ -21,7 +21,7 @@ namespace MathLib
 		T w;
 
 		quaternion()
-			: vector()
+			: vector(T(1.0), T(0.0), T(0.0))
 			, w(T(1.0))
 		{
 		}
@@ -278,6 +278,58 @@ namespace MathLib
 			}
         }
 		out = out.normalize();
+		return out;
+	}
+
+	template<typename T>
+	quaternion<T> quaternionSlerp(const quaternion<T> & from, const quaternion<T> & to, float t)
+	{
+		float p1[4];
+		double scale0, scale1;
+		quaternion<T> out;
+
+		// косинус угла
+		double cosom = from.vector.x * to.vector.x 
+			+ from.vector.y * to.vector.y 
+			+ from.vector.z * to.vector.z 
+			+ from.w * to.w;
+
+		if (cosom < 0.0)
+		{ 
+			cosom = -cosom;
+			p1[0] = -to.vector.x;
+			p1[1] = -to.vector.y;
+			p1[2] = -to.vector.z;
+			p1[3] = -to.w;
+		}
+		else
+		{
+			p1[0] = to.vector.x;
+			p1[1] = to.vector.y;
+			p1[2] = to.vector.z;
+			p1[3] = to.w;
+		}
+
+		if ((1.0 - cosom) > 0.001)
+		{
+			// стандартный случай (slerp)
+			double omega = acos(cosom);
+			double sinom = sin(omega);
+			scale0 = sin((1.0 - t) * omega) / sinom;
+			scale1 = sin(t * omega) / sinom;
+		}
+		else
+		{        
+			// если маленький угол - линейная интерполяция
+			scale0 = 1.0 - t;
+			scale1 = t;
+		}
+
+		out.vector.x = scale0 * from.vector.x + scale1 * p1[0];
+		out.vector.y = scale0 * from.vector.y + scale1 * p1[1];
+		out.vector.z = scale0 * from.vector.z + scale1 * p1[2];
+		out.w = scale0 * from.w + scale1 * p1[3];
+
 		return out;
 	}
 }

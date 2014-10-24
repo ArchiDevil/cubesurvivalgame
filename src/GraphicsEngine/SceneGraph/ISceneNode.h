@@ -1,5 +1,9 @@
 #pragma once
 
+//MY INCLUDES
+#include <Utilities/cRefcounted.h>
+#include <MathLib/math.h>
+
 //STL INCLUDES
 #include <string>
 #include <vector>
@@ -7,12 +11,9 @@
 //D3D INCLUDES
 #include <d3dx10.h>
 
-//MY INCLUDES
-#include "../../Utilities/cRefcounted.h"
-#include "../../MathLib/math.h"
-
 using MathLib::Vector2F;
 using MathLib::Vector3F;
+using MathLib::qaFloat;
 
 namespace ShiftEngine
 {
@@ -43,8 +44,12 @@ namespace ShiftEngine
 		Vector3F GetScale() const;
 		void SetScale(const Vector3F & val);
 
-		Vector3F GetRotation() const;
-		void SetRotation(const Vector3F & val);
+		qaFloat GetRotation() const;
+		void SetRotation(const qaFloat & val);
+		void RotateBy(const qaFloat & val);
+
+		//Vector3F GetRotation() const;
+		//void SetRotation(const Vector3F & val);
 
 		SceneGraph * GetSceneGraph() const;
 		void SetSceneGraph(SceneGraph * val);
@@ -68,7 +73,8 @@ namespace ShiftEngine
 	private:
 		Vector3F Position;
 		Vector3F Scale;
-		Vector3F Rotation;	//euler angles
+		qaFloat Rotation;
+		//Vector3F Rotation;	//euler angles
 
 		D3DXMATRIX worldMatrix;
 

@@ -52,18 +52,17 @@ void Console::HandleCommand()
 	}
 	else if(commandName == "go")
 	{
-		if(tokens.size() != 4)
+		if(tokens.size() != 3)
 		{
-			MainLog.Error("Wrong argument: go [pos_x] [pos_y] [pos_z]");
+			MainLog.Error("Wrong argument: go [pos_x] [pos_y]");
 			return;
 		}
 
 		float x_pos = std::stof(tokens[1]);
 		float y_pos = std::stof(tokens[2]);
-		float z_pos = std::stof(tokens[3]);
 
 		if(pGame->Player)
-			pGame->Player->Go(Vector3F(x_pos, y_pos, z_pos));
+			pGame->Player->Go(Vector2F(x_pos, y_pos));
 	}
 	else
 	{
