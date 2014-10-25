@@ -43,9 +43,7 @@ public:
 	void						Unload();
 	void						GenerateChunk(int x, int y);
 	void						ProcessLoading();
-
-	//bool						PlaceBlock(int x, int y, int z, BlockType type);
-	//bool						RemoveBlock(int x, int y, int z);
+	Vector3F					SelectColumnByRay(const MathLib::Ray & unprojectedRay) const;
 
 	//Getters
 	WorldStorage *				GetDataStorage();
@@ -74,7 +72,6 @@ private:
 	void						LightProp(int PTR, unsigned char value);
 
 	float						GetInterpolatedHeight(int x, int y);
-
 	std::unique_ptr<WorldStorage>		DataStorage;
 	std::unique_ptr<cChunksStorage>		ChunksStorage;
 	std::unique_ptr<cWorldGenerator>	Generator;

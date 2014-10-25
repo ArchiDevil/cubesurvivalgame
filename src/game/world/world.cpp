@@ -221,85 +221,6 @@ WorldStorage * cWorld::GetDataStorage()
 	return DataStorage.get();
 }
 
-//bool cWorld::PlaceBlock( int x, int y, int z, BlockType type )
-//{
-//	updatingSection.lock();
-//
-//	if(HaveSolidsNear(x, y, z))	//we can place block only if have solids near it
-//	{
-//		WorldStorage->GetBlock(x, y, z)->TypeID = type; //HACK: TEMP
-//		WorldStorage->GetBlock(x, y, z)->LightValue = 0;
-//
-//		double ChunkX = x / (int)GetDataStorage()->GetChunkWidth();
-//		double ChunkY = y / (int)GetDataStorage()->GetChunkWidth();
-//		ChunkX = floor(ChunkX);
-//		ChunkY = floor(ChunkY);
-//		int iX = (int)ChunkX;
-//		int iY = (int)ChunkY;
-//
-//		UpdateChunk(iX - 1, iY - 1);
-//		UpdateChunk(iX + 1, iY + 1);
-//		UpdateChunk(iX + 1, iY - 1);
-//		UpdateChunk(iX - 1, iY + 1);
-//
-//		UpdateChunk(iX - 1, iY);
-//		UpdateChunk(iX + 1, iY);
-//		UpdateChunk(iX, iY - 1);
-//		UpdateChunk(iX, iY + 1);
-//
-//		UpdateChunk(iX, iY);
-//
-//		updatingSection.unlock();
-//
-//		return true;
-//	}
-//
-//	updatingSection.unlock();
-//
-//	return false;
-//}
-//
-//bool cWorld::RemoveBlock( int x, int y, int z )
-//{
-//	updatingSection.lock();
-//
-//	if(WorldStorage->GetBlock(x, y, z)->TypeID != ID_AIR &&
-//		WorldStorage->GetBlock(x, y, z)->TypeID != ID_WATER && 
-//		WorldStorage->GetBlock(x, y, z)->TypeID != ID_WROOT)
-//	{
-//		GetDataStorage()->GetBlock(x, y, z)->TypeID = ID_AIR;
-//		GetDataStorage()->GetBlock(x, y, z)->LightValue = 0;
-//
-//		double ChunkX = x / (int)GetDataStorage()->GetChunkWidth();
-//		double ChunkY = y / (int)GetDataStorage()->GetChunkWidth();
-//		ChunkX = floor(ChunkX);
-//		ChunkY = floor(ChunkY);
-//
-//		int iX = (int)ChunkX;
-//		int iY = (int)ChunkY;
-//
-//		UpdateChunk(iX - 1, iY - 1);
-//		UpdateChunk(iX + 1, iY + 1);
-//		UpdateChunk(iX + 1, iY - 1);
-//		UpdateChunk(iX - 1, iY + 1);
-//
-//		UpdateChunk(iX - 1, iY);
-//		UpdateChunk(iX + 1, iY);
-//		UpdateChunk(iX, iY - 1);
-//		UpdateChunk(iX, iY + 1);
-//
-//		UpdateChunk(iX, iY);
-//
-//		updatingSection.unlock();
-//
-//		return true;
-//	}
-//
-//	updatingSection.unlock();
-//
-//	return false;
-//}
-
 void cWorld::UpdateChunk(int WorldX, int WorldY)
 {
 	ChunksStorage->GetChunkPtr(WorldX, WorldY)->SetStatus(CS_FILLED);
@@ -427,4 +348,58 @@ void cWorld::SetWorldName(const std::string & worldName)
 std::string cWorld::GetWorldName() const
 {
 	return worldName;
+}
+
+Vector3F cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay) const
+{
+	std::vector<WorldChunk*> foundChunksList;
+	unsigned int chunksPerSide = ChunksStorage->GetChunksPerSide();
+	for (unsigned int i = 0; i < chunksPerSide * chunksPerSide; ++i)
+	{
+		WorldChunk* pChunk = ChunksStorage->GetChunksArray() + i;
+		auto bbox = pChunk->GetLandNode()->GetBBox();
+
+		if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
+		{
+			foundChunksList.push_back(pChunk);
+		}
+	}
+
+	std::vector<MathLib::AABB> foundBBoxes;
+	for (WorldChunk * pChunk : foundChunksList)
+	{
+		int WorldX = pChunk->GetWorldX();
+		int WorldY = pChunk->GetWorldY();
+		int ChunkWidth = DataStorage->GetChunkWidth();
+		for (int xStart = WorldX * ChunkWidth; xStart < WorldX * ChunkWidth + ChunkWidth; ++xStart)
+		{
+			for (int yStart = WorldY * ChunkWidth; yStart < WorldY * ChunkWidth + ChunkWidth; ++yStart)
+			{
+				MathLib::AABB bbox;
+				bbox.bMin = Vector3F(xStart, yStart, DataStorage->GetFullHeight(xStart, yStart));
+				bbox.bMax = Vector3F(xStart + 1, yStart + 1, DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
+				if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
+				{
+					foundBBoxes.push_back(bbox);
+				}
+			}
+		}
+	}
+
+	float minimalDistance = 1000.0f;
+	MathLib::AABB * resultedBBox = nullptr;
+	for (MathLib::AABB & bbox : foundBBoxes)
+	{
+		float distance = MathLib::distance(bbox.GetCentralPoint(), unprojectedRay.Origin);
+		if (distance < minimalDistance)
+		{
+			minimalDistance = distance;
+			resultedBBox = &bbox;
+		}
+	}
+
+	if (resultedBBox)
+		return resultedBBox->GetCentralPoint();
+	else
+		return Vector3F();
 }

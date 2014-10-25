@@ -29,6 +29,4 @@ private:
 	IniWorker * pIniLoader;
 	Console console;
 
-	bool isConsoleState;
-
 };

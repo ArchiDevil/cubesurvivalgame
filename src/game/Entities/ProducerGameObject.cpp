@@ -1,7 +1,7 @@
 #include "ProducerGameObject.h"
 
 #include "../game.h"
-#include "../player/cInventory.h"
+#include "../cInventory.h"
 
 ProducerGameObject::ProducerGameObject(ShiftEngine::MeshNode * meshNode, Item * producedItem, uint32_t cycleTime)
 	: UsableGameObject(meshNode)

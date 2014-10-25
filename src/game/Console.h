@@ -19,10 +19,14 @@ public:
 
 	bool handleEvent(const InputEvent & event) override;
 
+	void SetVisibility(bool val);
+	bool GetVisibility() const;
+
 private:
 	std::vector<std::string> Tokenize(const std::string & input) const;
 
 	std::string inputBuffer;
 	size_t screenWidth, screenHeight;
+	bool visibility;
 
 };

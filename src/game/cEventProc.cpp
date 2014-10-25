@@ -1,6 +1,6 @@
 #include "cEventProc.h"
 
-#include "player/cInventory.h"
+#include "cInventory.h"
 #include "game.h"
 
 void cGameEventHandler::onPlayerMoves( double dt )

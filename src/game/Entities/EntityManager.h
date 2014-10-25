@@ -12,7 +12,7 @@
 #include "ItemEntity.h"
 #include "ProducerGameObject.h"
 #include "CrafterGameObject.h"
-#include "../player/player.h"
+#include "../Entities/PlayerGameObject.h"
 
 #include "../events.h"
 

@@ -1,7 +1,7 @@
 #include "cInventory.h"
 
-#include "../Items/ItemManager.h"
-#include "../Items/Item.h"
+#include "Items/ItemManager.h"
+#include "Items/Item.h"
 
 cInventory::cInventory(ItemManager * pItemMgr)
 	: pItemMgr(pItemMgr)

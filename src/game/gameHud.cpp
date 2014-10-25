@@ -1,7 +1,8 @@
 #include "gameHud.h"
 
 #include "game.h"
-#include "player/cInventory.h"
+#include "cInventory.h"
+#include <GraphicsEngine/ShiftEngine.h>
 
 gameHUD::gameHUD() 
 	: liHandItem(nullptr)

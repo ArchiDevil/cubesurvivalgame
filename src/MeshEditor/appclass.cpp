@@ -31,6 +31,7 @@ bool Application::Initialize()
 	settings.multisampleQuality = SettingsLoader->GetInteger("MultisampleQuality");
 	settings.windowed			= SettingsLoader->GetBoolean("Windowed");
 	settings.screenRate			= SettingsLoader->GetInteger("ScreenRate");
+	settings.anisotropyLevel	= SettingsLoader->GetInteger("AnisotropyLevel");
 	settings.zNear				= SettingsLoader->GetFloat("zNear");
 	settings.zFar				= SettingsLoader->GetFloat("zFar");
 

@@ -22,6 +22,8 @@ namespace MathLib
 		float GetSurfaceArea() const;
 		float GetVolume() const;
 
+		Vector3F GetCentralPoint() const;
+
 		Vector3F bMin;
 		Vector3F bMax;
 	};

@@ -142,8 +142,8 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 	sDesc.AddressU = D3D10_TEXTURE_ADDRESS_CLAMP;
 	sDesc.AddressV = D3D10_TEXTURE_ADDRESS_CLAMP;
 	sDesc.AddressW = D3D10_TEXTURE_ADDRESS_CLAMP;
-	sDesc.BorderColor[0] = sDesc.BorderColor[1] = sDesc.BorderColor[2] = sDesc.BorderColor[3] = 1.0f;
-	sDesc.ComparisonFunc = D3D10_COMPARISON_GREATER_EQUAL;
+	sDesc.BorderColor[0] = sDesc.BorderColor[1] = sDesc.BorderColor[2] = sDesc.BorderColor[3] = 0.0f;
+	sDesc.ComparisonFunc = D3D10_COMPARISON_NEVER;
 	if(Settings.anisotropyLevel > 0)
 	{
 		sDesc.Filter = D3D10_FILTER_ANISOTROPIC;
@@ -154,14 +154,14 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 		sDesc.Filter = D3D10_FILTER_MIN_MAG_MIP_LINEAR;
 		sDesc.MaxAnisotropy = 0;
 	}
-	sDesc.MaxLOD = D3D10_FLOAT32_MAX;
+	sDesc.MaxLOD = 8;
 	sDesc.MinLOD = 0.0f;
 	sDesc.MipLODBias = 0.0f;
 	ID3D10SamplerState * sampler = nullptr;
 	HRESULT hr = Context.Device->CreateSamplerState(&sDesc, &sampler);
 	if(FAILED(hr))
 	{
-		MainLog.FatalError("Unable to create samplers");
+		MainLog.FatalError("Unable to create samplers, error code: " + std::to_string(hr));
 		return false;
 	}
 	Context.Device->PSSetSamplers(0, 1, &sampler);

@@ -2,7 +2,7 @@
 
 #include "../math.h"
 
-bool MathLib::RayBoxIntersect( const Ray & ray, const AABB & bbox, float t0, float t1 )
+bool MathLib::RayBoxIntersect(const Ray & ray, const AABB & bbox, float t0, float t1)
 {
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
@@ -63,18 +63,18 @@ bool MathLib::RayBoxIntersect( const Ray & ray, const AABB & bbox, float t0, flo
 	return ((tmin < t1) && (tmax > t0));
 }
 
-bool MathLib::SphereSphereIntersect( Vector3F s1, Vector3F s2, float r1, float r2 )
+bool MathLib::SphereSphereIntersect(Vector3F s1, Vector3F s2, float r1, float r2)
 {
-	if(distance(s1, s2) <= r1 + r2)
+	if (distance(s1, s2) <= r1 + r2)
 		return true;
 	return false;
 }
 
-bool MathLib::RaySphereIntersect( Ray & r, Vector3F & s1, float r1 )
+bool MathLib::RaySphereIntersect(Ray & r, Vector3F & s1, float r1)
 {
 	Vector3F diff = s1 - r.Origin;
 
-	if(MathLib::distance(s1, r.Origin) > r1 && MathLib::dot(diff, r.Direction) < 0.0f)
+	if (MathLib::distance(s1, r.Origin) > r1 && MathLib::dot(diff, r.Direction) < 0.0f)
 		return false;
 
 	Vector3F res = MathLib::vec(diff, r.Direction);
@@ -89,7 +89,7 @@ bool MathLib::RaySphereIntersect( Ray & r, Vector3F & s1, float r1 )
 // p - точка пересечения прямой и треугольника
 // функция возвращает true в случае пересечения и false иначе, в p - точка пересечения
 bool MathLib::LineTriangleIntersectionPoint(const Vector3F &t1, const Vector3F &t2, const Vector3F &t3,
-							 const Vector3F &l1, const Vector3F &l2, Vector3F &p)
+	const Vector3F &l1, const Vector3F &l2, Vector3F &p)
 {
 	Vector3F n = Normalize(vec(t2 - t1, t3 - t2));
 	float d1 = dot((l1 - t1), n) / n.length();
@@ -97,11 +97,11 @@ bool MathLib::LineTriangleIntersectionPoint(const Vector3F &t1, const Vector3F &
 	if ((d1 > 0 && d2 > 0) || (d1 < 0 && d2 < 0))
 		return false;
 	p = l1 + (l2 - l1) * (-d2 / (d2 - d1));
-	if ( dot((vec(t2 - t1, p - t1)), n) <= 0 )
+	if (dot((vec(t2 - t1, p - t1)), n) <= 0)
 		return false;
-	if ( dot((vec(t3 - t2, p - t2)), n) <= 0 )
+	if (dot((vec(t3 - t2, p - t2)), n) <= 0)
 		return false;
-	if ( dot((vec(t1 - t3, p - t3)), n) <= 0 )
+	if (dot((vec(t1 - t3, p - t3)), n) <= 0)
 		return false;
 	return true;
 }

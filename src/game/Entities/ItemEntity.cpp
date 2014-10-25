@@ -1,7 +1,7 @@
 #include "ItemEntity.h"
 
 #include "../game.h"
-#include "../player/cInventory.h"
+#include "../cInventory.h"
 
 ItemEntity::ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
 	: itemId(itemId)

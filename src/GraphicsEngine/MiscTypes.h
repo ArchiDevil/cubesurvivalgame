@@ -57,6 +57,17 @@ namespace ShiftEngine
 	//параметры графического движка
 	struct GraphicEngineSettings
 	{
+		GraphicEngineSettings()
+			: screenWidth(800)
+			, screenHeight(600)
+			, multisampleQuality(0)
+			, windowed(true)
+			, screenRate(0)
+			, zNear(0.1f)
+			, zFar(200.0f)
+			, anisotropyLevel(0)
+		{}
+
 		int screenWidth;
 		int screenHeight;
 		int multisampleQuality;

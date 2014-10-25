@@ -1,6 +1,6 @@
 #pragma once
 
-#include "player/player.h"
+#include "Entities/PlayerGameObject.h"
 #include "world/world.h"
 #include "Entities/EntityManager.h"
 #include "Items/ItemManager.h"

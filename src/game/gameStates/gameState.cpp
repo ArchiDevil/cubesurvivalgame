@@ -2,10 +2,9 @@
 
 #include <thread>
 
-#include <GraphicsEngine/Renderer.h>
-#include <GraphicsEngine/ShaderManager.h>
+#include <GraphicsEngine/ShiftEngine.h>
 
-#include "../player/cInventory.h"
+#include "../cInventory.h"
 
 std::thread worldThread;
 volatile bool exitFlag = false;
@@ -17,8 +16,9 @@ float theta = -35.0f;
 float r = 20.0f;
 //END OF TEMPORARY
 
-gameState::gameState(IniWorker * iw )
-	: pIniLoader(iw), isConsoleState(false), console(800, 600)
+gameState::gameState(IniWorker * iw)
+	: pIniLoader(iw)
+	, console(800, 600)
 {
 }
 
@@ -55,7 +55,7 @@ bool gameState::initState()
 	MainLog.Message("Items have been loaded");
 
 	pGame->EntityMgr->CreatePlayer(Vector3F(0.0f, 0.0f, 100.0f));
-	pGame->Player->Initialize(pGame->ItemMgr);
+	pGame->Player->Initialize();
 	MainLog.Message("Player has been initialized");
 
 	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
@@ -66,9 +66,9 @@ bool gameState::initState()
 
 	//worldThread = std::thread([&]
 	//{
-		//while(!exitFlag) 
-		//	LostIsland::GetGamePtr()->World->ProcessLoading();
-		//Sleep(0);
+	//while(!exitFlag) 
+	//	LostIsland::GetGamePtr()->World->ProcessLoading();
+	//Sleep(0);
 	//});
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
@@ -84,7 +84,7 @@ bool gameState::initState()
 	return true;
 }
 
-bool gameState::update( double dt )
+bool gameState::update(double dt)
 {
 	static double accumulatedTime = 0.0;
 	accumulatedTime += dt;
@@ -112,7 +112,7 @@ bool gameState::update( double dt )
 	return true;
 }
 
-bool gameState::render( double dt )
+bool gameState::render(double dt)
 {
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
@@ -158,17 +158,16 @@ bool gameState::render( double dt )
 
 	pCtxMgr->BeginScene(); //no more needed here, cause clear frame should be called from renderer
 
-		pScene->DrawAll(dt);
+	pScene->DrawAll(dt);
 
-		pCtxMgr->SetZState(false);
-			pGame->gameHud->Draw();
-		pCtxMgr->SetZState(true);
+	pCtxMgr->SetZState(false);
+	pGame->gameHud->Draw();
+	pCtxMgr->SetZState(true);
 
-	for (int i = 0; i < infoSize ; i++)
-		pFntMgr->DrawTextTL(di[i].str(), 0, 0 + i*32);
+	for (int i = 0; i < infoSize; i++)
+		pFntMgr->DrawTextTL(di[i].str(), 0, 0 + i * 32);
 
-	if(isConsoleState)
-		console.Draw();
+	console.Draw();
 
 	pCtxMgr->EndScene();
 
@@ -178,14 +177,14 @@ bool gameState::render( double dt )
 void gameState::onKill()
 {
 	exitFlag = true;
-	if(worldThread.joinable())
+	if (worldThread.joinable())
 		worldThread.join();
 }
 
 void gameState::onSuspend()
 {
 	exitFlag = true;
-	if(worldThread.joinable())
+	if (worldThread.joinable())
 		worldThread.join();
 }
 
@@ -193,12 +192,12 @@ void gameState::onResume()
 {
 	cGame * pGame = LostIsland::GetGamePtr();
 
-	if(worldThread.joinable())
+	if (worldThread.joinable())
 		worldThread.join();
 	exitFlag = false;
 	worldThread = std::thread([&]
 	{
-		while(!exitFlag) 
+		while (!exitFlag)
 			LostIsland::GetGamePtr()->World->ProcessLoading();
 		Sleep(0);
 	});
@@ -215,16 +214,13 @@ void gameState::ProcessInput(double dt)
 	InputEngine->GetKeys();
 	auto mouseInfo = InputEngine->GetMouseInfo();
 
-	if(InputEngine->IsKeyUp(DIK_GRAVE))
+	if (InputEngine->IsKeyUp(DIK_GRAVE))
 	{
-		isConsoleState = !isConsoleState;
+		console.SetVisibility(!console.GetVisibility());
 	}
 
-	if(isConsoleState)
+	if (console.GetVisibility())
 	{
-		if(InputEngine->IsKeyUp(DIK_RETURN))
-			console.HandleCommand();
-
 		return;
 	}
 
@@ -291,17 +287,23 @@ void gameState::ProcessInput(double dt)
 			theta = -5.0f;
 	}
 
+	// do the raycasting
+	mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
+	mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
+	Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
+	Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
+	Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
+
 	if (InputEngine->IsMouseUp(LButton))
 	{
-		// do the raycasting and select any entity
-		mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
-		mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-
-		Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
-		Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
-		Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
-
 		pGame->EntityMgr->SelectEntity(unprojectedRay);
+	}
+
+	if (InputEngine->IsMouseUp(RButton))
+	{
+		auto coord = pGame->World->SelectColumnByRay(unprojectedRay);
+		MainLog.Message("Player goes to: " + std::to_string(coord.x) + " " + std::to_string(coord.y));
+		pGame->Player->Go(Vector2F(coord.x, coord.y));
 	}
 
 	r -= mouseInfo.deltaZ * dt;

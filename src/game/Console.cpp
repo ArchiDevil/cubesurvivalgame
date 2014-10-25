@@ -1,12 +1,13 @@
 #include "Console.h"
-
-#include "player/cInventory.h"
+#include "cInventory.h"
+#include <GraphicsEngine/ShiftEngine.h>
 
 #include <sstream>
 
 Console::Console(size_t screenWidth, size_t screenHeight)
 	: screenWidth(screenWidth)
 	, screenHeight(screenHeight)
+	, visibility(false)
 {
 }
 
@@ -73,6 +74,9 @@ void Console::HandleCommand()
 
 void Console::Draw()
 {
+	if (!visibility)
+		return;
+
 	auto * pFontManager = ShiftEngine::GetContextManager()->GetFontManager();
 	auto currentFont = pFontManager->GetCurrentFontName();
 	pFontManager->SetFont(L"2");
@@ -113,14 +117,31 @@ bool Console::handleEvent(const InputEvent & event)
 		return true;
 	case IE_SpecialKey:
 		if (event.key == SK_BACKSPACE)
-			if (inputBuffer.size()) 
+		{
+			if (inputBuffer.size())
+			{
 				inputBuffer.pop_back();
+			}
+		}
 
 		if (event.key == SK_ENTER)
+		{
 			HandleCommand();
+			visibility = false;
+		}
 
 		return true;
 	default:
 		return false;
 	}
+}
+
+void Console::SetVisibility(bool val)
+{
+	visibility = val;
+}
+
+bool Console::GetVisibility() const
+{
+	return visibility;
 }

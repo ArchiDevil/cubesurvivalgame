@@ -5,7 +5,7 @@
 #include "Items/EntityItem.h"
 #include "Items/FoodItem.h"
 
-#include "player/player.h"
+#include "Entities/PlayerGameObject.h"
 
 ItemUsingsHandler::ItemUsingsHandler( PlayerGameObject * pPlayer, cWorld * pWorld )
 	: pPlayer(pPlayer), pWorld(pWorld)
