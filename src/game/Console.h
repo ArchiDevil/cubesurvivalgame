@@ -22,6 +22,9 @@ public:
 	void SetVisibility(bool val);
 	bool GetVisibility() const;
 
+	void SetScreenWidth(size_t width);
+	void SetScreenHeight(size_t height);
+
 private:
 	std::vector<std::string> Tokenize(const std::string & input) const;
 

@@ -39,39 +39,39 @@ public:
 	cWorld();
 	~cWorld();
 
-	void						Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName);
-	void						Unload();
-	void						GenerateChunk(int x, int y);
-	void						ProcessLoading();
-	Vector3F					SelectColumnByRay(const MathLib::Ray & unprojectedRay) const;
-
-	//Getters
-	WorldStorage *				GetDataStorage();
-	cChunksStorage *			GetChunksStorage();
-	typesStorage *				GetTypesStorage();
-	bool						HaveSolidsNear(int x, int y, int z);
-
-	void						SetWorldName(const std::string & worldName);
-	std::string					GetWorldName() const;
-	
-	//Loaders
-	void						ShiftChunkX(int ShiftingValue);
-	void						ShiftChunkY(int ShiftingValue);
-
-private:
-	void						FillQueue(int centralX, int centralY, int cps);
-	void						UpdateChunk(int WorldX, int WorldY);
-	void						RemoveRepeatingElems();
-
-	//chunk handlers
-	int							ProcessChunk(int WorldX, int WorldY, Action action);
-	void						ClearChunkData(int WorldX, int WorldY);
-	void						ComputeUpsideLight(int WorldX, int WorldY);
-	void						ComputeScatteringLight(int WorldX, int WorldY);
-
-	void						LightProp(int PTR, unsigned char value);
-
-	float						GetInterpolatedHeight(int x, int y);
+	void			 Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName);
+	void			 Unload();
+	void			 GenerateChunk(int x, int y);
+	void			 ProcessLoading();
+	bool			 SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & out) const;
+					 
+	//Getters		 
+	WorldStorage *	 GetDataStorage();
+	cChunksStorage * GetChunksStorage();
+	typesStorage *	 GetTypesStorage();
+	bool			 HaveSolidsNear(int x, int y, int z);
+					 
+	void			 SetWorldName(const std::string & worldName);
+	std::string		 GetWorldName() const;
+					 
+	//Loaders		 
+	void			 ShiftChunkX(int ShiftingValue);
+	void			 ShiftChunkY(int ShiftingValue);
+					 
+private:			 
+	void			 FillQueue(int centralX, int centralY, int cps);
+	void			 UpdateChunk(int WorldX, int WorldY);
+	void			 RemoveRepeatingElems();
+					 
+	//chunk handlers 
+	int				 ProcessChunk(int WorldX, int WorldY, Action action);
+	void			 ClearChunkData(int WorldX, int WorldY);
+	void			 ComputeUpsideLight(int WorldX, int WorldY);
+	void			 ComputeScatteringLight(int WorldX, int WorldY);
+					 
+	void			 LightProp(int PTR, unsigned char value);
+					 
+	float			 GetInterpolatedHeight(int x, int y);
 	std::unique_ptr<WorldStorage>		DataStorage;
 	std::unique_ptr<cChunksStorage>		ChunksStorage;
 	std::unique_ptr<cWorldGenerator>	Generator;

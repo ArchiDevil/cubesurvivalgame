@@ -1,10 +1,9 @@
 #include "gameState.h"
 
-#include <thread>
-
 #include <GraphicsEngine/ShiftEngine.h>
-
 #include "../cInventory.h"
+
+#include <thread>
 
 std::thread worldThread;
 volatile bool exitFlag = false;
@@ -14,6 +13,7 @@ const double AccelerationMultiplier = 10.0;
 float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
+ShiftEngine::LightNode * pSun = nullptr;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw)
@@ -79,6 +79,8 @@ bool gameState::initState()
 	pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
+	pSun = pScene->AddDirectionalLightNode(Vector3F());
+
 	MainLog.Message("End of game state initializing");
 
 	return true;
@@ -92,14 +94,15 @@ bool gameState::update(double dt)
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	cGame * pGame = LostIsland::GetGamePtr();
 
+	Vector3F playerPosition = pGame->Player->GetPosition();
+	Vector3F sunPosition = pGame->environmentMgr->calculateSunPos(playerPosition);
+	pSun->SetDirection(-sunPosition);
 	ProcessInput(dt);
-	Vector3F sunPos = pGame->environmentMgr->GetSkyPtr()->GetSunPos();
 	cSimplePhysicsEngine::GetInstance().Update(dt);
-	pGame->EntityMgr->Update(dt, sunPos);
-	pGame->environmentMgr->Update(dt * 0.0, pGame->Player->GetPosition());
+	pGame->EntityMgr->Update(dt, sunPosition);
+	pGame->environmentMgr->Update(dt * 0.0);
 
-	Vector3D vectemp = pGame->Player->GetPosition();
-	pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(vectemp.x, vectemp.y, vectemp.z), phi, theta, r);
+	pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(playerPosition.x, playerPosition.y, playerPosition.z), phi, theta, r);
 
 	if ((int)accumulatedTime % 10 == 0)
 	{
@@ -119,23 +122,19 @@ bool gameState::render(double dt)
 	ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
 	cGame * pGame = LostIsland::GetGamePtr();
 
-	auto camPos = pScene->GetActiveCamera()->GetPosition();
-	Vector3D playerPos = pGame->Player->GetPosition();
-
 #if defined (DEBUG) || (_DEBUG)
-	const int infoSize = 10;
+	const int infoSize = 9;
 	std::ostringstream di[infoSize];
 
 	di[0] << "Health: " << pGame->Player->GetHealth();
 	di[1] << "Warmth: " << pGame->Player->GetTemperature();
 	di[2] << "Hunger: " << pGame->Player->GetHunger();
 	di[3] << "FPS: " << pRenderer->GetFPS();
-	di[4] << "Camera pos: " << camPos.x << " " << camPos.y << " " << camPos.z;
-	di[5] << "Shader changes: " << pRenderer->GetShaderChanges();
-	di[6] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
-	di[7] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
-	di[8] << "Texture bindings: " << pRenderer->GetTextureBindings();
-	di[9] << "Draw calls: " << pRenderer->GetDrawCalls();
+	di[4] << "Shader changes: " << pRenderer->GetShaderChanges();
+	di[5] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
+	di[6] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
+	di[7] << "Texture bindings: " << pRenderer->GetTextureBindings();
+	di[8] << "Draw calls: " << pRenderer->GetDrawCalls();
 #else
 	const int infoSize = 5;
 	std::ostringstream di[infoSize];
@@ -210,6 +209,8 @@ void gameState::ProcessInput(double dt)
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
+
+	static size_t mousePath = 0;
 
 	InputEngine->GetKeys();
 	auto mouseInfo = InputEngine->GetMouseInfo();
@@ -301,14 +302,28 @@ void gameState::ProcessInput(double dt)
 
 	if (InputEngine->IsMouseUp(RButton))
 	{
-		auto coord = pGame->World->SelectColumnByRay(unprojectedRay);
-		MainLog.Message("Player goes to: " + std::to_string(coord.x) + " " + std::to_string(coord.y));
-		pGame->Player->Go(Vector2F(coord.x, coord.y));
+		if (mousePath <= 15)
+		{
+			Vector3F column;
+			bool result = pGame->World->SelectColumnByRay(unprojectedRay, column);
+			if (result)
+			{
+				MainLog.Message("Player goes to: " + std::to_string(column.x) + " " + std::to_string(column.y));
+				pGame->Player->Go(Vector2F(column.x, column.y));
+			}
+		}
+		mousePath = 0;
+	}
+
+	if (InputEngine->IsMouseDown(RButton))
+	{
+		mousePath += abs(mouseInfo.deltaX);
+		mousePath += abs(mouseInfo.deltaY);
 	}
 
 	r -= mouseInfo.deltaZ * dt;
-	if (r > 30.0f)
-		r = 30.0f;
-	if (r < 5.0f)
-		r = 5.0f;
+	if (r > 60.0f)
+		r = 60.0f;
+	if (r < 15.0f)
+		r = 15.0f;
 }

@@ -145,3 +145,13 @@ bool Console::GetVisibility() const
 {
 	return visibility;
 }
+
+void Console::SetScreenWidth(size_t width)
+{
+	screenWidth = width;
+}
+
+void Console::SetScreenHeight(size_t height)
+{
+	screenHeight = height;
+}

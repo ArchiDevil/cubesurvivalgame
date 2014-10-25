@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Sky.h"
 #include "../dayTimer.h"
+#include <MathLib/math.h>
 
 // Хранит текущее время, день, месяц, год.
 // На основе этого анимирует небо, подсчитывает время,
@@ -14,17 +14,13 @@ public:
 	~cEnvironmentManager();
 
 	void Initialize(dayTimer & initialTime);
-	void Update(double deltaTime, const Vector3F & playerPos);
+	void Update(double deltaTime);
 	
 	void SetTime(dayTimer & t);
 	dayTimer GetTime();
-	
-	SkyManager * GetSkyPtr();
+	MathLib::Vector3F calculateSunPos(const MathLib::Vector3F & playerPos) const;
 
 private:
-	Vector3F calculateSunPos(const Vector3F & playerPos) const;
-
-	SkyManager * Sky;
 	dayTimer time;
 
 };

@@ -350,7 +350,7 @@ std::string cWorld::GetWorldName() const
 	return worldName;
 }
 
-Vector3F cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay) const
+bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & out) const
 {
 	std::vector<WorldChunk*> foundChunksList;
 	unsigned int chunksPerSide = ChunksStorage->GetChunksPerSide();
@@ -399,7 +399,13 @@ Vector3F cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay) const
 	}
 
 	if (resultedBBox)
-		return resultedBBox->GetCentralPoint();
+	{
+		out = resultedBBox->GetCentralPoint();
+		return true;
+	}
 	else
-		return Vector3F();
+	{
+		out = Vector3F();
+		return false;
+	}
 }

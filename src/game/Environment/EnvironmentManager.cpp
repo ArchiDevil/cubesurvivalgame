@@ -2,19 +2,15 @@
 
 cEnvironmentManager::cEnvironmentManager()
 {
-	Sky = new SkyManager;
 }
 
 cEnvironmentManager::~cEnvironmentManager()
 {
-	if(Sky)
-		delete Sky;
 }
 
 void cEnvironmentManager::Initialize(dayTimer & initialTime)
 {
 	this->time.setTime(initialTime.getHours(), initialTime.getMinutes());
-	Sky->Initialize();
 }
 
 void cEnvironmentManager::SetTime(dayTimer & t)
@@ -27,19 +23,12 @@ dayTimer cEnvironmentManager::GetTime()
 	return time;
 }
 
-void cEnvironmentManager::Update( double deltaTime, const Vector3F & playerPos )
+void cEnvironmentManager::Update(double deltaTime)
 {
 	time.update(deltaTime);
-	Sky->SetSunPos(calculateSunPos(playerPos));
-	Sky->Update(deltaTime, playerPos);
 }
 
-SkyManager * cEnvironmentManager::GetSkyPtr()
-{
-	return Sky;
-}
-
-Vector3F cEnvironmentManager::calculateSunPos(const Vector3F & playerPos) const
+MathLib::Vector3F cEnvironmentManager::calculateSunPos(const MathLib::Vector3F & playerPos) const
 {
 	// midday at 12:00
 	// dusk - 18:00

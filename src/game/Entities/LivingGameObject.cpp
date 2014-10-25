@@ -51,7 +51,7 @@ void LivingGameObject::Update(double dt)
 		Vector3F currentPos = SceneNode->GetPosition();
 		currentPos.z = 0.0f;
 		Vector3F targetPos = Vector3F(targetPosition.x, targetPosition.y, 0.0f);
-		if (MathLib::distance(currentPos, targetPos) <= 0.4f)
+		if (MathLib::distance(currentPos, targetPos) <= 0.1f)
 		{
 			SceneNode->SetPosition(targetPos);
 			currentState = ES_Waiting;
@@ -69,8 +69,19 @@ void LivingGameObject::Update(double dt)
 	}
 
 	auto pGame = LostIsland::GetGamePtr();
-	Vector3F position = this->GetPosition();
-	auto height = pGame->World->GetDataStorage()->GetFullHeight(position.x, position.y);
-	position.z = (float)height;
-	this->SetPosition(position);
+	auto bbox = SceneNode->GetBBox();
+	int heights[4] = { 0 };
+	heights[0] = pGame->World->GetDataStorage()->GetFullHeight(std::floor(bbox.bMin.x), std::floor(bbox.bMin.y));
+	heights[1] = pGame->World->GetDataStorage()->GetFullHeight(std::floor(bbox.bMin.x), std::floor(bbox.bMax.y));
+	heights[2] = pGame->World->GetDataStorage()->GetFullHeight(std::floor(bbox.bMax.x), std::floor(bbox.bMin.y));
+	heights[3] = pGame->World->GetDataStorage()->GetFullHeight(std::floor(bbox.bMax.x), std::floor(bbox.bMax.y));
+
+	float maxHeight = heights[0];
+	for (int i = 0; i < 4; ++i)
+		if (maxHeight < heights[i])
+			maxHeight = heights[i];
+
+	auto position = GetPosition();
+	position.z = (float)maxHeight;
+	SetPosition(position);
 }
