@@ -184,7 +184,7 @@ ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createSphere()
 	DefaultVertex * vertices = new DefaultVertex[subdivisions * subdivisions * 6];
 	memset(vertices, 0, sizeof(DefaultVertex) * subdivisions * subdivisions * 6);
 
-	const float step = M_PI / subdivisions;
+	const float step = (float)M_PI / subdivisions;
 
 	for(int i = 0; i < subdivisions; i++) //horizontal step (phi)
 	{

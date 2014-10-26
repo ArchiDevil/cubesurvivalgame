@@ -78,8 +78,8 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode()
 	CameraSceneNode * cam = new CameraSceneNode();
 	cam->SetSceneGraph(this);
 	rootNode->AddChild(cam);
-	cam->Initialize(ContextManager->GetParameters().screenWidth, 
-					ContextManager->GetParameters().screenHeight, 
+	cam->Initialize((float)ContextManager->GetParameters().screenWidth, 
+					(float)ContextManager->GetParameters().screenHeight,
 					ContextManager->GetParameters().zNear, 
 					ContextManager->GetParameters().zFar, 
 					60.0f);
