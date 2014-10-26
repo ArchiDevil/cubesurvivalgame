@@ -26,7 +26,7 @@ EntityManager::~EntityManager()
 {
 }
 
-ItemEntityPtr EntityManager::CreateItemEntity(const Vector3D & Position, const Vector3D & Velocity, uint64_t itemId)
+ItemEntityPtr EntityManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);

@@ -36,8 +36,8 @@ bool gameState::initState()
 
 	console.subscribe(&cInputEngine::GetInstance());
 
-	//cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
-	//MainLog.Message("Physics initialized");
+	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
+	MainLog.Message("Physics initialized");
 
 	::utils::filesystem::CreateDir(L"saves/worlds/");
 	::utils::filesystem::CreateDir(L"saves/players/");
@@ -249,9 +249,6 @@ void gameState::ProcessInput(double dt)
 	}
 
 	pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
-
-	if (InputEngine->IsKeyUp(DIK_F))
-		PhysicsEngine->ChangePlayerFreeState();
 
 	if (InputEngine->IsKeyUp(DIK_V))
 	{

@@ -9,13 +9,13 @@ using ShiftEngine::MeshNode;
 class PhysicsGameObject : public GameObject
 {
 public:
-	PhysicsGameObject(pPhysObject _obj, MeshNode * meshNode);
+	PhysicsGameObject(PhysObjectPtr obj, MeshNode * meshNode);
 	virtual ~PhysicsGameObject();
 
 	virtual void Update(double dt);
-	virtual void SetPosition(Vector3D & position);
+	virtual void SetPosition(MathLib::Vector3F & position);
 
 private:
-	pPhysObject obj;
+	PhysObjectPtr obj;
 
 };

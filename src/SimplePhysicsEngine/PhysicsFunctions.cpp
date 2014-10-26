@@ -1,89 +1,18 @@
 #include "PhysicsFunctions.h"
 
-using MathLib::Vector3D;
-
-//bool Physics::IsPlayerCollidesWithWorld(const Vector3D & Position, float PlayerHeight, cWorldStorage * storage)
-//{
-//	//UNDONE: не учитывается высота игрока
-//	if (IsLittleCubeCollidesWithWorld(Position, 0.4f, storage) ||
-//		IsLittleCubeCollidesWithWorld(Vector3D(Position.x, Position.y, Position.z + 0.8f), 0.4f, storage))
-//	{
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
-//
-//bool Physics::IsPointCollidesWithWorld(const Vector3D & Position, cWorldStorage * storage)
-//{
-//	//UNDONE: не только воздух может быть неколлидящимся
-//	if (storage->GetBlock((int)floor(Position.x), (int)floor(Position.y), (int)floor(Position.z))->TypeID != ID_AIR)
-//		return true;
-//	return false;
-//}
-//
-//bool Physics::IsLittleCubeCollidesWithWorld(const Vector3D & Pos, float Half, cWorldStorage * storage)
-//{
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x + Half, Pos.y + Half, Pos.z), storage))		//bottom corners
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x - Half, Pos.y + Half, Pos.z), storage))
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x + Half, Pos.y - Half, Pos.z), storage))
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x - Half, Pos.y - Half, Pos.z), storage))
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x + Half, Pos.y + Half, Pos.z + 2 * Half), storage))	//top corners
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x - Half, Pos.y + Half, Pos.z + 2 * Half), storage))
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x + Half, Pos.y - Half, Pos.z + 2 * Half), storage))
-//		return true;
-//	if (IsPointCollidesWithWorld(Vector3D(Pos.x - Half, Pos.y - Half, Pos.z + 2 * Half), storage))
-//		return true;
-//	return false;
-//}
-
-bool Physics::IsPointCollidesWithCube(const Vector3D & PointPosition, const Vector3D & CubePosition)
+bool Physics::IsPointCollidesWithWorld(const Vector3F & Position, WorldStorage * storage)
 {
-	if (PointPosition.x < CubePosition.x - 0.5f)
-		return false;
-	if (PointPosition.x > CubePosition.x + 0.5f)
-		return false;
-
-	if (PointPosition.y < CubePosition.y - 0.5f)
-		return false;
-	if (PointPosition.y > CubePosition.y + 0.5f)
-		return false;
-
-	if (PointPosition.z < CubePosition.z - 0.5f)
-		return false;
-	if (PointPosition.z > CubePosition.z + 0.5f)
-		return false;
-
-	return true;
+	if (storage->GetBlockType((int)floor(Position.x), (int)floor(Position.y), (int)floor(Position.z)) != BlockTypes::BT_Empty)
+		return true;
+	return false;
 }
 
-bool Physics::IsPlayerCollidesWithBlock(const Vector3D & PlayerPosition, const Vector3D & BlockPosition, float PlayerHeight)
+bool Physics::IsAABBCollidesWithWorld(const MathLib::AABB & bbox, WorldStorage * storage)
 {
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x - 0.5f, PlayerPosition.y - 0.5f, PlayerPosition.z), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x + 0.5f, PlayerPosition.y - 0.5f, PlayerPosition.z), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x - 0.5f, PlayerPosition.y + 0.5f, PlayerPosition.z), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x + 0.5f, PlayerPosition.y + 0.5f, PlayerPosition.z), BlockPosition))
-		return true;
-
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x - 0.5f, PlayerPosition.y - 0.5f, PlayerPosition.z + PlayerHeight), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x + 0.5f, PlayerPosition.y - 0.5f, PlayerPosition.z + PlayerHeight), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x - 0.5f, PlayerPosition.y + 0.5f, PlayerPosition.z + PlayerHeight), BlockPosition))
-		return true;
-	if (IsPointCollidesWithCube(Vector3D(PlayerPosition.x + 0.5f, PlayerPosition.y + 0.5f, PlayerPosition.z + PlayerHeight), BlockPosition))
-		return true;
-
+	Vector3F corners[8];
+	bbox.GetVertices(corners);
+	for (int i = 0; i < 8; ++i)
+		if (IsPointCollidesWithWorld(corners[i], storage))
+			return true;
 	return false;
 }

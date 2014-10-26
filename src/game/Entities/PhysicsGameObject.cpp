@@ -1,20 +1,20 @@
 #include "PhysicsGameObject.h"
 
-PhysicsGameObject::PhysicsGameObject(pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
-	: GameObject(meshNode), obj(_obj)
+PhysicsGameObject::PhysicsGameObject(PhysObjectPtr obj, ShiftEngine::MeshNode * meshNode)
+	: GameObject(meshNode), obj(obj)
 {
 }
 
-PhysicsGameObject::~PhysicsGameObject() 
+PhysicsGameObject::~PhysicsGameObject()
 {
 }
 
-void PhysicsGameObject::Update( double /*dt*/ )
+void PhysicsGameObject::Update(double /*dt*/)
 {
-	SceneNode->SetPosition(Vector3F(obj.GetPtr()->Position.x, obj.GetPtr()->Position.y, obj.GetPtr()->Position.z));
+	SceneNode->SetPosition(Vector3F(obj->Position.x, obj->Position.y, obj->Position.z));
 }
 
-void PhysicsGameObject::SetPosition( Vector3D & position )
+void PhysicsGameObject::SetPosition(MathLib::Vector3F & position)
 {
-	obj.GetPtr()->Position = position;
+	obj->Position = position;
 }

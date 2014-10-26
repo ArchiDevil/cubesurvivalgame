@@ -18,6 +18,8 @@
 
 class cSimplePhysicsEngine;
 
+using MathLib::Vector3F;
+
 typedef std::shared_ptr<GameObject>				GameObjectPtr;
 typedef std::shared_ptr<PhysicsGameObject>		PhysicsEntityPtr;
 typedef std::shared_ptr<ItemEntity>				ItemEntityPtr;
@@ -49,8 +51,8 @@ public:
 	EntityManager();
 	~EntityManager();
 
-	ItemEntityPtr			CreateItemEntity(const Vector3D & Position, const Vector3D & Velocity, uint64_t itemId);
-	GameObjectPtr			CreateEntity(const MathLib::Vector3F & position, const std::string & entityId);
+	ItemEntityPtr			CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId);
+	GameObjectPtr			CreateEntity(const Vector3F & position, const std::string & entityId);
 	CrafterPtr				CreateCrafterEntity(const Vector3F & Position, const std::string & id);
 	ProducerPtr				CreateProducerEntity(const Vector3F & Position, const std::string & id);
 	PlayerPtr				CreatePlayer(const Vector3F & Position);

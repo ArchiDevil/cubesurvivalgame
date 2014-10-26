@@ -1,73 +1,24 @@
 #pragma once
 
+#include <memory>
+
 #include <MathLib/math.h>
-#include <Utilities/cRefcounted.h>
 
-using MathLib::Vector3D;
+using MathLib::Vector3F;
 
-struct PhysObject : public Refcounted
+struct PhysObject
 {
-	PhysObject(Vector3D _pos = Vector3D(0.0f, 0.0f, 0.0f), 
-		Vector3D _vel = Vector3D(0.0f, 0.0f, 0.0f))
-		: Position(_pos), Velocities(_vel), toDelete(false){};
-	PhysObject(const PhysObject & ref);
+	PhysObject(Vector3F _pos = Vector3F(0.0f, 0.0f, 0.0f),
+			   Vector3F _vel = Vector3F(0.0f, 0.0f, 0.0f))
+		: Position(_pos)
+		, Velocities(_vel)
+		, toDelete(false)
+	{
+	}
 
-	Vector3D Position;
-	Vector3D Velocities;
+	Vector3F Position;
+	Vector3F Velocities;
 	bool toDelete;
 };
 
-class pPhysObject
-{
-public:
-	pPhysObject(PhysObject * obj = nullptr)
-		: ptr(obj) 
-	{
-		if(obj)
-			obj->addRef();
-	}
-
-	pPhysObject(const pPhysObject & ref)
-	{
-		if(ref.ptr)
-		{
-			this->ptr = ref.ptr;
-			ptr->addRef();
-		}
-	}
-
-	~pPhysObject()
-	{
-		if(this->ptr)
-			ptr->release();
-	}
-
-	PhysObject * GetPtr()
-	{
-		if(this->ptr)
-			return ptr;
-		else
-			return nullptr;
-	}
-
-	pPhysObject & operator = (const pPhysObject & ref)
-	{
-		if(this->ptr)
-			this->ptr->release();
-		if(ref.ptr)
-		{
-			this->ptr = ref.ptr;
-			this->ptr->addRef();
-		}
-		return *this;
-	}
-
-private:
-	PhysObject * ptr;
-};
-
-struct CollisionInfo	//now just for entities
-{
-	CollisionInfo(pPhysObject _obj) : obj(_obj) {};
-	pPhysObject obj;
-};
+typedef std::shared_ptr<PhysObject> PhysObjectPtr;

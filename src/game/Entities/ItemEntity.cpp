@@ -3,9 +3,9 @@
 #include "../game.h"
 #include "../cInventory.h"
 
-ItemEntity::ItemEntity(uint64_t itemId, pPhysObject _obj, ShiftEngine::MeshNode * meshNode)
+ItemEntity::ItemEntity(uint64_t itemId, PhysObjectPtr obj, ShiftEngine::MeshNode * meshNode)
 	: itemId(itemId)
-	, PhysicsGameObject(_obj, meshNode)
+	, PhysicsGameObject(obj, meshNode)
 {
 }
 

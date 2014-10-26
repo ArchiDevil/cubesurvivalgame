@@ -1,8 +1,17 @@
 #pragma once
 
 #include <vector>
-
 #include "types.h"
+
+struct CollisionInfo
+{
+	CollisionInfo(PhysObjectPtr obj)
+		: obj(obj)
+	{
+	}
+
+	PhysObjectPtr obj;
+};
 
 class CollisionListener
 {
@@ -17,5 +26,4 @@ public:
 
 private:
 	std::vector<CollisionInfo> CurrentCollisions;
-
 };
