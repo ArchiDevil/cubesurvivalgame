@@ -17,6 +17,8 @@ public:
 
 	virtual void Update(double dt) override;
 	virtual bool Go(const MathLib::Vector2F & target);
+	virtual MathLib::Vector2F GetTargetPosition() const;
+	virtual EntityState GetCurrentState() const;
 
 protected:
 	EntityState currentState;

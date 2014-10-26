@@ -125,6 +125,22 @@ GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, co
 	return nullptr;
 }
 
+PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
+{
+	if (LostIsland::GetGamePtr()->Player)
+	{
+		MainLog.Error("Player is already created");
+		return nullptr;
+	}
+	auto pCtxMgr = ShiftEngine::GetContextManager();
+	auto pScene = ShiftEngine::GetSceneGraph();
+	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
+	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()));
+	GameObjects.push_back(player);
+	LostIsland::GetGamePtr()->Player = player.get();
+	return player;
+}
+
 void EntityManager::LoadEntities()
 {
 	std::wstring pathPrefix = L"resources/gamedata/entities/";
@@ -209,22 +225,6 @@ void EntityManager::LoadEntities()
 	}
 }
 
-PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
-{
-	if (LostIsland::GetGamePtr()->Player)
-	{
-		MainLog.Error("Player is already created");
-		return nullptr;
-	}
-	auto pCtxMgr = ShiftEngine::GetContextManager();
-	auto pScene = ShiftEngine::GetSceneGraph();
-	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()));
-	GameObjects.push_back(player);
-	LostIsland::GetGamePtr()->Player = player.get();
-	return player;
-}
-
 void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
 {
 	bool selected = false;
@@ -242,7 +242,8 @@ void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
 
 	if (!selected)
 	{
-		selectedEntity->Unselect();
+		if (selectedEntity)
+			selectedEntity->Unselect();
 		selectedEntity = nullptr;
 	}
 }

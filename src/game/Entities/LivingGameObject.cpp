@@ -15,6 +15,22 @@ LivingGameObject::~LivingGameObject()
 
 bool LivingGameObject::Go(const MathLib::Vector2F & target)
 {
+	// check if target position doesn't contain water
+	auto pGame = LostIsland::GetGamePtr();
+	auto columnIndex = pGame->World->GetDataStorage()->GetColumnIndex(std::floor(target.x), std::floor(target.y));
+	BlockTypes topColumn = BlockTypes::BT_Empty;
+
+	for (unsigned i = 0;; ++i)
+	{
+		BlockTypes currentBlock = pGame->World->GetDataStorage()->GetBlockType(std::floor(target.x), std::floor(target.y), i++);
+		if (currentBlock == BT_Empty)
+			break;
+		topColumn = currentBlock;
+	}
+
+	if (topColumn == BT_Water)
+		return false;
+
 	targetPosition = target;
 	currentState = ES_Rotating;
 	return true;
@@ -84,4 +100,14 @@ void LivingGameObject::Update(double dt)
 	auto position = GetPosition();
 	position.z = (float)maxHeight;
 	SetPosition(position);
+}
+
+MathLib::Vector2F LivingGameObject::GetTargetPosition() const
+{
+	return targetPosition;
+}
+
+EntityState LivingGameObject::GetCurrentState() const
+{
+	return currentState;
 }

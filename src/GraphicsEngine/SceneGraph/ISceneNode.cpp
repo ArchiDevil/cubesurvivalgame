@@ -157,6 +157,11 @@ void ShiftEngine::ISceneNode::SetScale( const Vector3F & val )
 		pSceneGraph->MoveNodeCallback(this);
 }
 
+void ShiftEngine::ISceneNode::SetScale(float val)
+{
+	SetScale(Vector3F(val, val, val));
+}
+
 qaFloat ShiftEngine::ISceneNode::GetRotation() const
 {
 	return Rotation;

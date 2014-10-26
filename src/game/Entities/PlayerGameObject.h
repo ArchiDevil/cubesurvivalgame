@@ -24,11 +24,15 @@ public:
 	void SetHealth(int health);
 	void SetTemperature(int temperature);
 
+	void Update(double dt) override;
+
 private:
 	std::unique_ptr<cInventory> Inventory;
 
 	unsigned int hunger;
 	unsigned int temperature;
 	unsigned int health;
+
+	ShiftEngine::MeshNode * targetMarker;
 
 };

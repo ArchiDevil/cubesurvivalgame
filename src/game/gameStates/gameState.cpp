@@ -9,7 +9,6 @@ std::thread worldThread;
 volatile bool exitFlag = false;
 
 //TEMPORARY
-const double AccelerationMultiplier = 10.0;
 float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
@@ -88,9 +87,6 @@ bool gameState::initState()
 
 bool gameState::update(double dt)
 {
-	static double accumulatedTime = 0.0;
-	accumulatedTime += dt;
-
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	cGame * pGame = LostIsland::GetGamePtr();
 
@@ -103,13 +99,6 @@ bool gameState::update(double dt)
 	pGame->environmentMgr->Update(dt * 0.0);
 
 	pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(playerPosition.x, playerPosition.y, playerPosition.z), phi, theta, r);
-
-	if ((int)accumulatedTime % 10 == 0)
-	{
-		pGame->Player->SetHunger(pGame->Player->GetHunger() - 1);
-		accumulatedTime++;
-	}
-
 	pGame->World->ProcessLoading();
 
 	return true;
@@ -235,10 +224,6 @@ void gameState::ProcessInput(double dt)
 		this->kill();
 
 	double cameraSpeed = 10.0;
-	if (InputEngine->IsKeyDown(DIK_LSHIFT)) //HACK: temporary
-	{
-		cameraSpeed *= AccelerationMultiplier;
-	}
 
 	auto camPos = pScene->GetActiveCamera()->GetPosition();
 	Vector3F newCamPos(camPos.x, camPos.y, camPos.z);

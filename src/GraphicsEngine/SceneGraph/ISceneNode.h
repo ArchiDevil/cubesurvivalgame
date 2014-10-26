@@ -43,6 +43,7 @@ namespace ShiftEngine
 
 		Vector3F GetScale() const;
 		void SetScale(const Vector3F & val);
+		void SetScale(float val);
 
 		qaFloat GetRotation() const;
 		void SetRotation(const qaFloat & val);
