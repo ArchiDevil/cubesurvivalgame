@@ -92,7 +92,7 @@ void SimpleGUI::Skinner::DrawTextbox( Textbox * textbox, const std::string & str
 
 	int stringWidth = pFntMgr->GetStringWidth(string);
 	if(stringWidth > (size.x - size.x * 0.1f))	//more than size - 10%
-		textPosition.x = pos.x + (size.x - size.x * 0.1f) - stringWidth;
+		textPosition.x = pos.x + (size.x - (int)(size.x * 0.1f)) - stringWidth;
 	else
 		textPosition.x = pos.x + 3;
 
@@ -185,7 +185,7 @@ void SimpleGUI::Skinner::DrawValueBox( ValueBox * valueBox )
 	ValueBoxCache->SetMaskColor(Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
 	auto innerPos = outerPos;
 	auto innerSize = outerSize;
-	int minSize = min(innerSize.x, innerSize.y) * marginSize;
+	int minSize = (int)((float)min(innerSize.x, innerSize.y) * marginSize);
 	innerSize.x -= minSize;
 	innerSize.y -= minSize;
 	innerPos.x += minSize / 2;
@@ -193,7 +193,7 @@ void SimpleGUI::Skinner::DrawValueBox( ValueBox * valueBox )
 	SetControlParameters(ValueBoxCache, valueBox, innerPos, innerSize);
 	ValueBoxCache->Draw();
 
-	const int delimWidth = outerSize.x * 0.08f;
+	const int delimWidth = (int)((float)outerSize.x * 0.08f);
 
 	//now need to draw value delimiter
 	auto delimPos = outerPos;
@@ -201,7 +201,7 @@ void SimpleGUI::Skinner::DrawValueBox( ValueBox * valueBox )
 	delimSize.x = delimWidth;
 	delimSize.y = outerSize.y;
 	float percent = (float)(valueBox->GetValue() - valueBox->GetMinValue()) / (valueBox->GetMaxValue() - valueBox->GetMinValue());
-	delimPos.x = MathLib::LinearInterpolation(outerPos.x, outerPos.x + outerSize.x, percent) - delimWidth / 2;
+	delimPos.x = (int)MathLib::LinearInterpolation((float)outerPos.x, (float)outerPos.x + (float)outerSize.x, percent) - delimWidth / 2;
 	delimPos.y = outerPos.y;
 	SetControlParameters(ValueBoxCache, valueBox, delimPos, delimSize);
 	ValueBoxCache->SetMaskColor(Vector4F(0.5f, 0.5f, 0.5f, 1.0f));
@@ -211,7 +211,7 @@ void SimpleGUI::Skinner::DrawValueBox( ValueBox * valueBox )
 	ValueBoxCache->SetMaskColor(Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
 	auto innerDelimPos = delimPos;
 	auto innerDelimSize = delimSize;
-	minSize = (float)min(innerDelimSize.x, innerDelimSize.y) * marginSize;
+	minSize = (int)((float)min(innerDelimSize.x, innerDelimSize.y) * marginSize);
 	innerDelimSize.x -= minSize;
 	innerDelimSize.y -= minSize;
 	innerDelimPos.x += minSize / 2;

@@ -62,7 +62,10 @@ void SimpleGUI::Button::SetPicture( const std::wstring & str, bool center )
 	//	delete img;
 
 	img = std::make_shared<Image>(SimpleGUI::Image(nullptr, textureName));
-	img->SetSize(this->GetSize().x / 1.2, this->GetSize().y / 1.2);
+	Point size = GetSize();
+	size.x = (int)((float)size.x / 1.2f);
+	size.y = (int)((float)size.y / 1.2f);
+	img->SetSize(size.x, size.y);
 	Point curButSize = this->GetSize();
 	curButSize = Point(curButSize.x / 2, curButSize.y / 2);
 	img->SetPosition(Point(this->GetPosition().x + curButSize.x - img->GetSize().x / 2,
