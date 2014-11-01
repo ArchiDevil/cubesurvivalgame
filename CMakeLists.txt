@@ -26,7 +26,7 @@ set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
 set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
 
 function(AddVSTest TestName Sources)
-    if(NOT BUILD_TESTS)
+    if(NOT BUILD_TESTS OR NOT WIN32)
         return()
     endif()
     

@@ -17,8 +17,14 @@ namespace ShiftEngine
 	struct bufferDescription
 	{
 		bufferDescription() 
-			: bufferData(nullptr), pixel(false), vertex(false), 
-			isDirty(true), cbFromShader(nullptr)
+			: bufferData(nullptr)
+            , pixel(false)
+            , vertex(false)
+            , isDirty(true)
+            , cbFromShader(nullptr)
+            , StartSlotVertex(UINT_MAX)
+            , StartSlotPixel(UINT_MAX)
+            , Size(0)
 			{}
 		string Name;
 		bool isDirty;
@@ -41,8 +47,14 @@ namespace ShiftEngine
 	struct resDesc
 	{
 		resDesc()
-			: Name(""), BindPointVertex(UINT_MAX), BindPointPixel(UINT_MAX), 
-			View(nullptr), isDirty(true), pixel(false), vertex(false) {}
+			: Name("")
+            , BindPointVertex(UINT_MAX)
+            , BindPointPixel(UINT_MAX)
+            , View(nullptr)
+            , isDirty(true)
+            , pixel(false)
+            , vertex(false) 
+            {}
 		string Name;
 		uint32_t BindPointVertex;
 		uint32_t BindPointPixel;

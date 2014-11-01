@@ -7,14 +7,13 @@ cbuffer cbPerFrame
 {
 	float4x4 matView;
 	float4x4 matProjection;
-	float3 PlayerPosition = float3(0.0f, 0.0f, 90.0f);
 	float3 SunPosition = float3(0.0f, 0.0f, 90000.0f);
 };
 
 cbuffer cbRarely
 {
 	float3 DiffuseColor = float3(1.0f, 1.0f, 1.0f);
-	float3 AmbientColor = float3(0.2f, 0.2f, 0.2f);
+	float3 AmbientColor = float3(0.1f, 0.1f, 0.15f);
 };
 
 SamplerState testSS;
@@ -50,9 +49,8 @@ float4 PS(VS_OUT Input) : SV_TARGET
 {
 	float3 LightDir = normalize(SunPosition);
 	float3 color = Input.Color;
-    color += AmbientColor;
 	float DiffuseIntensity = max(0.0f, dot(LightDir, normalize(Input.Normal)));
 	color *= DiffuseIntensity * DiffuseColor;
-	float3 result = float3(1.0f, 1.0f, 1.0f) * color;
-	return float4(result, 1.0f);
+    color += AmbientColor;
+	return float4(color, 1.0f);
 };

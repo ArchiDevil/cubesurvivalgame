@@ -47,7 +47,7 @@ void Console::HandleCommand()
 			return;
 		}
 
-		unsigned int count = std::stoul(tokens[2]);
+        // unsigned int count = std::stoul(tokens[2]);
 
 		pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId(tokens[1]));
 	}
