@@ -1,7 +1,6 @@
 #include "cChunksStorage.h"
 
-#include "../../GraphicsEngine/ShiftEngine.h"
-
+#include <GraphicsEngine/ShiftEngine.h>
 #include <cassert>
 
 using namespace ShiftEngine;
@@ -75,17 +74,17 @@ void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int Center
 	}
 }
 
-int cChunksStorage::GetChunksPerSide()
+int cChunksStorage::GetChunksPerSide() const
 {
 	return ChunksPerSide;
 }
 
-int cChunksStorage::GetCenterX()
+int cChunksStorage::GetCentralX() const
 {
 	return CenterChunkX;
 }
 
-int cChunksStorage::GetCenterY()
+int cChunksStorage::GetCentralY() const
 {
 	return CenterChunkY;
 }
@@ -100,7 +99,7 @@ void cChunksStorage::SetCenterY( int y )
 	CenterChunkY = y;
 }
 
-int cChunksStorage::GetChunkNumPointer( int WorldX, int WorldY )
+int cChunksStorage::GetChunkNumPointer( int WorldX, int WorldY ) const
 {
 	int wx = WorldX % ChunksPerSide;
 	if(wx < 0)
@@ -114,6 +113,15 @@ int cChunksStorage::GetChunkNumPointer( int WorldX, int WorldY )
 }
 
 WorldChunk * cChunksStorage::GetChunkPtr( int WorldX, int WorldY )
+{
+	int ss2 = (ChunksPerSide + 1) / 2;
+	assert(abs(WorldX - CenterChunkX) <= ss2);
+	assert(abs(WorldY - CenterChunkY) <= ss2);
+
+	return &Chunks[GetChunkNumPointer(WorldX, WorldY)];
+}
+
+const WorldChunk * cChunksStorage::GetChunkPtr(int WorldX, int WorldY) const
 {
 	int ss2 = (ChunksPerSide + 1) / 2;
 	assert(abs(WorldX - CenterChunkX) <= ss2);
@@ -142,7 +150,7 @@ bool cChunksStorage::IsExist( int WorldX, int WorldY ) const
 	return true;
 }
 
-bool cChunksStorage::HaveRightNeighbors( int WorldX, int WorldY, ChunkStatus minimalStatus )
+bool cChunksStorage::HaveRightNeighbors( int WorldX, int WorldY, ChunkStatus minimalStatus ) const
 {
 	if(GetChunkPtr(WorldX + 1, WorldY)->GetStatus() < minimalStatus) return false;
 	if(GetChunkPtr(WorldX - 1, WorldY)->GetStatus() < minimalStatus) return false;
@@ -158,6 +166,11 @@ bool cChunksStorage::HaveRightNeighbors( int WorldX, int WorldY, ChunkStatus min
 }
 
 WorldChunk * cChunksStorage::GetChunksArray()
+{
+	return Chunks;
+}
+
+const WorldChunk * cChunksStorage::GetChunksArray() const
 {
 	return Chunks;
 }

@@ -39,7 +39,6 @@ void cWorld::Initialize(unsigned int ChunksPerSide, int CentralChunkX, int Centr
 	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, DataStorage->GetChunkWidth(), TypesStorage.get());
 	FillQueue(CentralChunkX, CentralChunkY, ChunksPerSide);
 
-
 	std::ostringstream str;
 	str << "saves/worlds/" << worldName << "/" << worldName << ".lihm";
 	Generator->LoadHeightMap(str.str());

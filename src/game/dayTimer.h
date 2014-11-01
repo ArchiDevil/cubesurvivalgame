@@ -39,14 +39,13 @@ public:
 		minutes = (int)currentTime % 60;
 	}
 
-
 	double getRawTime() const
 	{
 		return currentTime;
 	}
 
 private:
-	bool valid(int hours, int minutes)
+	bool valid(int hours, int minutes) const
 	{
 		return hours <= 23 && hours >= 0 && minutes >= 0 && minutes <= 59;
 	}

@@ -1,6 +1,6 @@
 #include "cWorldGenerator.h"
 
-#include <Windows.h>
+#include <Utilities/ut.h>
 
 cWorldGenerator::cWorldGenerator()
 {
@@ -53,8 +53,8 @@ void cWorldGenerator::LoadHeightMap( const std::string & filename )
 
 	if(in.fail())
 	{
-		GenerateHeightMap(WorldSize);
-		SaveHeightMap(filename);
+		//GenerateHeightMap(WorldSize);
+		//SaveHeightMap(filename);
 		return;
 	}
 	else
@@ -71,7 +71,7 @@ void cWorldGenerator::LoadHeightMap( const std::string & filename )
 
 void cWorldGenerator::SaveHeightMap( const std::string & filename )
 {
-	::CreateDirectory(L"saves/tempWorld", nullptr);
+	utils::filesystem::CreateDir(L"saves/tempWorld");
 
 	std::ofstream out;
 	out.open(filename, std::ios_base::binary);

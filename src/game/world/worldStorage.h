@@ -101,7 +101,6 @@ private:
 	WorldStorage(WorldStorage && ref);
 	WorldStorage& operator=(WorldStorage && ref);
 
-
 	BlockColumn * bcData;
 	unsigned int arrayWidth;
 	static const unsigned int ColumnsCount = 4;

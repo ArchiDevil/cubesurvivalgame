@@ -12,20 +12,22 @@ public:
 	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, typesStorage * ts);	
 	void Unload();
 
-	int GetChunksPerSide();		//возвращает количество чанков на сторону мира
-	int GetCenterX();			//возвращает центральный чанк по X
-	int GetCenterY();			//возвращает центральный чанк по Y
+	int GetChunksPerSide() const;
+	int GetCentralX() const;
+	int GetCentralY() const;
 
-	int GetChunkNumPointer(int WorldX, int WorldY);
+	int GetChunkNumPointer(int WorldX, int WorldY) const;
 	WorldChunk * GetChunkPtr(int WorldX, int WorldY);
+	const WorldChunk * GetChunkPtr(int WorldX, int WorldY) const;
 	WorldChunk * GetChunksArray();
+	const WorldChunk * GetChunksArray() const;
 
 	void SetCenterX(int x);
 	void SetCenterY(int y);
 
 	bool IsBorder(int WorldX, int WorldY) const;
 	bool IsExist(int WorldX, int WorldY) const;
-	bool HaveRightNeighbors(int WorldX, int WorldY, ChunkStatus minimalStatus);
+	bool HaveRightNeighbors(int WorldX, int WorldY, ChunkStatus minimalStatus) const;
 
 private:
 	WorldChunk * Chunks;

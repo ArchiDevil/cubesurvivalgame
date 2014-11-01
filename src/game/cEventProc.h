@@ -9,15 +9,9 @@ class cWorld;
 class EntityManager;
 class ItemManager;
 
-enum BlockType : unsigned char;
-
-class cGameEventHandler
+class GameEventHandler
 {
 public:
-	//world events
-	void onBlockRemoved(BlockType bt, MathLib::Vector3I Pos);	
-	void onBlockAdded(BlockType bt);							
-
 	//player events
 	void onPlayerMoves(double dt);
 	void onPlayerAttack();

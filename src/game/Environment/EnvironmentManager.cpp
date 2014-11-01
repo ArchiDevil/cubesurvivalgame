@@ -18,7 +18,7 @@ void cEnvironmentManager::SetTime(dayTimer & t)
 	time = t;
 }
 
-dayTimer cEnvironmentManager::GetTime()
+dayTimer cEnvironmentManager::GetTime() const
 {
 	return time;
 }

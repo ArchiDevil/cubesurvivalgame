@@ -17,7 +17,7 @@ public:
 	void Update(double deltaTime);
 	
 	void SetTime(dayTimer & t);
-	dayTimer GetTime();
+	dayTimer GetTime() const;
 	MathLib::Vector3F calculateSunPos(const MathLib::Vector3F & playerPos) const;
 
 private:

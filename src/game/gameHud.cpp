@@ -7,6 +7,8 @@
 gameHUD::gameHUD() 
 	: liHandItem(nullptr)
 	, liHandI(nullptr)
+    , width(800)
+    , height(600)
 {
 }
 
