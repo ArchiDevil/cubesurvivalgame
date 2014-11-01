@@ -26,13 +26,13 @@ EntityManager::~EntityManager()
 {
 }
 
-ItemEntityPtr EntityManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId)
+ItemGameObjectPtr EntityManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);
 
 	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), entityMaterial.get());
-	std::shared_ptr<ItemEntity> out = std::make_shared<ItemEntity>(itemId, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);
+	std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);
 	meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
 	meshNode->SetScale(Vector3F(0.4f, 0.4f, 0.4f));
 	GameObjects.push_back(out);
@@ -54,90 +54,35 @@ void EntityManager::Update( double dt, const Vector3F & sunPos )
 	}
 }
 
-CrafterPtr EntityManager::CreateCrafterEntity(const Vector3F & Position, const std::string & id)
-{
-	auto iter = crafters.find(id);
-	if (iter != crafters.end())
-	{
-		std::wstring mtlName = utils::StrToWStr(iter->second.materialName);
-		auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(mtlName, L"default");
-
-		std::wstring meshName = utils::StrToWStr(iter->second.meshName);
-		MeshNode * meshNode = nullptr;
-		if (meshName == L"cube")
-			meshNode = GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), mtl.get());
-		else
-			meshNode = GetSceneGraph()->AddMeshNode(meshName, mtl.get());
-
-		auto out = std::make_shared<CrafterGameObject>(meshNode, iter->second.craftingTime);
-		out->SetPosition(Position);
-		GameObjects.push_back(out);
-		return out;
-	}
-
-	MainLog.Error("Unable to load entity: " + id);
-	return nullptr;
-}
-
-ProducerPtr EntityManager::CreateProducerEntity(const Vector3F & Position, const std::string & id)
-{
-	auto iter = producers.find(id);
-	if (iter != producers.end())
-	{
-		std::wstring mtlName = utils::StrToWStr(iter->second.materialName);
-		auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(mtlName, L"default");
-
-		std::wstring meshName = utils::StrToWStr(iter->second.meshName);
-		MeshNode * meshNode = nullptr;
-		if (meshName == L"cube")
-			meshNode = GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), mtl.get());
-		else
-			meshNode = GetSceneGraph()->AddMeshNode(meshName, mtl.get());
-
-		auto out = std::make_shared<ProducerGameObject>(meshNode, iter->second.producedItem, iter->second.producingTime);
-		out->SetPosition(Position);
-		GameObjects.push_back(out);
-		return out;
-	}
-
-	MainLog.Error("Unable to load entity: " + id);
-	return nullptr;
-}
-
 GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
 {
-	//stupid implementation now
-	//for future needs, there's may be tuple with different types, needed for different entities
-	auto crafters_iter = crafters.find(entityId);
-	if (crafters_iter != crafters.end())
-		return CreateCrafterEntity(position, entityId);
+	auto iter = Breeds.find(entityId);
+	if (iter == Breeds.end())
+	{
+		MainLog.Error("Unable to create entity with id: " + entityId);
+		return nullptr;
+	}
 
-	auto producers_iter = producers.find(entityId);
-	if (producers_iter != producers.end())
-		return CreateProducerEntity(position, entityId);
-
-	uint64_t itemId = LostIsland::GetGamePtr()->ItemMgr->GetItemId(entityId);
-	if (itemId)
-		return CreateItemEntity(position, Vector3D(), itemId);
-
-	MainLog.Error("Unable to find entity: " + entityId);
-
-	return nullptr;
+	auto out = iter->second->Clone();
+	GameObjects.push_back(out);
+	return out;
 }
 
 PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 {
-	if (LostIsland::GetGamePtr()->Player)
+	auto pGame = LostIsland::GetGamePtr();
+	if (pGame->Player)
 	{
 		MainLog.Error("Player is already created");
 		return nullptr;
 	}
 	auto pCtxMgr = ShiftEngine::GetContextManager();
 	auto pScene = ShiftEngine::GetSceneGraph();
+
 	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()));
+	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr);
 	GameObjects.push_back(player);
-	LostIsland::GetGamePtr()->Player = player.get();
+	pGame->Player = player.get();
 	return player;
 }
 
@@ -193,29 +138,25 @@ void EntityManager::LoadEntities()
 		buff = root.get("type", buff);
 		if (buff.asString() == "crafter")
 		{
-			auto & crafter = crafters[id];
-
-			crafter.meshName = meshName;
-			crafter.materialName = materialName;
-
 			buff = root.get("crafting_time", buff);
-			crafter.craftingTime = buff.asInt();
-
+			uint32_t craftingTime = buff.asInt();
 			buff = root.get("produced_item", buff);
-			crafter.craftingItem = nullptr;
+			Item * craftingItem = nullptr;
+			//UNDONE: crafting item
+			Breeds[id] = std::make_shared<CrafterBreed>(meshName, materialName, craftingItem, craftingTime);
 		}
 		else if (buff.asString() == "producer")
 		{
-			auto & producer = producers[id];
-
-			producer.meshName = meshName;
-			producer.materialName = materialName;
-
 			buff = root.get("cycle_time", buff);
-			producer.producingTime = buff.asInt();
-
+			uint32_t producingTime = buff.asInt();
 			buff = root.get("produced_item", buff);
-			producer.producedItem = nullptr;
+			Item * producedItem = nullptr;
+			//UNDONE: produced item
+			Breeds[id] = std::make_shared<ProducerBreed>(meshName, materialName, producedItem, producingTime);
+		}
+		else if (buff.asString() == "static")
+		{
+			Breeds[id] = std::make_shared<StaticBreed>(meshName, materialName);
 		}
 		else
 		{

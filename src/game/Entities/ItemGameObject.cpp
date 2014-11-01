@@ -1,25 +1,24 @@
-#include "ItemEntity.h"
+#include "ItemGameObject.h"
 
 #include "../game.h"
-#include "../cInventory.h"
 
-ItemEntity::ItemEntity(uint64_t itemId, PhysObjectPtr obj, ShiftEngine::MeshNode * meshNode)
+ItemGameObject::ItemGameObject(uint64_t itemId, PhysObjectPtr obj, ShiftEngine::MeshNode * meshNode)
 	: itemId(itemId)
 	, PhysicsGameObject(obj, meshNode)
 {
 }
 
-ItemEntity::~ItemEntity()
+ItemGameObject::~ItemGameObject()
 {
 }
 
-void ItemEntity::Update( double dt )
+void ItemGameObject::Update(double dt)
 {
 	PhysicsGameObject::Update(dt);
 
-//	Vector3F rot = SceneNode->GetRotation();
-//	rot.z += dt;
-//	SceneNode->SetRotation(rot);
+	//	Vector3F rot = SceneNode->GetRotation();
+	//	rot.z += dt;
+	//	SceneNode->SetRotation(rot);
 
 	cGame * pGame = LostIsland::GetGamePtr();
 	auto ppos = pGame->Player->GetPosition();
@@ -27,11 +26,11 @@ void ItemEntity::Update( double dt )
 	{
 		pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = itemId;
 		pGame->Player->GetInventoryPtr()->GetHandPtr()->count++;
-		this->Delete();
+		Delete();
 	}
 }
 
-uint64_t ItemEntity::GetItemId() const
+uint64_t ItemGameObject::GetItemId() const
 {
 	return itemId;
 }

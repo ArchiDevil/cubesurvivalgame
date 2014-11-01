@@ -1,38 +1,34 @@
 #pragma once
 
 #include "LivingGameObject.h"
+#include "../cInventory.h"
 
 #include <MathLib/math.h>
-
-class cInventory;
 
 class PlayerGameObject : public LivingGameObject
 {
 public:
-	PlayerGameObject(ShiftEngine::MeshNode * sceneNode);
+	PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr);
 	~PlayerGameObject();
-
-	void Initialize();
 
 	//Getters
 	unsigned GetHunger() const;
-	unsigned GetHealth() const;
 	unsigned GetTemperature() const;
 	cInventory * GetInventoryPtr();
 
 	void SetHunger(int hunger);
-	void SetHealth(int health);
 	void SetTemperature(int temperature);
 
 	void Update(double dt) override;
 
 private:
-	std::unique_ptr<cInventory> Inventory;
+	cInventory Inventory;
 
 	unsigned int hunger;
 	unsigned int temperature;
-	unsigned int health;
 
 	ShiftEngine::MeshNode * targetMarker;
 
 };
+
+typedef std::shared_ptr<PlayerGameObject> PlayerPtr;

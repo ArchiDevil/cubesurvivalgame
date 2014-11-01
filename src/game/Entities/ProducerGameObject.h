@@ -1,12 +1,12 @@
 #pragma once
 
-#include "UsableGameObject.h"
+#include "GameObject.h"
 #include "../Items/Item.h"
 
 // for now, this class creates item inside it every N milliseconds
 // player can get item from here and use them
 
-class ProducerGameObject : public UsableGameObject
+class ProducerGameObject : public GameObject
 {
 	enum ProducerState
 	{
@@ -18,8 +18,7 @@ public:
 	ProducerGameObject(ShiftEngine::MeshNode * meshNode, Item * producedItem, uint32_t cycleTimeMs);
 	virtual ~ProducerGameObject();
 
-	// UsableGameObject
-	virtual void Activate() override;
+	virtual void Activate();
 
 	// GameObject
 	virtual void Update(double dt) override;
@@ -31,3 +30,5 @@ private:
 	Item * produceType;
 
 };
+
+typedef std::shared_ptr<ProducerGameObject> ProducerPtr;

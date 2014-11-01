@@ -6,6 +6,7 @@ LivingGameObject::LivingGameObject(ShiftEngine::MeshNode * sceneNode)
 	: GameObject(sceneNode)
 	, currentState(ES_Waiting)
 	, targetPosition()
+	, healthPoints(100)
 {
 }
 
@@ -110,4 +111,14 @@ MathLib::Vector2F LivingGameObject::GetTargetPosition() const
 EntityState LivingGameObject::GetCurrentState() const
 {
 	return currentState;
+}
+
+uint32_t LivingGameObject::GetHealth() const
+{
+	return healthPoints;
+}
+
+void LivingGameObject::SetHealth(uint32_t health)
+{
+	healthPoints = health;
 }

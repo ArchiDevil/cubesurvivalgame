@@ -14,13 +14,19 @@ struct cGame
 	cGame();
 	~cGame();
 
-	cWorld					* World;			//world class
-	PlayerGameObject		* Player;			//current player class
-	EntityManager			* EntityMgr;		//entity manager
-	cGameEventHandler		* GameEventHandler;	//events handler
-	ItemManager				* ItemMgr;			//items handler
-	cEnvironmentManager		* environmentMgr;	//environment simulator
-	gameHUD					* gameHud;			//hud
+	cWorld					* World;
+	PlayerGameObject		* Player;
+	EntityManager			* EntityMgr;
+	GameEventHandler		* GlobalEventHandler;
+	ItemManager				* ItemMgr;
+	cEnvironmentManager		* environmentMgr;
+	gameHUD					* gameHud;
+
+private:
+	cGame(const cGame & ref);
+	cGame operator=(const cGame & ref);
+	cGame(cGame && ref);
+	cGame operator=(cGame && ref);
 };
 
 namespace LostIsland

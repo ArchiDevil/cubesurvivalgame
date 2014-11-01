@@ -1,9 +1,9 @@
 #pragma once
 
-#include "UsableGameObject.h"
+#include "GameObject.h"
 #include "../Items/Item.h"
 
-class CrafterGameObject : public UsableGameObject
+class CrafterGameObject : public GameObject
 {
 	enum CrafterState
 	{
@@ -15,9 +15,7 @@ class CrafterGameObject : public UsableGameObject
 public:
 	CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs);
 	virtual ~CrafterGameObject();
-
-	// UsableGameObject
-	virtual void Activate() override;
+	virtual void Activate();
 
 	// GameObject
 	virtual void Update(double dt) override;
@@ -34,3 +32,5 @@ private:
 	uint32_t elapsedTime;
 	uint64_t storedItem;
 };
+
+typedef std::shared_ptr<CrafterGameObject> CrafterPtr;

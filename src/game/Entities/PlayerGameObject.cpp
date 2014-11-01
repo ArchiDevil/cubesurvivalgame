@@ -1,24 +1,14 @@
 #include "PlayerGameObject.h"
-#include "../cInventory.h"
 #include "../game.h"
 #include <GraphicsEngine/ShiftEngine.h>
 
-PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode)
+PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr)
 	: LivingGameObject(sceneNode)
 	, hunger(100)
-	, health(100)
 	, temperature(100)
 	, targetMarker(nullptr)
+	, Inventory(pItemMgr)
 {
-}
-
-PlayerGameObject::~PlayerGameObject() 
-{
-}
-
-void PlayerGameObject::Initialize()
-{
-	Inventory.reset(new cInventory(LostIsland::GetGamePtr()->ItemMgr));
 	if (targetMarker)
 		targetMarker->KillSelf();
 
@@ -29,19 +19,18 @@ void PlayerGameObject::Initialize()
 	targetMarker->SetScale(0.3f);
 }
 
+PlayerGameObject::~PlayerGameObject() 
+{
+}
+
 cInventory * PlayerGameObject::GetInventoryPtr()
 {
-	return Inventory.get();
+	return &Inventory;
 }
 
 unsigned PlayerGameObject::GetHunger() const
 {
 	return hunger;
-}
-
-unsigned PlayerGameObject::GetHealth() const
-{
-	return health;
 }
 
 unsigned PlayerGameObject::GetTemperature() const
@@ -51,17 +40,12 @@ unsigned PlayerGameObject::GetTemperature() const
 
 void PlayerGameObject::SetHunger(int hunger)
 {
-	hunger = hunger;
-}
-
-void PlayerGameObject::SetHealth(int health)
-{
-	health = health;
+	this->hunger = hunger;
 }
 
 void PlayerGameObject::SetTemperature(int temperature)
 {
-	temperature = temperature;
+	this->temperature = temperature;
 }
 
 void PlayerGameObject::Update(double dt)

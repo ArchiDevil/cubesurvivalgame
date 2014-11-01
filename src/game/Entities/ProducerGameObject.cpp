@@ -4,7 +4,7 @@
 #include "../cInventory.h"
 
 ProducerGameObject::ProducerGameObject(ShiftEngine::MeshNode * meshNode, Item * producedItem, uint32_t cycleTime)
-	: UsableGameObject(meshNode)
+	: GameObject(meshNode)
 	, state(Producing)
 	, cycleTime(cycleTime)
 	, elapsedTime(0)

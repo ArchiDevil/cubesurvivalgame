@@ -28,3 +28,5 @@ protected:
 	bool ToDelete;
 
 };
+
+typedef std::shared_ptr<GameObject>	GameObjectPtr;

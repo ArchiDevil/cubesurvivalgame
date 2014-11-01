@@ -32,7 +32,6 @@ bool gameState::initState()
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
-	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F(0.0f, 0.0f, 0.0f)).get();
 
 	console.subscribe(&cInputEngine::GetInstance());
 
@@ -53,13 +52,13 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
-	pGame->EntityMgr->CreatePlayer(Vector3F(0.0f, 0.0f, 100.0f));
-	pGame->Player->Initialize();
 	MainLog.Message("Player has been initialized");
 
-	pGame->gameHud->Initialize(pCtxMgr->GetParameters().screenWidth, pCtxMgr->GetParameters().screenHeight);
+	auto settings = pCtxMgr->GetParameters();
+	pGame->gameHud->Initialize(settings.screenWidth, settings.screenHeight);
 	MainLog.Message("HUD has been created");
 
+	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
@@ -72,12 +71,10 @@ bool gameState::initState()
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
-	auto settings = pCtxMgr->GetParameters();
 	pScene->AddCameraSceneNode();
-	pScene->SetAmbientColor(Vector3F(0.4f, 0.4f, 0.4f));
+	pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.33f));
 	pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
-
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
 
 	MainLog.Message("End of game state initializing");
@@ -183,18 +180,17 @@ void gameState::onResume()
 	if (worldThread.joinable())
 		worldThread.join();
 	exitFlag = false;
-	worldThread = std::thread([&]
-	{
-		while (!exitFlag)
-			LostIsland::GetGamePtr()->World->ProcessLoading();
-		Sleep(0);
-	});
+	//worldThread = std::thread([&]
+	//{
+	//	while (!exitFlag)
+	//		pGame->World->ProcessLoading();
+	//	Sleep(0);
+	//});
 }
 
 void gameState::ProcessInput(double dt)
 {
 	cInputEngine * InputEngine = &cInputEngine::GetInstance();
-	cSimplePhysicsEngine * PhysicsEngine = &cSimplePhysicsEngine::GetInstance();
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
@@ -289,10 +285,7 @@ void gameState::ProcessInput(double dt)
 			Vector3F column;
 			bool result = pGame->World->SelectColumnByRay(unprojectedRay, column);
 			if (result)
-			{
-				MainLog.Message("Player goes to: " + std::to_string(column.x) + " " + std::to_string(column.y));
 				pGame->Player->Go(Vector2F(column.x, column.y));
-			}
 		}
 		mousePath = 0;
 	}

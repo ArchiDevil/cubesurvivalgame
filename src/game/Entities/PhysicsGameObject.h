@@ -19,3 +19,5 @@ private:
 	PhysObjectPtr obj;
 
 };
+
+typedef std::shared_ptr<PhysicsGameObject> PhysicsEntityPtr;

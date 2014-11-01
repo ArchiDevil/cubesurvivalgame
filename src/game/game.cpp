@@ -4,7 +4,7 @@ cGame::cGame()
 	: World(nullptr)
 	, Player(nullptr)
 	, EntityMgr(nullptr)
-	, GameEventHandler(nullptr)
+	, GlobalEventHandler(nullptr)
 	, ItemMgr(nullptr)
 	, environmentMgr(nullptr)
 	, gameHud(nullptr)
@@ -12,7 +12,7 @@ cGame::cGame()
 	World				= new cWorld;
 	environmentMgr		= new cEnvironmentManager;
 	EntityMgr			= new EntityManager;
-	GameEventHandler	= new cGameEventHandler;
+	GlobalEventHandler = new GameEventHandler;
 	gameHud				= new gameHUD;
 	//ItemManager		= new cItemManager;
 }
@@ -20,7 +20,7 @@ cGame::cGame()
 cGame::~cGame()
 {
 	delete ItemMgr;
-	delete GameEventHandler;
+	delete GlobalEventHandler;
 	delete World;
 	delete Player;
 	delete EntityMgr;

@@ -1,0 +1,6 @@
+{
+	"id": 				"tree1",
+	"type": 			"static",
+	"mesh": 			"cube",
+	"material": 		"generic.mtl"
+}

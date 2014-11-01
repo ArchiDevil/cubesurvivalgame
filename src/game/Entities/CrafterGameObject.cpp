@@ -4,7 +4,7 @@
 #include "../cInventory.h"
 
 CrafterGameObject::CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs)
-	: UsableGameObject(meshNode)
+	: GameObject(meshNode)
 	, state(Empty)
 	, craftingTime(craftingTimeMs)
 	, elapsedTime(0)
