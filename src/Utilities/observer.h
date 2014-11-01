@@ -10,7 +10,7 @@ class notifier
 {
 public:
 	notifier() {}
-	~notifier() {}
+	virtual ~notifier() {}
 
 	void add_observer(observer<T> * obs) {observers.push_back(obs);}
 	void remove_observer(observer<T> * obs) {observers.remove(obs);}
@@ -28,8 +28,8 @@ template<typename T>
 class observer
 {
 public:
-	observer() {}
-	~observer() {}
+	observer() : cur_notifier(nullptr) {}
+	virtual ~observer() {}
 
 	void subscribe(notifier<T> * notifier) {if(notifier) notifier->add_observer(this);}
 	void unsubscribe(notifier<T> * notifier) {if(notifier) notifier->remove_observer(this);}

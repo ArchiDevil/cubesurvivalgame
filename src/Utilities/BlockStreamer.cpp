@@ -44,6 +44,8 @@ uint8_t * StreamBlock::GetData() const
 
 StreamBlock & StreamBlock::operator=( const StreamBlock & ref )
 {
+    if(&ref == this)
+        return *this;
 	delete [] data;
 	this->id = ref.id;
 	this->size = ref.size;

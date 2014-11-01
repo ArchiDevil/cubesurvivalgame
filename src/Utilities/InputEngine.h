@@ -41,13 +41,13 @@ public:
 	bool Initialize(HWND hWnd, HINSTANCE hInstance);
 	void GetKeys();
 
-	bool IsMouseDown(MouseKeys key);
-	bool IsMouseUp(MouseKeys key);
-	bool IsMouseMoved();
+	bool IsMouseDown(MouseKeys key) const;
+	bool IsMouseUp(MouseKeys key) const;
+	bool IsMouseMoved() const;
 
-	bool IsKeyDown(unsigned char Key);
-	bool IsKeyUp(unsigned char Key);
-	MouseInfo GetMouseInfo();
+	bool IsKeyDown(unsigned char Key) const;
+	bool IsKeyUp(unsigned char Key) const;
+	MouseInfo GetMouseInfo() const;
 
 	bool handleEvent(const SystemKeyMessage & keyEvent) override;
 

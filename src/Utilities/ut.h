@@ -32,10 +32,25 @@ enum MouseKeys
 struct MouseInfo
 {
 	MouseInfo()
-		: deltaX(0), deltaY(0), deltaZ(0), absoluteX(0), absoluteY(0), clientX(0), clientY(0) {}
+		: deltaX(0)
+		, deltaY(0)
+		, deltaZ(0)
+		, absoluteX(0)
+		, absoluteY(0)
+		, clientX(0)
+		, clientY(0) 
+	{}
 
 	MouseInfo(long _deltaX, long _deltaY, long _deltaZ, unsigned long _absoluteX, unsigned long _absoluteY, long _clientX, long _clientY)
-		: deltaX(_deltaX), deltaY(_deltaY), deltaZ(_deltaZ), absoluteX(_absoluteX), absoluteY(_absoluteY), clientX(_clientX), clientY(_clientY) {}
+		: deltaX(_deltaX)
+		, deltaY(_deltaY)
+		, deltaZ(_deltaZ)
+		, absoluteX(_absoluteX)
+		, absoluteY(_absoluteY)
+		, clientX(_clientX)
+		, clientY(_clientY) 
+	{}
+
 	long deltaX, deltaY, deltaZ;
 	unsigned long absoluteX, absoluteY;
 	long clientX, clientY;

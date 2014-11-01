@@ -9,7 +9,7 @@ class cApplication
 {
 public:
 	cApplication( int Width, int Height, LPCWSTR AppName );
-	~cApplication();
+	virtual ~cApplication();
 
 	virtual bool Initialize()				= 0;
 	virtual void Shutdown()					= 0;

@@ -1,25 +1,28 @@
 #include "InputEngine.h"
 
-cInputEngine::cInputEngine() 
-	: mouse(nullptr), keyboard(nullptr), di(nullptr)
+cInputEngine::cInputEngine()
+	: mouse(nullptr)
+	, keyboard(nullptr)
+	, di(nullptr)
+	, hWnd(0)
 {
 }
 
 cInputEngine::~cInputEngine()
 {
-	if(keyboard) 
+	if (keyboard)
 		keyboard->Release();
-	if(mouse) 
+	if (mouse)
 		mouse->Release();
-	if(di) 
+	if (di)
 		di->Release();
 }
 
-bool cInputEngine::Initialize( HWND hWnd, HINSTANCE hInstance )
+bool cInputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	this->hWnd = hWnd;
 
-	if(FAILED(DirectInput8Create(hInstance,	//инстанция окна, откуда забираем кнопки
+	if (FAILED(DirectInput8Create(hInstance,	//инстанция окна, откуда забираем кнопки
 		DIRECTINPUT_VERSION,				//всегда передаем такой параметр
 		IID_IDirectInput8,					//аналогично - всегда такой параметр
 		(void**)&di,						//указатель на устройство
@@ -31,7 +34,7 @@ bool cInputEngine::Initialize( HWND hWnd, HINSTANCE hInstance )
 	di->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	di->CreateDevice(GUID_SysMouse, &mouse, NULL);
 
-	if(!keyboard || !mouse)
+	if (!keyboard || !mouse)
 		return false;
 
 	keyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
@@ -61,7 +64,7 @@ void cInputEngine::GetKeys()
 	mouse->GetDeviceState(sizeof(curMouseBuffer), &curMouseBuffer);
 }
 
-MouseInfo cInputEngine::GetMouseInfo()
+MouseInfo cInputEngine::GetMouseInfo() const
 {
 	POINT pt;
 	POINT pt2;
@@ -72,37 +75,37 @@ MouseInfo cInputEngine::GetMouseInfo()
 	return out;
 }
 
-bool cInputEngine::IsMouseUp( MouseKeys key )
+bool cInputEngine::IsMouseUp(MouseKeys key) const
 {
-	if(preMouseBuffer.rgbButtons[(int)key] && !curMouseBuffer.rgbButtons[(int)key])
+	if (preMouseBuffer.rgbButtons[(int)key] && !curMouseBuffer.rgbButtons[(int)key])
 		return true;
 	return false;
 }
 
-bool cInputEngine::IsMouseDown( MouseKeys key )
+bool cInputEngine::IsMouseDown(MouseKeys key) const
 {
-	if(preMouseBuffer.rgbButtons[(int)key] && curMouseBuffer.rgbButtons[(int)key])
+	if (preMouseBuffer.rgbButtons[(int)key] && curMouseBuffer.rgbButtons[(int)key])
 		return true;
 	return false;
 }
 
-bool cInputEngine::IsKeyDown( unsigned char Key )
+bool cInputEngine::IsKeyDown(unsigned char Key) const
 {
-	if(curKeyBuffer[Key] && preKeyBuffer[Key])
+	if (curKeyBuffer[Key] && preKeyBuffer[Key])
 		return true;
 	return false;
 }
 
-bool cInputEngine::IsKeyUp( unsigned char Key )
+bool cInputEngine::IsKeyUp(unsigned char Key) const
 {
-	if(!curKeyBuffer[Key] && preKeyBuffer[Key])
+	if (!curKeyBuffer[Key] && preKeyBuffer[Key])
 		return true;
 	return false;
 }
 
-bool cInputEngine::IsMouseMoved()
+bool cInputEngine::IsMouseMoved() const
 {
-	if(curMouseBuffer.lX != 0 || curMouseBuffer.lY != 0 || curMouseBuffer.lZ != 0)
+	if (curMouseBuffer.lX != 0 || curMouseBuffer.lY != 0 || curMouseBuffer.lZ != 0)
 		return true;
 	return false;
 }
