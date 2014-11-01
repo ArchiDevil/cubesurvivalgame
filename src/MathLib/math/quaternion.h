@@ -264,18 +264,24 @@ namespace MathLib
         out.w += 1.0f;      // reducing angle to halfangle
         if( out.w <= 0.00001f ) // angle close to PI
         {
-            if((from.z * from.z) > (from.x * from.x))
-			{
-				out.vector.x = 0.0;
-				out.vector.y = from.z;
-				out.vector.z = -from.y;
-			}
-            else 
-			{
-				out.vector.x = from.y;
-				out.vector.y = -from.x;
-				out.vector.z = 0.0;
-			}
+			out.vector.x = 0.0;
+			out.vector.y = 0.0;
+			out.vector.z = 1.0;
+
+   //         if((from.y * from.y) > (from.x * from.x))
+			//{
+			//	MainLog.Message("First");
+			//	out.vector.x = 0.0;
+			//	out.vector.y = from.x;
+			//	out.vector.z = -from.y;
+			//}
+   //         else 
+			//{
+			//	MainLog.Message("Second");
+			//	out.vector.x = from.y;
+			//	out.vector.y = 0.0;
+			//	out.vector.z = -from.x;
+			//}
         }
 		out = out.normalize();
 		return out;
