@@ -18,6 +18,19 @@ bool ShiftEngine::materialFlags::operator==( const materialFlags & ref ) const
 		&& isCustom == ref.isCustom;
 }
 
+uint32_t ShiftEngine::materialFlags::GetHash() const
+{
+	static_assert(sizeof(lightingModel) == sizeof(uint8_t), "Update hash calculating");
+	uint32_t out = 0x0;
+	out |= useVertexColors << 0;
+	out |= twoFace << 1;
+	out |= isReflective << 2;
+	out |= isTransparent << 3;
+	out |= isCustom << 4;
+	out |= (uint32_t)lightingModel << 5;
+	return out;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 ShiftEngine::MaterialInfo::MaterialInfo() 
@@ -44,38 +57,40 @@ bool ShiftEngine::MaterialInfo::operator<( const MaterialInfo & ref ) const
 	if(*this == ref)
 		return false;
 
-	std::hash<std::string> stringHash;
+	return this->GetHash() < ref.GetHash();
 
-	//std::string str = diffuseMap + normalMap + specularMap + alphaMap + environmentMap;
-	size_t curHash;// = stringHash(str);
+	//std::hash<std::string> stringHash;
 
-	//str = ref.diffuseMap + ref.normalMap + ref.specularMap + ref.alphaMap + ref.environmentMap;
-	size_t refHash;// = stringHash(str);
+	////std::string str = diffuseMap + normalMap + specularMap + alphaMap + environmentMap;
+	//size_t curHash;// = stringHash(str);
 
-	//if(curHash != refHash)
-	//	return curHash < refHash;
+	////str = ref.diffuseMap + ref.normalMap + ref.specularMap + ref.alphaMap + ref.environmentMap;
+	//size_t refHash;// = stringHash(str);
 
-	std::string curBytes;
-	uint8_t * start = (uint8_t*)this;
-	uint8_t * end = (uint8_t*)&diffuseMap;
-	while(start != end)
-	{
-		curBytes.push_back(*start);
-		start++;
-	}
-	curHash = stringHash(curBytes);
+	////if(curHash != refHash)
+	////	return curHash < refHash;
 
-	curBytes.clear();
-	start = (uint8_t*)&ref;
-	end = (uint8_t*)&ref.diffuseMap;
-	while(start != end)
-	{
-		curBytes.push_back(*start);
-		start++;
-	}
-	refHash = stringHash(curBytes);
+	//std::string curBytes;
+	//uint8_t * start = (uint8_t*)this;
+	//uint8_t * end = (uint8_t*)&diffuseMap;
+	//while(start != end)
+	//{
+	//	curBytes.push_back(*start);
+	//	start++;
+	//}
+	//curHash = stringHash(curBytes);
 
-	return curHash < refHash;
+	//curBytes.clear();
+	//start = (uint8_t*)&ref;
+	//end = (uint8_t*)&ref.diffuseMap;
+	//while(start != end)
+	//{
+	//	curBytes.push_back(*start);
+	//	start++;
+	//}
+	//refHash = stringHash(curBytes);
+
+	//return curHash < refHash;
 }
 
 bool ShiftEngine::MaterialInfo::operator==( const MaterialInfo & ref ) const
@@ -91,6 +106,18 @@ bool ShiftEngine::MaterialInfo::operator==( const MaterialInfo & ref ) const
 		&& alphaMap == ref.alphaMap
 		&& opacity == ref.opacity
 		&& shininess == ref.shininess;
+}
+
+uint64_t ShiftEngine::MaterialInfo::GetHash() const
+{
+	uint64_t out = 0x0;
+	// serialize flags first
+	out |= flags.GetHash();
+
+	// next - textures
+	out |= (uint64_t)diffuseMap.GetType() << 32;
+	out |= (uint64_t)alphaMap.GetType() << 40;
+	return out;
 }
 
 //////////////////////////////////////////////////////////////////////////

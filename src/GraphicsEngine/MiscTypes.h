@@ -3,10 +3,6 @@
 #include <string>
 #include <cstdint>
 
-#if defined (WIN32) || (__WIN32)
-	#include <Windows.h>
-#endif
-
 #include "../MathLib/math.h"
 
 #define LIM_HEADER_VERSION 2
@@ -20,7 +16,7 @@ namespace ShiftEngine
 		Format_R32,
 	};
 
-	enum class TextureType
+	enum class TextureType : uint8_t
 	{
 		Unknown,
 		Texture2D,

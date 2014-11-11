@@ -373,6 +373,9 @@ void ShiftEngine::D3D10Program::SetUniformByIndex( unsigned int index, const voi
 
 bool ShiftEngine::D3D10Program::SetTextureByIndex( unsigned int index, TexturePtr & texture )
 {
+	if (!texture)
+		return false;
+
 	if(index >= resources.size()) 
 		return false;
 	resDesc & var = resources[index];

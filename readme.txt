@@ -1,15 +1,10 @@
-CubeSurv (TechRelease DX10) 0.1.0.271
+Islands World (Tech demo DX10) 0.0.2.92
 used:
-	PPL
 	Direct3D 10
 	DirectInput 8
 
 Keys:
-WASD - moving
 V - turn on/off wireframe
-LMB - remove block
-RMB - add block
-F - enable/disable FreeRoam mode
-Hold SHIFT - acceleration
-
-NOTE: At the first run application creates global height map that contains heights for all island. First run will be slow.
+RMB click - move player
+RMB drag - move camera around player
+Mouse wheel - zoom in/out

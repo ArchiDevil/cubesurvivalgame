@@ -9,7 +9,7 @@
 
 namespace ShiftEngine
 {
-	enum class MaterialLightingModel
+	enum class MaterialLightingModel : uint8_t
 	{
 		//TODO: NOT SUPPORTED NOW
 		None,
@@ -33,6 +33,8 @@ namespace ShiftEngine
 
 		// temporary here
 		bool useAnimation;							//NOT SUPPORTED NOW
+
+		uint32_t GetHash() const;
 
 		bool operator==(const materialFlags & ref) const;
 	};
@@ -62,6 +64,7 @@ namespace ShiftEngine
 		MaterialInfo(const materialFlags & _flags);
 
 		const materialFlags * GetFlags() const;
+		uint64_t GetHash() const;
 		bool operator==(const MaterialInfo & ref) const;
 		bool operator<(const MaterialInfo & ref) const;
 
