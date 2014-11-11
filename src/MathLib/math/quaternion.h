@@ -288,10 +288,10 @@ namespace MathLib
 	}
 
 	template<typename T>
-	quaternion<T> quaternionSlerp(const quaternion<T> & from, const quaternion<T> & to, float t)
+	quaternion<T> quaternionSlerp(const quaternion<T> & from, const quaternion<T> & to, T t)
 	{
-		float p1[4];
-		double scale0, scale1;
+		T p1[4];
+		T scale0, scale1;
 		quaternion<T> out;
 
 		// косинус угла
@@ -319,10 +319,10 @@ namespace MathLib
 		if ((1.0 - cosom) > 0.001)
 		{
 			// стандартный случай (slerp)
-			double omega = acos(cosom);
-			double sinom = sin(omega);
-			scale0 = sin((1.0 - t) * omega) / sinom;
-			scale1 = sin(t * omega) / sinom;
+			T omega = (T)acos(cosom);
+			T sinom = (T)sin(omega);
+			scale0 = (T)sin((1.0 - t) * omega) / sinom;
+			scale1 = (T)sin(t * omega) / sinom;
 		}
 		else
 		{        
