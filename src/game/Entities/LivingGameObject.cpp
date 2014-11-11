@@ -4,9 +4,6 @@
 
 LivingGameObject::LivingGameObject(ShiftEngine::MeshNode * sceneNode)
 	: GameObject(sceneNode)
-	, currentState(ES_Waiting)
-	, targetPosition()
-	, healthPoints(100)
 {
 }
 
@@ -32,13 +29,34 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 	if (topColumn == BT_Water)
 		return false;
 
-	targetPosition = target;
-	currentState = ES_Rotating;
+	while (!states.empty() &&
+		   (states.top()->GetType() == EntityState::Rotating ||
+		   states.top()->GetType() == EntityState::Moving))
+	{
+		states.pop();
+	}
+
+	PushState(std::make_shared<MovingState>(target));
+	PushState(std::make_shared<RotatingState>(target));
+	//currentState = ES_Rotating;
 	return true;
 }
 
 void LivingGameObject::Update(double dt)
 {
+#if 1
+	if (!states.empty())
+	{
+		auto currentState = states.top();
+		currentState->Update(this, dt);
+		if(currentState->Dead())
+		{
+			states.pop();
+		}
+	}
+#endif
+
+#if 0
 	switch (currentState)
 	{
 	case ES_Rotating:
@@ -84,6 +102,7 @@ void LivingGameObject::Update(double dt)
 	default:
 		break;
 	}
+#endif
 
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();
@@ -101,24 +120,4 @@ void LivingGameObject::Update(double dt)
 	auto position = GetPosition();
 	position.z = (float)maxHeight;
 	SetPosition(position);
-}
-
-MathLib::Vector2F LivingGameObject::GetTargetPosition() const
-{
-	return targetPosition;
-}
-
-EntityState LivingGameObject::GetCurrentState() const
-{
-	return currentState;
-}
-
-uint32_t LivingGameObject::GetHealth() const
-{
-	return healthPoints;
-}
-
-void LivingGameObject::SetHealth(uint32_t health)
-{
-	healthPoints = health;
 }

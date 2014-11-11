@@ -32,6 +32,7 @@ public:
 	PlayerPtr				CreatePlayer(const Vector3F & Position);
 	void					Update(double dt, const Vector3F & sunPos);
 	void					SelectEntity(const MathLib::Ray &unprojectedVector);
+	GameObjectPtr			GetNearestEntity(const MathLib::Ray &unprojectedVector);
 	bool					DispatchEvent(IGameEvent * ev);
 
 private:

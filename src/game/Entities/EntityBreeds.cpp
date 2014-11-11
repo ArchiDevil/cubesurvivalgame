@@ -8,7 +8,7 @@
 ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::string & materialFile)
 {
 	std::wstring wmaterialFile = utils::StrToWStr(materialFile);
-	auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(wmaterialFile, L"default");
+	auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(wmaterialFile, L"generic");
 
 	std::wstring wmeshName = utils::StrToWStr(meshName);
 	MeshNode * meshNode = nullptr;

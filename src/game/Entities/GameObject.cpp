@@ -3,6 +3,7 @@
 GameObject::GameObject( ShiftEngine::MeshNode * sceneNode )
 	: SceneNode(sceneNode)
 	, ToDelete(false)
+	, health(1)
 	//, parent(nullptr)
 {
 }
@@ -43,19 +44,43 @@ bool GameObject::OnGameEvent(IGameEvent * ev)
 	return false;
 }
 
-bool GameObject::Select(const MathLib::Ray & unprojectedRay)
+void GameObject::Select()
 {
-	if (MathLib::RayBoxIntersect(unprojectedRay, SceneNode->GetBBox(), 0.0f, 10000.0f))
-	{
-		this->SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 0.75f, 0.75f, 1.0f));
-		MainLog.Message("Selected some entity");
-		return true;
-	}
-	return false;
+	this->SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 0.75f, 0.75f, 1.0f));
+	MainLog.Message("Selected some entity");
 }
 
 void GameObject::Unselect()
 {
 	this->SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
 	MainLog.Message("Some entity has been unselected");
+}
+
+bool GameObject::CanSelected(const MathLib::Ray &uprojectedRay)
+{
+	if (MathLib::RayBoxIntersect(uprojectedRay, SceneNode->GetBBox(), 0.0f, 10000.0f))
+		return true;
+	return false;
+}
+
+uint32_t GameObject::GetHealth() const
+{
+	return health;
+}
+
+void GameObject::SetHealth(uint32_t health)
+{
+	this->health = health;
+}
+
+void GameObject::PushState(const std::shared_ptr<IEntityState> & state)
+{
+	states.push(state);
+}
+
+const EntityState GameObject::GetCurrentState() const
+{
+	if (states.empty())
+		return EntityState::Waiting;
+	return states.top()->GetType();
 }

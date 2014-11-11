@@ -52,20 +52,8 @@ void PlayerGameObject::Update(double dt)
 {
 	LivingGameObject::Update(dt);
 
-	if (GetCurrentState() == ES_Moving ||
-		GetCurrentState() == ES_Rotating)
-	{
-		targetMarker->SetVisibility(true);
-		targetMarker->SetPosition(Vector3F(targetPosition.x, targetPosition.y, 100.0f));
-
-		auto pGame = LostIsland::GetGamePtr();
-		float height = pGame->World->GetDataStorage()->GetFullHeight(std::floor(targetPosition.x), std::floor(targetPosition.y));
-
-		auto position = targetMarker->GetPosition();
-		position.z = (float)height;
-		targetMarker->SetPosition(position);
-	}
-	else
+	if (GetCurrentState() != EntityState::Moving &&
+		GetCurrentState() != EntityState::Rotating)
 	{
 		targetMarker->SetVisibility(false);
 	}
@@ -77,4 +65,20 @@ void PlayerGameObject::Update(double dt)
 		hunger--;
 		accumulatedTime = 1.0;
 	}
+}
+
+bool PlayerGameObject::Go(const MathLib::Vector2F & target)
+{
+	bool result = LivingGameObject::Go(target);
+	if (!result) return false;
+
+	auto pGame = LostIsland::GetGamePtr();
+	targetMarker->SetVisibility(true);
+	targetMarker->SetPosition(Vector3F(target.x, target.y, 0.0f));
+	float height = pGame->World->GetDataStorage()->GetFullHeight(std::floor(target.x), std::floor(target.y));
+	auto position = targetMarker->GetPosition();
+	position.z = (float)height;
+	targetMarker->SetPosition(position);
+
+	return true;
 }

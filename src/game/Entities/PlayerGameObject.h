@@ -21,6 +21,8 @@ public:
 
 	void Update(double dt) override;
 
+	virtual bool Go(const MathLib::Vector2F & target) override;
+
 private:
 	cInventory Inventory;
 

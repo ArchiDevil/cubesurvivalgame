@@ -1,12 +1,6 @@
 #include "gameState.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
-#include "../cInventory.h"
-
-#include <thread>
-
-std::thread worldThread;
-volatile bool exitFlag = false;
 
 //TEMPORARY
 float phi = 0.0f;
@@ -52,8 +46,6 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
-	MainLog.Message("Player has been initialized");
-
 	auto settings = pCtxMgr->GetParameters();
 	pGame->gameHud->Initialize(settings.screenWidth, settings.screenHeight);
 	MainLog.Message("HUD has been created");
@@ -62,13 +54,6 @@ bool gameState::initState()
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
-	//worldThread = std::thread([&]
-	//{
-	//while(!exitFlag) 
-	//	LostIsland::GetGamePtr()->World->ProcessLoading();
-	//Sleep(0);
-	//});
-
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 
 	pScene->AddCameraSceneNode();
@@ -76,6 +61,8 @@ bool gameState::initState()
 	pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
+
+	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
 
 	MainLog.Message("End of game state initializing");
 
@@ -161,31 +148,14 @@ bool gameState::render(double dt)
 
 void gameState::onKill()
 {
-	exitFlag = true;
-	if (worldThread.joinable())
-		worldThread.join();
 }
 
 void gameState::onSuspend()
 {
-	exitFlag = true;
-	if (worldThread.joinable())
-		worldThread.join();
 }
 
 void gameState::onResume()
 {
-	cGame * pGame = LostIsland::GetGamePtr();
-
-	if (worldThread.joinable())
-		worldThread.join();
-	exitFlag = false;
-	//worldThread = std::thread([&]
-	//{
-	//	while (!exitFlag)
-	//		pGame->World->ProcessLoading();
-	//	Sleep(0);
-	//});
 }
 
 void gameState::ProcessInput(double dt)

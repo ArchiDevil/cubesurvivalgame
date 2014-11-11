@@ -45,8 +45,6 @@ void EntityManager::Update( double dt, const Vector3F & sunPos )
 	while (iter != GameObjects.end())
 	{
 		(*iter)->Update(dt);
-		(*iter)->GetSceneNode()->GetMaterialPtr()->SetNamedParam("lightPos", sunPos);
-
 		if ((*iter)->MustBeDeleted())
 			iter = GameObjects.erase(iter);
 		else
@@ -64,6 +62,7 @@ GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, co
 	}
 
 	auto out = iter->second->Clone();
+	out->SetPosition(position);
 	GameObjects.push_back(out);
 	return out;
 }
@@ -171,8 +170,9 @@ void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
 	bool selected = false;
 	for (auto & entity : GameObjects)
 	{
-		if (entity->Select(unprojectedRay))
+		if (entity->CanSelected(unprojectedRay))
 		{
+			entity->Select();
 			if (selectedEntity) 
 				selectedEntity->Unselect();
 			selectedEntity = entity.get();
@@ -187,4 +187,12 @@ void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
 			selectedEntity->Unselect();
 		selectedEntity = nullptr;
 	}
+}
+
+GameObjectPtr EntityManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
+{
+	for (auto & entity : GameObjects)
+		if (entity->CanSelected(unprojectedRay))
+			return entity;
+	return nullptr;
 }
