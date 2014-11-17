@@ -9,4 +9,3 @@ public:
 	virtual bool Convert(const std::wstring & input, const std::wstring & output);
 
 };
-

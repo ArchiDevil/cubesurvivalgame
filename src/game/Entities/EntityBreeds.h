@@ -1,13 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
-
-#include "StaticGameObject.h"
-// #include "AnimalGameObject.h"
-// #include "CollectableGameObject.h"
-#include "ProducerGameObject.h"
-#include "CrafterGameObject.h"
-#include "ItemGameObject.h"
+#include "../Items/Item.h"
 
 class EntityBreed
 {
@@ -44,6 +38,7 @@ public:
 protected:
 	Item * producedItem;
 	uint32_t producingTime;
+
 };
 
 class CrafterBreed : public EntityBreed
@@ -62,6 +57,7 @@ public:
 protected:
 	Item * craftingItem;
 	uint32_t craftingTime;
+
 };
 
 class StaticBreed : public EntityBreed
@@ -73,7 +69,19 @@ public:
 	}
 
 	GameObjectPtr Clone() const override;
+};
+
+class CollectableBreed : public EntityBreed
+{
+public:
+	CollectableBreed(const std::string & meshName, const std::string & materialFile, uint32_t itemId)
+		: EntityBreed(meshName, materialFile)
+		, itemId(itemId)
+	{
+	}
+
+	GameObjectPtr Clone() const override;
 
 protected:
-
+	uint32_t itemId;
 };

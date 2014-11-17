@@ -1,8 +1,8 @@
 {
-	"id": 				"fishnet",
-	"type": 			"producer",
-	"produced_item": 	"fish",
-	"cycle_time": 		60000,
-	"mesh": 			"cube",
-	"material": 		"fishnet.mtl"
+    "id": "fishnet",
+    "type": "producer",
+    "produced_item": "fish",
+    "cycle_time": 60000,
+    "mesh": "cube",
+    "material": "fishnet.mtl"
 }

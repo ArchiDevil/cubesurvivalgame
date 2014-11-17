@@ -15,11 +15,10 @@ using namespace ShiftEngine;
 
 EntityManager::EntityManager()
 	: selectedEntity(nullptr)
+	, entityMaterial(nullptr)
 {
 	IProgramPtr EntityShader = GetContextManager()->LoadShader(L"EntityShader.fx");
 	entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
-
-	LoadEntities();
 }
 
 EntityManager::~EntityManager()
@@ -85,8 +84,45 @@ PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 	return player;
 }
 
+void EntityManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
+{
+	if (selectedEntity && selectedEntity->CanBeHighlighted(unprojectedRay))
+		return;
+
+	bool selected = false;
+	for (auto & entity : GameObjects)
+	{
+		if (entity->CanBeHighlighted(unprojectedRay))
+		{
+			entity->Highlight();
+			if (selectedEntity) 
+				selectedEntity->UnHightlight();
+			selectedEntity = entity.get();
+			selected = true;
+			break;
+		}
+	}
+
+	if (!selected)
+	{
+		if (selectedEntity)
+			selectedEntity->UnHightlight();
+		selectedEntity = nullptr;
+	}
+}
+
+GameObjectPtr EntityManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
+{
+	for (auto & entity : GameObjects)
+		if (entity->CanBeHighlighted(unprojectedRay))
+			return entity;
+	return nullptr;
+}
+
 void EntityManager::LoadEntities()
 {
+	auto *pGame = LostIsland::GetGamePtr();
+
 	std::wstring pathPrefix = L"resources/gamedata/entities/";
 	auto files = utils::filesystem::CollectFileNames(pathPrefix);
 
@@ -135,7 +171,8 @@ void EntityManager::LoadEntities()
 		std::string materialName = root.get("material", buff).asString();
 
 		buff = root.get("type", buff);
-		if (buff.asString() == "crafter")
+		std::string type = buff.asString();
+		if (type == "crafter")
 		{
 			buff = root.get("crafting_time", buff);
 			uint32_t craftingTime = buff.asInt();
@@ -144,7 +181,7 @@ void EntityManager::LoadEntities()
 			//UNDONE: crafting item
 			Breeds[id] = std::make_shared<CrafterBreed>(meshName, materialName, craftingItem, craftingTime);
 		}
-		else if (buff.asString() == "producer")
+		else if (type == "producer")
 		{
 			buff = root.get("cycle_time", buff);
 			uint32_t producingTime = buff.asInt();
@@ -153,9 +190,21 @@ void EntityManager::LoadEntities()
 			//UNDONE: produced item
 			Breeds[id] = std::make_shared<ProducerBreed>(meshName, materialName, producedItem, producingTime);
 		}
-		else if (buff.asString() == "static")
+		else if (type == "static")
 		{
 			Breeds[id] = std::make_shared<StaticBreed>(meshName, materialName);
+		}
+		else if (type == "collectable")
+		{
+			buff = root.get("item", buff);
+			std::string itemName = buff.asString();
+			if (itemName.empty())
+			{
+				MainLog.Error("Unable to find entity item for: " + id);
+				continue;
+			}
+			uint32_t itemId = pGame->ItemMgr->GetItemId(itemName);
+			Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId);
 		}
 		else
 		{
@@ -163,36 +212,4 @@ void EntityManager::LoadEntities()
 			continue;
 		}
 	}
-}
-
-void EntityManager::SelectEntity(const MathLib::Ray &unprojectedRay)
-{
-	bool selected = false;
-	for (auto & entity : GameObjects)
-	{
-		if (entity->CanSelected(unprojectedRay))
-		{
-			entity->Select();
-			if (selectedEntity) 
-				selectedEntity->Unselect();
-			selectedEntity = entity.get();
-			selected = true;
-			break;
-		}
-	}
-
-	if (!selected)
-	{
-		if (selectedEntity)
-			selectedEntity->Unselect();
-		selectedEntity = nullptr;
-	}
-}
-
-GameObjectPtr EntityManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
-{
-	for (auto & entity : GameObjects)
-		if (entity->CanSelected(unprojectedRay))
-			return entity;
-	return nullptr;
 }

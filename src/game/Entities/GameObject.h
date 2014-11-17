@@ -9,8 +9,6 @@
 #include <stack>
 #include <memory>
 
-//class IEntityState;
-
 class GameObject
 {
 public:
@@ -21,13 +19,14 @@ public:
 	virtual void SetPosition(const Vector3F & Position);
 	virtual void Update(double dt) = 0;
 	virtual bool OnGameEvent(IGameEvent * ev);
-	virtual bool CanSelected(const MathLib::Ray &uprojectedRay);
-	virtual void Unselect();
-	virtual void Select();
+	virtual bool CanBeHighlighted(const MathLib::Ray &uprojectedRay);
+	virtual void Highlight();
+	virtual void UnHightlight();
+
 	ShiftEngine::MeshNode * GetSceneNode();
 
-	uint32_t GetHealth() const;
-	void SetHealth(uint32_t health);
+	int GetHealth() const;
+	void SetHealth(int in_health);
 
 	//service methods
 	bool MustBeDeleted() const;
@@ -40,7 +39,7 @@ protected:
 	ShiftEngine::MeshNode * SceneNode;
 	bool ToDelete;
 
-	uint32_t health;
+	int health;
 	std::stack<std::shared_ptr<IEntityState>> states;
 
 };

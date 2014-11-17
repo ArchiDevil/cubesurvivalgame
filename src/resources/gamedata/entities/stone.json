@@ -1,0 +1,7 @@
+{
+    "id": "stone",
+    "type": "collectable",
+    "item": "stone",
+    "mesh": "cube",
+    "material": "generic.mtl"
+}

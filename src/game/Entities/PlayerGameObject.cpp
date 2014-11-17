@@ -38,14 +38,14 @@ unsigned PlayerGameObject::GetTemperature() const
 	return temperature;
 }
 
-void PlayerGameObject::SetHunger(int hunger)
+void PlayerGameObject::SetHunger(int in_hunger)
 {
-	this->hunger = hunger;
+	this->hunger = in_hunger;
 }
 
-void PlayerGameObject::SetTemperature(int temperature)
+void PlayerGameObject::SetTemperature(int in_temperature)
 {
-	this->temperature = temperature;
+	this->temperature = in_temperature;
 }
 
 void PlayerGameObject::Update(double dt)

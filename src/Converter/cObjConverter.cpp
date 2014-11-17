@@ -112,34 +112,25 @@ bool cObjConverter::Convert(const std::wstring & in, const std::wstring & out)
 			{
 				auto subelems = split(elems[i], '/');
 				key_t t;
-				switch (subelems.size())
+				if (subelems.size() == 1)
 				{
-				case 1:
-					{
-						//just one index
-						long index = std::stoi(subelems[0]) - 1;
-						t = std::make_tuple(index, index, index);
-						break;
-					}
-				case 2:
-					{
-						long index1 = std::stoi(subelems[0]) - 1;
-						long index2 = std::stoi(subelems[1]) - 1;
-						t = std::make_tuple(index1, index1, index2);
-						break;
-					}
-				case 3:
-					{
-						long index1 = std::stoi(subelems[0]) - 1;
-						long index2 = -1;
-						if(subelems[1].size() != 0)
-							index2 = std::stoi(subelems[1]) - 1;
-						long index3 = std::stoi(subelems[2]) - 1;
-						t = std::make_tuple(index1, index2, index3);
-						break;
-					}
-				default:
-					break;
+					long index = std::stoi(subelems[0]) - 1;
+					t = std::make_tuple(index, index, index);
+				}
+				else if (subelems.size() == 2)
+				{
+					long index1 = std::stoi(subelems[0]) - 1;
+					long index2 = std::stoi(subelems[1]) - 1;
+					t = std::make_tuple(index1, index1, index2);
+				}
+				else if (subelems.size() == 3)
+				{
+					long index1 = std::stoi(subelems[0]) - 1;
+					long index2 = -1;
+					if (subelems[1].size() != 0)
+						index2 = std::stoi(subelems[1]) - 1;
+					long index3 = std::stoi(subelems[2]) - 1;
+					t = std::make_tuple(index1, index2, index3);
 				}
 
 				unsigned long index = 0;

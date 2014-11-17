@@ -319,31 +319,28 @@ bool WorkState::ProcessInput(double ElapsedTime)
 			if (lenghtOfMove < threshold)
 			{
 				D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-				float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F(0.0f, 0.0f, 0.0f));
+				float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
 				//calculate new position
 				for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
 				{
 					Vector3F temp = dir * mult + (nearV);
-					if (Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
+					Block & block = Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z));
+					if (!block.exist)
+						continue;
+
+					mult -= 0.1f;
+					temp = dir * mult + nearV;
+					auto vector = Workspace->GetHalfSize();
+					vector *= 2.0f;
+					if (temp.x >= 0.0f && temp.x <= vector.x &&
+						temp.y >= 0.0f && temp.y <= vector.y &&
+						temp.z >= 0.0f && temp.z <= vector.z)
 					{
-						mult -= 0.1f;
-						temp = dir * mult + nearV;
-						auto vector = Workspace->GetHalfSize();
-						vector *= 2.0f;
-						if (temp.x >= 0.0f && temp.x <= vector.x &&
-							temp.y >= 0.0f && temp.y <= vector.y &&
-							temp.z >= 0.0f && temp.z <= vector.z)
-						{
-							Workspace->SaveToUndo();
-							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist = true;
-							Workspace->GetElem((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).color = Vector3F(0.9f, 0.9f, 0.9f);
-							break;
-						}
-						else
-						{
-							break;
-						}
+						Workspace->SaveToUndo();
+						block.exist = true;
+						block.color = Vector3F(0.9f, 0.9f, 0.9f);
 					}
+					break;
 				}
 			}
 			flag = false;

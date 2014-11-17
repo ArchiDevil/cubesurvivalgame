@@ -7,6 +7,7 @@ float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
 ShiftEngine::LightNode * pSun = nullptr;
+GameObjectPtr tree = nullptr;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw)
@@ -55,6 +56,7 @@ bool gameState::initState()
 	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
+	pGame->EntityMgr->LoadEntities();
 
 	pScene->AddCameraSceneNode();
 	pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.33f));
@@ -62,7 +64,8 @@ bool gameState::initState()
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
 
-	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
+	tree = pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
+	pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
 
 	MainLog.Message("End of game state initializing");
 
@@ -243,10 +246,7 @@ void gameState::ProcessInput(double dt)
 	Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
 	Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
 
-	if (InputEngine->IsMouseUp(LButton))
-	{
-		pGame->EntityMgr->SelectEntity(unprojectedRay);
-	}
+	pGame->EntityMgr->HighlightEntity(unprojectedRay);
 
 	if (InputEngine->IsMouseUp(RButton))
 	{
@@ -264,6 +264,14 @@ void gameState::ProcessInput(double dt)
 	{
 		mousePath += abs(mouseInfo.deltaX);
 		mousePath += abs(mouseInfo.deltaY);
+	}
+
+	if (InputEngine->IsKeyUp(DIK_Y))
+	{
+		if (tree)
+		{
+			tree->SetHealth(-1);
+		}
 	}
 
 	r -= mouseInfo.deltaZ * dt;

@@ -91,3 +91,50 @@ EntityState MovingState::GetType() const
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+DyingState::DyingState(float dyingTime)
+	: elapsedTime(dyingTime)
+	, fullTime(dyingTime)
+{
+}
+
+void DyingState::Update(GameObject * entity, double dt)
+{
+	//HACK: with big FPS there's will be an error due to cast
+	elapsedTime -= dt;
+	auto * pSceneNode = entity->GetSceneNode();
+	if (!pSceneNode)
+		return;
+
+	float scale = elapsedTime / fullTime;
+	pSceneNode->SetScale(scale);
+	if (elapsedTime <= 0.0f)
+	{
+		Die();
+	}
+}
+
+EntityState DyingState::GetType() const
+{
+	return EntityState::Dying;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+DecayState::DecayState(float decayTime)
+	: elapsedTime(decayTime)
+{
+}
+
+void DecayState::Update(GameObject * entity, double dt)
+{
+	//HACK: with big FPS there's will be an error due to cast
+	elapsedTime -= (float)dt;
+	if (elapsedTime <= 0.0f)
+		entity->Delete();
+}
+
+EntityState DecayState::GetType() const
+{
+	return EntityState::Decay;
+}

@@ -9,6 +9,8 @@ enum class EntityState
 	Waiting,
 	Rotating,
 	Moving,
+	Dying,
+	Decay
 };
 
 class IEntityState
@@ -50,5 +52,28 @@ private:
 
 };
 
+class DyingState : public IEntityState
+{
+public:
+	DyingState(float dyingTime);
+	virtual void Update(GameObject * entity, double dt) override;
+	virtual EntityState GetType() const override;
+
+private:
+	float elapsedTime;
+	const float fullTime;
+
+};
+
+class DecayState : public IEntityState
+{
+public:
+	DecayState(float decayTime);
+	virtual void Update(GameObject * entity, double dt) override;
+	virtual EntityState GetType() const override;
+
+private:
+	float elapsedTime;
+};
+
 	//ES_Attacking,
-	//ES_Dying
