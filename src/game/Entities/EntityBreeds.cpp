@@ -4,7 +4,6 @@
 #include <Utilities/ut.h>
 
 #include "StaticGameObject.h"
-#include "ProducerGameObject.h"
 #include "CrafterGameObject.h"
 #include "ItemGameObject.h"
 #include "CollectableGameObject.h"
@@ -25,11 +24,6 @@ ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::
 		meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(wmeshName, mtl.get());
 
 	return meshNode;
-}
-
-GameObjectPtr ProducerBreed::Clone() const
-{
-	return std::make_shared<ProducerGameObject>(CreateMeshNode(meshName, materialFile), producedItem, producingTime);
 }
 
 GameObjectPtr CrafterBreed::Clone() const

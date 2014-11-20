@@ -181,15 +181,6 @@ void EntityManager::LoadEntities()
 			//UNDONE: crafting item
 			Breeds[id] = std::make_shared<CrafterBreed>(meshName, materialName, craftingItem, craftingTime);
 		}
-		else if (type == "producer")
-		{
-			buff = root.get("cycle_time", buff);
-			uint32_t producingTime = buff.asInt();
-			buff = root.get("produced_item", buff);
-			Item * producedItem = nullptr;
-			//UNDONE: produced item
-			Breeds[id] = std::make_shared<ProducerBreed>(meshName, materialName, producedItem, producingTime);
-		}
 		else if (type == "static")
 		{
 			Breeds[id] = std::make_shared<StaticBreed>(meshName, materialName);
