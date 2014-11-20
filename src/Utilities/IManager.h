@@ -3,6 +3,7 @@
 class IManager
 {
 public:
+	IManager() {}
     ~IManager() {}
     
     IManager(const IManager & ref) = delete;
