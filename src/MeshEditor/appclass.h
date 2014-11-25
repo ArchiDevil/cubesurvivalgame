@@ -34,7 +34,7 @@ private:
 	// OTHER STRUCTURES //
 	//////////////////////
 	cTimer							mainTimer;
-	IniWorker *						SettingsLoader;
+	IniWorker						SettingsLoader;
 
 	std::stack<appState *>			statesStack;	//stack of game states like MainMenu, GameState and more
 	std::vector<wchar_t>			charQueue;

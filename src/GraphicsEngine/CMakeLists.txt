@@ -12,7 +12,11 @@ set(DXSDK_LIBS  d3d10.lib
 include_directories($ENV{DXSDK_DIR}/include)
 include_directories(../../3rdparty/tinyxml2)
 
-link_directories($ENV{DXSDK_DIR}/lib/x86)
+if(${EX_PLATFORM} EQUAL 64)
+    link_directories($ENV{DXSDK_DIR}/lib/x64)
+else()
+    link_directories($ENV{DXSDK_DIR}/lib/x86)
+endif()
 
 add_library(GraphicsEngine STATIC ${SRC})
 

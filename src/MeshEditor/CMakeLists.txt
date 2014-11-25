@@ -4,7 +4,12 @@ file(GLOB_RECURSE SRC *.cpp *.h)
 
 include_directories(../../3rdparty/jsoncpp/include)
 include_directories($ENV{DXSDK_DIR}/include)
-link_directories($ENV{DXSDK_DIR}/lib/x86)
+
+if(${EX_PLATFORM} EQUAL 64)
+    link_directories($ENV{DXSDK_DIR}/lib/x64)
+else()
+    link_directories($ENV{DXSDK_DIR}/lib/x86)
+endif()
 
 add_executable(MeshEditor ${SRC})
 target_link_libraries(MeshEditor GraphicsEngine GUI Utilities MathLib)

@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 project(LostIsland)
 
+if(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR CMAKE_COMPILER_2005 OR MSVC90 OR MSVC10 OR MSVC11)
+    message(FATAL_ERROR "Visual Studio below 2013 is not supported")
+endif()
+
+if(NOT MSVC)
+	message(FATAL_ERROR "Only Visual Studio supported for now")
+endif()
+
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
 option(BUILD_TESTS "Generate projects for tests building" OFF)
 
@@ -13,6 +21,14 @@ cmake_policy(SET CMP0018 NEW)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    message(STATUS "x64 detected")
+    set(EX_PLATFORM 64)
+else()
+    message(STATUS "x86 detected")
+    set(EX_PLATFORM 32)
+endif()
 
 add_subdirectory(3rdparty/tinyxml2)
 
@@ -32,14 +48,10 @@ function(AddVSTest TestName Sources)
     
     if(MSVC)
         # define visual studio installation dir
-        if(MSVC10)
-            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS100COMNTOOLS})
-        elseif(MSVC11)
-            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS110COMNTOOLS})
-        elseif(MSVC12)
+        if(MSVC12)
             string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS120COMNTOOLS})
-        #elseif(MSVC12)
-        #    string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS140COMNTOOLS})
+        elseif(MSVC14)
+            string(REGEX REPLACE "Common7\\\\Tools\\\\" "VC" VCINSTALLDIR $ENV{VS140COMNTOOLS})
         endif()
     else(MSVC)
         message(ERROR "Unable to find visual studio installation path")
@@ -49,7 +61,11 @@ function(AddVSTest TestName Sources)
     include_directories($ENV{DXSDK_DIR}/include)
 
     link_directories(${VCINSTALLDIR}/UnitTest/lib)
-    link_directories($ENV{DXSDK_DIR}/lib/x86)
+    if(${EX_PLATFORM} EQUAL 64)
+        link_directories($ENV{DXSDK_DIR}/lib/x64)
+    else()
+        link_directories($ENV{DXSDK_DIR}/lib/x86)
+    endif()
     
     foreach(arg ${ARGN})
         list(APPEND Sources ${arg})
