@@ -11,6 +11,8 @@
 
 class Item;
 
+typedef uint64_t item_id_t;
+
 class ItemManager
 {
 public:
@@ -18,14 +20,14 @@ public:
 	~ItemManager();
 
 	void Initialize(const std::wstring & PathName);
-	Item * GetItemById(uint64_t itemId);
-	uint64_t GetItemId(const std::string & ItemName);
+	Item * GetItemById(item_id_t itemId);
+	item_id_t GetItemId(const std::string & ItemName);
 
 private:
 	void LoadDefinitions(const std::wstring & path);
 
-	std::map<uint64_t, Item*> HashItem;
-	std::map<std::string, uint64_t> NameHash;
+	std::map<item_id_t, Item*> HashItem;
+	std::map<std::string, item_id_t> NameHash;
 
 	typesStorage * ts;
 	ItemUsingsHandler handler;

@@ -194,7 +194,7 @@ void EntityManager::LoadEntities()
 				MainLog.Error("Unable to find entity item for: " + id);
 				continue;
 			}
-			uint32_t itemId = pGame->ItemMgr->GetItemId(itemName);
+			item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
 			Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId);
 		}
 		else

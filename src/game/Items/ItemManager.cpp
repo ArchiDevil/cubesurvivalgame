@@ -113,7 +113,7 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 	}
 }
 
-Item * ItemManager::GetItemById(uint64_t itemId)
+Item * ItemManager::GetItemById(item_id_t itemId)
 {
 	auto iter = HashItem.find(itemId);
 	if (iter != HashItem.end())
@@ -122,7 +122,7 @@ Item * ItemManager::GetItemById(uint64_t itemId)
 	return nullptr;
 }
 
-uint64_t ItemManager::GetItemId(const std::string & ItemName)
+item_id_t ItemManager::GetItemId(const std::string & ItemName)
 {
 	auto iter = NameHash.find(ItemName);
 	if (iter != NameHash.end())
