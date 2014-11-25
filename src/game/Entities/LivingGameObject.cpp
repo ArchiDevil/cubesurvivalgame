@@ -9,6 +9,11 @@ LivingGameObject::LivingGameObject(ShiftEngine::MeshNode * sceneNode)
 
 LivingGameObject::~LivingGameObject()
 {
+	while (!Actions.empty())
+	{
+		auto action = Actions.back();
+		action->OnCancel(this);
+	}
 }
 
 bool LivingGameObject::Go(const MathLib::Vector2F & target)
@@ -29,15 +34,20 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 	if (topColumn == BT_Water)
 		return false;
 
+	PushState(std::make_shared<MovingState>(target));
+	PushState(std::make_shared<RotatingState>(target));
+	Actions.push(std::make_shared<MoveAction>(target));
+	return true;
+}
+
+void LivingGameObject::Stop()
+{
+	// set current state to waiting
 	while (!states.empty() &&
 		   states.top()->GetType() != EntityState::Waiting)
 	{
 		states.pop();
 	}
-
-	PushState(std::make_shared<MovingState>(target));
-	PushState(std::make_shared<RotatingState>(target));
-	return true;
 }
 
 void LivingGameObject::Update(double dt)
@@ -46,6 +56,14 @@ void LivingGameObject::Update(double dt)
 	currentState->Update(this, dt);
 	if (currentState->Dead())
 		states.pop();
+
+	if (!Actions.empty())
+	{
+		auto & action = Actions.back();
+		action->OnUpdate(this, dt);
+		if (action->IsDead())
+			Actions.pop();
+	}
 
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();

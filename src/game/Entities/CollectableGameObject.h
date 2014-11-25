@@ -2,13 +2,15 @@
 
 #include "StaticGameObject.h"
 
+#include "../Items/ItemManager.h"
+
 class CollectableGameObject : public StaticGameObject
 {
 public:
-	CollectableGameObject(ShiftEngine::MeshNode * sceneNode, uint32_t itemId);
+	CollectableGameObject(ShiftEngine::MeshNode * sceneNode, item_id_t itemId);
 	~CollectableGameObject();
 
 private:
-	uint32_t itemId;
+	item_id_t itemId;
 
 };

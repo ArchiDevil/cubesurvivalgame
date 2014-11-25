@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "../Items/Item.h"
+#include "../Items/ItemManager.h"
 
 class EntityBreed
 {
@@ -55,7 +56,7 @@ public:
 class CollectableBreed : public EntityBreed
 {
 public:
-	CollectableBreed(const std::string & meshName, const std::string & materialFile, uint32_t itemId)
+	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId)
 		: EntityBreed(meshName, materialFile)
 		, itemId(itemId)
 	{
@@ -64,5 +65,5 @@ public:
 	GameObjectPtr Clone() const override;
 
 protected:
-	uint32_t itemId;
+	item_id_t itemId;
 };
