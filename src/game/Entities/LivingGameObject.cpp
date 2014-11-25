@@ -30,29 +30,22 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 		return false;
 
 	while (!states.empty() &&
-		   (states.top()->GetType() == EntityState::Rotating ||
-		   states.top()->GetType() == EntityState::Moving))
+		   states.top()->GetType() != EntityState::Waiting)
 	{
 		states.pop();
 	}
 
 	PushState(std::make_shared<MovingState>(target));
 	PushState(std::make_shared<RotatingState>(target));
-	//currentState = ES_Rotating;
 	return true;
 }
 
 void LivingGameObject::Update(double dt)
 {
-	if (!states.empty())
-	{
-		auto currentState = states.top();
-		currentState->Update(this, dt);
-		if(currentState->Dead())
-		{
-			states.pop();
-		}
-	}
+	auto currentState = states.top();
+	currentState->Update(this, dt);
+	if (currentState->Dead())
+		states.pop();
 
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();

@@ -17,7 +17,7 @@ class IEntityState
 {
 public:
 	IEntityState();
-    virtual ~IEntityState();
+	virtual ~IEntityState();
 
 	virtual void Update(GameObject * entity, double dt) = 0;
 	virtual bool Dead() const;
@@ -27,6 +27,14 @@ protected:
 	void Die();
 
 	bool dead;
+};
+
+class WaitingState : public IEntityState
+{
+public:
+	WaitingState();
+	virtual void Update(GameObject * entity, double dt) override;
+	virtual EntityState GetType() const override;
 };
 
 class RotatingState : public IEntityState
@@ -76,4 +84,4 @@ private:
 	float elapsedTime;
 };
 
-	//ES_Attacking,
+//ES_Attacking,

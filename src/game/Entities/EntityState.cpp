@@ -22,6 +22,21 @@ void IEntityState::Die()
 
 //////////////////////////////////////////////////////////////////////////
 
+WaitingState::WaitingState()
+{
+}
+
+void WaitingState::Update(GameObject * entity, double dt)
+{
+}
+
+EntityState WaitingState::GetType() const
+{
+	return EntityState::Waiting;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 RotatingState::RotatingState(const MathLib::Vector2F & targetPosition)
 	: targetPosition(targetPosition)
 {

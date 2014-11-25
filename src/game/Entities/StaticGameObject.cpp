@@ -1,6 +1,6 @@
 #include "StaticGameObject.h"
 
-StaticGameObject::StaticGameObject(ShiftEngine::MeshNode * mesh) 
+StaticGameObject::StaticGameObject(ShiftEngine::MeshNode * mesh)
 	: GameObject(mesh)
 {
 }
@@ -11,15 +11,10 @@ StaticGameObject::~StaticGameObject()
 
 void StaticGameObject::Update(double dt)
 {
-	if (!states.empty())
-	{
-		auto currentState = states.top();
-		currentState->Update(this, dt);
-		if (currentState->Dead())
-		{
-			states.pop();
-		}
-	}
+	auto currentState = states.top();
+	currentState->Update(this, dt);
+	if (currentState->Dead())
+		states.pop();
 
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();

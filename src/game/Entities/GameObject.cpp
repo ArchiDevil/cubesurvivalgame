@@ -5,6 +5,7 @@ GameObject::GameObject( ShiftEngine::MeshNode * sceneNode )
 	, ToDelete(false)
 	, health(1)
 {
+	states.push(std::make_shared<WaitingState>());
 }
 
 GameObject::~GameObject()
@@ -73,8 +74,6 @@ void GameObject::PushState(const std::shared_ptr<IEntityState> & state)
 
 const EntityState GameObject::GetCurrentState() const
 {
-	if (states.empty())
-		return EntityState::Waiting;
 	return states.top()->GetType();
 }
 
