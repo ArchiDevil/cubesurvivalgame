@@ -10,17 +10,40 @@ public:
 	IEntityAction();
 	virtual ~IEntityAction();
 
-	virtual void OnStart(LivingGameObject * gameObject) = 0;
-	virtual void OnUpdate(LivingGameObject * gameObject, double dt) = 0;
-	virtual void OnEnd(LivingGameObject * gameObject) = 0;
-	virtual void OnCancel(LivingGameObject * gameObject) = 0;
+	void Start(LivingGameObject * gameObject);
+	void Update(LivingGameObject * gameObject, double dt);
+	void End(LivingGameObject * gameObject);
+	void Cancel(LivingGameObject * gameObject);
 	bool IsDead() const;
+	bool IsStarted() const;
 
 protected:
+	virtual void onStart(LivingGameObject * gameObject) = 0;
+	virtual void onUpdate(LivingGameObject * gameObject, double dt) = 0;
+	virtual void onEnd(LivingGameObject * gameObject) = 0;
+	virtual void onCancel(LivingGameObject * gameObject) = 0;
+
 	void die();
 
 private:
 	bool m_dead;
+	bool m_started;
+};
+
+class RotateAction : public IEntityAction
+{
+public:
+	RotateAction(const MathLib::Vector2F & targetPosition);
+
+protected:
+	virtual void onStart(LivingGameObject * gameObject) override;
+	virtual void onUpdate(LivingGameObject * gameObject, double dt) override;
+	virtual void onEnd(LivingGameObject * gameObject) override;
+	virtual void onCancel(LivingGameObject * gameObject) override;
+
+private:
+	MathLib::Vector2F targetPosition;
+	double rotationTime;
 };
 
 class MoveAction : public IEntityAction
@@ -28,10 +51,11 @@ class MoveAction : public IEntityAction
 public:
 	MoveAction(const MathLib::Vector2F & targetPosition);
 
-	virtual void OnStart(LivingGameObject * gameObject) override;
-	virtual void OnUpdate(LivingGameObject * gameObject, double dt) override;
-	virtual void OnEnd(LivingGameObject * gameObject) override;
-	virtual void OnCancel(LivingGameObject * gameObject) override;
+protected:
+	virtual void onStart(LivingGameObject * gameObject) override;
+	virtual void onUpdate(LivingGameObject * gameObject, double dt) override;
+	virtual void onEnd(LivingGameObject * gameObject) override;
+	virtual void onCancel(LivingGameObject * gameObject) override;
 
 private:
 	MathLib::Vector2F targetPosition;

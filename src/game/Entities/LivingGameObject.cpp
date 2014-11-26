@@ -11,8 +11,9 @@ LivingGameObject::~LivingGameObject()
 {
 	while (!Actions.empty())
 	{
-		auto action = Actions.back();
-		action->OnCancel(this);
+		auto action = Actions.front();
+		action->Cancel(this);
+		Actions.pop();
 	}
 }
 
@@ -36,7 +37,10 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 
 	PushState(std::make_shared<MovingState>(target));
 	PushState(std::make_shared<RotatingState>(target));
+
+	Actions.push(std::make_shared<RotateAction>(target));
 	Actions.push(std::make_shared<MoveAction>(target));
+
 	return true;
 }
 
@@ -59,8 +63,8 @@ void LivingGameObject::Update(double dt)
 
 	if (!Actions.empty())
 	{
-		auto & action = Actions.back();
-		action->OnUpdate(this, dt);
+		auto & action = Actions.front();
+		action->Update(this, dt);
 		if (action->IsDead())
 			Actions.pop();
 	}

@@ -4,6 +4,7 @@
 
 IEntityAction::IEntityAction()
 	: m_dead(false)
+	, m_started(false)
 {
 }
 
@@ -21,26 +22,99 @@ bool IEntityAction::IsDead() const
 	return m_dead;
 }
 
+bool IEntityAction::IsStarted() const
+{
+	return m_started;
+}
+
+void IEntityAction::Start(LivingGameObject * gameObject)
+{
+	onStart(gameObject);
+	m_started = true;
+}
+
+void IEntityAction::Update(LivingGameObject * gameObject, double dt)
+{
+	onUpdate(gameObject, dt);
+}
+
+void IEntityAction::End(LivingGameObject * gameObject)
+{
+	onEnd(gameObject);
+	die();
+}
+
+void IEntityAction::Cancel(LivingGameObject * gameObject)
+{
+	onCancel(gameObject);
+	die();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
-MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
-	: IEntityAction()
-	, targetPosition(targetPosition)
+RotateAction::RotateAction(const MathLib::Vector2F & targetPosition)
+	: targetPosition(targetPosition)
+	, rotationTime(0.0)
 {
 }
 
-void MoveAction::OnStart(LivingGameObject * gameObject)
+void RotateAction::onStart(LivingGameObject * gameObject)
 {
-	gameObject->PushState(std::make_shared<MovingState>(targetPosition));
 }
 
-void MoveAction::OnUpdate(LivingGameObject * gameObject, double dt)
+void RotateAction::onUpdate(LivingGameObject * gameObject, double dt)
 {
 	auto * pSceneNode = gameObject->GetSceneNode();
 	if (!pSceneNode)
 		return;
 
-	Vector2F gameObjectPos = { gameObject->GetPosition().x, gameObject->GetPosition().y };
+	rotationTime += dt / 4.0;
+	Vector3F thisPos{ pSceneNode->GetPosition().x, pSceneNode->GetPosition().y, 0.0f };
+	Vector3F target{ targetPosition.x, targetPosition.y, 0.0 };
+	Vector3F faceStart = Vector3F(-1.0f, 0.0f, 0.0f) * pSceneNode->GetRotation();
+	Vector3F faceEnd = thisPos - target;
+	auto rotation = MathLib::shortest_arc(faceStart, faceEnd);
+	if (MathLib::angle(faceStart, faceEnd) <= 0.1f)
+	{
+		pSceneNode->RotateBy(rotation);
+		die();
+	}
+	else
+	{
+		auto rotationQuat = MathLib::quaternionSlerp(pSceneNode->GetRotation(), pSceneNode->GetRotation() * rotation, (float)rotationTime);
+		pSceneNode->SetRotation(rotationQuat);
+	}
+}
+
+void RotateAction::onEnd(LivingGameObject * gameObject)
+{
+	gameObject->Stop();
+}
+
+void RotateAction::onCancel(LivingGameObject * gameObject)
+{
+	gameObject->Stop();
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
+	: targetPosition(targetPosition)
+{
+}
+
+void MoveAction::onStart(LivingGameObject * gameObject)
+{
+	gameObject->PushState(std::make_shared<MovingState>(targetPosition));
+}
+
+void MoveAction::onUpdate(LivingGameObject * gameObject, double dt)
+{
+	auto * pSceneNode = gameObject->GetSceneNode();
+	if (!pSceneNode)
+		return;
+
+	Vector2F gameObjectPos{ gameObject->GetPosition().x, gameObject->GetPosition().y };
 
 	if (MathLib::distance(gameObjectPos, targetPosition) <= 0.1f)
 	{
@@ -55,12 +129,12 @@ void MoveAction::OnUpdate(LivingGameObject * gameObject, double dt)
 	}
 }
 
-void MoveAction::OnEnd(LivingGameObject * gameObject)
+void MoveAction::onEnd(LivingGameObject * gameObject)
 {
 	gameObject->Stop();
 }
 
-void MoveAction::OnCancel(LivingGameObject * gameObject)
+void MoveAction::onCancel(LivingGameObject * gameObject)
 {
 	gameObject->Stop();
 }
