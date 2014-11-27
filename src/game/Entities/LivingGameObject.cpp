@@ -9,12 +9,7 @@ LivingGameObject::LivingGameObject(ShiftEngine::MeshNode * sceneNode)
 
 LivingGameObject::~LivingGameObject()
 {
-	while (!Actions.empty())
-	{
-		auto action = Actions.front();
-		action->Cancel(this);
-		Actions.pop();
-	}
+	CancelCommands();
 }
 
 bool LivingGameObject::Go(const MathLib::Vector2F & target)
@@ -38,9 +33,8 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 	PushState(std::make_shared<MovingState>(target));
 	PushState(std::make_shared<RotatingState>(target));
 
-	Actions.push(std::make_shared<RotateAction>(target));
-	Actions.push(std::make_shared<MoveAction>(target));
-
+	PushCommand(std::make_shared<RotateAction>(target));
+	PushCommand(std::make_shared<MoveAction>(target));
 	return true;
 }
 
@@ -51,6 +45,31 @@ void LivingGameObject::Stop()
 		   states.top()->GetType() != EntityState::Waiting)
 	{
 		states.pop();
+	}
+}
+
+void LivingGameObject::PushCommand(std::shared_ptr<IEntityAction> action)
+{
+	Actions.push(action);
+}
+
+void LivingGameObject::CancelCommands()
+{
+	while (!Actions.empty())
+	{
+		auto action = Actions.back();
+		action->Cancel(this);
+		Actions.pop();
+	}
+}
+
+void LivingGameObject::CancelCurrentCommand()
+{
+	if (!Actions.empty())
+	{
+		auto action = Actions.back();
+		action->Cancel(this);
+		Actions.pop();
 	}
 }
 
