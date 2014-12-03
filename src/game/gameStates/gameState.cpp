@@ -52,8 +52,8 @@ bool gameState::initState()
 	MainLog.Message("HUD has been created");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
-	pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
-	pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
+	//pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = pGame->ItemMgr->GetItemId("raw_fish");
+	//pGame->Player->GetInventoryPtr()->GetHandPtr()->count = 25;
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 	pGame->EntityMgr->LoadEntities();

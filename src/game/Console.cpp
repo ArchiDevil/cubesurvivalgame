@@ -1,5 +1,5 @@
 #include "Console.h"
-#include "cInventory.h"
+#include "GameObjectInventory.h"
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <sstream>
@@ -41,15 +41,15 @@ void Console::HandleCommand()
 	}
 	else if(commandName == "add_item")
 	{
-		if (tokens.size() != 2)
+		if (tokens.size() != 3)
 		{
-			MainLog.Error("Wrong arguments: add_item [item_name]");
+			MainLog.Error("Wrong arguments: add_item [item_name] [count]");
 			return;
 		}
 
-        // unsigned int count = std::stoul(tokens[2]);
-
-		pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId(tokens[1]));
+		std::string name = tokens[1];
+        unsigned int count = std::stoul(tokens[2]);
+		pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId(name), count);
 	}
 	else if(commandName == "go")
 	{

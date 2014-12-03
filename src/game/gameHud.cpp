@@ -1,7 +1,7 @@
 #include "gameHud.h"
 
 #include "game.h"
-#include "cInventory.h"
+#include "GameObjectInventory.h"
 #include <GraphicsEngine/ShiftEngine.h>
 
 gameHUD::gameHUD() 
@@ -30,15 +30,15 @@ void gameHUD::Draw()
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto pItemMgr = pGame->ItemMgr;
-	uint64_t itemId = pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId;
-	int itemCount = pGame->Player->GetInventoryPtr()->GetHandPtr()->count;
+	//uint64_t itemId = pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId;
+	//int itemCount = pGame->Player->GetInventoryPtr()->GetHandPtr()->count;
 
-	if (itemId)
-		liHandItem->SetTexture(pItemMgr->GetItemById(itemId)->GetTexturePtr());
-	else
-		liHandItem->SetTexture(nullptr);
+	//if (itemId)
+	//	liHandItem->SetTexture(pItemMgr->GetItemById(itemId)->GetTexturePtr());
+	//else
+	//	liHandItem->SetTexture(nullptr);
 
-	liHandI->Draw();
-	liHandItem->Draw();
-	ShiftEngine::GetContextManager()->GetFontManager()->DrawTextTL(std::to_string(itemCount), width - 70, height - 70);
+	//liHandI->Draw();
+	//liHandItem->Draw();
+	//ShiftEngine::GetContextManager()->GetFontManager()->DrawTextTL(std::to_string(itemCount), width - 70, height - 70);
 }

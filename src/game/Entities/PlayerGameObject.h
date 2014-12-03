@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LivingGameObject.h"
-#include "../cInventory.h"
+#include "../GameObjectInventory.h"
 
 #include <MathLib/math.h>
 
@@ -14,7 +14,7 @@ public:
 	//Getters
 	unsigned GetHunger() const;
 	unsigned GetTemperature() const;
-	cInventory * GetInventoryPtr();
+	GameObjectInventory * GetInventoryPtr();
 
 	void SetHunger(int hunger);
 	void SetTemperature(int temperature);
@@ -24,7 +24,7 @@ public:
 	virtual bool Go(const MathLib::Vector2F & target) override;
 
 private:
-	cInventory Inventory;
+	GameObjectInventory Inventory;
 
 	unsigned int hunger;
 	unsigned int temperature;

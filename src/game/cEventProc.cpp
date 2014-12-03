@@ -1,6 +1,6 @@
 #include "cEventProc.h"
 
-#include "cInventory.h"
+#include "GameObjectInventory.h"
 #include "game.h"
 
 void GameEventHandler::onPlayerMoves(double dt)
@@ -37,36 +37,37 @@ void GameEventHandler::onPlayerMoves(double dt)
 
 bool GameEventHandler::onPlayerPicksItem(uint64_t itemId)
 {
-	return LostIsland::GetGamePtr()->Player->GetInventoryPtr()->AddItem(itemId);
+	return false;
+	//return LostIsland::GetGamePtr()->Player->GetInventoryPtr()->AddItem(itemId);
 }
 
 void GameEventHandler::onPlayerDropsItem(uint64_t itemId)
 {
-	if (!LostIsland::GetGamePtr()->Player->GetInventoryPtr()->RemoveItem(itemId))
-	{
-		MainLog.Error("Dropping item that doesn't exist");
-		return;
-	}
+	//if (!LostIsland::GetGamePtr()->Player->GetInventoryPtr()->RemoveItem(itemId))
+	//{
+	//	MainLog.Error("Dropping item that doesn't exist");
+	//	return;
+	//}
 
-	auto pos = LostIsland::GetGamePtr()->Player->GetPosition();
-	pos.z += 10.0f;
-	LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), itemId);
+	//auto pos = LostIsland::GetGamePtr()->Player->GetPosition();
+	//pos.z += 10.0f;
+	//LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), itemId);
 }
 
 void GameEventHandler::onPlayerUsesItem(bool self)
 {
-	auto * pGame = LostIsland::GetGamePtr();
-	SlotUnit * pHand = pGame->Player->GetInventoryPtr()->GetHandPtr();
-	if (pHand->itemId)
-	{
-		auto * pItem = pGame->ItemMgr->GetItemById(pHand->itemId);
-		bool useResult = false;
-		if (self && pItem->UseOnPlayer())
-			useResult = true;
-		else if (!self && pItem->UseInWorld())
-			useResult = true;
-		if (useResult)
-			if (--pHand->count == 0)
-				pHand->itemId = 0;
-	}
+	//auto * pGame = LostIsland::GetGamePtr();
+	//SlotUnit * pHand = pGame->Player->GetInventoryPtr()->GetHandPtr();
+	//if (pHand->itemId)
+	//{
+	//	auto * pItem = pGame->ItemMgr->GetItemById(pHand->itemId);
+	//	bool useResult = false;
+	//	if (self && pItem->UseOnPlayer())
+	//		useResult = true;
+	//	else if (!self && pItem->UseInWorld())
+	//		useResult = true;
+	//	if (useResult)
+	//		if (--pHand->count == 0)
+	//			pHand->itemId = 0;
+	//}
 }

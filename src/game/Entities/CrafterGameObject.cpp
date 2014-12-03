@@ -1,7 +1,7 @@
 #include "CrafterGameObject.h"
 
 #include "../game.h"
-#include "../cInventory.h"
+#include "../GameObjectInventory.h"
 
 CrafterGameObject::CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs)
 	: GameObject(meshNode)
@@ -18,34 +18,34 @@ CrafterGameObject::~CrafterGameObject()
 
 void CrafterGameObject::Activate()
 {
-	//getting item from player's hand if crafter in empty state
-	//otherwise it should return item to player or do nothing 
-	cGame * pGame = LostIsland::GetGamePtr();
-	cInventory * pInventory = pGame->Player->GetInventoryPtr();
+	////getting item from player's hand if crafter in empty state
+	////otherwise it should return item to player or do nothing 
+	//cGame * pGame = LostIsland::GetGamePtr();
+	//GameObjectInventory * pInventory = pGame->Player->GetInventoryPtr();
 
-	switch (state)
-	{
-	case Empty:
-		{
-			SlotUnit * rhItem = pInventory->GetHandPtr();
-			if (rhItem->itemId != 0)
-			{
-				storedItem = rhItem->itemId;
-				if (--rhItem->count == 0)
-					rhItem->itemId = 0;
-				state = Crafting;
-				elapsedTime = 0;
-				MainLog.Message("Crafting started");
-			}
-			break;
-		}
-	case Crafting:
-		return;
-	case Done:
-		//stub
-		MainLog.Message("Crafting is done");
-		break;
-	}
+	//switch (state)
+	//{
+	//case Empty:
+	//	{
+	//		SlotUnit * rhItem = pInventory->GetHandPtr();
+	//		if (rhItem->itemId != 0)
+	//		{
+	//			storedItem = rhItem->itemId;
+	//			if (--rhItem->count == 0)
+	//				rhItem->itemId = 0;
+	//			state = Crafting;
+	//			elapsedTime = 0;
+	//			MainLog.Message("Crafting started");
+	//		}
+	//		break;
+	//	}
+	//case Crafting:
+	//	return;
+	//case Done:
+	//	//stub
+	//	MainLog.Message("Crafting is done");
+	//	break;
+	//}
 }
 
 void CrafterGameObject::Update(double dt)

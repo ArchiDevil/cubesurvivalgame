@@ -7,7 +7,7 @@ PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManage
 	, hunger(100)
 	, temperature(100)
 	, targetMarker(nullptr)
-	, Inventory(pItemMgr)
+	, Inventory(pItemMgr, 10)
 {
 	if (targetMarker)
 		targetMarker->KillSelf();
@@ -23,7 +23,7 @@ PlayerGameObject::~PlayerGameObject()
 {
 }
 
-cInventory * PlayerGameObject::GetInventoryPtr()
+GameObjectInventory * PlayerGameObject::GetInventoryPtr()
 {
 	return &Inventory;
 }
