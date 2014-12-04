@@ -1,5 +1,7 @@
 #include "cEventProc.h"
 
+#include <MathLib/math.h>
+
 #include "GameObjectInventory.h"
 #include "game.h"
 
@@ -37,8 +39,7 @@ void GameEventHandler::onPlayerMoves(double dt)
 
 bool GameEventHandler::onPlayerPicksItem(uint64_t itemId)
 {
-	return false;
-	//return LostIsland::GetGamePtr()->Player->GetInventoryPtr()->AddItem(itemId);
+	return LostIsland::GetGamePtr()->Player->GetInventoryPtr()->AddItem(itemId, 1);
 }
 
 void GameEventHandler::onPlayerDropsItem(uint64_t itemId)

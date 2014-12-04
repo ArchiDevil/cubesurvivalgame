@@ -24,8 +24,7 @@ void ItemGameObject::Update(double dt)
 	auto ppos = pGame->Player->GetPosition();
 	if (MathLib::distance((Vector3F)ppos, GetPosition()) < 1.0f)
 	{
-		//pGame->Player->GetInventoryPtr()->GetHandPtr()->itemId = itemId;
-		//pGame->Player->GetInventoryPtr()->GetHandPtr()->count++;
+		pGame->Player->GetInventoryPtr()->AddItem(itemId, 1);
 		Delete();
 	}
 }

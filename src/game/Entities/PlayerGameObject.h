@@ -14,7 +14,7 @@ public:
 	//Getters
 	unsigned GetHunger() const;
 	unsigned GetTemperature() const;
-	GameObjectInventory * GetInventoryPtr();
+	PlayerInventory * GetInventoryPtr();
 
 	void SetHunger(int hunger);
 	void SetTemperature(int temperature);
@@ -24,7 +24,7 @@ public:
 	virtual bool Go(const MathLib::Vector2F & target) override;
 
 private:
-	GameObjectInventory Inventory;
+	PlayerInventory Inventory;
 
 	unsigned int hunger;
 	unsigned int temperature;

@@ -23,7 +23,7 @@ PlayerGameObject::~PlayerGameObject()
 {
 }
 
-GameObjectInventory * PlayerGameObject::GetInventoryPtr()
+PlayerInventory * PlayerGameObject::GetInventoryPtr()
 {
 	return &Inventory;
 }

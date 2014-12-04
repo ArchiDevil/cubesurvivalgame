@@ -3,40 +3,58 @@
 #include <cstdint>
 #include <vector>
 
-class ItemManager;
+#include "Items/ItemManager.h"
+
 enum ItemTypes;
 
 struct SlotUnit
 {
-	SlotUnit(uint64_t itemId = 0, int count = 0) 
+	SlotUnit(item_id_t itemId = 0, size_t count = 0)
 		: itemId(itemId)
 		, count(count)
 	{
 	}
 
-	uint64_t itemId;
-	uint64_t count;
+	item_id_t itemId;
+	size_t count;
 };
 
 class GameObjectInventory
 {
 public:
 	GameObjectInventory(ItemManager * pItemMgr, size_t inventorySize);
-	~GameObjectInventory();
 
-	bool AddItem(uint64_t itemId, size_t count);
-	bool UseItem(unsigned slot);
+	virtual bool AddItem(item_id_t itemId, size_t count);
+	void DropItem(unsigned slot);
+	void RemoveItem(unsigned slot);
 
 	bool IsExist(std::string & Name) const;
 	bool IsExist(ItemTypes Type) const;
 	bool IsExist(uint64_t itemId) const;
 
-	SlotUnit GetItemInSlot(int slot) const;
+	SlotUnit GetItemInSlot(unsigned slot) const;
 
-private:
+protected:
 	int GetFirstFreeSlotIndex() const;
 
 	ItemManager * pItemMgr;
-	std::vector<SlotUnit> Items;
+	std::vector<SlotUnit> items;
+
+};
+
+class PlayerInventory : public GameObjectInventory
+{
+public:
+	PlayerInventory(ItemManager * pItemMgr, size_t inventorySize);
+	virtual bool AddItem(item_id_t itemId, size_t count) override;
+
+	//SlotUnit GetItemInLeftHand() const;
+	SlotUnit GetItemInRightHand() const;
+
+	//bool UseItemFromLeftHand();
+	void RemoveItemFromRightHand();
+
+private:
+	SlotUnit rightHand;
 
 };

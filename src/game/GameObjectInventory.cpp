@@ -5,17 +5,13 @@
 
 GameObjectInventory::GameObjectInventory(ItemManager * pItemMgr, size_t inventorySize)
 	: pItemMgr(pItemMgr)
-	, Items(inventorySize)
-{
-}
-
-GameObjectInventory::~GameObjectInventory()
+	, items(inventorySize)
 {
 }
 
 bool GameObjectInventory::IsExist(std::string & Name) const
 {
-	for (const auto &it : Items)
+	for (const auto &it : items)
 		if (pItemMgr->GetItemById(it.itemId)->GetName() == Name)
 			return true;
 
@@ -24,7 +20,7 @@ bool GameObjectInventory::IsExist(std::string & Name) const
 
 bool GameObjectInventory::IsExist(ItemTypes Type) const
 {
-	for (const auto &it : Items)
+	for (const auto &it : items)
 		if (pItemMgr->GetItemById(it.itemId)->GetType() == Type)
 			return true;
 
@@ -33,30 +29,30 @@ bool GameObjectInventory::IsExist(ItemTypes Type) const
 
 bool GameObjectInventory::IsExist(uint64_t itemId) const
 {
-	for (const auto &item : Items)
+	for (const auto &item : items)
 		if (item.itemId == itemId)
 			return true;
 
 	return false;
 }
 
-SlotUnit GameObjectInventory::GetItemInSlot(int slot) const
+SlotUnit GameObjectInventory::GetItemInSlot(unsigned slot) const
 {
-	return Items[slot];
+	return items[slot];
 }
 
 int GameObjectInventory::GetFirstFreeSlotIndex() const
 {
-	for (size_t i = 0; i < Items.size(); i++)
-		if (Items[i].count == 0)
+	for (size_t i = 0; i < items.size(); i++)
+		if (items[i].count == 0)
 			return i;
 
 	return -1;
 }
 
-bool GameObjectInventory::AddItem(uint64_t itemId, size_t count)
+bool GameObjectInventory::AddItem(item_id_t itemId, size_t count)
 {
-	for (auto & item : Items)
+	for (auto & item : items)
 	{
 		if (item.itemId == itemId)
 		{
@@ -68,8 +64,8 @@ bool GameObjectInventory::AddItem(uint64_t itemId, size_t count)
 	int slotIndex = GetFirstFreeSlotIndex();
 	if (slotIndex != -1)
 	{
-		Items[slotIndex].itemId = itemId;
-		Items[slotIndex].count = 1;
+		items[slotIndex].itemId = itemId;
+		items[slotIndex].count = 1;
 		return true;
 	}
 	else
@@ -78,27 +74,55 @@ bool GameObjectInventory::AddItem(uint64_t itemId, size_t count)
 	}
 }
 
-bool GameObjectInventory::UseItem(unsigned slot)
+void GameObjectInventory::DropItem(unsigned slot)
 {
-	if (slot >= Items.size())
-		return false;
+}
 
-	auto &itemSlot = Items[slot];
+void GameObjectInventory::RemoveItem(unsigned slot)
+{
+	if (slot >= items.size())
+		return;
+
+	auto &itemSlot = items[slot];
 	if (!itemSlot.itemId || !itemSlot.count)
-		return false;
+		return;
 
 	auto *item = pItemMgr->GetItemById(itemSlot.itemId);
 	if (item)
-	{
-		if (item->UseOnPlayer())
-		{
-			if (--itemSlot.count == 0)
-			{
-				// drop item
-				Items[slot] = {};
-				return true;
-			}
-		}
-	}
-	return false;
+		if (--itemSlot.count == 0)
+			items[slot] = {};
+}
+
+//////////////////////////////////////////////////////////
+
+PlayerInventory::PlayerInventory(ItemManager * pItemMgr, size_t inventorySize)
+	: GameObjectInventory(pItemMgr, inventorySize)
+{
+}
+
+bool PlayerInventory::AddItem(item_id_t itemId, size_t count)
+{
+	if (!itemId || !count)
+		return false;
+
+	if (rightHand.itemId == itemId)
+		rightHand.count += count;
+
+	if (!rightHand.itemId)
+		rightHand = { itemId, count };
+
+	return GameObjectInventory::AddItem(itemId, count);
+}
+
+SlotUnit PlayerInventory::GetItemInRightHand() const
+{
+	return rightHand;
+}
+
+void PlayerInventory::RemoveItemFromRightHand()
+{
+	auto *item = pItemMgr->GetItemById(rightHand.itemId);
+	if (item)
+		if (--rightHand.count == 0)
+			rightHand = {};
 }

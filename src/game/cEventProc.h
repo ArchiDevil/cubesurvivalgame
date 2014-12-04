@@ -2,13 +2,6 @@
 
 #include <cstdint>
 
-#include <MathLib/math.h>
-
-class PlayerGameObject;
-class cWorld;
-class EntityManager;
-class ItemManager;
-
 class GameEventHandler
 {
 public:
