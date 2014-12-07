@@ -19,8 +19,7 @@ public:
 	CollisionListener();
 	~CollisionListener();
 
-	std::vector<CollisionInfo> GetCollisionsPlayerEntityInfo() const;
-	std::vector<CollisionInfo> & GetCollisionsPlayerEntityInfo();
+	const std::vector<CollisionInfo> & GetCollisionsInfo() const;
 	void ClearCollisions();
 	void AddCollision(const CollisionInfo & col);
 

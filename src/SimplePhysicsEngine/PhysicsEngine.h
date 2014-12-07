@@ -1,26 +1,28 @@
 #pragma once
 
-#include <list>
-
-#include <game/world/worldStorage.h>
-#include "PhysicsFunctions.h"
 #include "types.h"
 #include "CollisionShouter.h"
+#include "PhysicsFunctions.h"
 
 #include <Utilities/singleton.h>
 
-class cSimplePhysicsEngine : public singleton<cSimplePhysicsEngine>
+#include <list>
+#include <vector>
+
+class WorldStorage;
+
+class SimplePhysicsEngine : public singleton<SimplePhysicsEngine>
 {
 public:
-	cSimplePhysicsEngine();
-	~cSimplePhysicsEngine();
+	SimplePhysicsEngine();
+	~SimplePhysicsEngine();
 
 	void Initialize(WorldStorage * storage, float gravity = -9.81f);
 	void Update(double dt);
 
-	PhysObjectPtr CreateEntity(const Vector3F & Position, const Vector3F & Velocity);
-	int GetPhysEntitySize() const;
-	std::vector<CollisionInfo> & GetCollisionsPlayerEntity();
+	PhysObjectPtr CreateEntity(const Vector3F & position, const Vector3F & velocity, const AABB & bbox);
+	int GetPhysEntitiesCount() const;
+	const std::vector<CollisionInfo> & GetCollisions() const;
 
 private:
 	void UpdatePhysics(double dt);

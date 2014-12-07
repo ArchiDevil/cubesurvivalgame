@@ -8,12 +8,7 @@ CollisionListener::~CollisionListener()
 {
 }
 
-std::vector<CollisionInfo> CollisionListener::GetCollisionsPlayerEntityInfo() const
-{
-	return CurrentCollisions;
-}
-
-std::vector<CollisionInfo> & CollisionListener::GetCollisionsPlayerEntityInfo()
+const std::vector<CollisionInfo> & CollisionListener::GetCollisionsInfo() const
 {
 	return CurrentCollisions;
 }
