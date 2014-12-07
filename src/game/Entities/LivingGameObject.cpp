@@ -16,7 +16,6 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 {
 	// check if target position doesn't contain water
 	auto pGame = LostIsland::GetGamePtr();
-	auto columnIndex = pGame->World->GetDataStorage()->GetColumnIndex(std::floor(target.x), std::floor(target.y));
 	BlockTypes topColumn = BlockTypes::BT_Empty;
 
 	for (unsigned i = 0;; ++i)
@@ -30,55 +29,41 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 	if (topColumn == BT_Water)
 		return false;
 
-	PushState(std::make_shared<MovingState>(target));
-	PushState(std::make_shared<RotatingState>(target));
-
-	PushCommand(std::make_shared<RotateAction>(target));
-	PushCommand(std::make_shared<MoveAction>(target));
+	PushCommand(std::make_unique<RotateAction>(target));
+	PushCommand(std::make_unique<MoveAction>(target));
 	return true;
 }
 
 void LivingGameObject::Stop()
 {
-	// set current state to waiting
-	while (!states.empty() &&
-		   states.top()->GetType() != EntityState::Waiting)
-	{
-		states.pop();
-	}
+	SetState(std::make_shared<WaitingState>());
 }
 
-void LivingGameObject::PushCommand(std::shared_ptr<IEntityAction> action)
+void LivingGameObject::PushCommand(std::unique_ptr<IEntityAction> action)
 {
-	Actions.push(action);
+	Actions.push(std::move(action));
 }
 
 void LivingGameObject::CancelCommands()
 {
 	while (!Actions.empty())
-	{
-		auto action = Actions.back();
-		action->Cancel(this);
-		Actions.pop();
-	}
+		CancelCurrentCommand();
 }
 
 void LivingGameObject::CancelCurrentCommand()
 {
 	if (!Actions.empty())
 	{
-		auto action = Actions.back();
-		action->Cancel(this);
+		auto action = std::move(Actions.back());
 		Actions.pop();
+		action->Cancel(this);
 	}
 }
 
 void LivingGameObject::Update(double dt)
 {
-	auto currentState = states.top();
-	currentState->Update(this, dt);
 	if (currentState->Dead())
-		states.pop();
+		SetState(std::make_shared<WaitingState>());
 
 	if (!Actions.empty())
 	{

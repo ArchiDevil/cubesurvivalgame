@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LivingGameObject.h"
-#include "../GameObjectInventory.h"
+#include "../Entities/GameObjectInventory.h"
 
 #include <MathLib/math.h>
 

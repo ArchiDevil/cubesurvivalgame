@@ -15,12 +15,12 @@ public:
 	virtual void Update(double dt) override;
 	virtual bool Go(const MathLib::Vector2F & target);
 	virtual void Stop();
-	virtual void PushCommand(std::shared_ptr<IEntityAction> action);
+	virtual void PushCommand(std::unique_ptr<IEntityAction> action);
 	virtual void CancelCurrentCommand();
 
 private:
 	void CancelCommands();
 
-	std::queue<std::shared_ptr<IEntityAction>> Actions;
+	std::queue<std::unique_ptr<IEntityAction>> Actions;
 
 };

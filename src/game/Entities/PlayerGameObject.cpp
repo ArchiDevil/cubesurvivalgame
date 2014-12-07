@@ -4,19 +4,18 @@
 
 PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr)
 	: LivingGameObject(sceneNode)
-	, hunger(100)
+	, hunger(25)
 	, temperature(100)
 	, targetMarker(nullptr)
 	, Inventory(pItemMgr, 10)
 {
-	if (targetMarker)
-		targetMarker->KillSelf();
-
 	auto * pScene = ShiftEngine::GetSceneGraph();
 	auto material = ShiftEngine::GetContextManager()->LoadMaterial(L"player.mtl", L"playerTargetMarker");
 	targetMarker = pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), material.get());
 	targetMarker->SetVisibility(false);
 	targetMarker->SetScale(0.3f);
+
+	health = 20;
 }
 
 PlayerGameObject::~PlayerGameObject() 
@@ -62,7 +61,10 @@ void PlayerGameObject::Update(double dt)
 	accumulatedTime += dt;
 	if ((int)accumulatedTime % 10 == 0)
 	{
-		hunger--;
+		if (hunger)
+			hunger--;
+		if (!hunger)
+			health--;
 		accumulatedTime = 1.0;
 	}
 }
@@ -70,7 +72,8 @@ void PlayerGameObject::Update(double dt)
 bool PlayerGameObject::Go(const MathLib::Vector2F & target)
 {
 	bool result = LivingGameObject::Go(target);
-	if (!result) return false;
+	if (!result) 
+		return false;
 
 	auto pGame = LostIsland::GetGamePtr();
 	targetMarker->SetVisibility(true);
