@@ -1,7 +1,6 @@
 #pragma once
 
 #include "WorldChunk.h"
-#include "typesStorage.h"
 
 class cChunksStorage
 {
@@ -9,7 +8,7 @@ public:
 	cChunksStorage();
 	~cChunksStorage();
 
-	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, typesStorage * ts);	
+	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth);	
 	void Unload();
 
 	int GetChunksPerSide() const;

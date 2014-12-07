@@ -26,7 +26,6 @@ void cWorld::Initialize(unsigned int ChunksPerSide, int CentralChunkX, int Centr
 
 	Generator.reset(new cWorldGenerator);
 	ChunksStorage.reset(new cChunksStorage);
-	TypesStorage.reset(new typesStorage);
 	DataStorage.reset(new WorldStorage(ChunksPerSide * DataStorage->GetChunkWidth()));
 	Streamer.reset(new cChunkStreamer(DataStorage.get()));
 	Tesselator.reset(new WorldTesselator(DataStorage.get()));
@@ -34,9 +33,7 @@ void cWorld::Initialize(unsigned int ChunksPerSide, int CentralChunkX, int Centr
 
 	SetWorldName(worldName);
 
-	std::wstring BlockPath = L"resources/gamedata/blocks/";
-	TypesStorage->loadTypes(utils::filesystem::CollectFileNames(BlockPath, L"blk"));
-	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, DataStorage->GetChunkWidth(), TypesStorage.get());
+	ChunksStorage->Initialize(ChunksPerSide, CentralChunkX, CentralChunkY, DataStorage->GetChunkWidth());
 	FillQueue(CentralChunkX, CentralChunkY, ChunksPerSide);
 
 	std::ostringstream str;
@@ -332,11 +329,6 @@ void cWorld::FillQueue(int centralX, int centralY, int cps)
 			loadingQueue.push_back(LoadQuery(startX, index, Tesselate));
 		}
 	}
-}
-
-typesStorage * cWorld::GetTypesStorage()
-{
-	return TypesStorage.get();
 }
 
 void cWorld::SetWorldName(const std::string & worldName)

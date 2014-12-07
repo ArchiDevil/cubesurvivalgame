@@ -13,10 +13,10 @@ public:
 	cEnvironmentManager();
 	~cEnvironmentManager();
 
-	void Initialize(dayTimer & initialTime);
+	void Initialize(const dayTimer & initialTime);
 	void Update(double deltaTime);
 	
-	void SetTime(dayTimer & t);
+	void SetTime(const dayTimer & t);
 	dayTimer GetTime() const;
 	MathLib::Vector3F calculateSunPos(const MathLib::Vector3F & playerPos) const;
 

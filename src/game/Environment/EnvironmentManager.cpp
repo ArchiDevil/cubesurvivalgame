@@ -8,12 +8,12 @@ cEnvironmentManager::~cEnvironmentManager()
 {
 }
 
-void cEnvironmentManager::Initialize(dayTimer & initialTime)
+void cEnvironmentManager::Initialize(const dayTimer & initialTime)
 {
 	this->time.setTime(initialTime.getHours(), initialTime.getMinutes());
 }
 
-void cEnvironmentManager::SetTime(dayTimer & t)
+void cEnvironmentManager::SetTime(const dayTimer & t)
 {
 	time = t;
 }

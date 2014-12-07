@@ -7,7 +7,6 @@ float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
 ShiftEngine::LightNode * pSun = nullptr;
-GameObjectPtr tree = nullptr;
 //END OF TEMPORARY
 
 gameState::gameState(IniWorker * iw)
@@ -30,9 +29,6 @@ bool gameState::initState()
 
 	console.subscribe(&cInputEngine::GetInstance());
 
-	cSimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
-	MainLog.Message("Physics initialized");
-
 	::utils::filesystem::CreateDir(L"saves/worlds/");
 	::utils::filesystem::CreateDir(L"saves/players/");
 	::utils::filesystem::CreateDir(L"saves/worlds/tempWorld/");
@@ -43,7 +39,10 @@ bool gameState::initState()
 	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, "tempWorld");
 	MainLog.Message("World Manager has been initialized");
 
-	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World, pGame->World->GetTypesStorage());
+	SimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
+	LOG_INFO("Physics initialized");
+
+	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World);
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	MainLog.Message("Items have been loaded");
 
@@ -52,7 +51,6 @@ bool gameState::initState()
 	MainLog.Message("HUD has been created");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
-	pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId("raw_fish"), 25);
 
 	pGame->environmentMgr->Initialize(dayTimer(11, 00));
 	pGame->EntityMgr->LoadEntities();
@@ -63,8 +61,9 @@ bool gameState::initState()
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
 
-	tree = pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
 	pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
+	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1")->GetSceneNode()->GetMaterialPtr()->SetDiffuseColor({1.0f, 0.0f, 0.0f, 1.0f});
+	pGame->EntityMgr->CreateItemEntity(Vector3F(3.0f, 3.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("stone"));
 
 	MainLog.Message("End of game state initializing");
 
@@ -80,7 +79,7 @@ bool gameState::update(double dt)
 	Vector3F sunPosition = pGame->environmentMgr->calculateSunPos(playerPosition);
 	pSun->SetDirection(-sunPosition);
 	ProcessInput(dt);
-	cSimplePhysicsEngine::GetInstance().Update(dt);
+	SimplePhysicsEngine::GetInstance().Update(dt);
 	pGame->EntityMgr->Update(dt, sunPosition);
 	pGame->environmentMgr->Update(dt * 0.0);
 
@@ -249,28 +248,35 @@ void gameState::ProcessInput(double dt)
 
 	if (InputEngine->IsMouseUp(RButton))
 	{
-		if (mousePath <= 15)
+		// check if we are targeting to entity
+		auto entity = pGame->EntityMgr->GetNearestEntity(unprojectedRay);
+		if (entity)
 		{
-			Vector3F column;
-			bool result = pGame->World->SelectColumnByRay(unprojectedRay, column);
-			if (result)
-				pGame->Player->Go(Vector2F(column.x, column.y));
+			auto interaction = entity->GetInteraction();
+			if (interaction)
+			{
+				Vector2F endPos = { entity->GetPosition().x, entity->GetPosition().y };
+				pGame->Player->Go(endPos);
+				pGame->Player->PushCommand(std::move(interaction));
+			}
 		}
-		mousePath = 0;
+		else
+		{
+			if (mousePath <= 15)
+			{
+				Vector3F column;
+				bool result = pGame->World->SelectColumnByRay(unprojectedRay, column);
+				if (result)
+					pGame->Player->Go(Vector2F(column.x, column.y));
+			}
+			mousePath = 0;
+		}
 	}
 
 	if (InputEngine->IsMouseDown(RButton))
 	{
 		mousePath += abs(mouseInfo.deltaX);
 		mousePath += abs(mouseInfo.deltaY);
-	}
-
-	if (InputEngine->IsKeyUp(DIK_Y))
-	{
-		if (tree)
-		{
-			tree->SetHealth(-1);
-		}
 	}
 
 	r -= mouseInfo.deltaZ * dt;

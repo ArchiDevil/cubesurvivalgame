@@ -48,7 +48,6 @@ public:
 	//Getters		 
 	WorldStorage *	 GetDataStorage();
 	cChunksStorage * GetChunksStorage();
-	typesStorage *	 GetTypesStorage();
 	bool			 HaveSolidsNear(int x, int y, int z);
 					 
 	void			 SetWorldName(const std::string & worldName);
@@ -77,7 +76,6 @@ private:
 	std::unique_ptr<cWorldGenerator>	Generator;
 	std::unique_ptr<cChunkStreamer>		Streamer;
 	std::unique_ptr<WorldTesselator>	Tesselator;
-	std::unique_ptr<typesStorage>		TypesStorage;
 
 	std::mutex							critSect;
 	std::mutex							updatingSection;

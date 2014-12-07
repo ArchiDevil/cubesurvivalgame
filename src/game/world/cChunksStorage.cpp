@@ -8,8 +8,10 @@ using ShiftEngine::VertexSemantic;
 using ShiftEngine::Material;
 
 cChunksStorage::cChunksStorage() 
-	: CenterChunkX(0), CenterChunkY(0),
-	Chunks(nullptr), ChunksPerSide(3) 
+	: CenterChunkX(0)
+	, CenterChunkY(0)
+	, Chunks(nullptr)
+	, ChunksPerSide(3) 
 {
 }
 
@@ -18,10 +20,8 @@ cChunksStorage::~cChunksStorage()
 	delete [] Chunks;
 }
 
-void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth, typesStorage * ts )
+void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth )
 {
-	auto pTypes = ts;
-
 	this->ChunksPerSide = ChunksPerSide;
 	this->CenterChunkX = CenterChunkX;
 	this->CenterChunkY = CenterChunkY;

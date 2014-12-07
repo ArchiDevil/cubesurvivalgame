@@ -1,5 +1,7 @@
 #include "WorldTesselator.h"
 
+#include "worldGenerator/cNoise.h"
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 WorldTesselator::WorldTesselator( WorldStorage * _ws )
@@ -53,13 +55,17 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 	std::vector<PNC> vertices;
 	std::vector<unsigned long> indices;
 
+	cNoise noiseGen;
+	noiseGen.SetFrequency(0.01);
+	//noiseGen.SetOctaves(5);
+
 	for (int i = 0; i < chunkWidth; i++)
 	{
 		for (int j = 0; j < chunkWidth; j++)
 		{
-			float shift1 = (rand() % 17 - 8) / 255.0f;
-			float shift2 = (rand() % 17 - 8) / 255.0f;
-			float shift3 = (rand() % 17 - 8) / 255.0f;
+			float shift1 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
+			float shift2 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
+			float shift3 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
 			Vector3F randVector = Vector3F(shift1, shift2, shift3);
 
 			unsigned long curIndex = vertices.size();

@@ -12,9 +12,8 @@
 #include <json/json.h>
 #include <GraphicsEngine/ShiftEngine.h>
 
-ItemManager::ItemManager( PlayerGameObject * _p, cWorld * _w, typesStorage * _ts )
-	: ts(_ts)
-	, handler(_p, _w)
+ItemManager::ItemManager( PlayerGameObject * _p, cWorld * _w )
+	: handler(_p, _w)
 {
 }
 
