@@ -1,11 +1,14 @@
 #include "GameObject.h"
 
+#include "../game.h"
+
 GameObject::GameObject( ShiftEngine::MeshNode * sceneNode )
 	: SceneNode(sceneNode)
+	, currentState(std::make_shared<WaitingState>())
 	, ToDelete(false)
 	, health(1)
+	, inventory(LostIsland::GetGamePtr()->ItemMgr, 10)
 {
-	states.push(std::make_shared<WaitingState>());
 }
 
 GameObject::~GameObject()
@@ -40,11 +43,6 @@ ShiftEngine::MeshNode * GameObject::GetSceneNode()
 	return SceneNode;
 }
 
-bool GameObject::OnGameEvent(IGameEvent * ev)
-{
-	return false;
-}
-
 bool GameObject::CanBeHighlighted(const MathLib::Ray &uprojectedRay)
 {
 	if (MathLib::RayBoxIntersect(uprojectedRay, SceneNode->GetBBox(), 0.0f, 10000.0f))
@@ -60,21 +58,16 @@ int GameObject::GetHealth() const
 void GameObject::SetHealth(int in_health)
 {
 	health = in_health;
-	if (health <= 0)
-	{
-		PushState(std::make_shared<DecayState>(10.0f));
-		PushState(std::make_shared<DyingState>(2.0f));
-	}
 }
 
-void GameObject::PushState(const std::shared_ptr<IEntityState> & state)
+void GameObject::SetState(const std::shared_ptr<IEntityState> & state)
 {
-	states.push(state);
+	currentState = state;
 }
 
 const EntityState GameObject::GetCurrentState() const
 {
-	return states.top()->GetType();
+	return currentState->GetType();
 }
 
 void GameObject::Highlight()
@@ -85,4 +78,9 @@ void GameObject::Highlight()
 void GameObject::UnHightlight()
 {
 	SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
+}
+
+std::unique_ptr<IEntityAction> GameObject::GetInteraction()
+{
+	return nullptr;
 }

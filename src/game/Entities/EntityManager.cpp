@@ -30,8 +30,9 @@ ItemGameObjectPtr EntityManager::CreateItemEntity(const Vector3F & Position, con
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);
 
-	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), entityMaterial.get());
-	std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, cSimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity), meshNode);
+	MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
+	MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), bbox, entityMaterial.get());
+	std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, SimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity, bbox), meshNode);
 	meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
 	meshNode->SetScale(Vector3F(0.4f, 0.4f, 0.4f));
 	GameObjects.push_back(out);

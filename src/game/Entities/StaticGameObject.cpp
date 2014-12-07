@@ -11,11 +11,6 @@ StaticGameObject::~StaticGameObject()
 
 void StaticGameObject::Update(double dt)
 {
-	auto currentState = states.top();
-	currentState->Update(this, dt);
-	if (currentState->Dead())
-		states.pop();
-
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();
 	int heights[4] = { 0 };

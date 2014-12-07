@@ -3,8 +3,9 @@
 #include <MathLib/math.h>
 #include <GraphicsEngine/SceneGraph/MeshNode.h>
 
-#include "../events.h"
 #include "EntityState.h"
+#include "EntityActions.h"
+#include "GameObjectInventory.h"
 
 #include <stack>
 #include <memory>
@@ -18,10 +19,10 @@ public:
 	virtual Vector3F GetPosition() const;
 	virtual void SetPosition(const Vector3F & Position);
 	virtual void Update(double dt) = 0;
-	virtual bool OnGameEvent(IGameEvent * ev);
 	virtual bool CanBeHighlighted(const MathLib::Ray &uprojectedRay);
 	virtual void Highlight();
 	virtual void UnHightlight();
+	virtual std::unique_ptr<IEntityAction> GetInteraction();
 
 	ShiftEngine::MeshNode * GetSceneNode();
 
@@ -32,15 +33,16 @@ public:
 	bool MustBeDeleted() const;
 	void Delete();
 
-	virtual void PushState(const std::shared_ptr<IEntityState> & state);
+	virtual void SetState(const std::shared_ptr<IEntityState> & state);
 	virtual const EntityState GetCurrentState() const;
 
 protected:
 	ShiftEngine::MeshNode * SceneNode;
+	std::shared_ptr<IEntityState> currentState;
 	bool ToDelete;
-
 	int health;
-	std::stack<std::shared_ptr<IEntityState>> states;
+
+	GameObjectInventory inventory;
 
 };
 

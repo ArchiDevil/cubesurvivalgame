@@ -16,8 +16,6 @@
 #include "PlayerGameObject.h"
 #include "EntityBreeds.h"
 
-#include "../events.h"
-
 class cSimplePhysicsEngine;
 using MathLib::Vector3F;
 using MathLib::Ray;
@@ -35,7 +33,6 @@ public:
 	void					Update(double dt, const Vector3F & sunPos);
 	void					HighlightEntity(const Ray &unprojectedVector);
 	GameObjectPtr			GetNearestEntity(const Ray &unprojectedVector);
-	bool					DispatchEvent(IGameEvent * ev);
 
 private:
 	std::list<GameObjectPtr> GameObjects;

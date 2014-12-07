@@ -1,7 +1,7 @@
 #include "CrafterGameObject.h"
 
 #include "../game.h"
-#include "../GameObjectInventory.h"
+//#include "../GameObjectInventory.h"
 
 CrafterGameObject::CrafterGameObject(ShiftEngine::MeshNode * meshNode, uint32_t craftingTimeMs)
 	: GameObject(meshNode)

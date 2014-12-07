@@ -5,7 +5,7 @@
 #include "Entities/EntityManager.h"
 #include "Items/ItemManager.h"
 #include "Environment/EnvironmentManager.h"
-#include "cEventProc.h"
+#include "GameEventHandler.h"
 #include "gameHud.h"
 #include "dayTimer.h"
 
@@ -13,6 +13,11 @@ struct cGame
 {
 	cGame();
 	~cGame();
+
+	cGame(const cGame & ref) = delete;
+	cGame & operator=(const cGame & ref) = delete;
+	cGame(cGame && ref) = delete;
+	cGame & operator=(cGame && ref) = delete;
 
 	cWorld					* World;
 	PlayerGameObject		* Player;
@@ -22,11 +27,6 @@ struct cGame
 	cEnvironmentManager		* environmentMgr;
 	gameHUD					* gameHud;
 
-private:
-	cGame(const cGame & ref);
-	cGame operator=(const cGame & ref);
-	cGame(cGame && ref);
-	cGame operator=(cGame && ref);
 };
 
 namespace LostIsland

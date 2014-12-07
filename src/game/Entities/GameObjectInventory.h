@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "Items/ItemManager.h"
+#include "../Items/ItemManager.h"
 
 enum ItemTypes;
 
@@ -25,7 +25,6 @@ public:
 	GameObjectInventory(ItemManager * pItemMgr, size_t inventorySize);
 
 	virtual bool AddItem(item_id_t itemId, size_t count);
-	void DropItem(unsigned slot);
 	void RemoveItem(unsigned slot);
 
 	bool IsExist(std::string & Name) const;
@@ -33,6 +32,7 @@ public:
 	bool IsExist(uint64_t itemId) const;
 
 	SlotUnit GetItemInSlot(unsigned slot) const;
+	const std::vector<SlotUnit> & GetItems() const;
 
 protected:
 	int GetFirstFreeSlotIndex() const;

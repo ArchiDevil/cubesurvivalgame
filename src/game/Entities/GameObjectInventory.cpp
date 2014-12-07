@@ -1,7 +1,6 @@
 #include "GameObjectInventory.h"
 
-#include "Items/ItemManager.h"
-#include "Items/Item.h"
+#include "../Items/Item.h"
 
 GameObjectInventory::GameObjectInventory(ItemManager * pItemMgr, size_t inventorySize)
 	: pItemMgr(pItemMgr)
@@ -74,10 +73,6 @@ bool GameObjectInventory::AddItem(item_id_t itemId, size_t count)
 	}
 }
 
-void GameObjectInventory::DropItem(unsigned slot)
-{
-}
-
 void GameObjectInventory::RemoveItem(unsigned slot)
 {
 	if (slot >= items.size())
@@ -87,10 +82,13 @@ void GameObjectInventory::RemoveItem(unsigned slot)
 	if (!itemSlot.itemId || !itemSlot.count)
 		return;
 
-	auto *item = pItemMgr->GetItemById(itemSlot.itemId);
-	if (item)
-		if (--itemSlot.count == 0)
-			items[slot] = {};
+	if (--itemSlot.count == 0)
+		items[slot] = {};
+}
+
+const std::vector<SlotUnit> & GameObjectInventory::GetItems() const
+{
+	return items;
 }
 
 //////////////////////////////////////////////////////////
@@ -121,8 +119,6 @@ SlotUnit PlayerInventory::GetItemInRightHand() const
 
 void PlayerInventory::RemoveItemFromRightHand()
 {
-	auto *item = pItemMgr->GetItemById(rightHand.itemId);
-	if (item)
-		if (--rightHand.count == 0)
-			rightHand = {};
+	if (--rightHand.count == 0)
+		rightHand = {};
 }

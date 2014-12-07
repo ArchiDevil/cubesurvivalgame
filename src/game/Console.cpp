@@ -1,5 +1,5 @@
 #include "Console.h"
-#include "GameObjectInventory.h"
+#include "Entities/GameObjectInventory.h"
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <sstream>
@@ -49,21 +49,8 @@ void Console::HandleCommand()
 
 		std::string name = tokens[1];
         unsigned int count = std::stoul(tokens[2]);
-		pGame->Player->GetInventoryPtr()->AddItem(pGame->ItemMgr->GetItemId(name), count);
-	}
-	else if(commandName == "go")
-	{
-		if(tokens.size() != 3)
-		{
-			MainLog.Error("Wrong argument: go [pos_x] [pos_y]");
-			return;
-		}
 
-		float x_pos = std::stof(tokens[1]);
-		float y_pos = std::stof(tokens[2]);
-
-		if(pGame->Player)
-			pGame->Player->Go(Vector2F(x_pos, y_pos));
+		pGame->GlobalEventHandler->onPlayerPicksItem(pGame->ItemMgr->GetItemId(name), count);
 	}
 	else
 	{

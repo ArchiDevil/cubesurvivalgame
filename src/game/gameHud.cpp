@@ -1,7 +1,7 @@
 #include "gameHud.h"
 
 #include "game.h"
-#include "GameObjectInventory.h"
+#include "Entities/GameObjectInventory.h"
 #include <GraphicsEngine/ShiftEngine.h>
 
 gameHUD::gameHUD() 

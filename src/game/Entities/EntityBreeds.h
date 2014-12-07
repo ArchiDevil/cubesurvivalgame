@@ -31,8 +31,7 @@ public:
 				  : EntityBreed(meshName, materialFile)
 				  , craftingItem(craftingItem)
 				  , craftingTime(craftingTime)
-	{
-	}
+	{}
 
 	GameObjectPtr Clone() const override;
 
@@ -47,8 +46,7 @@ class StaticBreed : public EntityBreed
 public:
 	StaticBreed(const std::string & meshName, const std::string & materialFile)
 		: EntityBreed(meshName, materialFile)
-	{
-	}
+	{}
 
 	GameObjectPtr Clone() const override;
 };
@@ -59,8 +57,7 @@ public:
 	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId)
 		: EntityBreed(meshName, materialFile)
 		, itemId(itemId)
-	{
-	}
+	{}
 
 	GameObjectPtr Clone() const override;
 
