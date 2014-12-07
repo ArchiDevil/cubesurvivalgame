@@ -34,6 +34,11 @@ namespace ShiftEngine
 
 		virtual void KillSelf();
 
+		LightNode(const LightNode & ref) = delete;
+		LightNode(LightNode && ref) = delete;
+		LightNode& operator=(const LightNode & ref) = delete;
+		LightNode& operator=(LightNode && ref) = delete;
+
 	private:
 		MathLib::Vector3F color;
 		const LightNodeType type;

@@ -63,7 +63,7 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring 
 	return out;
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode( MeshDataPtr dataPtr, MathLib::AABB & bbox, const Material * mat )
+ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode( MeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat )
 {
 	MeshNode * out = new MeshNode(dataPtr, mat, bbox);
 	rootNode->AddChild(out);

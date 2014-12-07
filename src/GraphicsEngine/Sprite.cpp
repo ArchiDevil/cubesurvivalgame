@@ -5,16 +5,21 @@
 ShiftEngine::IProgramPtr ShiftEngine::Sprite::SpriteShader;
 
 ShiftEngine::Sprite::Sprite() 
-	: Position(0.0f, 0.0f), Rotation(0.0f), Scale(1.0f, 1.0f), 
-	MaskColor(1.0f, 1.0f, 1.0f, 1.0f), texture(nullptr)
+	: Position(0.0f, 0.0f)
+	, Rotation(0.0f)
+	, Scale(1.0f, 1.0f)
+	, MaskColor(1.0f, 1.0f, 1.0f, 1.0f)
+	, texture(nullptr)
 {
 	LoadShader();
 	CreateBuffers(Vector2F(0.0f, 0.0f), Vector2F(1.0f, 1.0f));
 }
 
-ShiftEngine::Sprite::Sprite( const std::wstring & FileName, Vector2F & TexCoordLeftTop, Vector2F & TexCoordRightBottom ) 
-	: Position(0.0f, 0.0f), Rotation(0.0f), Scale(1.0f, 1.0f), 
-	MaskColor(1.0f, 1.0f, 1.0f, 1.0f)
+ShiftEngine::Sprite::Sprite( const std::wstring & FileName, const Vector2F & TexCoordLeftTop, const Vector2F & TexCoordRightBottom ) 
+	: Position(0.0f, 0.0f)
+	, Rotation(0.0f)
+	, Scale(1.0f, 1.0f)
+	, MaskColor(1.0f, 1.0f, 1.0f, 1.0f)
 {
 	LoadShader();
 	CreateBuffers(TexCoordLeftTop, TexCoordRightBottom);
@@ -56,7 +61,7 @@ void ShiftEngine::Sprite::SetTexture( ShiftEngine::TexturePtr ptr )
 		SetScale(Vector2F(1.0f, 1.0f));
 }
 
-void ShiftEngine::Sprite::SetPosition( Vector2F & pos )
+void ShiftEngine::Sprite::SetPosition( const Vector2F & pos )
 {
 	Position = pos;
 }
@@ -66,7 +71,7 @@ void ShiftEngine::Sprite::SetRotation( float rot )
 	Rotation = rot;
 }
 
-void ShiftEngine::Sprite::SetScale( Vector2F & sc )
+void ShiftEngine::Sprite::SetScale( const Vector2F & sc )
 {
 	Scale = sc;
 
@@ -82,12 +87,12 @@ Vector2F ShiftEngine::Sprite::GetTextureDimensions() const
 	return Vector2F((float)texture->GetWidth(), (float)texture->GetHeight());
 }
 
-void ShiftEngine::Sprite::SetMaskColor( Vector4F & color )
+void ShiftEngine::Sprite::SetMaskColor( const Vector4F & color )
 {
 	MaskColor = color;
 }
 
-void ShiftEngine::Sprite::CreateBuffers( Vector2F & LT, Vector2F & RB )
+void ShiftEngine::Sprite::CreateBuffers( const Vector2F & LT, const Vector2F & RB )
 {
 	PlainSpriteVertex ver[] = 
 	{
