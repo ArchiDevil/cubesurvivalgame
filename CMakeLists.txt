@@ -92,7 +92,7 @@ endfunction(VSTestLinkLibraries)
 
 if(MSVC)
 	add_definitions(-DUNICODE -D_UNICODE)
-	add_definitions("/wd4005 /wd4996 /D_CRT_SECURE_NO_WARNINGS")
+	add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /D_CRT_SECURE_NO_WARNINGS /W4")
 endif()
 
 include_directories(${RootDir})
