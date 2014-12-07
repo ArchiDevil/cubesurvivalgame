@@ -1,6 +1,7 @@
 #include "EntityActions.h"
 
 #include "LivingGameObject.h"
+#include "CollectableGameObject.h"
 
 IEntityAction::IEntityAction()
 	: m_dead(false)
@@ -60,6 +61,7 @@ RotateAction::RotateAction(const MathLib::Vector2F & targetPosition)
 
 void RotateAction::onStart(LivingGameObject * gameObject)
 {
+	gameObject->SetState(std::make_shared<RotatingState>());
 }
 
 void RotateAction::onUpdate(LivingGameObject * gameObject, double dt)
@@ -88,6 +90,7 @@ void RotateAction::onUpdate(LivingGameObject * gameObject, double dt)
 
 void RotateAction::onEnd(LivingGameObject * gameObject)
 {
+	//TODO: use game object calls instead of setting state directly
 	gameObject->Stop();
 }
 
@@ -105,7 +108,7 @@ MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
 
 void MoveAction::onStart(LivingGameObject * gameObject)
 {
-	gameObject->PushState(std::make_shared<MovingState>(targetPosition));
+	gameObject->SetState(std::make_shared<MovingState>());
 }
 
 void MoveAction::onUpdate(LivingGameObject * gameObject, double dt)
@@ -137,4 +140,84 @@ void MoveAction::onEnd(LivingGameObject * gameObject)
 void MoveAction::onCancel(LivingGameObject * gameObject)
 {
 	gameObject->Stop();
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+DyingAction::DyingAction(double dyingTime)
+	: dyingTime(dyingTime)
+	, elapsedTime(0.0)
+{
+}
+
+void DyingAction::onStart(LivingGameObject * gameObject)
+{
+	gameObject->SetState(std::make_shared<DyingState>());
+}
+
+void DyingAction::onUpdate(LivingGameObject * gameObject, double dt)
+{
+	elapsedTime -= dt;
+	auto * pSceneNode = gameObject->GetSceneNode();
+	if (!pSceneNode)
+		return;
+
+	float scale = elapsedTime / dyingTime;
+	pSceneNode->SetScale(scale);
+	if (elapsedTime <= 0.0f)
+		die();
+}
+
+void DyingAction::onEnd(LivingGameObject * gameObject)
+{
+	// gameObject->AddAction(std::make_shared<DecayAction>());
+}
+
+void DyingAction::onCancel(LivingGameObject * gameObject)
+{
+	throw;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+TimingAction::TimingAction(double activationTime)
+	: elapsedTime(activationTime)
+{
+}
+
+void TimingAction::onUpdate(LivingGameObject * gameObject, double dt)
+{
+	elapsedTime -= dt;
+	if (elapsedTime <= 0.0)
+	{
+		onEnd(gameObject);
+		die();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+CollectingAction::CollectingAction(double time, CollectableGameObject * collectable, item_id_t item_id, size_t count)
+	: TimingAction(time)
+	, item_id(item_id)
+	, count(count)
+	, collectable(collectable)
+{
+}
+
+void CollectingAction::onStart(LivingGameObject * gameObject)
+{
+	gameObject->SetState(std::make_shared<CollectingState>());
+}
+
+void CollectingAction::onEnd(LivingGameObject * gameObject)
+{
+	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(item_id, count);
+	collectable->Delete();
+	//TODO: add item to player/game object
+}
+
+void CollectingAction::onCancel(LivingGameObject * gameObject)
+{
+	gameObject->SetState(std::make_shared<WaitingState>());
 }

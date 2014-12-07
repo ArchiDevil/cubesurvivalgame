@@ -2,7 +2,10 @@
 
 #include <MathLib/math.h>
 
+#include "../Items/ItemManager.h"
+
 class LivingGameObject;
+class CollectableGameObject;
 
 class IEntityAction
 {
@@ -60,4 +63,50 @@ protected:
 private:
 	MathLib::Vector2F targetPosition;
 
+};
+
+class DyingAction : public IEntityAction
+{
+public:
+	DyingAction(double dyingTime);
+
+protected:
+	virtual void onStart(LivingGameObject * gameObject) override;
+	virtual void onUpdate(LivingGameObject * gameObject, double dt) override;
+	virtual void onEnd(LivingGameObject * gameObject) override;
+	virtual void onCancel(LivingGameObject * gameObject) override;
+
+private:
+	double elapsedTime;
+	double dyingTime;
+
+};
+
+class TimingAction : public IEntityAction
+{
+public:
+	TimingAction(double activationTime);
+
+protected:
+	virtual void onUpdate(LivingGameObject * gameObject, double dt) override;
+
+private:
+	double elapsedTime;
+};
+
+class CollectingAction : public TimingAction
+{
+public:
+	CollectingAction(double time, CollectableGameObject * collectable, item_id_t item_id, size_t count = 1);
+
+protected:
+	virtual void onStart(LivingGameObject * gameObject);
+	virtual void onEnd(LivingGameObject * gameObject);
+	virtual void onCancel(LivingGameObject * gameObject);
+
+private:
+	item_id_t item_id;
+	size_t count;
+	CollectableGameObject * collectable;
+	
 };

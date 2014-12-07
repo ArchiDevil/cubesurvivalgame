@@ -11,3 +11,8 @@ CollectableGameObject::CollectableGameObject(ShiftEngine::MeshNode * sceneNode, 
 CollectableGameObject::~CollectableGameObject()
 {
 }
+
+std::unique_ptr<IEntityAction> CollectableGameObject::GetInteraction()
+{
+	return std::make_unique<CollectingAction>(2.0, this, itemId);
+}
