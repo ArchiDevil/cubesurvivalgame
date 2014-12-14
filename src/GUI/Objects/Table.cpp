@@ -64,7 +64,7 @@ void SimpleGUI::Table::AddRow( AnsiString str )
 
 void SimpleGUI::Table::RemoveRow( AnsiString str )
 {
-	MainLog.FatalError("Fatal error");
+	LOG_FATAL_ERROR("Fatal error");
 }
 
 void SimpleGUI::Table::Clear()
@@ -74,7 +74,7 @@ void SimpleGUI::Table::Clear()
 
 SimpleGUI::TableRow * SimpleGUI::Table::GetRow( int num )
 {
-	MainLog.FatalError("Fatal error");
+	LOG_FATAL_ERROR("Fatal error");
 	return nullptr;
 }
 

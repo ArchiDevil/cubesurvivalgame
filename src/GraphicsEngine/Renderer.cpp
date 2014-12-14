@@ -116,7 +116,7 @@ void ShiftEngine::Renderer::Process( RenderQueue &rq )
 			{					
 				if(!currentState.currentProgram->SetTextureByIndex(mat->builtinTextures[i].first, mat->builtinTextures[i].second))
 				{
-					MainLog.Error("Unable to set texture for material");
+					LOG_ERROR("Unable to set texture for material");
 				}
 				currentState.texturesCache[(engineTextures)i] = mat->builtinTextures[i].second;
 				currentState.TextureBindings++;

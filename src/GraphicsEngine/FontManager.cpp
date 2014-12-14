@@ -133,7 +133,7 @@ void ShiftEngine::FontManager::LoadFonts()
 	auto fontsTextureNames = utils::filesystem::CollectFileNames(pPaths.TexturePath + L"fonts\\");
 
 	if(fontsNames.size() == 0 || fontsTextureNames.size() == 0 || fontsNames.size() != fontsTextureNames.size())
-		MainLog.FatalError("Unable to load textures for fonts");
+		LOG_FATAL_ERROR("Unable to load textures for fonts");
 
 	auto fontNamesIterator = fontsNames.begin();
 	auto textureNamesIterator = fontsTextureNames.begin();
@@ -142,7 +142,7 @@ void ShiftEngine::FontManager::LoadFonts()
 	{
 		cFont * font = new cFont;
 		if(!font->Initialize(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator)))
-			MainLog.Error("Unable to load font: " + utils::WStrToStr(*fontNamesIterator));
+			LOG_ERROR("Unable to load font: " + utils::WStrToStr(*fontNamesIterator));
 		Fonts[::utils::ExtractName(*fontNamesIterator)].reset(font);
 		++textureNamesIterator;
 		++fontNamesIterator;
@@ -161,7 +161,7 @@ void ShiftEngine::FontManager::SetFont( const std::wstring & fontName )
 	{
 		pCurrentFont = nullptr;
 		currentFont.clear();
-		MainLog.Error("Unable to find font: " + utils::WStrToStr(fontName));
+		LOG_ERROR("Unable to find font: " + utils::WStrToStr(fontName));
 	}
 }
 

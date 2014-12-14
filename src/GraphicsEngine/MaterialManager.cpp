@@ -14,9 +14,9 @@ using namespace tinyxml2;
 	char buffer[1024] = {0};																						\
 	sprintf_s(buffer, "Error code: %d: %s, %s", result, materialDoc.GetErrorStr1(), materialDoc.GetErrorStr2());	\
 	std::string buf = buffer;																						\
-	MainLog.Error(buf);																								\
-	MainLog.Error(##x);																								\
-	MainLog.Error("Unable to load material " + utils::WStrToStr(filename));											\
+	LOG_ERROR(buf);																								\
+	LOG_ERROR(##x);																								\
+	LOG_ERROR("Unable to load material " + utils::WStrToStr(filename));											\
 	return nullptr;																									\
 
 #define FIND_FLOAT(x)																								\
@@ -48,7 +48,7 @@ using namespace tinyxml2;
 			}																										\
 			else																									\
 			{																										\
-				MainLog.Error("Unable to parse material");															\
+				LOG_ERROR("Unable to parse material");															\
 				return false;																						\
 			}																										\
 		}																											\
@@ -173,7 +173,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial( const std::
 
 		if(!FillProperties(mtlInfo, keyVal))
 		{
-			MainLog.Error("Unable to fill properties in material manager");
+			LOG_ERROR("Unable to fill properties in material manager");
 			return nullptr;
 		}
 	}
@@ -198,7 +198,7 @@ bool ShiftEngine::MaterialManager::CheckMaterialName( const std::string & name )
 	std::regex nameRegex("^[A-Za-z][\\w]+");
 	if(!std::regex_match(name, nameRegex))
 	{
-		MainLog.Error("Wrong material name: " + name + ". Make sure that material name starts with letter and contains only digits, lettes and underlines.");
+		LOG_ERROR("Wrong material name: " + name + ". Make sure that material name starts with letter and contains only digits, lettes and underlines.");
 		return false;
 	}
 
@@ -250,7 +250,7 @@ bool ShiftEngine::MaterialManager::LoadMaps( MaterialInfo & info, const std::map
 		std::string attr = it->second->Attribute("type");
 		if(attr == "")
 		{
-			MainLog.Error("Unable to get attribute 'type'");
+			LOG_ERROR("Unable to get attribute 'type'");
 			info.diffuseMap = MaterialTextureDescription(TextureType::Unknown);
 		}
 		else
@@ -259,7 +259,7 @@ bool ShiftEngine::MaterialManager::LoadMaps( MaterialInfo & info, const std::map
 			auto textureIt = it->second->FirstChildElement();
 			if(!textureIt)
 			{
-				MainLog.Error("Unable to get textures from texture subitem");
+				LOG_ERROR("Unable to get textures from texture subitem");
 				info.diffuseMap = MaterialTextureDescription(TextureType::Unknown);
 			}
 
@@ -297,7 +297,7 @@ bool ShiftEngine::MaterialManager::LoadMaps( MaterialInfo & info, const std::map
 		std::string attr = it->second->Attribute("type");
 		if(attr == "")
 		{
-			MainLog.Error("Unable to get attribute 'type'");
+			LOG_ERROR("Unable to get attribute 'type'");
 			info.alphaMap = MaterialTextureDescription(TextureType::Unknown);
 		}
 		else
@@ -306,7 +306,7 @@ bool ShiftEngine::MaterialManager::LoadMaps( MaterialInfo & info, const std::map
 			auto textureIt = it->second->FirstChildElement();
 			if(!textureIt)
 			{
-				MainLog.Error("Unable to get textures from texture subitem");
+				LOG_ERROR("Unable to get textures from texture subitem");
 				info.alphaMap = MaterialTextureDescription(TextureType::Unknown);
 			}
 
@@ -358,7 +358,7 @@ bool ShiftEngine::MaterialManager::LoadColors( MaterialInfo & info, const std::m
 			std::string value = iterator->second->Attribute("value");								\
 			if(!std::regex_match(value, checkRegex))												\
 			{																						\
-				MainLog.Error(value + " is not correct value for color");							\
+				LOG_ERROR(value + " is not correct value for color");							\
 				return false;																		\
 			}																						\
 																									\

@@ -38,5 +38,5 @@ GameObjectPtr StaticBreed::Clone() const
 
 GameObjectPtr CollectableBreed::Clone() const
 {
-	return std::make_shared<CollectableGameObject>(CreateMeshNode(meshName, materialFile), itemId);
+	return std::make_shared<CollectableGameObject>(CreateMeshNode(meshName, materialFile), itemId, count);
 }

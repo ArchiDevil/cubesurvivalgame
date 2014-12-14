@@ -39,7 +39,7 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 	Paths = _Paths;
 
 	if(Paths.FontsPath.empty() || Paths.MaterialsPath.empty() || Paths.MeshPath.empty() || Paths.ShaderPath.empty() || Paths.TexturePath.empty())
-		MainLog.Error("Some settings paths are not filled");
+		LOG_ERROR("Some settings paths are not filled");
 
 	DXGI_SWAP_CHAIN_DESC desc;
 	ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -76,9 +76,9 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 		&Context.SwapChain,			//указатель на своп чейн
 		&Context.Device				//указатель на устройство
 		)))
-		MainLog.FatalError("Unable to create DirectX 10 device");
+		LOG_FATAL_ERROR("Unable to create DirectX 10 device");
 
-	MainLog.Message("Device created");
+	LOG_INFO("Device created");
 
 	ID3D10Texture2D * tempTex = nullptr;
 
@@ -118,7 +118,7 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 	Context.Device->RSSetViewports(1, &vp);
 
 	if(!Context.CreateStates())
-		MainLog.FatalError("Unable to create states for renderer");
+		LOG_FATAL_ERROR("Unable to create states for renderer");
 
 	ZBufferState = true;
 	Context.Device->OMSetDepthStencilState(Context.dsStateZOn, 1);
@@ -161,7 +161,7 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 	HRESULT hr = Context.Device->CreateSamplerState(&sDesc, &sampler);
 	if(FAILED(hr))
 	{
-		MainLog.FatalError("Unable to create samplers, error code: " + std::to_string(hr));
+		LOG_FATAL_ERROR("Unable to create samplers, error code: " + std::to_string(hr));
 		return false;
 	}
 	Context.Device->PSSetSamplers(0, 1, &sampler);
@@ -225,7 +225,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10ContextManager::LoadTexture( const std
 {
 	TexturePtr out = TextureManager->CreateTexture2D(FileName);
 	if(out == TextureManager->GetErrorTexture())
-		MainLog.Error("Unable to load " + utils::WStrToStr(FileName) + ", loaded empty texture.");
+		LOG_ERROR("Unable to load " + utils::WStrToStr(FileName) + ", loaded empty texture.");
 	return out;
 }
 
@@ -238,7 +238,7 @@ ShiftEngine::MeshDataPtr ShiftEngine::D3D10ContextManager::LoadMesh( const std::
 {
 	MeshDataPtr out = MeshManager->LoadMesh(Paths.MeshPath + FileName);
 	if(out == nullptr)
-		MainLog.Error("Unable to load: " + utils::WStrToStr(FileName));
+		LOG_ERROR("Unable to load: " + utils::WStrToStr(FileName));
 	return out;
 }
 
@@ -248,7 +248,7 @@ ShiftEngine::MaterialPtr ShiftEngine::D3D10ContextManager::LoadMaterial( const s
 
 	if(ptr == nullptr)
 	{
-		MainLog.Error("Unable to load " + utils::WStrToStr(FileName));
+		LOG_ERROR("Unable to load " + utils::WStrToStr(FileName));
 		return pMaterialManager->LoadMaterial(Paths.MaterialsPath + L"error.mtl");
 	}
 
@@ -372,7 +372,7 @@ void ShiftEngine::D3D10ContextManager::RegisterVertexSemantic( VertexSemantic & 
 	}
 	else
 	{
-		MainLog.Message("Semantic is already registered");
+		LOG_INFO("Semantic is already registered");
 	}
 }
 
@@ -418,7 +418,7 @@ ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFr
 
 		if(repr[i].count > 4)
 		{
-			MainLog.Error("Unable to create input layout for vertex declaration. Reason - wrong byteWidth in vd description. Value is" + std::to_string(repr[i].count));
+			LOG_ERROR("Unable to create input layout for vertex declaration. Reason - wrong byteWidth in vd description. Value is" + std::to_string(repr[i].count));
 			outIL = nullptr;
 		}
 		stream << "float" << repr[i].count << " in_" << i << " : " << repr[i].name << ";\n";
@@ -431,8 +431,8 @@ ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFr
 	ID3D10Blob * errorMessages = nullptr;
 	if(FAILED(D3DCompile(shaderCode, bufferSize, NULL, NULL, NULL, "f", "vs_4_0", 0, 0, &compiledShader, &errorMessages)))
 	{
-		MainLog.Error(std::string((char*)errorMessages->GetBufferPointer()));
-		MainLog.FatalError("Internal fatal error");
+		LOG_ERROR(std::string((char*)errorMessages->GetBufferPointer()));
+		LOG_FATAL_ERROR("Internal fatal error");
 		outIL = nullptr;
 	}
 
@@ -491,7 +491,7 @@ ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFr
 		delete [] ilDesc;
 		compiledShader->Release();
 		outIL = nullptr;
-		MainLog.FatalError("Unable to create input layout");
+		LOG_FATAL_ERROR("Unable to create input layout");
 		return nullptr;
 	}
 

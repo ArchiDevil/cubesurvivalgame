@@ -201,7 +201,7 @@ void ShiftEngine::D3D10Program::ParseInfo()
 		cbDesc.MiscFlags = 0;
 		HRESULT hr = pDevice->CreateBuffer( &cbDesc, NULL, &elem.cbFromShader );
 		if( FAILED( hr ) )
-			MainLog.FatalError("Unable to bind constant buffer for shader");
+			LOG_FATAL_ERROR("Unable to bind constant buffer for shader");
 	}
 }
 

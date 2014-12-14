@@ -54,13 +54,15 @@ public:
 class CollectableBreed : public EntityBreed
 {
 public:
-	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId)
+	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId, size_t count)
 		: EntityBreed(meshName, materialFile)
 		, itemId(itemId)
+		, count(count)
 	{}
 
 	GameObjectPtr Clone() const override;
 
 protected:
 	item_id_t itemId;
+	size_t count;
 };

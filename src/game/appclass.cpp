@@ -54,14 +54,14 @@ bool Application::Initialize()
 
 	//инициализируем графический движок
 	if(!ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND()))
-		MainLog.FatalError("Unable to inititalize graphics engine");
+		LOG_FATAL_ERROR("Unable to inititalize graphics engine");
 	else
-		MainLog.Message("Graphics engine has been initialized");
+		LOG_INFO("Graphics engine has been initialized");
 
 	if(!cInputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
-		MainLog.FatalError("Unable to create DIDevice");
+		LOG_FATAL_ERROR("Unable to create DIDevice");
 	else
-		MainLog.Message("Input system has been initialized");
+		LOG_INFO("Input system has been initialized");
 
 	cInputEngine::GetInstance().subscribe(&System);
 
@@ -77,7 +77,7 @@ bool Application::Initialize()
 	state->initState();
 
 	this->SaveTechInfo();
-	MainLog.Message("Successfully initialized, starting main loop");
+	LOG_INFO("Successfully initialized, starting main loop");
 	gameTimer.Start();
 
 	return true;
@@ -92,7 +92,7 @@ void Application::Shutdown()
 	PerformanceLog.Message("Max FPS = "			+ std::to_string(maxFPS)							+ " FPS");
 	PerformanceLog.Message("Frames elapsed = "	+ std::to_string(PerfCounter)						+ " frames");
 	PerformanceLog.Message("All time = "		+ std::to_string((int)AllTime)						+ " seconds");
-	MainLog.Message("Working done");
+	LOG_INFO("Working done");
 }
 
 bool Application::Frame()

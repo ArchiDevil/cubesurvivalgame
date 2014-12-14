@@ -43,14 +43,14 @@ bool Application::Initialize()
 
 	//инициализируем графический движок
 	ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND());
-	MainLog.Message("DirectX has been initialized");
+	LOG_INFO("DirectX has been initialized");
 
 	ShiftEngine::GetSceneGraph()->AddCameraSceneNode();
 
 	if (!cInputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
-		MainLog.Message("Unable to create DIDevice");
+		LOG_INFO("Unable to create DIDevice");
 	else
-		MainLog.Message("Input system has been initialized");
+		LOG_INFO("Input system has been initialized");
 
 	MainCanvas = new SimpleGUI::Canvas();
 	GUIListener = new SimpleGUI::MainListener(MainCanvas, &(cInputEngine::GetInstance()), charQueue);
@@ -106,14 +106,8 @@ bool Application::Frame()
 			return false;
 		return true;
 	}
-	else
-	{
-		return false;
-	}
 
-	::Sleep(1);
-
-	return true;
+	return false;
 }
 
 void Application::PushState(appState * state)

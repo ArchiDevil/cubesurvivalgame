@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
 
 	IniWorker i;
 	if(!i.Initialize("settings.ini"))
-		MainLog.Error("Unable to open settings");
+		LOG_ERROR("Unable to open settings");
 
 	Application app(hInstance, i.GetInteger("Width"), i.GetInteger("Height"), L"LIME");
 

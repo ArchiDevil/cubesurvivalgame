@@ -35,7 +35,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
 	if(file == INVALID_HANDLE_VALUE)
 	{
 
-		MainLog.Error("Unable to get filenames from " + utils::WStrToStr(bufferPath)
+		LOG_ERROR("Unable to get filenames from " + utils::WStrToStr(bufferPath)
 			+ ", may be directory is not exist or it's empty.");
 		return std::vector<std::wstring>();
 	}

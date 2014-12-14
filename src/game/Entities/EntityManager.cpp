@@ -57,7 +57,7 @@ GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, co
 	auto iter = Breeds.find(entityId);
 	if (iter == Breeds.end())
 	{
-		MainLog.Error("Unable to create entity with id: " + entityId);
+		LOG_ERROR("Unable to create entity with id: " + entityId);
 		return nullptr;
 	}
 
@@ -72,7 +72,7 @@ PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 	auto pGame = LostIsland::GetGamePtr();
 	if (pGame->Player)
 	{
-		MainLog.Error("Player is already created");
+		LOG_ERROR("Player is already created");
 		return nullptr;
 	}
 	auto pCtxMgr = ShiftEngine::GetContextManager();
@@ -135,7 +135,7 @@ void EntityManager::LoadEntities()
 		std::ifstream jsonfile(filename);
 		if (jsonfile.fail() || jsonfile.bad())
 		{
-			MainLog.Error("Unable to open " + filename);
+			LOG_ERROR("Unable to open " + filename);
 			continue;
 		}
 
@@ -143,8 +143,8 @@ void EntityManager::LoadEntities()
 		bool result = reader.parse(jsonfile, root);
 		if (!result)
 		{
-			MainLog.Error("Unable to parse " + filename);
-			MainLog.Error(reader.getFormatedErrorMessages());
+			LOG_ERROR("Unable to parse " + filename);
+			LOG_ERROR(reader.getFormatedErrorMessages());
 			continue;
 		}
 
@@ -160,8 +160,8 @@ void EntityManager::LoadEntities()
 			buff = root.get(prop, buff);
 			if (buff.empty())
 			{
-				MainLog.Error("Wrong entity " + filename);
-				MainLog.Error("Unable to find property " + prop);
+				LOG_ERROR("Wrong entity " + filename);
+				LOG_ERROR("Unable to find property " + prop);
 				errorFlag = true;
 			}
 		}
@@ -192,15 +192,17 @@ void EntityManager::LoadEntities()
 			std::string itemName = buff.asString();
 			if (itemName.empty())
 			{
-				MainLog.Error("Unable to find entity item for: " + id);
+				LOG_ERROR("Unable to find entity item for: " + id);
 				continue;
 			}
 			item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
-			Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId);
+			buff = root.get("count", buff);
+			unsigned count = buff.asUInt();
+			Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count);
 		}
 		else
 		{
-			MainLog.Error("Unable to parse " + filename + ": unknown entity type");
+			LOG_ERROR("Unable to parse " + filename + ": unknown entity type");
 			continue;
 		}
 	}

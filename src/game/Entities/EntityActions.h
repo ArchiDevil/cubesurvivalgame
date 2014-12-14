@@ -97,7 +97,7 @@ private:
 class CollectingAction : public TimingAction
 {
 public:
-	CollectingAction(double time, CollectableGameObject * collectable, item_id_t item_id, size_t count = 1);
+	CollectingAction(double time, CollectableGameObject * collectable, float maximumDistance, item_id_t item_id, size_t count = 1);
 
 protected:
 	virtual void onStart(LivingGameObject * gameObject);
@@ -105,6 +105,7 @@ protected:
 	virtual void onCancel(LivingGameObject * gameObject);
 
 private:
+	float maximum_distance;	// distance to collect
 	item_id_t item_id;
 	size_t count;
 	CollectableGameObject * collectable;

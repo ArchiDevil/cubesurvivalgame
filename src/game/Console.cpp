@@ -29,7 +29,7 @@ void Console::HandleCommand()
 	{
 		if (tokens.size() != 5)
 		{
-			MainLog.Error("Wrong arguments: spawn_entity [entity_name] [pos_x] [pos_y] [pos_z]");
+			LOG_ERROR("Wrong arguments: spawn_entity [entity_name] [pos_x] [pos_y] [pos_z]");
 			return;
 		}
 
@@ -43,7 +43,7 @@ void Console::HandleCommand()
 	{
 		if (tokens.size() != 3)
 		{
-			MainLog.Error("Wrong arguments: add_item [item_name] [count]");
+			LOG_ERROR("Wrong arguments: add_item [item_name] [count]");
 			return;
 		}
 
@@ -54,7 +54,7 @@ void Console::HandleCommand()
 	}
 	else
 	{
-		MainLog.Error("Unable to recognize command: " + commandName);
+		LOG_ERROR("Unable to recognize command: " + commandName);
 		return;
 	}
 }

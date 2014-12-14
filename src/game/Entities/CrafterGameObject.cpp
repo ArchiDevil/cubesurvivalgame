@@ -35,7 +35,7 @@ void CrafterGameObject::Activate()
 	//				rhItem->itemId = 0;
 	//			state = Crafting;
 	//			elapsedTime = 0;
-	//			MainLog.Message("Crafting started");
+	//			LOG_INFO("Crafting started");
 	//		}
 	//		break;
 	//	}
@@ -43,7 +43,7 @@ void CrafterGameObject::Activate()
 	//	return;
 	//case Done:
 	//	//stub
-	//	MainLog.Message("Crafting is done");
+	//	LOG_INFO("Crafting is done");
 	//	break;
 	//}
 }

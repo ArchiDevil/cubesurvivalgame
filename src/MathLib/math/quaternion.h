@@ -270,14 +270,14 @@ namespace MathLib
 
    //         if((from.y * from.y) > (from.x * from.x))
 			//{
-			//	MainLog.Message("First");
+			//	LOG_INFO("First");
 			//	out.vector.x = 0.0;
 			//	out.vector.y = from.x;
 			//	out.vector.z = -from.y;
 			//}
    //         else 
 			//{
-			//	MainLog.Message("Second");
+			//	LOG_INFO("Second");
 			//	out.vector.x = from.y;
 			//	out.vector.y = 0.0;
 			//	out.vector.z = -from.x;

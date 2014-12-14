@@ -140,7 +140,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 		negY.empty() || posY.empty() ||
 		negZ.empty() || posZ.empty())
 	{
-		MainLog.Error("Unable to load cubemap with empty textures");
+		LOG_ERROR("Unable to load cubemap with empty textures");
 		return nullptr;
 	}
 
@@ -164,7 +164,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 	{
 		D3DX10_IMAGE_INFO ii;
 		if(FAILED(D3DX10GetImageInfoFromFile((TexturesPath + items[i]).c_str(), nullptr, &ii, &hr)))
-			MainLog.Error("Unable to get image info for: " + utils::WStrToStr(items[i]));
+			LOG_ERROR("Unable to get image info for: " + utils::WStrToStr(items[i]));
 
 		infos.push_back(ii);
 	}
@@ -177,7 +177,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 		{
 			if(infos[i].Width != prevWidth || infos[i].Height != prevHeight)
 			{
-				MainLog.FatalError("Unable to create cubemap from textures without the same size");
+				LOG_FATAL_ERROR("Unable to create cubemap from textures without the same size");
 			}
 		}
 	}
@@ -207,7 +207,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 			&loadInfo, 0,
 			(ID3D10Resource**)&srcTex[i], 0)))
 		{
-			MainLog.Error("Unable to load texture in cubemap: " + utils::WStrToStr(items[i]));
+			LOG_ERROR("Unable to load texture in cubemap: " + utils::WStrToStr(items[i]));
 
 			D3D10_TEXTURE2D_DESC desc;
 			desc.ArraySize = 1;
@@ -253,7 +253,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 
 	ID3D10Texture2D* texArray = nullptr;
 	if(FAILED(device->CreateTexture2D(&texArrayDesc, 0, &texArray)))
-		MainLog.Error("Unable to create Cubemap!");
+		LOG_ERROR("Unable to create Cubemap!");
 
 	// for each texture element...
 	for(UINT i = 0; i < elems; ++i)
@@ -280,7 +280,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 	viewDesc.Texture2DArray.ArraySize = elems;
 
 	if(FAILED(device->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
-		MainLog.FatalError("Unable to create ShaderResourceView");
+		LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
 	auto texturePtr = std::make_shared<D3D10Texture>(texElementDesc.Width, texElementDesc.Height, TextureType::TextureCubemap, SRW);
 	Textures[superString] = texturePtr;
@@ -297,7 +297,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 
 	if(names.size() < 2)
 	{
-		MainLog.Error("Unable to load texture array with texture count < 2");
+		LOG_ERROR("Unable to load texture array with texture count < 2");
 		return nullptr;
 	}
 
@@ -314,7 +314,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 		D3DX10_IMAGE_INFO ii;
 		if(FAILED(D3DX10GetImageInfoFromFile((TexturesPath + names[i]).c_str(), nullptr, &ii, &hr)))
 		{
-			MainLog.Error("Unable to get image info for: " + utils::WStrToStr(names[i]));
+			LOG_ERROR("Unable to get image info for: " + utils::WStrToStr(names[i]));
 		}
 		infos.push_back(ii);
 	}
@@ -327,7 +327,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 		{
 			if(infos[i].Width != prevWidth || infos[i].Height != prevHeight)
 			{
-				MainLog.FatalError("Unable to create texture array from textures without the same size");
+				LOG_FATAL_ERROR("Unable to create texture array from textures without the same size");
 			}
 		}
 	}
@@ -357,7 +357,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 			&loadInfo, 0,
 			(ID3D10Resource**)&srcTex[i], 0)))
 		{
-			MainLog.Error("Unable to load texture in texture array: " + utils::WStrToStr(names[i]));
+			LOG_ERROR("Unable to load texture in texture array: " + utils::WStrToStr(names[i]));
 
 			D3D10_TEXTURE2D_DESC desc;
 			desc.ArraySize = 1;
@@ -403,7 +403,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 
 	ID3D10Texture2D* texArray = nullptr;
 	if(FAILED(device->CreateTexture2D(&texArrayDesc, 0, &texArray)))
-		MainLog.Error("Unable to create TextureArray!");
+		LOG_ERROR("Unable to create TextureArray!");
 
 	// for each texture element...
 	for(UINT i = 0; i < elems; ++i)
@@ -430,7 +430,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 	viewDesc.Texture2DArray.ArraySize = elems;
 
 	if(FAILED(device->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
-		MainLog.FatalError("Unable to create ShaderResourceView");
+		LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
 	auto texturePtr = std::make_shared<D3D10Texture>(texElementDesc.Width, texElementDesc.Height, TextureType::Texture2DArray, SRW);
 	Textures[superString] = texturePtr;
@@ -450,7 +450,7 @@ ShiftEngine::TextureInfo ShiftEngine::D3D10TextureManager::GetTextureInfo( const
 	}
 	else
 	{
-		MainLog.Error("Unable to get info for texture: " + utils::WStrToStr(filename));
+		LOG_ERROR("Unable to get info for texture: " + utils::WStrToStr(filename));
 		return TextureInfo();
 	}
 }

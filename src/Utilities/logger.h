@@ -20,6 +20,6 @@ private:
 
 extern Log MainLog;
 
-#define LOG_FATAL_ERROR(str)			MainLog.FatalError(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " " + str)
-#define LOG_ERROR(str)					MainLog.Error(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " " + str)
-#define LOG_INFO(str)					MainLog.Message(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " " + str)
+#define LOG_FATAL_ERROR(str)			MainLog.FatalError(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " -- " + str)
+#define LOG_ERROR(str)					MainLog.Error(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " -- " + str)
+#define LOG_INFO(str)					MainLog.Message(std::string(__FUNCTION__) + "():" + std::to_string(__LINE__) + " -- " + str)

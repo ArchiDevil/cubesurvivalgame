@@ -15,7 +15,7 @@ bool IniWorker::Initialize( const std::string & FileName )
 	File.open(FileName.c_str());
 	if(File.fail())
 	{
-		MainLog.FatalError("Unable to open settings file");
+		LOG_FATAL_ERROR("Unable to open settings file");
 		return false;
 	}
 	CollectKeys(File);
@@ -27,7 +27,7 @@ std::string IniWorker::GetKey( const std::string & Key )
 	if(data.find(Key) != data.end())
 		return data[Key];
 
-	MainLog.Error("Unable to get key for: " + Key);
+	LOG_ERROR("Unable to get key for: " + Key);
 	return "";
 }
 
@@ -50,7 +50,7 @@ bool IniWorker::GetBoolean( const std::string & Parameter )
 		return false;
 	else
 	{
-		MainLog.Error(buffer + " is a wrong boolean value");
+		LOG_ERROR(buffer + " is a wrong boolean value");
 		return false;
 	}
 }

@@ -37,18 +37,18 @@ bool gameState::initState()
 	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
 	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, "tempWorld");
-	MainLog.Message("World Manager has been initialized");
+	LOG_INFO("World Manager has been initialized");
 
 	SimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
 	LOG_INFO("Physics initialized");
 
 	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World);
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
-	MainLog.Message("Items have been loaded");
+	LOG_INFO("Items have been loaded");
 
 	auto settings = pCtxMgr->GetParameters();
 	pGame->gameHud->Initialize(settings.screenWidth, settings.screenHeight);
-	MainLog.Message("HUD has been created");
+	LOG_INFO("HUD has been created");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
 
@@ -65,7 +65,7 @@ bool gameState::initState()
 	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1")->GetSceneNode()->GetMaterialPtr()->SetDiffuseColor({1.0f, 0.0f, 0.0f, 1.0f});
 	pGame->EntityMgr->CreateItemEntity(Vector3F(3.0f, 3.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("stone"));
 
-	MainLog.Message("End of game state initializing");
+	LOG_INFO("End of game state initializing");
 
 	return true;
 }

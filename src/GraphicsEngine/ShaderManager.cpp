@@ -31,9 +31,9 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompileVSFromSource
 	hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_4_0", flags, 0, &compiledShader, &errors);
 	if(hr != S_OK && errors != nullptr)
 	{
-		MainLog.Error("Unable to compile custom shader");
+		LOG_ERROR("Unable to compile custom shader");
 		std::string temp = (char*)errors->GetBufferPointer();
-		MainLog.FatalError(temp);
+		LOG_FATAL_ERROR(temp);
 	}
 
 	ID3D10VertexShader * finalShader = nullptr;
@@ -42,7 +42,7 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompileVSFromSource
 	hr = D3D10ReflectShader( compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &pReflector);
 	if(FAILED(hr))
 	{
-		MainLog.FatalError("Unable to parse shader");
+		LOG_FATAL_ERROR("Unable to parse shader");
 	}
 	D3D10ShaderPtr out = std::make_shared<D3D10Shader>(finalShader, ShaderType::ST_Vertex, pReflector);
 
@@ -58,9 +58,9 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompilePSFromSource
 	hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_4_0", flags, 0, &compiledShader, &errors);
 	if(hr != S_OK && errors != nullptr)
 	{
-		MainLog.Error("Unable to compile custom shader");
+		LOG_ERROR("Unable to compile custom shader");
 		std::string temp = (char*)errors->GetBufferPointer();
-		MainLog.FatalError(temp);
+		LOG_FATAL_ERROR(temp);
 	}
 
 	ID3D10PixelShader * finalShader = nullptr;
@@ -69,7 +69,7 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompilePSFromSource
 	hr = D3D10ReflectShader( compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &pReflector);
 	if(FAILED(hr))
 	{
-		MainLog.FatalError("Unable to parse shader");
+		LOG_FATAL_ERROR("Unable to parse shader");
 	}
 	D3D10ShaderPtr out = std::make_shared<D3D10Shader>(finalShader, ShaderType::ST_Pixel, pReflector);
 	return out;
@@ -88,7 +88,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromFile(
 
 		if(in.fail())
 		{
-			MainLog.Error("Unable to open " + utils::WStrToStr(fileName));
+			LOG_ERROR("Unable to open " + utils::WStrToStr(fileName));
 			return nullptr;
 		}
 

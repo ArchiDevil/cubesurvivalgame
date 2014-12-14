@@ -35,7 +35,7 @@ bool GameObject::MustBeDeleted() const
 void GameObject::Delete()
 {
 	ToDelete = true;
-	MainLog.Message("Entity " + std::to_string((size_t)this) + " died");
+	LOG_INFO("Entity " + std::to_string((size_t)this) + " died");
 }
 
 ShiftEngine::MeshNode * GameObject::GetSceneNode()

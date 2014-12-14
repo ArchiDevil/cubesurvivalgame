@@ -47,7 +47,7 @@ namespace ShiftEngine
 					}
 					else
 					{
-						MainLog.Error("Unable to bind vertex shader!");
+						LOG_ERROR("Unable to bind vertex shader!");
 						return;
 					}
 				}
@@ -62,13 +62,13 @@ namespace ShiftEngine
 					}
 					else
 					{
-						MainLog.Error("Unable to bind pixel shader!");
+						LOG_ERROR("Unable to bind pixel shader!");
 						return;
 					}
 				}
 				break;
 			case ShiftEngine::ShaderType::ST_Geometry:
-				MainLog.Error("Unable to bind geometry shader: operation is not implemented yet");
+				LOG_ERROR("Unable to bind geometry shader: operation is not implemented yet");
 				break;
 			default:
 				break;

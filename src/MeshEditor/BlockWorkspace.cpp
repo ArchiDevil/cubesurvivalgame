@@ -49,7 +49,7 @@ void BlockWorkspace::Initialize()
 	CreateBBox();
 	CreatePlane();
 	ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
-	MainLog.Message("Workspace initialized");
+	LOG_INFO("Workspace initialized");
 }
 
 void BlockWorkspace::ResizeWithoutSaved( int new_x, int new_y, int new_z )
@@ -428,7 +428,7 @@ void BlockWorkspace::Save( const std::wstring & filename )
 	std::ofstream stream(buff);
 
 	if(!stream || stream.fail())
-		MainLog.Error("Unable to save " + utils::WStrToStr(buff));
+		LOG_ERROR("Unable to save " + utils::WStrToStr(buff));
 
 	stream.write(reinterpret_cast<char *>(&h), sizeof(Header));
 
@@ -452,7 +452,7 @@ void BlockWorkspace::Load( const std::wstring & filename )
 
 	if(!stream || stream.fail())
 	{
-		MainLog.Error("Unable to load " + utils::WStrToStr(buff));
+		LOG_ERROR("Unable to load " + utils::WStrToStr(buff));
 		return;
 	}
 

@@ -32,16 +32,10 @@ endif()
 
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     add_custom_target(CopyResources
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MinSizeRel/resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/resources/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/resources/
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_BINARY_DIR}/src/game/resources/
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_BINARY_DIR}/src/MeshEditor/resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MinSizeRel/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_BINARY_DIR}/src/game/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_LIST_DIR}/settings.ini ${CMAKE_BINARY_DIR}/src/MeshEditor/
         )

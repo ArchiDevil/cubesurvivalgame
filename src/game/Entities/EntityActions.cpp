@@ -197,8 +197,9 @@ void TimingAction::onUpdate(LivingGameObject * gameObject, double dt)
 
 //////////////////////////////////////////////////////////////////////////
 
-CollectingAction::CollectingAction(double time, CollectableGameObject * collectable, item_id_t item_id, size_t count)
+CollectingAction::CollectingAction(double time, CollectableGameObject * collectable, float maximum_distance, item_id_t item_id, size_t count)
 	: TimingAction(time)
+	, maximum_distance(maximum_distance)
 	, item_id(item_id)
 	, count(count)
 	, collectable(collectable)
@@ -214,7 +215,6 @@ void CollectingAction::onEnd(LivingGameObject * gameObject)
 {
 	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(item_id, count);
 	collectable->Delete();
-	//TODO: add item to player/game object
 }
 
 void CollectingAction::onCancel(LivingGameObject * gameObject)
