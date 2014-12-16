@@ -2,9 +2,9 @@
 
 #include "../game.h"
 
-GameObject::GameObject( ShiftEngine::MeshNode * sceneNode )
+GameObject::GameObject(ShiftEngine::MeshNode * sceneNode)
 	: SceneNode(sceneNode)
-	, currentState(std::make_shared<WaitingState>())
+	, currentState(std::make_unique<WaitingState>())
 	, ToDelete(false)
 	, health(1)
 	, inventory(LostIsland::GetGamePtr()->ItemMgr, 10)
@@ -13,7 +13,7 @@ GameObject::GameObject( ShiftEngine::MeshNode * sceneNode )
 
 GameObject::~GameObject()
 {
-	if(SceneNode)
+	if (SceneNode)
 		SceneNode->KillSelf();
 }
 
@@ -22,7 +22,7 @@ Vector3F GameObject::GetPosition() const
 	return SceneNode->GetPosition();
 }
 
-void GameObject::SetPosition( const Vector3F & Position )
+void GameObject::SetPosition(const Vector3F & Position)
 {
 	SceneNode->SetPosition(Vector3F(Position.x, Position.y, Position.z));
 }
@@ -35,7 +35,6 @@ bool GameObject::MustBeDeleted() const
 void GameObject::Delete()
 {
 	ToDelete = true;
-	LOG_INFO("Entity " + std::to_string((size_t)this) + " died");
 }
 
 ShiftEngine::MeshNode * GameObject::GetSceneNode()
@@ -60,9 +59,17 @@ void GameObject::SetHealth(int in_health)
 	health = in_health;
 }
 
-void GameObject::SetState(const std::shared_ptr<IEntityState> & state)
+bool GameObject::DispatchState(std::unique_ptr<IEntityState> state)
 {
-	currentState = state;
+	if (currentState && currentState->DispatchState(state->GetType()))
+	{
+		EntityState fromState = currentState->GetType();
+		EntityState toState = state->GetType();
+		currentState = std::move(state);
+		OnStateChange(fromState, toState);
+		return true;
+	}
+	return false;
 }
 
 const EntityState GameObject::GetCurrentState() const
@@ -83,4 +90,8 @@ void GameObject::UnHightlight()
 std::unique_ptr<IEntityAction> GameObject::GetInteraction()
 {
 	return nullptr;
+}
+
+void GameObject::OnStateChange(EntityState /*from*/, EntityState /*to*/)
+{
 }

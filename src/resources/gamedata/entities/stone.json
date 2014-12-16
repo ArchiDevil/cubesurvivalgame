@@ -2,6 +2,7 @@
     "id": "stone",
     "type": "collectable",
     "item": "stone",
+    "count": 1,
     "mesh": "cube",
     "material": "generic.mtl"
 }

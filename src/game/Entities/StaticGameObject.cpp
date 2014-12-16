@@ -9,7 +9,7 @@ StaticGameObject::~StaticGameObject()
 {
 }
 
-void StaticGameObject::Update(double dt)
+void StaticGameObject::Update(double /*dt*/)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();

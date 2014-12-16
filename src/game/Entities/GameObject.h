@@ -33,12 +33,14 @@ public:
 	bool MustBeDeleted() const;
 	void Delete();
 
-	virtual void SetState(const std::shared_ptr<IEntityState> & state);
+	virtual bool DispatchState(std::unique_ptr<IEntityState> state);
 	virtual const EntityState GetCurrentState() const;
 
 protected:
+	virtual void OnStateChange(EntityState from, EntityState to);
+
 	ShiftEngine::MeshNode * SceneNode;
-	std::shared_ptr<IEntityState> currentState;
+	std::unique_ptr<IEntityState> currentState;
 	bool ToDelete;
 	int health;
 

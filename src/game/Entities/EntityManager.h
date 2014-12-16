@@ -30,7 +30,7 @@ public:
 	ItemGameObjectPtr		CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId);
 	GameObjectPtr			CreateEntity(const Vector3F & position, const std::string & entityId);
 	PlayerPtr				CreatePlayer(const Vector3F & Position);
-	void					Update(double dt, const Vector3F & sunPos);
+	void					Update(double dt);
 	void					HighlightEntity(const Ray &unprojectedVector);
 	GameObjectPtr			GetNearestEntity(const Ray &unprojectedVector);
 

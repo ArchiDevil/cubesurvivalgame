@@ -20,9 +20,34 @@ void IEntityState::Die()
 	dead = true;
 }
 
+// TODO: move transitions into some thins like a Finite State Machine entity (added into tasklist)
+
+void IEntityState::AddTransition(EntityState from, EntityState to)
+{
+	transitions.insert(std::pair<EntityState, EntityState>(from, to));
+}
+
+bool IEntityState::DispatchState(EntityState state) const
+{
+	auto iter_pair = transitions.equal_range(GetType());
+	for (auto iter = iter_pair.first; iter != iter_pair.second; ++iter)
+		if (iter->second == state)
+			return true;
+
+	return false;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 WaitingState::WaitingState()
+{
+	AddTransition(GetType(), EntityState::Rotating);
+	AddTransition(GetType(), EntityState::Moving);
+	AddTransition(GetType(), EntityState::Dying);
+	AddTransition(GetType(), EntityState::Collecting);
+}
+
+void WaitingState::Update(GameObject * /*entity*/, double /*dt*/)
 {
 }
 
@@ -33,8 +58,36 @@ EntityState WaitingState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-RotatingState::RotatingState()
+RotatingState::RotatingState(const MathLib::Vector2F & targetPosition)
+	: targetPosition(targetPosition)
+	, rotatingTime(0.0)
 {
+	AddTransition(GetType(), EntityState::Waiting);
+	AddTransition(GetType(), EntityState::Moving);
+}
+
+void RotatingState::Update(GameObject * entity, double dt)
+{
+	auto * pSceneNode = entity->GetSceneNode();
+	if (!pSceneNode)
+		return;
+	rotatingTime += dt / 4.0;
+	Vector3F thisPos = pSceneNode->GetPosition();
+	thisPos.z = 0.0f;
+	Vector3F target = Vector3F(targetPosition.x, targetPosition.y, 0.0);
+	Vector3F faceStart = Vector3F(-1.0f, 0.0f, 0.0f) * pSceneNode->GetRotation();
+	Vector3F faceEnd = thisPos - target;
+	auto rotation = MathLib::shortest_arc(faceStart, faceEnd);
+	if (MathLib::angle(faceStart, faceEnd) <= 0.1f)
+	{
+		pSceneNode->RotateBy(rotation);
+		Die();
+	}
+	else
+	{
+		auto rotationQuat = MathLib::quaternionSlerp(pSceneNode->GetRotation(), pSceneNode->GetRotation() * rotation, (float)rotatingTime);
+		pSceneNode->SetRotation(rotationQuat);
+	}
 }
 
 EntityState RotatingState::GetType() const
@@ -44,8 +97,31 @@ EntityState RotatingState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-MovingState::MovingState()
+MovingState::MovingState(const MathLib::Vector2F & targetPosition)
+	: targetPosition(targetPosition)
 {
+	AddTransition(GetType(), EntityState::Waiting);
+}
+
+void MovingState::Update(GameObject * entity, double dt)
+{
+	auto * pSceneNode = entity->GetSceneNode();
+	if (!pSceneNode)
+		return;
+	Vector3F currentPos = pSceneNode->GetPosition();
+	currentPos.z = 0.0f;
+	Vector3F targetPos = Vector3F(targetPosition.x, targetPosition.y, 0.0f);
+	if (MathLib::distance(currentPos, targetPos) <= 0.1f)
+	{
+		pSceneNode->SetPosition(targetPos);
+		Die();
+	}
+	else
+	{
+		auto directionVec = MathLib::Normalize(targetPos - currentPos);
+		directionVec *= dt * 5.0f;
+		pSceneNode->SetPosition(pSceneNode->GetPosition() + directionVec);
+	}
 }
 
 EntityState MovingState::GetType() const
@@ -55,8 +131,27 @@ EntityState MovingState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-DyingState::DyingState()
+DyingState::DyingState(float dyingTime)
+	: elapsedTime(dyingTime)
+	, fullTime(dyingTime)
 {
+	AddTransition(GetType(), EntityState::Decay);
+}
+
+void DyingState::Update(GameObject * entity, double dt)
+{
+	//HACK: with big FPS there's will be an error due to cast
+	elapsedTime -= dt;
+	auto * pSceneNode = entity->GetSceneNode();
+	if (!pSceneNode)
+		return;
+
+	float scale = elapsedTime / fullTime;
+	pSceneNode->SetScale(scale);
+	if (elapsedTime <= 0.0f)
+	{
+		entity->DispatchState(std::make_unique<DecayState>(2.0));
+	}
 }
 
 EntityState DyingState::GetType() const
@@ -66,8 +161,17 @@ EntityState DyingState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-DecayState::DecayState()
+DecayState::DecayState(float decayTime)
+	: elapsedTime(decayTime)
 {
+}
+
+void DecayState::Update(GameObject * entity, double dt)
+{
+	//HACK: with big FPS there's will be an error due to cast
+	elapsedTime -= (float)dt;
+	if (elapsedTime <= 0.0f)
+		entity->Delete();
 }
 
 EntityState DecayState::GetType() const
@@ -77,11 +181,24 @@ EntityState DecayState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-CollectingState::CollectingState()
+CollectingState::CollectingState(double collectingTime)
+	: collectingTime(collectingTime)
+	, accumulatedTime(0.0)
 {
+	AddTransition(GetType(), EntityState::Waiting);
 }
 
 EntityState CollectingState::GetType() const
 {
 	return EntityState::Collecting;
+}
+
+void CollectingState::Update(GameObject * entity, double dt)
+{
+	accumulatedTime += dt;
+	if (accumulatedTime >= collectingTime)
+	{
+		entity->DispatchState(std::make_unique<WaitingState>());
+		// switch to waiting or previous
+	}
 }

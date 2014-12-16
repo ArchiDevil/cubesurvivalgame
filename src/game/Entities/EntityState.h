@@ -2,6 +2,8 @@
 
 #include <MathLib/math.h>
 
+#include <map>
+
 class GameObject;
 
 enum class EntityState
@@ -22,10 +24,14 @@ public:
 
 	virtual bool Dead() const;
 	virtual EntityState GetType() const = 0;
+	virtual void Update(GameObject * entity, double dt) = 0;
+	bool DispatchState(EntityState state) const;
 
 protected:
+	void AddTransition(EntityState from, EntityState to);
 	void Die();
 
+	std::multimap<EntityState, EntityState> transitions;
 	bool dead;
 };
 
@@ -33,42 +39,69 @@ class WaitingState : public IEntityState
 {
 public:
 	WaitingState();
+	virtual void Update(GameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 };
 
 class RotatingState : public IEntityState
 {
 public:
-	RotatingState();
+	RotatingState(const MathLib::Vector2F & targetPosition);
+	virtual void Update(GameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
+
+private:
+	const MathLib::Vector2F targetPosition;
+	double rotatingTime;
 };
 
 class MovingState : public IEntityState
 {
 public:
-	MovingState();
+	MovingState(const MathLib::Vector2F & targetPosition);
+	virtual void Update(GameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
+
+private:
+	MathLib::Vector2F targetPosition;
+
 };
 
 class DyingState : public IEntityState
 {
 public:
-	DyingState();
+	DyingState(float dyingTime);
+	virtual void Update(GameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
+
+private:
+	float elapsedTime;
+	const float fullTime;
+
 };
 
 class DecayState : public IEntityState
 {
 public:
-	DecayState();
+	DecayState(float decayTime);
+	virtual void Update(GameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
+
+private:
+	float elapsedTime;
 };
 
 class CollectingState : public IEntityState
 {
 public:
-	CollectingState();
+	CollectingState(double collectingTime);
 	virtual EntityState GetType() const override;
+	virtual void Update(GameObject * entity, double dt) override;
+
+private:
+	double collectingTime;
+	double accumulatedTime;
+
 };
 
 //ES_Attacking,

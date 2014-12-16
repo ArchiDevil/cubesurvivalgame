@@ -29,14 +29,13 @@ bool LivingGameObject::Go(const MathLib::Vector2F & target)
 	if (topColumn == BT_Water)
 		return false;
 
-	PushCommand(std::make_unique<RotateAction>(target));
 	PushCommand(std::make_unique<MoveAction>(target));
 	return true;
 }
 
 void LivingGameObject::Stop()
 {
-	SetState(std::make_shared<WaitingState>());
+	DispatchState(std::make_unique<WaitingState>());
 }
 
 void LivingGameObject::PushCommand(std::unique_ptr<IEntityAction> action)
@@ -62,16 +61,21 @@ void LivingGameObject::CancelCurrentCommand()
 
 void LivingGameObject::Update(double dt)
 {
+	//may be use stateEnd method inside state?
 	if (currentState->Dead())
-		SetState(std::make_shared<WaitingState>());
+		DispatchState(std::make_unique<WaitingState>());
 
 	if (!Actions.empty())
 	{
 		auto & action = Actions.front();
-		action->Update(this, dt);
+		if (!action->IsStarted())
+			action->Start(this);
+
 		if (action->IsDead())
 			Actions.pop();
 	}
+
+	currentState->Update(this, dt); // there's no check to nullptr to avoid missing crash. State must exists everytime (do it without pointer?)
 
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();
@@ -89,4 +93,10 @@ void LivingGameObject::Update(double dt)
 	auto position = GetPosition();
 	position.z = (float)maxHeight;
 	SetPosition(position);
+}
+
+void LivingGameObject::OnStateChange(EntityState /*from*/, EntityState to)
+{
+	if (!Actions.empty())
+		Actions.front()->OnStateChange(this, to);
 }

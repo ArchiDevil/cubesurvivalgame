@@ -39,7 +39,7 @@ ItemGameObjectPtr EntityManager::CreateItemEntity(const Vector3F & Position, con
 	return out;
 }
 
-void EntityManager::Update( double dt, const Vector3F & sunPos )
+void EntityManager::Update( double dt )
 {
 	auto iter = GameObjects.begin();
 	while (iter != GameObjects.end())
@@ -80,6 +80,7 @@ PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 
 	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
 	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr);
+	player->SetPosition(Position);
 	GameObjects.push_back(player);
 	pGame->Player = player.get();
 	return player;

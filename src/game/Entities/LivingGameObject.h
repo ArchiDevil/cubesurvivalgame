@@ -20,6 +20,7 @@ public:
 
 private:
 	void CancelCommands();
+	virtual void OnStateChange(EntityState from, EntityState to) override;
 
 	std::queue<std::unique_ptr<IEntityAction>> Actions;
 

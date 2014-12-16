@@ -34,11 +34,6 @@ void IEntityAction::Start(LivingGameObject * gameObject)
 	m_started = true;
 }
 
-void IEntityAction::Update(LivingGameObject * gameObject, double dt)
-{
-	onUpdate(gameObject, dt);
-}
-
 void IEntityAction::End(LivingGameObject * gameObject)
 {
 	onEnd(gameObject);
@@ -51,95 +46,47 @@ void IEntityAction::Cancel(LivingGameObject * gameObject)
 	die();
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-RotateAction::RotateAction(const MathLib::Vector2F & targetPosition)
-	: targetPosition(targetPosition)
-	, rotationTime(0.0)
+void IEntityAction::OnStateChange(LivingGameObject * /*gameObject*/, EntityState /*newState*/)
 {
-}
-
-void RotateAction::onStart(LivingGameObject * gameObject)
-{
-	gameObject->SetState(std::make_shared<RotatingState>());
-}
-
-void RotateAction::onUpdate(LivingGameObject * gameObject, double dt)
-{
-	auto * pSceneNode = gameObject->GetSceneNode();
-	if (!pSceneNode)
-		return;
-
-	rotationTime += dt / 4.0;
-	Vector3F thisPos{ pSceneNode->GetPosition().x, pSceneNode->GetPosition().y, 0.0f };
-	Vector3F target{ targetPosition.x, targetPosition.y, 0.0 };
-	Vector3F faceStart = Vector3F(-1.0f, 0.0f, 0.0f) * pSceneNode->GetRotation();
-	Vector3F faceEnd = thisPos - target;
-	auto rotation = MathLib::shortest_arc(faceStart, faceEnd);
-	if (MathLib::angle(faceStart, faceEnd) <= 0.1f)
-	{
-		pSceneNode->RotateBy(rotation);
-		die();
-	}
-	else
-	{
-		auto rotationQuat = MathLib::quaternionSlerp(pSceneNode->GetRotation(), pSceneNode->GetRotation() * rotation, (float)rotationTime);
-		pSceneNode->SetRotation(rotationQuat);
-	}
-}
-
-void RotateAction::onEnd(LivingGameObject * gameObject)
-{
-	//TODO: use game object calls instead of setting state directly
-	gameObject->Stop();
-}
-
-void RotateAction::onCancel(LivingGameObject * gameObject)
-{
-	gameObject->Stop();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
 	: targetPosition(targetPosition)
+	, rotated(false)
 {
 }
 
 void MoveAction::onStart(LivingGameObject * gameObject)
 {
-	gameObject->SetState(std::make_shared<MovingState>());
+	// TODO: what if we cannot dispatch it now? postpone?
+	gameObject->DispatchState(std::make_unique<RotatingState>(targetPosition));
 }
 
-void MoveAction::onUpdate(LivingGameObject * gameObject, double dt)
+void MoveAction::onEnd(LivingGameObject * /*gameObject*/)
 {
-	auto * pSceneNode = gameObject->GetSceneNode();
-	if (!pSceneNode)
-		return;
-
-	Vector2F gameObjectPos{ gameObject->GetPosition().x, gameObject->GetPosition().y };
-
-	if (MathLib::distance(gameObjectPos, targetPosition) <= 0.1f)
-	{
-		pSceneNode->SetPosition(Vector3F(targetPosition.x, targetPosition.y, 0.0f));
-		die();
-	}
-	else
-	{
-		auto directionVec = MathLib::Normalize(targetPosition - gameObjectPos);
-		directionVec *= dt * 5.0f;
-		pSceneNode->SetPosition(pSceneNode->GetPosition() + Vector3F(directionVec.x, directionVec.y, 0.0f));
-	}
-}
-
-void MoveAction::onEnd(LivingGameObject * gameObject)
-{
-	gameObject->Stop();
 }
 
 void MoveAction::onCancel(LivingGameObject * gameObject)
 {
 	gameObject->Stop();
+}
+
+void MoveAction::OnStateChange(LivingGameObject * gameObject, EntityState newState)
+{
+	if (newState == EntityState::Waiting) // entity stops
+	{
+		if (!rotated)
+		{
+			rotated = true;
+			gameObject->DispatchState(std::make_unique<MovingState>(targetPosition));
+		}
+		else
+		{
+			this->End(gameObject);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -152,66 +99,40 @@ DyingAction::DyingAction(double dyingTime)
 
 void DyingAction::onStart(LivingGameObject * gameObject)
 {
-	gameObject->SetState(std::make_shared<DyingState>());
+	gameObject->DispatchState(std::make_unique<DyingState>(dyingTime));
 }
 
-void DyingAction::onUpdate(LivingGameObject * gameObject, double dt)
+void DyingAction::onEnd(LivingGameObject * /*gameObject*/)
 {
-	elapsedTime -= dt;
-	auto * pSceneNode = gameObject->GetSceneNode();
-	if (!pSceneNode)
-		return;
-
-	float scale = elapsedTime / dyingTime;
-	pSceneNode->SetScale(scale);
-	if (elapsedTime <= 0.0f)
-		die();
 }
 
-void DyingAction::onEnd(LivingGameObject * gameObject)
+void DyingAction::onCancel(LivingGameObject * /*gameObject*/)
 {
-	// gameObject->AddAction(std::make_shared<DecayAction>());
+	assert(false); // this state couldn't be cancelled
 }
 
-void DyingAction::onCancel(LivingGameObject * gameObject)
+void DyingAction::OnStateChange(LivingGameObject * gameObject, EntityState /*newState*/)
 {
-	throw;
+	End(gameObject);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TimingAction::TimingAction(double activationTime)
-	: elapsedTime(activationTime)
-{
-}
-
-void TimingAction::onUpdate(LivingGameObject * gameObject, double dt)
-{
-	elapsedTime -= dt;
-	if (elapsedTime <= 0.0)
-	{
-		onEnd(gameObject);
-		die();
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-CollectingAction::CollectingAction(double time, CollectableGameObject * collectable, float maximum_distance, item_id_t item_id, size_t count)
-	: TimingAction(time)
-	, maximum_distance(maximum_distance)
+CollectingAction::CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximum_distance, item_id_t item_id, size_t count)
+	: maximum_distance(maximum_distance)
 	, item_id(item_id)
 	, count(count)
 	, collectable(collectable)
+	, collecting_time(collecting_time)
 {
 }
 
 void CollectingAction::onStart(LivingGameObject * gameObject)
 {
-	gameObject->SetState(std::make_shared<CollectingState>());
+	gameObject->DispatchState(std::make_unique<CollectingState>(collecting_time));
 }
 
-void CollectingAction::onEnd(LivingGameObject * gameObject)
+void CollectingAction::onEnd(LivingGameObject * /*gameObject*/)
 {
 	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(item_id, count);
 	collectable->Delete();
@@ -219,5 +140,13 @@ void CollectingAction::onEnd(LivingGameObject * gameObject)
 
 void CollectingAction::onCancel(LivingGameObject * gameObject)
 {
-	gameObject->SetState(std::make_shared<WaitingState>());
+	gameObject->DispatchState(std::make_unique<WaitingState>());
+}
+
+void CollectingAction::OnStateChange(LivingGameObject * gameObject, EntityState newState)
+{
+	if (newState == EntityState::Waiting)
+	{
+		this->End(gameObject);
+	}
 }
