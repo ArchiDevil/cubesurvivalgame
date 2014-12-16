@@ -18,7 +18,7 @@ def gen():
     path = get_path()
     os.mkdir(os.path.join(path, "build"))
     os.chdir(os.path.join(path, "build"))
-    runCmd(['cmake', '..'])
+    runCmd(['cmake', '-G', 'Visual Studio 12 2013', '..'])
     os.chdir(path)
  
 def compilation():

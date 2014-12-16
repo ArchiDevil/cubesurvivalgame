@@ -12,7 +12,7 @@ ItemUsingsHandler::ItemUsingsHandler( PlayerGameObject * pPlayer, cWorld * pWorl
 {
 }
 
-bool ItemUsingsHandler::UseEntityItem(EntityItem * item)
+bool ItemUsingsHandler::UseEntityItem(EntityItem * /*item*/)
 {
 	return false;
 }
@@ -23,7 +23,7 @@ bool ItemUsingsHandler::UseFoodItem(FoodItem * item)
 	return true;
 }
 
-bool ItemUsingsHandler::UseWeaponItem(WeaponItem * item)
+bool ItemUsingsHandler::UseWeaponItem(WeaponItem * /*item*/)
 {
 	return false;
 }

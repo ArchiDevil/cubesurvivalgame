@@ -80,7 +80,7 @@ bool gameState::update(double dt)
 	pSun->SetDirection(-sunPosition);
 	ProcessInput(dt);
 	SimplePhysicsEngine::GetInstance().Update(dt);
-	pGame->EntityMgr->Update(dt, sunPosition);
+	pGame->EntityMgr->Update(dt);
 	pGame->environmentMgr->Update(dt * 0.0);
 
 	pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(playerPosition.x, playerPosition.y, playerPosition.z), phi, theta, r);
@@ -172,14 +172,10 @@ void gameState::ProcessInput(double dt)
 	auto mouseInfo = InputEngine->GetMouseInfo();
 
 	if (InputEngine->IsKeyUp(DIK_GRAVE))
-	{
 		console.SetVisibility(!console.GetVisibility());
-	}
 
-	if (console.GetVisibility())
-	{
+	if (console.GetVisibility()) 
 		return;
-	}
 
 	D3DXVECTOR3 tempVec = pScene->GetActiveCamera()->GetUpVector();
 	tempVec.z = 0.0f;

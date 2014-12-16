@@ -5,7 +5,7 @@
 #include "Entities/GameObjectInventory.h"
 #include "game.h"
 
-void GameEventHandler::onPlayerMoves(double dt)
+void GameEventHandler::onPlayerMoves(double /*dt*/)
 {
 	static int PlayerCX = 0;
 	static int PlayerCY = 0;
