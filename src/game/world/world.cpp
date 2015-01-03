@@ -75,7 +75,7 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
 			Generator->GetNoise()->SetFrequency(0.007);
 			Generator->GetNoise()->SetOctaves(5);
 
-			double noise = Generator->GetNoise()->SimplexNoise(i, j) * 10.0f;
+			double noise = Generator->GetNoise()->SimplexNoise(i, j) * 6.0f;
 			double distance = MathLib::distance(Vector2F(), Vector2F(i, j)) / 400.0;
 			int result = (noise + 90) * (1.0 - distance);
 			unsigned int kMax = result < 3 ? 3 : result; //+ GetInterpolatedHeight(i, j);

@@ -135,13 +135,14 @@ Block & BlockWorkspace::GetElem( int x, int y, int z )
 	}
 	else if(z < 0)
 	{
-		Block hack;
+		static Block hack;
 		hack.exist = true;
 		return hack;
 	}
 	else
 	{
-		return Block();
+        static Block local;
+		return local;
 	}
 }
 

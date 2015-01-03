@@ -61,5 +61,4 @@ bool AppStateMachine::Frame( double dt )
 	{
 		return false;
 	}
-	return true;
 }
