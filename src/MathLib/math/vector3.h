@@ -7,14 +7,14 @@ namespace MathLib
 	template<typename T>
 	struct vec3
 	{
-		vec3() 
+		vec3()
 			: x(0)
 			, y(0)
 			, z(0)
 		{
 		}
 
-		vec3(T _x, T _y, T _z) 
+		vec3(T _x, T _y, T _z)
 			: x(_x)
 			, y(_y)
 			, z(_z)
@@ -70,11 +70,12 @@ namespace MathLib
 			return *this;
 		}
 
-		inline vec3 & operator = (const vec3 & vec)
+		template<typename T2>
+		inline vec3 & operator = (const vec3<T2> & vec)
 		{
-			this->x = vec.x;
-			this->y = vec.y;
-			this->z = vec.z;
+			this->x = (T)vec.x;
+			this->y = (T)vec.y;
+			this->z = (T)vec.z;
 			return *this;
 		}
 
@@ -98,14 +99,10 @@ namespace MathLib
 			return vec3(-x, -y, -z);
 		}
 
-		inline vec3 operator * (float num) const
+		template<typename D>
+		inline vec3 operator * (D num) const
 		{
-			return vec3(this->x * num, this->y * num, this->z * num);
-		}
-
-		inline vec3 operator * (double num) const
-		{
-			return vec3(this->x * num, this->y * num, this->z * num);
+			return vec3(x * (T)num, y * (T)num, z * (T)num);
 		}
 
 		inline bool operator == (const vec3 & ref) const

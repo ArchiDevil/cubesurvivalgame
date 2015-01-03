@@ -7,13 +7,13 @@ namespace MathLib
 	template<typename T>
 	struct vec2
 	{
-		vec2() : x(0), y(0){};
-		vec2(T _x, T _y) : x(_x), y(_y){};
+		vec2() : x(0), y(0) {};
+		vec2(T _x, T _y) : x(_x), y(_y) {};
 
 		union
 		{
 			T el[2];
-			struct  
+			struct
 			{
 				T x, y;
 			};
@@ -22,6 +22,11 @@ namespace MathLib
 		T length() const
 		{
 			return (T)sqrt((double)x*x + (double)y*y);
+		}
+
+		inline const T * ptr() const
+		{
+			return el;
 		}
 
 		inline T * ptr()
@@ -33,7 +38,7 @@ namespace MathLib
 		{
 			this->x += ref.x;
 			this->y += ref.y;
-			return *this;	
+			return *this;
 		}
 
 		inline vec2 & operator -= (const vec2 & ref)
@@ -43,24 +48,11 @@ namespace MathLib
 			return *this;
 		}
 
-		inline vec2 & operator *= (float num)
+		template<typename D>
+		inline vec2 & operator *= (D num)
 		{
-			this->x *= num;
-			this->y *= num;
-			return *this;	
-		}
-
-		inline vec2 & operator *= (double num)
-		{
-			this->x *= num;
-			this->y *= num;
-			return *this;	
-		}
-
-		inline vec2 & operator = (const vec2 & vec)
-		{
-			this->x = vec.x;
-			this->y = vec.y;
+			this->x *= (T)num;
+			this->y *= (T)num;
 			return *this;
 		}
 
@@ -82,14 +74,20 @@ namespace MathLib
 			return vec2(this->x - ref.x, this->y - ref.y);
 		}
 
-		inline vec2 operator * (float num) const
+		inline vec2 operator - () const
 		{
-			return vec2(this->x * num, this->y * num);
+			return vec2(-x, -y);
 		}
 
-		inline vec2 operator * (double num) const
+		template<typename T2> operator vec2<T2>() const
 		{
-			return vec2(this->x * num, this->y * num);
+			return vec2<T2>((T2)x, (T2)y);
+		}
+
+		template<typename D>
+		inline vec2 operator * (D num) const
+		{
+			return vec2(x * (T)num, y * (T)num);
 		}
 
 		inline bool operator == (const vec2 & ref) const
