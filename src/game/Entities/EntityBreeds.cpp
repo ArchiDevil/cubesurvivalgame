@@ -3,8 +3,7 @@
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/ut.h>
 
-#include "StaticGameObject.h"
-#include "CrafterGameObject.h"
+#include "LiveGameObject.h"
 #include "ItemGameObject.h"
 #include "CollectableGameObject.h"
 // #include "AnimalGameObject.h"
@@ -26,14 +25,9 @@ ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::
 	return meshNode;
 }
 
-GameObjectPtr CrafterBreed::Clone() const
+GameObjectPtr LiveBreed::Clone() const
 {
-	return std::make_shared<CrafterGameObject>(CreateMeshNode(meshName, materialFile), craftingTime);
-}
-
-GameObjectPtr StaticBreed::Clone() const
-{
-	return std::make_shared<StaticGameObject>(CreateMeshNode(meshName, materialFile));
+	return std::make_shared<LiveGameObject>(CreateMeshNode(meshName, materialFile));
 }
 
 GameObjectPtr CollectableBreed::Clone() const

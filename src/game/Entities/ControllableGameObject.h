@@ -1,21 +1,22 @@
 #pragma once
 
-#include "GameObject.h"
+#include "LiveGameObject.h"
 #include "EntityActions.h"
 
 #include <queue>
 #include <memory>
 
-class LivingGameObject : public GameObject
+class ControllableGameObject : public LiveGameObject
 {
 public:
-	LivingGameObject(ShiftEngine::MeshNode * sceneNode);
-	virtual ~LivingGameObject();
+	ControllableGameObject(ShiftEngine::MeshNode * sceneNode);
+	virtual ~ControllableGameObject();
 
 	virtual void Update(double dt) override;
 	virtual bool Go(const MathLib::Vector2F & target);
 	virtual void Stop();
 	virtual void PushCommand(std::unique_ptr<IEntityAction> action);
+	virtual void Interact(InteractableGameObject * target, InteractionType interaction);
 	virtual void CancelCurrentCommand();
 
 private:

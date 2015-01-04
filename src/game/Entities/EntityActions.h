@@ -1,12 +1,15 @@
 #pragma once
 
-#include <MathLib/math.h>
-
 #include "../Items/ItemManager.h"
 #include "EntityState.h"
 
-class LivingGameObject;
+#include <MathLib/math.h>
+
+#include <memory>
+
+class ControllableGameObject;
 class CollectableGameObject;
+class LiveGameObject;
 
 class IEntityAction
 {
@@ -14,18 +17,18 @@ public:
 	IEntityAction();
 	virtual ~IEntityAction();
 
-	void Start(LivingGameObject * gameObject);
-	void End(LivingGameObject * gameObject);
-	void Cancel(LivingGameObject * gameObject);
+	void Start(ControllableGameObject * gameObject);
+	void End(ControllableGameObject * gameObject);
+	void Cancel(ControllableGameObject * gameObject);
 	bool IsDead() const;
 	bool IsStarted() const;
 
-	virtual void OnStateChange(LivingGameObject * gameObject, EntityState newState);
+	virtual void OnStateChange(ControllableGameObject * gameObject, EntityState newState);
 
 protected:
-	virtual void onStart(LivingGameObject * gameObject) = 0;
-	virtual void onEnd(LivingGameObject * gameObject) = 0;
-	virtual void onCancel(LivingGameObject * gameObject) = 0;
+	virtual void onStart(ControllableGameObject * gameObject) = 0;
+	virtual void onEnd(ControllableGameObject * gameObject) = 0;
+	virtual void onCancel(ControllableGameObject * gameObject) = 0;
 
 	void die();
 
@@ -34,16 +37,35 @@ private:
 	bool m_started;
 };
 
+// should be used for aggregating actions like a: move (rotate + move), attack (move + attack) and etc.
+class ActionAggregator : public IEntityAction
+{
+public:
+	ActionAggregator() = delete;
+	ActionAggregator(const ActionAggregator&) = delete;
+	ActionAggregator(ActionAggregator&&) = delete;
+	ActionAggregator& operator=(const ActionAggregator&) = delete;
+	ActionAggregator& operator=(ActionAggregator&&) = delete;
+	virtual void OnStateChange(ControllableGameObject * gameObject, EntityState newState) override;
+
+protected:
+	ActionAggregator(std::initializer_list<std::unique_ptr<IEntityAction>> init_list);
+	virtual void onStart(ControllableGameObject * gameObject) override;
+	virtual void onEnd(ControllableGameObject * gameObject) override;
+	virtual void onCancel(ControllableGameObject * gameObject) override;
+
+};
+
 class MoveAction : public IEntityAction
 {
 public:
 	MoveAction(const MathLib::Vector2F & targetPosition);
-	virtual void OnStateChange(LivingGameObject * gameObject, EntityState newState);
+	virtual void OnStateChange(ControllableGameObject * gameObject, EntityState newState);
 
 protected:
-	virtual void onStart(LivingGameObject * gameObject) override;
-	virtual void onEnd(LivingGameObject * gameObject) override;
-	virtual void onCancel(LivingGameObject * gameObject) override;
+	virtual void onStart(ControllableGameObject * gameObject) override;
+	virtual void onEnd(ControllableGameObject * gameObject) override;
+	virtual void onCancel(ControllableGameObject * gameObject) override;
 
 private:
 	MathLib::Vector2F targetPosition;
@@ -51,39 +73,36 @@ private:
 
 };
 
-class DyingAction : public IEntityAction
-{
-public:
-	DyingAction(double dyingTime);
-	virtual void OnStateChange(LivingGameObject * gameObject, EntityState newState);
-
-protected:
-	virtual void onStart(LivingGameObject * gameObject) override;
-	virtual void onEnd(LivingGameObject * gameObject) override;
-	virtual void onCancel(LivingGameObject * gameObject) override;
-
-private:
-	double elapsedTime;
-	double dyingTime;
-
-};
-
 class CollectingAction : public IEntityAction
 {
 public:
-	CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximumDistance, item_id_t item_id, size_t count = 1);
-	virtual void OnStateChange(LivingGameObject * gameObject, EntityState newState);
+	CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximumDistance);
+	virtual void OnStateChange(ControllableGameObject * gameObject, EntityState newState);
 
 protected:
-	virtual void onStart(LivingGameObject * gameObject) override;
-	virtual void onEnd(LivingGameObject * gameObject) override;
-	virtual void onCancel(LivingGameObject * gameObject) override;
+	virtual void onStart(ControllableGameObject * gameObject) override;
+	virtual void onEnd(ControllableGameObject * gameObject) override;
+	virtual void onCancel(ControllableGameObject * gameObject) override;
 
 private:
 	float maximum_distance;	// distance to collect
-	item_id_t item_id;
-	size_t count;
 	CollectableGameObject * collectable;
 	double collecting_time;
-	
+
+};
+
+class AttackAction : public IEntityAction
+{
+public:
+	AttackAction(LiveGameObject * object, float maximum_distance);
+	virtual void OnStateChange(ControllableGameObject * gameObject, EntityState newState);
+
+protected:
+	virtual void onStart(ControllableGameObject * gameObject) override;
+	virtual void onEnd(ControllableGameObject * gameObject) override;
+	virtual void onCancel(ControllableGameObject * gameObject) override;
+
+	LiveGameObject * target;
+	float maximum_distance;
+
 };

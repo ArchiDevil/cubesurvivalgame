@@ -23,28 +23,10 @@ protected:
 
 typedef std::shared_ptr<EntityBreed> BreedPtr;
 
-class CrafterBreed : public EntityBreed
+class LiveBreed : public EntityBreed
 {
 public:
-	CrafterBreed(const std::string & meshName, const std::string & materialFile,
-				 Item * craftingItem, uint32_t craftingTime)
-				  : EntityBreed(meshName, materialFile)
-				  , craftingItem(craftingItem)
-				  , craftingTime(craftingTime)
-	{}
-
-	GameObjectPtr Clone() const override;
-
-protected:
-	Item * craftingItem;
-	uint32_t craftingTime;
-
-};
-
-class StaticBreed : public EntityBreed
-{
-public:
-	StaticBreed(const std::string & meshName, const std::string & materialFile)
+	LiveBreed(const std::string & meshName, const std::string & materialFile)
 		: EntityBreed(meshName, materialFile)
 	{}
 

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "StaticGameObject.h"
+#include "LiveGameObject.h"
 #include "../game.h"
 
-class TreeGameObject : public StaticGameObject
+class TreeGameObject : public LiveGameObject
 {
 public:
 	TreeGameObject(ShiftEngine::MeshNode * mesh);
 	virtual ~TreeGameObject();
-
-	virtual std::unique_ptr<IEntityAction> GetInteraction();
 
 };

@@ -1,4 +1,4 @@
-Islands World (Tech demo DX10) 0.0.2.92
+Islands World (Tech demo DX10) 0.0.2.128
 used:
 	Direct3D 10
 	DirectInput 8

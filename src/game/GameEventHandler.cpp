@@ -63,7 +63,7 @@ void GameEventHandler::onPlayerUsesItem(bool self, item_id_t itemId)
 		pItem->UseInWorld();
 }
 
-void GameEventHandler::onLivingObjectDies(LivingGameObject * object, GameObjectInventory & inventory)
+void GameEventHandler::onLivingObjectDies(ControllableGameObject * object, GameObjectInventory & inventory)
 {
 	if (!object)
 		return;

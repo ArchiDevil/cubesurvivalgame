@@ -5,6 +5,8 @@
 #include <map>
 
 class GameObject;
+class ControllableGameObject;
+class LiveGameObject;
 
 enum class EntityState
 {
@@ -13,7 +15,8 @@ enum class EntityState
 	Moving,
 	Dying,
 	Decay,
-	Collecting
+	Collecting,
+	Attacking
 };
 
 class IEntityState
@@ -22,16 +25,12 @@ public:
 	IEntityState();
 	virtual ~IEntityState();
 
-	virtual bool Dead() const;
+	bool Dead() const;
 	virtual EntityState GetType() const = 0;
-	virtual void Update(GameObject * entity, double dt) = 0;
-	bool DispatchState(EntityState state) const;
+	virtual void Update(LiveGameObject * entity, double dt) = 0;
 
 protected:
-	void AddTransition(EntityState from, EntityState to);
 	void Die();
-
-	std::multimap<EntityState, EntityState> transitions;
 	bool dead;
 };
 
@@ -39,7 +38,7 @@ class WaitingState : public IEntityState
 {
 public:
 	WaitingState();
-	virtual void Update(GameObject * entity, double dt) override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 };
 
@@ -47,7 +46,7 @@ class RotatingState : public IEntityState
 {
 public:
 	RotatingState(const MathLib::Vector2F & targetPosition);
-	virtual void Update(GameObject * entity, double dt) override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 
 private:
@@ -59,7 +58,7 @@ class MovingState : public IEntityState
 {
 public:
 	MovingState(const MathLib::Vector2F & targetPosition);
-	virtual void Update(GameObject * entity, double dt) override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 
 private:
@@ -70,21 +69,20 @@ private:
 class DyingState : public IEntityState
 {
 public:
-	DyingState(float dyingTime);
-	virtual void Update(GameObject * entity, double dt) override;
+	DyingState(double dyingTime);
+	virtual void Update(LiveGameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 
 private:
-	float elapsedTime;
-	const float fullTime;
-
+	double accumulatedTime;
+	const double fullTime;
 };
 
 class DecayState : public IEntityState
 {
 public:
 	DecayState(float decayTime);
-	virtual void Update(GameObject * entity, double dt) override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
 	virtual EntityState GetType() const override;
 
 private:
@@ -96,12 +94,24 @@ class CollectingState : public IEntityState
 public:
 	CollectingState(double collectingTime);
 	virtual EntityState GetType() const override;
-	virtual void Update(GameObject * entity, double dt) override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
 
 private:
-	double collectingTime;
+	const double collectingTime;
 	double accumulatedTime;
 
 };
 
-//ES_Attacking,
+class AttackingState : public IEntityState
+{
+public:
+	AttackingState(LiveGameObject * target, double cycleTime);
+	virtual EntityState GetType() const override;
+	virtual void Update(LiveGameObject * entity, double dt) override;
+
+private:
+	LiveGameObject * target;
+	const double cycleTime;
+	double accumulatedTime;
+
+};

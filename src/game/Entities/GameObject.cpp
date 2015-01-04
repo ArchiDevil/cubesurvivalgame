@@ -4,10 +4,7 @@
 
 GameObject::GameObject(ShiftEngine::MeshNode * sceneNode)
 	: SceneNode(sceneNode)
-	, currentState(std::make_unique<WaitingState>())
 	, ToDelete(false)
-	, health(1)
-	, inventory(LostIsland::GetGamePtr()->ItemMgr, 10)
 {
 }
 
@@ -49,34 +46,6 @@ bool GameObject::CanBeHighlighted(const MathLib::Ray &uprojectedRay)
 	return false;
 }
 
-int GameObject::GetHealth() const
-{
-	return health;
-}
-
-void GameObject::SetHealth(int in_health)
-{
-	health = in_health;
-}
-
-bool GameObject::DispatchState(std::unique_ptr<IEntityState> state)
-{
-	if (currentState && currentState->DispatchState(state->GetType()))
-	{
-		EntityState fromState = currentState->GetType();
-		EntityState toState = state->GetType();
-		currentState = std::move(state);
-		OnStateChange(fromState, toState);
-		return true;
-	}
-	return false;
-}
-
-const EntityState GameObject::GetCurrentState() const
-{
-	return currentState->GetType();
-}
-
 void GameObject::Highlight()
 {
 	SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.5f, 1.5f, 1.5f, 1.0f));
@@ -85,13 +54,4 @@ void GameObject::Highlight()
 void GameObject::UnHightlight()
 {
 	SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
-}
-
-std::unique_ptr<IEntityAction> GameObject::GetInteraction()
-{
-	return nullptr;
-}
-
-void GameObject::OnStateChange(EntityState /*from*/, EntityState /*to*/)
-{
 }

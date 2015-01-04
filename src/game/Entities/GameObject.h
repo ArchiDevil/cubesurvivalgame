@@ -16,35 +16,28 @@ public:
 	GameObject(ShiftEngine::MeshNode * sceneNode);
 	virtual ~GameObject();
 
-	virtual Vector3F GetPosition() const;
-	virtual void SetPosition(const Vector3F & Position);
+	// pure virtuals 
 	virtual void Update(double dt) = 0;
+
+	// setters
+	virtual void SetPosition(const Vector3F & Position);
+
+	// getters
+	virtual Vector3F GetPosition() const;
+	ShiftEngine::MeshNode * GetSceneNode();
+
+	// highlight methods
 	virtual bool CanBeHighlighted(const MathLib::Ray &uprojectedRay);
 	virtual void Highlight();
 	virtual void UnHightlight();
-	virtual std::unique_ptr<IEntityAction> GetInteraction();
 
-	ShiftEngine::MeshNode * GetSceneNode();
-
-	int GetHealth() const;
-	void SetHealth(int in_health);
-
-	//service methods
+	// service methods
 	bool MustBeDeleted() const;
 	void Delete();
 
-	virtual bool DispatchState(std::unique_ptr<IEntityState> state);
-	virtual const EntityState GetCurrentState() const;
-
 protected:
-	virtual void OnStateChange(EntityState from, EntityState to);
-
 	ShiftEngine::MeshNode * SceneNode;
-	std::unique_ptr<IEntityState> currentState;
 	bool ToDelete;
-	int health;
-
-	GameObjectInventory inventory;
 
 };
 

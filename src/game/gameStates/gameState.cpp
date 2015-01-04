@@ -42,7 +42,7 @@ bool gameState::initState()
 	SimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
 	LOG_INFO("Physics initialized");
 
-	pGame->ItemMgr = new ItemManager(pGame->Player, pGame->World);
+	pGame->ItemMgr.reset(new ItemManager());
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	LOG_INFO("Items have been loaded");
 
@@ -76,7 +76,7 @@ bool gameState::update(double dt)
 	cGame * pGame = LostIsland::GetGamePtr();
 
 	Vector3F playerPosition = pGame->Player->GetPosition();
-	Vector3F sunPosition = pGame->environmentMgr->calculateSunPos(playerPosition);
+	Vector3F sunPosition = pGame->environmentMgr->GetSunPosition(playerPosition);
 	pSun->SetDirection(-sunPosition);
 	ProcessInput(dt);
 	SimplePhysicsEngine::GetInstance().Update(dt);
@@ -172,45 +172,16 @@ void gameState::ProcessInput(double dt)
 	auto mouseInfo = InputEngine->GetMouseInfo();
 
 	if (InputEngine->IsKeyUp(DIK_GRAVE))
-		console.SetVisibility(!console.GetVisibility());
+		console.SetVisibility(!console.IsVisible());
 
-	if (console.GetVisibility()) 
+	if (console.IsVisible()) 
 		return;
-
-	D3DXVECTOR3 tempVec = pScene->GetActiveCamera()->GetUpVector();
-	tempVec.z = 0.0f;
-	Vector3F upCam = MathLib::Normalize(Vector3F(tempVec.x, tempVec.y, tempVec.z));
-	tempVec = pScene->GetActiveCamera()->GetRightVector();
-	Vector3D rightCam(tempVec.x, tempVec.y, 0);
 
 	if (InputEngine->IsKeyDown(DIK_ESCAPE))
 		this->kill();
 
-	double cameraSpeed = 10.0;
-
 	auto camPos = pScene->GetActiveCamera()->GetPosition();
 	Vector3F newCamPos(camPos.x, camPos.y, camPos.z);
-
-	if (InputEngine->IsKeyDown(DIK_W))
-	{
-		newCamPos += upCam * dt * cameraSpeed;
-	}
-
-	if (InputEngine->IsKeyDown(DIK_S))
-	{
-		newCamPos -= upCam * dt * cameraSpeed;
-	}
-
-	if (InputEngine->IsKeyDown(DIK_A))
-	{
-		newCamPos -= rightCam * dt * cameraSpeed;
-	}
-
-	if (InputEngine->IsKeyDown(DIK_D))
-	{
-		newCamPos += rightCam * dt * cameraSpeed;
-	}
-
 	pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
 
 	if (InputEngine->IsKeyUp(DIK_V))
@@ -245,35 +216,31 @@ void gameState::ProcessInput(double dt)
 	if (InputEngine->IsMouseUp(RButton))
 	{
 		// check if we are targeting to entity
-		auto entity = pGame->EntityMgr->GetNearestEntity(unprojectedRay);
-		if (entity)
+		auto retVal = pGame->EntityMgr->GetNearestEntity(unprojectedRay);
+		if (retVal)
 		{
+			InteractableGameObject* entity = (InteractableGameObject*)retVal.get();
+			if (!entity) throw;
 			auto interaction = entity->GetInteraction();
-			if (interaction)
-			{
-				Vector2F endPos = { entity->GetPosition().x, entity->GetPosition().y };
-				pGame->Player->Go(endPos);
-				pGame->Player->PushCommand(std::move(interaction));
-			}
+			pGame->Player->Interact(entity, interaction);
 		}
 		else
 		{
 			if (mousePath <= 15)
 			{
 				Vector3F column;
-				bool result = pGame->World->SelectColumnByRay(unprojectedRay, column);
-				if (result)
+				if (pGame->World->SelectColumnByRay(unprojectedRay, column))
+				{
+					pGame->Player->CancelCurrentCommand();
 					pGame->Player->Go(Vector2F(column.x, column.y));
+				}
 			}
-			mousePath = 0;
 		}
+		mousePath = 0;
 	}
 
 	if (InputEngine->IsMouseDown(RButton))
-	{
-		mousePath += abs(mouseInfo.deltaX);
-		mousePath += abs(mouseInfo.deltaY);
-	}
+		mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
 	r -= mouseInfo.deltaZ * dt;
 	if (r > 60.0f)

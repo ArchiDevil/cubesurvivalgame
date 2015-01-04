@@ -5,7 +5,7 @@
 #include "Items/ItemManager.h"
 
 class GameObjectInventory;
-class LivingGameObject;
+class ControllableGameObject;
 
 enum GameEventType
 {
@@ -31,6 +31,6 @@ public:
 	void onPlayerMoves(double dt);
 	bool onPlayerPicksItem(uint64_t itemId, size_t count);
 	void onPlayerDropsItem(uint64_t itemId, size_t count);
-	void onLivingObjectDies(LivingGameObject * object, GameObjectInventory & inventory);
+	void onLivingObjectDies(ControllableGameObject * object, GameObjectInventory & inventory);
 	void onPlayerUsesItem(bool self, item_id_t itemId);
 };

@@ -1,5 +1,7 @@
 #include "EntityState.h"
+
 #include "GameObject.h"
+#include "ControllableGameObject.h"
 
 IEntityState::IEntityState()
 	: dead(false)
@@ -20,34 +22,13 @@ void IEntityState::Die()
 	dead = true;
 }
 
-// TODO: move transitions into some thins like a Finite State Machine entity (added into tasklist)
-
-void IEntityState::AddTransition(EntityState from, EntityState to)
-{
-	transitions.insert(std::pair<EntityState, EntityState>(from, to));
-}
-
-bool IEntityState::DispatchState(EntityState state) const
-{
-	auto iter_pair = transitions.equal_range(GetType());
-	for (auto iter = iter_pair.first; iter != iter_pair.second; ++iter)
-		if (iter->second == state)
-			return true;
-
-	return false;
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 WaitingState::WaitingState()
 {
-	AddTransition(GetType(), EntityState::Rotating);
-	AddTransition(GetType(), EntityState::Moving);
-	AddTransition(GetType(), EntityState::Dying);
-	AddTransition(GetType(), EntityState::Collecting);
 }
 
-void WaitingState::Update(GameObject * /*entity*/, double /*dt*/)
+void WaitingState::Update(LiveGameObject * /*entity*/, double /*dt*/)
 {
 }
 
@@ -62,11 +43,9 @@ RotatingState::RotatingState(const MathLib::Vector2F & targetPosition)
 	: targetPosition(targetPosition)
 	, rotatingTime(0.0)
 {
-	AddTransition(GetType(), EntityState::Waiting);
-	AddTransition(GetType(), EntityState::Moving);
 }
 
-void RotatingState::Update(GameObject * entity, double dt)
+void RotatingState::Update(LiveGameObject * entity, double dt)
 {
 	auto * pSceneNode = entity->GetSceneNode();
 	if (!pSceneNode)
@@ -100,10 +79,9 @@ EntityState RotatingState::GetType() const
 MovingState::MovingState(const MathLib::Vector2F & targetPosition)
 	: targetPosition(targetPosition)
 {
-	AddTransition(GetType(), EntityState::Waiting);
 }
 
-void MovingState::Update(GameObject * entity, double dt)
+void MovingState::Update(LiveGameObject * entity, double dt)
 {
 	auto * pSceneNode = entity->GetSceneNode();
 	if (!pSceneNode)
@@ -131,27 +109,24 @@ EntityState MovingState::GetType() const
 
 //////////////////////////////////////////////////////////////////////////
 
-DyingState::DyingState(float dyingTime)
-	: elapsedTime(dyingTime)
+DyingState::DyingState(double dyingTime)
+	: accumulatedTime(0.0)
 	, fullTime(dyingTime)
 {
-	AddTransition(GetType(), EntityState::Decay);
 }
 
-void DyingState::Update(GameObject * entity, double dt)
+void DyingState::Update(LiveGameObject * entity, double dt)
 {
 	//HACK: with big FPS there's will be an error due to cast
-	elapsedTime -= dt;
+	accumulatedTime += dt;
 	auto * pSceneNode = entity->GetSceneNode();
 	if (!pSceneNode)
 		return;
 
-	float scale = elapsedTime / fullTime;
+	float scale = (fullTime - accumulatedTime) / fullTime;
 	pSceneNode->SetScale(scale);
-	if (elapsedTime <= 0.0f)
-	{
+	if (accumulatedTime > fullTime)
 		entity->DispatchState(std::make_unique<DecayState>(2.0));
-	}
 }
 
 EntityState DyingState::GetType() const
@@ -166,7 +141,7 @@ DecayState::DecayState(float decayTime)
 {
 }
 
-void DecayState::Update(GameObject * entity, double dt)
+void DecayState::Update(LiveGameObject * entity, double dt)
 {
 	//HACK: with big FPS there's will be an error due to cast
 	elapsedTime -= (float)dt;
@@ -185,7 +160,6 @@ CollectingState::CollectingState(double collectingTime)
 	: collectingTime(collectingTime)
 	, accumulatedTime(0.0)
 {
-	AddTransition(GetType(), EntityState::Waiting);
 }
 
 EntityState CollectingState::GetType() const
@@ -193,12 +167,41 @@ EntityState CollectingState::GetType() const
 	return EntityState::Collecting;
 }
 
-void CollectingState::Update(GameObject * entity, double dt)
+void CollectingState::Update(LiveGameObject * entity, double dt)
 {
 	accumulatedTime += dt;
 	if (accumulatedTime >= collectingTime)
 	{
 		entity->DispatchState(std::make_unique<WaitingState>());
 		// switch to waiting or previous
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+AttackingState::AttackingState(LiveGameObject * target, double cycleTime)
+	: target(target)
+	, cycleTime(cycleTime)
+	, accumulatedTime(0.0)
+{
+}
+
+EntityState AttackingState::GetType() const
+{
+	return EntityState::Attacking;
+}
+
+void AttackingState::Update(LiveGameObject * entity, double dt)
+{
+	if (!target)
+		return;
+	
+	accumulatedTime += dt;
+	if (accumulatedTime >= cycleTime)
+	{
+		// tick
+		accumulatedTime -= cycleTime;
+		entity->Attack(target);
+		entity->DispatchState(std::make_unique<WaitingState>());
 	}
 }

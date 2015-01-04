@@ -1,7 +1,9 @@
 #include "EntityActions.h"
 
-#include "LivingGameObject.h"
+#include "ControllableGameObject.h"
 #include "CollectableGameObject.h"
+
+#include "../game.h"
 
 IEntityAction::IEntityAction()
 	: m_dead(false)
@@ -28,25 +30,34 @@ bool IEntityAction::IsStarted() const
 	return m_started;
 }
 
-void IEntityAction::Start(LivingGameObject * gameObject)
+void IEntityAction::Start(ControllableGameObject * gameObject)
 {
+	if (!gameObject)
+		return;
+
 	onStart(gameObject);
 	m_started = true;
 }
 
-void IEntityAction::End(LivingGameObject * gameObject)
+void IEntityAction::End(ControllableGameObject * gameObject)
 {
+	if (!gameObject)
+		return;
+
 	onEnd(gameObject);
 	die();
 }
 
-void IEntityAction::Cancel(LivingGameObject * gameObject)
+void IEntityAction::Cancel(ControllableGameObject * gameObject)
 {
+	if (!gameObject)
+		return;
+
 	onCancel(gameObject);
 	die();
 }
 
-void IEntityAction::OnStateChange(LivingGameObject * /*gameObject*/, EntityState /*newState*/)
+void IEntityAction::OnStateChange(ControllableGameObject * /*gameObject*/, EntityState /*newState*/)
 {
 }
 
@@ -58,95 +69,114 @@ MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
 {
 }
 
-void MoveAction::onStart(LivingGameObject * gameObject)
+void MoveAction::onStart(ControllableGameObject * gameObject)
 {
 	// TODO: what if we cannot dispatch it now? postpone?
 	gameObject->DispatchState(std::make_unique<RotatingState>(targetPosition));
 }
 
-void MoveAction::onEnd(LivingGameObject * /*gameObject*/)
+void MoveAction::onEnd(ControllableGameObject * /*gameObject*/)
 {
 }
 
-void MoveAction::onCancel(LivingGameObject * gameObject)
+void MoveAction::onCancel(ControllableGameObject * gameObject)
 {
 	gameObject->Stop();
 }
 
-void MoveAction::OnStateChange(LivingGameObject * gameObject, EntityState newState)
+void MoveAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
 {
-	if (newState == EntityState::Waiting) // entity stops
+	if (newState != EntityState::Waiting) // entity stops
+		return;
+
+	if (!rotated)
 	{
-		if (!rotated)
-		{
-			rotated = true;
-			gameObject->DispatchState(std::make_unique<MovingState>(targetPosition));
-		}
-		else
-		{
-			this->End(gameObject);
-		}
+		rotated = true;
+		gameObject->DispatchState(std::make_unique<MovingState>(targetPosition));
+	}
+	else
+	{
+		this->End(gameObject);
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-DyingAction::DyingAction(double dyingTime)
-	: dyingTime(dyingTime)
-	, elapsedTime(0.0)
-{
-}
-
-void DyingAction::onStart(LivingGameObject * gameObject)
-{
-	gameObject->DispatchState(std::make_unique<DyingState>(dyingTime));
-}
-
-void DyingAction::onEnd(LivingGameObject * /*gameObject*/)
-{
-}
-
-void DyingAction::onCancel(LivingGameObject * /*gameObject*/)
-{
-	assert(false); // this state couldn't be cancelled
-}
-
-void DyingAction::OnStateChange(LivingGameObject * gameObject, EntityState /*newState*/)
-{
-	End(gameObject);
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-CollectingAction::CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximum_distance, item_id_t item_id, size_t count)
+CollectingAction::CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximum_distance)
 	: maximum_distance(maximum_distance)
-	, item_id(item_id)
-	, count(count)
 	, collectable(collectable)
 	, collecting_time(collecting_time)
 {
 }
 
-void CollectingAction::onStart(LivingGameObject * gameObject)
+void CollectingAction::onStart(ControllableGameObject * gameObject)
 {
 	gameObject->DispatchState(std::make_unique<CollectingState>(collecting_time));
 }
 
-void CollectingAction::onEnd(LivingGameObject * /*gameObject*/)
+void CollectingAction::onEnd(ControllableGameObject * /*gameObject*/)
 {
-	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(item_id, count);
+	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(collectable->GetItemId(), collectable->GetCount());
 	collectable->Delete();
 }
 
-void CollectingAction::onCancel(LivingGameObject * gameObject)
+void CollectingAction::onCancel(ControllableGameObject * gameObject)
 {
 	gameObject->DispatchState(std::make_unique<WaitingState>());
 }
 
-void CollectingAction::OnStateChange(LivingGameObject * gameObject, EntityState newState)
+void CollectingAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
 {
 	if (newState == EntityState::Waiting)
-	{
 		this->End(gameObject);
-	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void ActionAggregator::OnStateChange(ControllableGameObject * /*gameObject*/, EntityState /*newState*/)
+{
+}
+
+void ActionAggregator::onStart(ControllableGameObject * /*gameObject*/)
+{
+}
+
+void ActionAggregator::onEnd(ControllableGameObject * /*gameObject*/)
+{
+}
+
+void ActionAggregator::onCancel(ControllableGameObject * /*gameObject*/)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+AttackAction::AttackAction(LiveGameObject * object, float maximum_distance)
+	: target(object)
+	, maximum_distance(maximum_distance)
+{
+}
+
+void AttackAction::onStart(ControllableGameObject * gameObject)
+{
+	gameObject->DispatchState(std::make_unique<AttackingState>(target, 0.7));
+}
+
+void AttackAction::onEnd(ControllableGameObject * gameObject)
+{
+	gameObject->DispatchState(std::make_unique<WaitingState>());
+}
+
+void AttackAction::onCancel(ControllableGameObject * gameObject)
+{
+	gameObject->DispatchState(std::make_unique<WaitingState>());
+}
+
+void AttackAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
+{
+	if (newState != EntityState::Waiting)
+		return;
+
+	if (target->GetHealth() > 0) // target is dead
+		gameObject->DispatchState(std::make_unique<AttackingState>(target, 0.7));
 }
