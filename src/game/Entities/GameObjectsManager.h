@@ -12,7 +12,6 @@
 #include "GameObject.h"
 #include "PhysicsGameObject.h"
 #include "ItemGameObject.h"
-#include "CrafterGameObject.h"
 #include "PlayerGameObject.h"
 #include "EntityBreeds.h"
 
@@ -20,19 +19,19 @@ class cSimplePhysicsEngine;
 using MathLib::Vector3F;
 using MathLib::Ray;
 
-class EntityManager : public IManager
+class GameObjectsManager : public IManager
 {
 public:
-	EntityManager();
-	~EntityManager();
+	GameObjectsManager();
+	~GameObjectsManager();
 	void					LoadEntities();
 
 	ItemGameObjectPtr		CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId);
 	GameObjectPtr			CreateEntity(const Vector3F & position, const std::string & entityId);
 	PlayerPtr				CreatePlayer(const Vector3F & Position);
 	void					Update(double dt);
-	void					HighlightEntity(const Ray &unprojectedVector);
-	GameObjectPtr			GetNearestEntity(const Ray &unprojectedVector);
+	void					HighlightEntity(const Ray &unprojectedRay);
+	GameObjectPtr			GetNearestEntity(const Ray &unprojectedRay);
 
 private:
 	std::list<GameObjectPtr> GameObjects;

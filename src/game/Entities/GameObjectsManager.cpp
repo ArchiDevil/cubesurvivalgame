@@ -1,4 +1,4 @@
-#include "EntityManager.h"
+#include "GameObjectsManager.h"
 
 #include <vector>
 #include <algorithm>
@@ -13,7 +13,7 @@
 
 using namespace ShiftEngine;
 
-EntityManager::EntityManager()
+GameObjectsManager::GameObjectsManager()
 	: selectedEntity(nullptr)
 	, entityMaterial(nullptr)
 {
@@ -21,11 +21,11 @@ EntityManager::EntityManager()
 	entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
 }
 
-EntityManager::~EntityManager()
+GameObjectsManager::~GameObjectsManager()
 {
 }
 
-ItemGameObjectPtr EntityManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId)
+ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);
@@ -39,7 +39,7 @@ ItemGameObjectPtr EntityManager::CreateItemEntity(const Vector3F & Position, con
 	return out;
 }
 
-void EntityManager::Update( double dt )
+void GameObjectsManager::Update( double dt )
 {
 	auto iter = GameObjects.begin();
 	while (iter != GameObjects.end())
@@ -52,7 +52,7 @@ void EntityManager::Update( double dt )
 	}
 }
 
-GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
+GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
 {
 	auto iter = Breeds.find(entityId);
 	if (iter == Breeds.end())
@@ -67,7 +67,7 @@ GameObjectPtr EntityManager::CreateEntity(const MathLib::Vector3F & position, co
 	return out;
 }
 
-PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
+PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	if (pGame->Player)
@@ -79,14 +79,14 @@ PlayerPtr EntityManager::CreatePlayer(const Vector3F & Position)
 	auto pScene = ShiftEngine::GetSceneGraph();
 
 	ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr);
+	PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr.get());
 	player->SetPosition(Position);
 	GameObjects.push_back(player);
 	pGame->Player = player.get();
 	return player;
 }
 
-void EntityManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
+void GameObjectsManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
 {
 	if (selectedEntity && selectedEntity->CanBeHighlighted(unprojectedRay))
 		return;
@@ -113,7 +113,7 @@ void EntityManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
 	}
 }
 
-GameObjectPtr EntityManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
+GameObjectPtr GameObjectsManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
 {
 	for (auto & entity : GameObjects)
 		if (entity->CanBeHighlighted(unprojectedRay))
@@ -121,7 +121,7 @@ GameObjectPtr EntityManager::GetNearestEntity(const MathLib::Ray &unprojectedRay
 	return nullptr;
 }
 
-void EntityManager::LoadEntities()
+void GameObjectsManager::LoadEntities()
 {
 	auto *pGame = LostIsland::GetGamePtr();
 
@@ -174,18 +174,9 @@ void EntityManager::LoadEntities()
 
 		buff = root.get("type", buff);
 		std::string type = buff.asString();
-		if (type == "crafter")
+		if (type == "static")
 		{
-			buff = root.get("crafting_time", buff);
-			uint32_t craftingTime = buff.asInt();
-			buff = root.get("produced_item", buff);
-			Item * craftingItem = nullptr;
-			//UNDONE: crafting item
-			Breeds[id] = std::make_shared<CrafterBreed>(meshName, materialName, craftingItem, craftingTime);
-		}
-		else if (type == "static")
-		{
-			Breeds[id] = std::make_shared<StaticBreed>(meshName, materialName);
+			Breeds[id] = std::make_shared<LiveBreed>(meshName, materialName);
 		}
 		else if (type == "collectable")
 		{
