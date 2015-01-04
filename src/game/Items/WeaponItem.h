@@ -7,14 +7,13 @@ class Item;
 class WeaponItem : public Item
 {
 public:
-	WeaponItem(ItemUsingsHandler * handler
-		, const std::string & name
-		, const std::string & desc
-		, ShiftEngine::MeshDataPtr data
-		, ShiftEngine::TexturePtr ptr
-		, int damageCount)
-		: Item(handler, ptr, data, name, desc)
-		, damageCount(damageCount)
+	WeaponItem(const std::string & name
+			   , const std::string & desc
+			   , ShiftEngine::MeshDataPtr data
+			   , ShiftEngine::TexturePtr ptr
+			   , int damageCount)
+			   : Item(ptr, data, name, desc)
+			   , damageCount(damageCount)
 	{
 	}
 
@@ -25,7 +24,7 @@ public:
 
 	bool UseInWorld() override
 	{
-		return handler->UseWeaponItem(this);
+		return false;
 	}
 
 	ItemType GetType() const

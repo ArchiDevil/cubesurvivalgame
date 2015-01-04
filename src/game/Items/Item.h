@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
+#include "../Entities/GameObject.h"
 
 #include <GraphicsEngine/D3D10Texture.h>
 #include <GraphicsEngine/cMesh.h>
 
-class ItemUsingsHandler;
+#include <string>
 
 enum ItemType
 {
@@ -19,11 +19,10 @@ enum ItemType
 class Item
 {
 public:
-	Item(ItemUsingsHandler * _handler, 
-		  ShiftEngine::TexturePtr icon, 
-		  ShiftEngine::MeshDataPtr mesh, 
-		  const std::string & _Name, 
-		  const std::string & _Desc);
+	Item(ShiftEngine::TexturePtr icon,
+		 ShiftEngine::MeshDataPtr mesh,
+		 const std::string & _Name,
+		 const std::string & _Desc);
 
 	virtual ~Item();
 
@@ -35,10 +34,11 @@ public:
 	
 	virtual bool UseInWorld() = 0;
 	virtual bool UseOnPlayer() = 0;
+	// virtual bool UseOnGameObject(GameObject * target) = 0;
+
 	virtual ItemType GetType() const = 0;
 
 protected:
-	ItemUsingsHandler * handler;
 	const std::string name;
 	const std::string description;
 	const ShiftEngine::TexturePtr icon;

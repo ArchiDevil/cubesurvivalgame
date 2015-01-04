@@ -2,25 +2,24 @@
 
 #include "Item.h"
 
+#include "../game.h"
+
 class Item;
 
 class FoodItem : public Item
 {
 public:
-	FoodItem(ItemUsingsHandler * handler
-		, const std::string & name
-		, const std::string & desc
-		, ShiftEngine::MeshDataPtr data
-		, ShiftEngine::TexturePtr ptr
-		, int hunger)
-		: Item(handler, ptr, data, name, desc)
-		, hunger(hunger)
+	FoodItem(const std::string & name, const std::string & desc
+			 , ShiftEngine::MeshDataPtr data, ShiftEngine::TexturePtr ptr, int hunger)
+			 : Item(ptr, data, name, desc)
+			 , hunger(hunger)
 	{
 	}
 
 	bool UseOnPlayer() override
 	{
-		return handler->UseFoodItem(this);
+		auto * pPlayer = LostIsland::GetGamePtr()->Player;
+		pPlayer->SetHunger(pPlayer->GetHunger() + GetHunger());
 	}
 
 	bool UseInWorld() override

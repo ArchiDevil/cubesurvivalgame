@@ -1,13 +1,8 @@
 #include "Item.h"
 
-Item::Item(ItemUsingsHandler * handler
-	, ShiftEngine::TexturePtr icon
-	, ShiftEngine::MeshDataPtr mesh
-	, const std::string & name
-	, const std::string & desc)
-
-	: handler(handler)
-	, name(name)
+Item::Item(ShiftEngine::TexturePtr icon, ShiftEngine::MeshDataPtr mesh, 
+		   const std::string & name, const std::string & desc)
+	: name(name)
 	, description(desc)
 	, icon(icon)
 	, mesh(mesh)

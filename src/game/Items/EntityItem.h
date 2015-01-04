@@ -7,14 +7,13 @@ class Item;
 class EntityItem : public Item
 {
 public:
-	EntityItem(ItemUsingsHandler * handler
-		, const std::string & name
-		, const std::string & desc
-		, ShiftEngine::MeshDataPtr data
-		, ShiftEngine::TexturePtr ptr
-		, const std::string & entityId)
-		: Item(handler, ptr, data, name, desc)
-		, entityId(entityId)
+	EntityItem(const std::string & name
+			   , const std::string & desc
+			   , ShiftEngine::MeshDataPtr data
+			   , ShiftEngine::TexturePtr ptr
+			   , const std::string & entityId)
+			   : Item(ptr, data, name, desc)
+			   , entityId(entityId)
 	{
 	}
 
@@ -25,7 +24,7 @@ public:
 
 	bool UseInWorld() override
 	{
-		return handler->UseEntityItem(this);
+		return false;
 	}
 
 	ItemType GetType() const override

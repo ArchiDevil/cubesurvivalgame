@@ -6,27 +6,20 @@
 #include "FoodItem.h"
 #include "EntityItem.h"
 
-#include <cassert>
-
 #include <Utilities/fnv.h>
 #include <json/json.h>
 #include <GraphicsEngine/ShiftEngine.h>
+#include <Utilities/logger.h>
+#include <Utilities/ut.h>
 
-ItemManager::ItemManager( PlayerGameObject * _p, cWorld * _w )
-	: handler(_p, _w)
-{
-}
+#include <cassert>
 
-ItemManager::~ItemManager() 
-{
-}
-
-void ItemManager::Initialize( const std::wstring & PathName )
+void ItemManager::Initialize(const std::wstring & PathName)
 {
 	LoadDefinitions(PathName);
 }
 
-void ItemManager::LoadDefinitions( const std::wstring & path )
+void ItemManager::LoadDefinitions(const std::wstring & path)
 {
 	auto files = utils::filesystem::CollectFileNames(path);
 	for (auto & file : files)
@@ -47,7 +40,7 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 		std::string required[] = {
 			"id", "type", "icon"
 		};
-		
+
 		bool errorFlag = false;
 
 		for (auto & key : required)
@@ -88,22 +81,22 @@ void ItemManager::LoadDefinitions( const std::wstring & path )
 
 		if (type == "misc")
 		{
-			HashItem[hash] = new MiscItem(&handler, id, description, cubeMesh, iconTexture);
+			HashItem[hash] = new MiscItem(id, description, cubeMesh, iconTexture);
 		}
 		else if (type == "weapon")
 		{
 			int damageCount = root.get("damage", null).asInt();
-			HashItem[hash] = new WeaponItem(&handler, id, description, cubeMesh, iconTexture, damageCount);
+			HashItem[hash] = new WeaponItem(id, description, cubeMesh, iconTexture, damageCount);
 		}
 		else if (type == "food")
 		{
 			int hungerCount = root.get("hunger", null).asInt();
-			HashItem[hash] = new FoodItem(&handler, id, description, cubeMesh, iconTexture, hungerCount);
+			HashItem[hash] = new FoodItem(id, description, cubeMesh, iconTexture, hungerCount);
 		}
 		else if (type == "entity")
 		{
 			std::string entityId = root.get("entity", null).asString();
-			HashItem[hash] = new EntityItem(&handler, id, description, cubeMesh, iconTexture, entityId);
+			HashItem[hash] = new EntityItem(id, description, cubeMesh, iconTexture, entityId);
 		}
 		else
 		{

@@ -4,20 +4,14 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
-#include "../ItemUsingHandler.h"
-#include "../world/world.h"
+#include <cstdint>
 
 class Item;
-
 typedef uint64_t item_id_t;
 
 class ItemManager
 {
 public:
-	ItemManager(PlayerGameObject * _p, cWorld * _w);
-	~ItemManager();
-
 	void Initialize(const std::wstring & PathName);
 	Item * GetItemById(item_id_t itemId);
 	item_id_t GetItemId(const std::string & ItemName);
@@ -27,7 +21,4 @@ private:
 
 	std::map<item_id_t, Item*> HashItem;
 	std::map<std::string, item_id_t> NameHash;
-
-	ItemUsingsHandler handler;
-
 };
