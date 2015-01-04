@@ -1,0 +1,10 @@
+<materials>
+    <material name="generic">
+		<params>
+			<param name="specularColor" value="rgb(0.0, 0.0, 0.0)"/>
+            <param name="diffuseMap" type="texture2D">
+                <texture>stone.png</texture>
+            </param>
+		</params>
+    </material>
+</materials>
