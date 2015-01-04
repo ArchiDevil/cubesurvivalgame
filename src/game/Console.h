@@ -20,7 +20,7 @@ public:
 	bool handleEvent(const InputEvent & event) override;
 
 	void SetVisibility(bool val);
-	bool GetVisibility() const;
+	bool IsVisible() const;
 
 	void SetScreenWidth(size_t width);
 	void SetScreenHeight(size_t height);

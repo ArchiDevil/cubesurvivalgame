@@ -20,6 +20,7 @@ public:
 	{
 		auto * pPlayer = LostIsland::GetGamePtr()->Player;
 		pPlayer->SetHunger(pPlayer->GetHunger() + GetHunger());
+		return true;
 	}
 
 	bool UseInWorld() override

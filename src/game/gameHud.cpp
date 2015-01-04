@@ -29,7 +29,7 @@ void gameHUD::Initialize( int sw, int sh )
 void gameHUD::Draw()
 {
 	auto pGame = LostIsland::GetGamePtr();
-	auto pItemMgr = pGame->ItemMgr;
+	auto &pItemMgr = pGame->ItemMgr;
 	SlotUnit handItem = pGame->Player->GetInventoryPtr()->GetItemInRightHand();
 
 	if (handItem.itemId)

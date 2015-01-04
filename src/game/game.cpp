@@ -1,30 +1,17 @@
 #include "game.h"
 
 cGame::cGame()
-	: World(nullptr)
-	, Player(nullptr)
-	, EntityMgr(nullptr)
-	, GlobalEventHandler(nullptr)
-	, ItemMgr(nullptr)
-	, environmentMgr(nullptr)
-	, gameHud(nullptr)
+	: Player(nullptr)
 {
-	World				= new cWorld;
-	environmentMgr		= new cEnvironmentManager;
-	EntityMgr			= new EntityManager;
-	GlobalEventHandler = new GameEventHandler;
-	gameHud				= new gameHUD;
-	//ItemManager		= new cItemManager;
+	World.reset(new cWorld);
+	environmentMgr.reset(new EnvironmentManager);
+	EntityMgr.reset(new GameObjectsManager);
+	GlobalEventHandler.reset(new GameEventHandler);
+	gameHud.reset(new gameHUD);
 }
 
 cGame::~cGame()
 {
-	delete ItemMgr;
-	delete GlobalEventHandler;
-	delete World;
-	delete Player;
-	delete EntityMgr;
-	delete gameHud;
 }
 
 static cGame * GamePtr = nullptr;

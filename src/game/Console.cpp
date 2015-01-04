@@ -128,7 +128,7 @@ void Console::SetVisibility(bool val)
 	visibility = val;
 }
 
-bool Console::GetVisibility() const
+bool Console::IsVisible() const
 {
 	return visibility;
 }
