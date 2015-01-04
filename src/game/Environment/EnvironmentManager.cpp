@@ -1,34 +1,42 @@
 #include "EnvironmentManager.h"
 
-cEnvironmentManager::cEnvironmentManager()
+#include <Utilities/logger.h>
+
+#include <string>
+#include <cmath>
+
+EnvironmentManager::EnvironmentManager()
+	: minimalTemperature(18.0f)
+	, maximalTemperature(26.0f)
+{
+	// this is default temperature parameters for first milestone
+}
+
+EnvironmentManager::~EnvironmentManager()
 {
 }
 
-cEnvironmentManager::~cEnvironmentManager()
+void EnvironmentManager::Initialize(const dayTimer & initialTime)
 {
+	SetTime(initialTime);
 }
 
-void cEnvironmentManager::Initialize(const dayTimer & initialTime)
-{
-	this->time.setTime(initialTime.getHours(), initialTime.getMinutes());
-}
-
-void cEnvironmentManager::SetTime(const dayTimer & t)
+void EnvironmentManager::SetTime(const dayTimer & t)
 {
 	time = t;
 }
 
-dayTimer cEnvironmentManager::GetTime() const
+dayTimer EnvironmentManager::GetTime() const
 {
 	return time;
 }
 
-void cEnvironmentManager::Update(double deltaTime)
+void EnvironmentManager::Update(double deltaTime)
 {
 	time.update(deltaTime);
 }
 
-MathLib::Vector3F cEnvironmentManager::calculateSunPos(const MathLib::Vector3F & playerPos) const
+MathLib::Vector3F EnvironmentManager::GetSunPosition(const MathLib::Vector3F & playerPos) const
 {
 	// midday at 12:00
 	// dusk - 18:00
@@ -47,4 +55,11 @@ MathLib::Vector3F cEnvironmentManager::calculateSunPos(const MathLib::Vector3F &
 	yAngle = - currentTime / maxTime * 360.0f;
 	
 	return MathLib::GetPointOnSphere(playerPos, 10000.0f, 0.0f, yAngle);
+}
+
+float EnvironmentManager::GetEnvironmentTemperature() const
+{
+	float currentTemp = minimalTemperature + (maximalTemperature - minimalTemperature) * sinf((float)time.getRawTime() / (24.0f * 60.0f) * M_PIF);
+	LOG_INFO("Current temperature is " + std::to_string(currentTemp));
+	return currentTemp;
 }

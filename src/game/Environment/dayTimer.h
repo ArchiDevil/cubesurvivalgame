@@ -3,9 +3,11 @@
 class dayTimer
 {
 public:
-	dayTimer(unsigned int _hours = 0, unsigned int _minutes = 0) 
-	: currentTime(0.0), hours(_hours), minutes(_minutes) 
+	dayTimer(unsigned int hours = 0, unsigned int minutes = 0) 
+		: m_hours(hours)
+		, m_minutes(minutes)
 	{
+		currentTime = (double)hours * 60.0 + (double)minutes;
 	}
 
 	void setTime(int hours, int minutes)
@@ -13,19 +15,19 @@ public:
 		if(!valid(hours, minutes))
 			return;
 
-		this->hours = hours;
-		this->minutes = minutes;
+		m_hours = hours;
+		m_minutes = minutes;
 		currentTime = (double)hours * 60.0 + (double)minutes;
 	}
 
 	unsigned int getHours() const
 	{
-		return hours;
+		return m_hours;
 	}
 
 	unsigned int getMinutes() const
 	{
-		return minutes;
+		return m_minutes;
 	}
 
 	void update(double deltaTime)
@@ -35,8 +37,8 @@ public:
 		if(currentTime >= (24.0f * 60.0f))
 			currentTime -= 24.0f * 60.0f;
 
-		hours = (int)(currentTime / 60) % 24;
-		minutes = (int)currentTime % 60;
+		m_hours = (int)(currentTime / 60) % 24;
+		m_minutes = (int)currentTime % 60;
 	}
 
 	double getRawTime() const
@@ -51,6 +53,6 @@ private:
 	}
 
 	double currentTime;
-	unsigned int hours, minutes;
+	unsigned int m_hours, m_minutes;
 
 };
