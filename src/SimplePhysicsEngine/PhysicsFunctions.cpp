@@ -19,8 +19,7 @@ bool Physics::IsAABBCollidesWithWorld(const MathLib::AABB & bbox, WorldStorage *
 	Vector3F corners[8];
 	bbox.GetVertices(corners);
 	for (int i = 0; i < 8; ++i)
-		if (IsPointCollidesWithWorld(corners[i], storage))
+		if (corners[i].z < 0.0f || IsPointCollidesWithWorld(corners[i], storage))
 			return true;
-
 	return false;
 }

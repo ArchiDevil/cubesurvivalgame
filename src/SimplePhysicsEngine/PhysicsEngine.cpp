@@ -38,20 +38,25 @@ void SimplePhysicsEngine::UpdatePhysics(double dt)
 {
 	for (auto &object : physEntities)
 	{
-		object->Velocities.z += gravityAcc * (float)dt;
-		MathLib::Vector3F delta = object->Velocities * (float)dt;
-		MathLib::Vector3F newPos = object->Position + delta;
-		MathLib::AABB bboxToCalculate = { object->bbox.bMin + newPos, object->bbox.bMax + newPos };
+		float l = 0.0f, r = (float)dt, eps = 1e-6;
+		Vector3F newPos = object->Position;
+		while (fabs(l - r) > eps)
+		{
+			float cur_dt = (l + r) / 2.0f;
 
-		if (!Physics::IsAABBCollidesWithWorld(bboxToCalculate, dataStorage))
-		{
-			object->Position = newPos;
+			Vector3F Velocities = object->Velocities;
+			Velocities.z += gravityAcc * cur_dt;
+			Vector3F delta = Velocities * (float)cur_dt;
+			newPos = object->Position + delta;
+			AABB bboxToCalculate = { object->bbox.bMin + newPos, object->bbox.bMax + newPos };
+
+			if (!Physics::IsAABBCollidesWithWorld(bboxToCalculate, dataStorage))
+				l = cur_dt;
+			else
+				r = cur_dt;
 		}
-		else
-		{
-			// wrong on big speed!
-			object->Velocities.z = 0.0f;
-		}
+		object->Velocities.z += gravityAcc * r;
+		object->Position = newPos;
 	}
 }
 

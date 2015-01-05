@@ -63,7 +63,7 @@ bool gameState::initState()
 
 	pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
 	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1")->GetSceneNode()->GetMaterialPtr()->SetDiffuseColor({1.0f, 0.0f, 0.0f, 1.0f});
-	pGame->EntityMgr->CreateItemEntity(Vector3F(3.0f, 3.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("stone"));
+	pGame->EntityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("stone"));
 
 	LOG_INFO("End of game state initializing");
 
