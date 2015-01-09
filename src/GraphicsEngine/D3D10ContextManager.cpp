@@ -1,7 +1,7 @@
 #include "D3D10ContextManager.h"
 
-#include "../Utilities/logger.h"
-#include "../Utilities/ut.h"
+#include <Utilities/logger.hpp>
+#include <Utilities/ut.h>
 
 #include <sstream>
 

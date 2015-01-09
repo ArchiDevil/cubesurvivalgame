@@ -8,8 +8,8 @@
 #include "SceneGraph/CameraSceneNode.h"
 #include "SceneGraph/LightNode.h"
 
-#include "../Utilities/logger.h"
-#include "../Utilities/ut.h"
+#include <Utilities/logger.hpp>
+#include <Utilities/ut.h>
 
 ShiftEngine::Renderer::Renderer(D3D10ShaderManager * _pShaderManager, D3D10ShaderGenerator * _pShaderGenerator)
 	: FPS(0), FPSCounter(0), elapsedTime(0), 

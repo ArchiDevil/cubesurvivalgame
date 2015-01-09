@@ -1,6 +1,7 @@
 #include "D3D10TextureManager.h"
 
-#include "../Utilities/ut.h"
+#include <Utilities/ut.h>
+#include <Utilities/logger.hpp>
 
 #include <D3DX10.h>
 #include <cassert>

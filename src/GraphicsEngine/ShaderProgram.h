@@ -3,7 +3,7 @@
 #include <D3D10.h>
 #include <memory>
 
-#include "../Utilities/logger.h"
+#include <Utilities/logger.hpp>
 
 struct ID3D11ShaderReflection;
 

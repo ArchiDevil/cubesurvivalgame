@@ -5,8 +5,6 @@
 
 #include "D3D10Texture.h"
 
-#include "../Utilities/logger.h"
-
 namespace ShiftEngine
 {
 	struct TextureInfo

@@ -1,6 +1,6 @@
 #include "EnvironmentManager.h"
 
-#include <Utilities/logger.h>
+#include <Utilities/logger.hpp>
 
 #include <string>
 #include <cmath>

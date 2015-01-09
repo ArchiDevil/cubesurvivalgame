@@ -9,7 +9,7 @@
 #include <Utilities/fnv.h>
 #include <json/json.h>
 #include <GraphicsEngine/ShiftEngine.h>
-#include <Utilities/logger.h>
+#include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
 
 #include <cassert>

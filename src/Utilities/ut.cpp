@@ -1,5 +1,6 @@
 #include "ut.h"
-#include "logger.h"
+
+#include "logger.hpp"
 
 #if defined (WIN32) || (_WIN32)
     #include <Windows.h>
@@ -8,6 +9,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+
+extern Log MainLog("Application.log");
 
 std::string utils::WStrToStr( const std::wstring & str )
 {

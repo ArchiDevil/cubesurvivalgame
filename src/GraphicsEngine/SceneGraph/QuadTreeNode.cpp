@@ -3,8 +3,6 @@
 #include "../RenderQueue.h"
 #include "CameraSceneNode.h"
 
-#include "../../Utilities/logger.h"
-
 #ifdef min
 	#undef min
 #endif

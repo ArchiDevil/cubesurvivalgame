@@ -2,7 +2,7 @@
 
 #include "Entities/EntityState.h"
 
-#include <Utilities/logger.h>
+#include <Utilities/logger.hpp>
 
 #include <cassert>
 #include <string>

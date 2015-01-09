@@ -1,9 +1,9 @@
 #include "PhysicsEngine.h"
 
-#include <game/world/worldStorage.h>
-
 #include <string>
-#include <Utilities/logger.h>
+
+#include <game/world/worldStorage.h>
+#include <Utilities/logger.hpp>
 
 SimplePhysicsEngine::SimplePhysicsEngine()
 	: dataStorage(nullptr)
