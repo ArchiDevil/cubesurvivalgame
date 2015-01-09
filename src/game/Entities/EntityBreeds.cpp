@@ -27,7 +27,10 @@ ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::
 
 GameObjectPtr LiveBreed::Clone() const
 {
-	return std::make_shared<LiveGameObject>(CreateMeshNode(meshName, materialFile));
+	auto out = std::make_shared<LiveGameObject>(CreateMeshNode(meshName, materialFile));
+	for (const auto &item : inventoryBreedPtr.GetItems())
+		out->GetInventory()->AddItem(item.itemId, item.count ? item.count : item.minimumCount + (rand() % (item.maximumCount - item.minimumCount)));
+	return out;
 }
 
 GameObjectPtr CollectableBreed::Clone() const

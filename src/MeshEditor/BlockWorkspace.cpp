@@ -429,7 +429,7 @@ void BlockWorkspace::Save( const std::wstring & filename )
 	std::ofstream stream(buff);
 
 	if(!stream || stream.fail())
-		LOG_ERROR("Unable to save " + utils::WStrToStr(buff));
+		LOG_ERROR("Unable to save ", utils::WStrToStr(buff));
 
 	stream.write(reinterpret_cast<char *>(&h), sizeof(Header));
 
@@ -453,7 +453,7 @@ void BlockWorkspace::Load( const std::wstring & filename )
 
 	if(!stream || stream.fail())
 	{
-		LOG_ERROR("Unable to load " + utils::WStrToStr(buff));
+		LOG_ERROR("Unable to load ", utils::WStrToStr(buff));
 		return;
 	}
 

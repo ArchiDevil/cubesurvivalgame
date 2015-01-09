@@ -14,9 +14,9 @@ using namespace tinyxml2;
 	char buffer[1024] = {0};																						\
 	sprintf_s(buffer, "Error code: %d: %s, %s", result, materialDoc.GetErrorStr1(), materialDoc.GetErrorStr2());	\
 	std::string buf = buffer;																						\
-	LOG_ERROR(buf);																								\
-	LOG_ERROR(##x);																								\
-	LOG_ERROR("Unable to load material " + utils::WStrToStr(filename));											\
+	LOG_ERROR(buf);																									\
+	LOG_ERROR(##x);																									\
+	LOG_ERROR("Unable to load material ", utils::WStrToStr(filename));												\
 	return nullptr;																									\
 
 #define FIND_FLOAT(x)																								\
@@ -48,7 +48,7 @@ using namespace tinyxml2;
 			}																										\
 			else																									\
 			{																										\
-				LOG_ERROR("Unable to parse material");															\
+				LOG_ERROR("Unable to parse material");																\
 				return false;																						\
 			}																										\
 		}																											\
@@ -198,7 +198,7 @@ bool ShiftEngine::MaterialManager::CheckMaterialName( const std::string & name )
 	std::regex nameRegex("^[A-Za-z][\\w]+");
 	if(!std::regex_match(name, nameRegex))
 	{
-		LOG_ERROR("Wrong material name: " + name + ". Make sure that material name starts with letter and contains only digits, lettes and underlines.");
+		LOG_ERROR("Wrong material name: ", name, ". Make sure that material name starts with letter and contains only digits, lettes and underlines.");
 		return false;
 	}
 
@@ -350,29 +350,29 @@ bool ShiftEngine::MaterialManager::LoadColors( MaterialInfo & info, const std::m
 	std::smatch match;
 	std::string nums[3];
 
-#define GET_COLOR(x)																				\
-	{																								\
-		auto iterator = KeyVal.find(""#x);															\
-		if(iterator != KeyVal.end())																\
-		{																							\
-			std::string value = iterator->second->Attribute("value");								\
-			if(!std::regex_match(value, checkRegex))												\
-			{																						\
-				LOG_ERROR(value + " is not correct value for color");							\
-				return false;																		\
-			}																						\
-																									\
-			for(int i = 0; i < 3; i++)																\
-			{																						\
-				std::regex_search(value, match, numRegex);											\
-				auto string = match.str();															\
-				nums[i] = string;																	\
-				value = match.suffix();																\
-			}																						\
-																									\
-			info.##x = MathLib::Vector4F(stof(nums[0]), stof(nums[1]), stof(nums[2]), 1.0f);;		\
-		}																							\
-	}																								\
+#define GET_COLOR(x)																			\
+	{																							\
+		auto iterator = KeyVal.find(""#x);														\
+		if(iterator != KeyVal.end())															\
+		{																						\
+			std::string value = iterator->second->Attribute("value");							\
+			if(!std::regex_match(value, checkRegex))											\
+			{																					\
+				LOG_ERROR(value, " is not correct value for color");							\
+				return false;																	\
+			}																					\
+																								\
+			for(int i = 0; i < 3; i++)															\
+			{																					\
+				std::regex_search(value, match, numRegex);										\
+				auto string = match.str();														\
+				nums[i] = string;																\
+				value = match.suffix();															\
+			}																					\
+																								\
+			info.##x = MathLib::Vector4F(stof(nums[0]), stof(nums[1]), stof(nums[2]), 1.0f);	\
+		}																						\
+	}																							\
 
 	GET_COLOR(diffuseColor);
 	GET_COLOR(specularColor);

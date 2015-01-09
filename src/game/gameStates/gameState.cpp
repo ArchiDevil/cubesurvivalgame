@@ -62,7 +62,7 @@ bool gameState::initState()
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
 
 	pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
-	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1")->GetSceneNode()->GetMaterialPtr()->SetDiffuseColor({1.0f, 0.0f, 0.0f, 1.0f});
+	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
 	pGame->EntityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("stone"));
 
 	LOG_INFO("End of game state initializing");

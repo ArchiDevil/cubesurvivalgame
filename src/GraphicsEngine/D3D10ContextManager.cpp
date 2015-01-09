@@ -160,10 +160,8 @@ bool ShiftEngine::D3D10ContextManager::Initialize( GraphicEngineSettings _Settin
 	ID3D10SamplerState * sampler = nullptr;
 	HRESULT hr = Context.Device->CreateSamplerState(&sDesc, &sampler);
 	if(FAILED(hr))
-	{
-		LOG_FATAL_ERROR("Unable to create samplers, error code: " + std::to_string(hr));
-		return false;
-	}
+		LOG_FATAL_ERROR("Unable to create samplers, error code: ", std::to_string(hr));
+
 	Context.Device->PSSetSamplers(0, 1, &sampler);
 
 	RegisterVertexSemantic(defaultVertexSemantic);
@@ -225,7 +223,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10ContextManager::LoadTexture( const std
 {
 	TexturePtr out = TextureManager->CreateTexture2D(FileName);
 	if(out == TextureManager->GetErrorTexture())
-		LOG_ERROR("Unable to load " + utils::WStrToStr(FileName) + ", loaded empty texture.");
+		LOG_ERROR("Unable to load ", utils::WStrToStr(FileName), ", loaded empty texture.");
 	return out;
 }
 
@@ -238,7 +236,7 @@ ShiftEngine::MeshDataPtr ShiftEngine::D3D10ContextManager::LoadMesh( const std::
 {
 	MeshDataPtr out = MeshManager->LoadMesh(Paths.MeshPath + FileName);
 	if(out == nullptr)
-		LOG_ERROR("Unable to load: " + utils::WStrToStr(FileName));
+		LOG_ERROR("Unable to load: ", utils::WStrToStr(FileName));
 	return out;
 }
 
@@ -248,7 +246,7 @@ ShiftEngine::MaterialPtr ShiftEngine::D3D10ContextManager::LoadMaterial( const s
 
 	if(ptr == nullptr)
 	{
-		LOG_ERROR("Unable to load " + utils::WStrToStr(FileName));
+		LOG_ERROR("Unable to load ", utils::WStrToStr(FileName));
 		return pMaterialManager->LoadMaterial(Paths.MaterialsPath + L"error.mtl");
 	}
 
@@ -418,7 +416,7 @@ ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFr
 
 		if(repr[i].count > 4)
 		{
-			LOG_ERROR("Unable to create input layout for vertex declaration. Reason - wrong byteWidth in vd description. Value is" + std::to_string(repr[i].count));
+			LOG_ERROR("Unable to create input layout for vertex declaration. Reason - wrong byteWidth in vd description. Value is", std::to_string(repr[i].count));
 			outIL = nullptr;
 		}
 		stream << "float" << repr[i].count << " in_" << i << " : " << repr[i].name << ";\n";

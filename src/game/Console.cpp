@@ -54,7 +54,7 @@ void Console::HandleCommand()
 	}
 	else
 	{
-		LOG_ERROR("Unable to recognize command: " + commandName);
+		LOG_ERROR("Unable to recognize command: ", commandName);
 		return;
 	}
 }

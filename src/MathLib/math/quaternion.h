@@ -267,21 +267,6 @@ namespace MathLib
 			out.vector.x = 0.0;
 			out.vector.y = 0.0;
 			out.vector.z = 1.0;
-
-   //         if((from.y * from.y) > (from.x * from.x))
-			//{
-			//	LOG_INFO("First");
-			//	out.vector.x = 0.0;
-			//	out.vector.y = from.x;
-			//	out.vector.z = -from.y;
-			//}
-   //         else 
-			//{
-			//	LOG_INFO("Second");
-			//	out.vector.x = from.y;
-			//	out.vector.y = 0.0;
-			//	out.vector.z = -from.x;
-			//}
         }
 		out = out.normalize();
 		return out;

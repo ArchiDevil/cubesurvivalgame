@@ -18,6 +18,7 @@ public:
 	// getters
 	int GetHealth() const;
 	virtual InteractionType GetInteraction() const override;
+	GameObjectInventory * GetInventory();
 
 	// setters
 	void SetHealth(int in_health);
@@ -25,6 +26,5 @@ public:
 private:
 	int health;
 	GameObjectInventory inventory;
-	GameObjectInventory * GetInventory();
 
 };

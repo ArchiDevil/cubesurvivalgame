@@ -34,7 +34,10 @@ public:
 	GameObjectPtr			GetNearestEntity(const Ray &unprojectedRay);
 
 private:
+	void					LoadInventories();
+
 	std::list<GameObjectPtr> GameObjects;
+	std::unordered_map<std::string, InventoryBreed> Inventories;
 	std::unordered_map<std::string, BreedPtr> Breeds;
 
 	GameObject * selectedEntity;

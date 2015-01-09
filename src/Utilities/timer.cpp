@@ -2,8 +2,8 @@
 
 #if defined (WIN32) || (_WIN32)
 
-cTimer::cTimer() :
-stopped(true)
+cTimer::cTimer() 
+    : stopped(true)
 {
 	QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
 	secPerCount = 1.0 / countsPerSec;

@@ -57,7 +57,7 @@ GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & positio
 	auto iter = Breeds.find(entityId);
 	if (iter == Breeds.end())
 	{
-		LOG_ERROR("Unable to create entity with id: " + entityId);
+		LOG_ERROR("Unable to create entity with id: ", entityId);
 		return nullptr;
 	}
 
@@ -123,6 +123,8 @@ GameObjectPtr GameObjectsManager::GetNearestEntity(const MathLib::Ray &unproject
 
 void GameObjectsManager::LoadEntities()
 {
+	LoadInventories();
+
 	auto *pGame = LostIsland::GetGamePtr();
 
 	std::wstring pathPrefix = L"resources/gamedata/entities/";
@@ -136,7 +138,7 @@ void GameObjectsManager::LoadEntities()
 		std::ifstream jsonfile(filename);
 		if (jsonfile.fail() || jsonfile.bad())
 		{
-			LOG_ERROR("Unable to open " + filename);
+			LOG_ERROR("Unable to open ", filename);
 			continue;
 		}
 
@@ -144,7 +146,7 @@ void GameObjectsManager::LoadEntities()
 		bool result = reader.parse(jsonfile, root);
 		if (!result)
 		{
-			LOG_ERROR("Unable to parse " + filename);
+			LOG_ERROR("Unable to parse ", filename);
 			LOG_ERROR(reader.getFormatedErrorMessages());
 			continue;
 		}
@@ -161,8 +163,8 @@ void GameObjectsManager::LoadEntities()
 			buff = root.get(prop, buff);
 			if (buff.empty())
 			{
-				LOG_ERROR("Wrong entity " + filename);
-				LOG_ERROR("Unable to find property " + prop);
+				LOG_ERROR("Wrong entity ", filename);
+				LOG_ERROR("Unable to find property ", prop);
 				errorFlag = true;
 			}
 		}
@@ -176,7 +178,12 @@ void GameObjectsManager::LoadEntities()
 		std::string type = buff.asString();
 		if (type == "static")
 		{
-			Breeds[id] = std::make_shared<LiveBreed>(meshName, materialName);
+			std::string inventoryName = root.get("inventory", buff).asString();
+			InventoryBreed emptyBreed;
+			if (!inventoryName.empty())
+				Breeds[id] = std::make_shared<LiveBreed>(Inventories[inventoryName], meshName, materialName);
+			else
+				Breeds[id] = std::make_shared<LiveBreed>(emptyBreed, meshName, materialName);
 		}
 		else if (type == "collectable")
 		{
@@ -184,7 +191,7 @@ void GameObjectsManager::LoadEntities()
 			std::string itemName = buff.asString();
 			if (itemName.empty())
 			{
-				LOG_ERROR("Unable to find entity item for: " + id);
+				LOG_ERROR("Unable to find entity item for: ", id);
 				continue;
 			}
 			item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
@@ -194,8 +201,90 @@ void GameObjectsManager::LoadEntities()
 		}
 		else
 		{
-			LOG_ERROR("Unable to parse " + filename + ": unknown entity type");
+			LOG_ERROR("Unable to parse ", filename, ": unknown entity type");
 			continue;
 		}
+	}
+}
+
+void GameObjectsManager::LoadInventories()
+{
+	std::wstring pathPrefix = L"resources/gamedata/inventories/";
+	auto files = utils::filesystem::CollectFileNames(pathPrefix);
+
+	auto *pGame = LostIsland::GetGamePtr();
+
+	Json::Reader reader;
+	for (const auto & file_name : files)
+	{
+		std::wstring file = pathPrefix + file_name;
+		std::string filename = utils::WStrToStr(file);
+		std::ifstream jsonfile(filename);
+		if (jsonfile.fail() || jsonfile.bad())
+		{
+			LOG_ERROR("Unable to open ", filename);
+			continue;
+		}
+
+		Json::Value root(0);
+		bool result = reader.parse(jsonfile, root);
+		if (!result)
+		{
+			LOG_ERROR("Unable to parse ", filename);
+			LOG_ERROR(reader.getFormatedErrorMessages());
+			continue;
+		}
+
+		Json::Value buff(0);
+		buff = root.get("items", buff);
+		if (buff.empty() || !buff.isArray())
+		{
+			LOG_ERROR("Unable to find 'items' array-node in ", filename, ". Skipped.");
+			continue;
+		}
+
+		auto itemsCount = buff.size();
+		InventoryBreed inventory;
+		for (unsigned int i = 0; i < itemsCount; ++i)
+		{
+			Json::Value null(0);
+			buff = buff.get(i, null);
+			if (buff.empty())
+			{
+				LOG_ERROR("Wrong array element #", i, " in file ", filename);
+				continue;
+			}
+
+			std::string itemName = buff.get("item", null).asString();
+			if (!itemName.size())
+			{
+				LOG_ERROR("Wrong item name in element #", i, " in file ", filename);
+				continue;
+			}
+
+			unsigned int count = buff.get("count", null).asUInt();
+			unsigned int min_count = buff.get("min_count", null).asUInt();
+			unsigned int max_count = buff.get("max_count", null).asUInt();
+
+			if (!count && !min_count && !max_count)
+			{
+				LOG_ERROR("Wrong item count in element #", i, " in file ", filename);
+				continue;
+			}
+
+			if (count && (min_count || max_count))
+			{
+				LOG_ERROR("Wrong combination of count/min_count/max_count in element #", i, " in file ", filename);
+				continue;
+			}
+
+			if (count)
+				inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->ItemMgr->GetItemId(itemName), count));
+
+			if (min_count || max_count)
+				inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->ItemMgr->GetItemId(itemName), 0, min_count, max_count));
+		}
+
+		Inventories.emplace(std::make_pair(utils::WStrToStr(file_name.substr(0, file_name.find(L"."))), std::move(inventory)));
 	}
 }

@@ -164,7 +164,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 	{
 		D3DX10_IMAGE_INFO ii;
 		if(FAILED(D3DX10GetImageInfoFromFile((TexturesPath + items[i]).c_str(), nullptr, &ii, &hr)))
-			LOG_ERROR("Unable to get image info for: " + utils::WStrToStr(items[i]));
+			LOG_ERROR("Unable to get image info for: ", utils::WStrToStr(items[i]));
 
 		infos.push_back(ii);
 	}
@@ -207,7 +207,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateCubemap( const s
 			&loadInfo, 0,
 			(ID3D10Resource**)&srcTex[i], 0)))
 		{
-			LOG_ERROR("Unable to load texture in cubemap: " + utils::WStrToStr(items[i]));
+			LOG_ERROR("Unable to load texture in cubemap: ", utils::WStrToStr(items[i]));
 
 			D3D10_TEXTURE2D_DESC desc;
 			desc.ArraySize = 1;
@@ -314,7 +314,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 		D3DX10_IMAGE_INFO ii;
 		if(FAILED(D3DX10GetImageInfoFromFile((TexturesPath + names[i]).c_str(), nullptr, &ii, &hr)))
 		{
-			LOG_ERROR("Unable to get image info for: " + utils::WStrToStr(names[i]));
+			LOG_ERROR("Unable to get image info for: ", utils::WStrToStr(names[i]));
 		}
 		infos.push_back(ii);
 	}
@@ -357,7 +357,7 @@ ShiftEngine::TexturePtr ShiftEngine::D3D10TextureManager::CreateTextureArray( co
 			&loadInfo, 0,
 			(ID3D10Resource**)&srcTex[i], 0)))
 		{
-			LOG_ERROR("Unable to load texture in texture array: " + utils::WStrToStr(names[i]));
+			LOG_ERROR("Unable to load texture in texture array: ", utils::WStrToStr(names[i]));
 
 			D3D10_TEXTURE2D_DESC desc;
 			desc.ArraySize = 1;
@@ -450,7 +450,7 @@ ShiftEngine::TextureInfo ShiftEngine::D3D10TextureManager::GetTextureInfo( const
 	}
 	else
 	{
-		LOG_ERROR("Unable to get info for texture: " + utils::WStrToStr(filename));
+		LOG_ERROR("Unable to get info for texture: ", utils::WStrToStr(filename));
 		return TextureInfo();
 	}
 }

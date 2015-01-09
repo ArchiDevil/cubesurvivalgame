@@ -27,7 +27,7 @@ std::string IniWorker::GetKey( const std::string & Key )
 	if(data.find(Key) != data.end())
 		return data[Key];
 
-	LOG_ERROR("Unable to get key for: " + Key);
+	LOG_ERROR("Unable to get key for: ", Key);
 	return "";
 }
 
@@ -50,7 +50,7 @@ bool IniWorker::GetBoolean( const std::string & Parameter )
 		return false;
 	else
 	{
-		LOG_ERROR(buffer + " is a wrong boolean value");
+		LOG_ERROR(buffer, " is a wrong boolean value");
 		return false;
 	}
 }

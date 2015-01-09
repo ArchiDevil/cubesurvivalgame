@@ -88,7 +88,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromFile(
 
 		if(in.fail())
 		{
-			LOG_ERROR("Unable to open " + utils::WStrToStr(fileName));
+			LOG_ERROR("Unable to open ", utils::WStrToStr(fileName));
 			return nullptr;
 		}
 

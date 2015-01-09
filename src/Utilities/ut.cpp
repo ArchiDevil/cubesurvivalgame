@@ -34,9 +34,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
 	file = FindFirstFile(fName.c_str(), &data);
 	if(file == INVALID_HANDLE_VALUE)
 	{
-
-		LOG_ERROR("Unable to get filenames from " + utils::WStrToStr(bufferPath)
-			+ ", may be directory is not exist or it's empty.");
+		LOG_ERROR("Unable to get filenames from ", utils::WStrToStr(bufferPath), ", may be directory is not exist or it's empty.");
 		return std::vector<std::wstring>();
 	}
 
@@ -57,34 +55,27 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
 	FindClose(file);
 	return names;
 #else
+	LOG_ERROR("Not implemented yet.");
     return std::vector<std::wstring> ();
 #endif
 }
 
 std::wstring utils::ExtractName( const std::wstring & filename )
 {
-	auto iter = std::find(filename.begin(), filename.end(), '.');
-	return std::wstring(filename.begin(), iter);
+	std::wstring::size_type pos = filename.rfind(L'.');
+	if (pos == filename.npos)
+		return filename;
+	else
+		return filename.substr(0, pos);
 }
 
 std::wstring utils::ExtractExtension( const std::wstring & filename )
 {
-	std::wstring buffer = filename;
-	int pos = buffer.find(L".");
-	if(pos != -1)
-		buffer = buffer.substr(pos + 1, buffer.size());
+	std::wstring::size_type pos = filename.rfind(L'.');
+	if (pos == filename.npos)
+		return std::wstring();
 	else
-		return std::wstring(L"");
-
-	for (;;)
-	{
-		pos = buffer.find(L".");
-		if(pos == -1)
-			break;
-		buffer = buffer.substr(pos + 1, buffer.size());
-	}
-
-	return buffer;
+		return filename.substr(0, pos);
 }
 
 bool utils::IsNumber( const std::string & str )
@@ -102,6 +93,7 @@ bool utils::filesystem::CreateDir( const std::wstring & directoryName )
 #ifdef WIN32
 	return ::CreateDirectory(directoryName.c_str(), NULL) != 0;
 #else
+	LOG_ERROR("Not implemented yet.");
 	return false;
 #endif
 }
@@ -112,12 +104,11 @@ bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
 	DWORD ftyp = GetFileAttributes(directoryName.c_str());
 	if (ftyp == INVALID_FILE_ATTRIBUTES)
 		return false;
-
 	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
 		return true;
-
 	return false;
 #else
+	LOG_ERROR("Not implemented yet.");
 	return false;
 #endif
 }

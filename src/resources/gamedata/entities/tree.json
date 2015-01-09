@@ -2,5 +2,6 @@
     "id": "tree1",
     "type": "static",
     "mesh": "cube",
-    "material": "treeobject.mtl"
+    "material": "treeobject.mtl",
+    "inventory": "tree"
 }

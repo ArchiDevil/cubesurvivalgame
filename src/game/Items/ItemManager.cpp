@@ -48,7 +48,7 @@ void ItemManager::LoadDefinitions(const std::wstring & path)
 			if (root.get(key, null).empty())
 			{
 				errorFlag = true;
-				LOG_ERROR("Unable to get required key " + key + " from " + utils::WStrToStr(file));
+				LOG_ERROR("Unable to get required key ", key, " from ", utils::WStrToStr(file));
 			}
 		}
 
@@ -65,14 +65,14 @@ void ItemManager::LoadDefinitions(const std::wstring & path)
 		auto itemIter = HashItem.find(hash);
 		if (itemIter != HashItem.end())
 		{
-			LOG_ERROR("Hash collision on: " + id);
+			LOG_ERROR("Hash collision on: ", id);
 			++hash;
 		}
 
 		auto nameIter = NameHash.find(id);
 		if (nameIter != NameHash.end())
 		{
-			LOG_ERROR("Name collision of: " + id + " and " + nameIter->first);
+			LOG_ERROR("Name collision of: ", id, " and ", nameIter->first);
 		}
 		NameHash[id] = hash;
 
@@ -100,7 +100,7 @@ void ItemManager::LoadDefinitions(const std::wstring & path)
 		}
 		else
 		{
-			LOG_ERROR("Unable to resolve item type: " + type);
+			LOG_ERROR("Unable to resolve item type: ", type);
 		}
 	}
 }
