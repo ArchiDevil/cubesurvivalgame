@@ -64,7 +64,7 @@ bool GameObjectInventory::AddItem(item_id_t itemId, size_t count)
 	if (slotIndex != -1)
 	{
 		items[slotIndex].itemId = itemId;
-		items[slotIndex].count = 1;
+		items[slotIndex].count = count;
 		return true;
 	}
 	else

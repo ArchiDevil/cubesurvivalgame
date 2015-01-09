@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "ControllableGameObject.h"
 
+#include "../game.h"
+
 IEntityState::IEntityState()
 	: dead(false)
 {
@@ -126,7 +128,10 @@ void DyingState::Update(LiveGameObject * entity, double dt)
 	float scale = (fullTime - accumulatedTime) / fullTime;
 	pSceneNode->SetScale(scale);
 	if (accumulatedTime > fullTime)
+	{
+		LostIsland::GetGamePtr()->GlobalEventHandler->onLivingObjectDies(entity);
 		entity->DispatchState(std::make_unique<DecayState>(2.0));
+	}
 }
 
 EntityState DyingState::GetType() const

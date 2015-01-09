@@ -39,8 +39,6 @@ public:
 		size_t maximumCount;
 	};
 
-	typedef std::vector<ExtendedSlotUnit> value_type;
-
 	void AddItem(const ExtendedSlotUnit & item)
 	{
 		items.push_back(item);
@@ -51,13 +49,13 @@ public:
 		items.push_back(item);
 	}
 
-	const value_type & GetItems() const
+	const std::vector<ExtendedSlotUnit> & GetItems() const
 	{
 		return items;
 	}
 
 private:
-	value_type items;
+	std::vector<ExtendedSlotUnit> items;
 };
 
 class LiveBreed : public EntityBreed

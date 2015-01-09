@@ -47,8 +47,7 @@ void GameEventHandler::onPlayerDropsItem(uint64_t itemId, size_t count)
 	LostIsland::GetGamePtr()->Player->GetInventoryPtr()->RemoveItem(itemId);
 	auto pos = LostIsland::GetGamePtr()->Player->GetPosition();
 	pos.z += 10.0f;
-	for (size_t i = 0; i < count; ++i)
-		LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), itemId);
+	LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), itemId, count);
 }
 
 void GameEventHandler::onPlayerUsesItem(bool self, item_id_t itemId)
@@ -63,15 +62,25 @@ void GameEventHandler::onPlayerUsesItem(bool self, item_id_t itemId)
 		pItem->UseInWorld();
 }
 
-void GameEventHandler::onLivingObjectDies(ControllableGameObject * object, GameObjectInventory & inventory)
+void GameEventHandler::onLivingObjectDies(LiveGameObject * object)
 {
 	if (!object)
 		return;
 
+	LOG_INFO(object, " dies.");
+
 	auto pos = object->GetPosition();
-	pos.z += 10.0f;
-	auto items = inventory.GetItems();
+	pos.z += 3.0f;
+	auto items = object->GetInventory()->GetItems();
 	for (const auto & item : items)
-		for (size_t i = 0; i < item.count; ++i)
-			LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), item.itemId);
+	{
+		if (!item.count)
+			continue;
+
+		LOG_INFO(object, " dies. Creating ", item.itemId, " object in count of ", item.count);
+		Vector3D velocity(sin(rand() % 4), cos(rand() % 4), 1.0);
+		velocity = MathLib::Normalize(velocity);
+		velocity *= 6.0f;
+		LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, velocity, item.itemId, item.count);
+	}
 }

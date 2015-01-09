@@ -98,12 +98,12 @@ void PlayerGameObject::Attack(LiveGameObject * target) const
 
 	if (itemInHand->GetType() == IT_Weapon)
 	{
-		LOG_INFO("Entity ", (size_t)target, " damaged with ", (size_t)((WeaponItem*)itemInHand)->GetDamageCount(), ". Remains ", target->GetHealth());
+		LOG_INFO("Entity ", target, " damaged with ", ((WeaponItem*)itemInHand)->GetDamageCount(), ". Remains ", target->GetHealth());
 		target->SetHealth(target->GetHealth() - ((WeaponItem*)itemInHand)->GetDamageCount());
 	}
 	else
 	{
-		LOG_INFO("Entity ", (size_t)target, " damaged with ", 1, ". Remains ", target->GetHealth());
+		LOG_INFO("Entity ", target, " damaged with ", 1, ". Remains ", target->GetHealth());
 		target->SetHealth(target->GetHealth() - 1);
 	}
 }
