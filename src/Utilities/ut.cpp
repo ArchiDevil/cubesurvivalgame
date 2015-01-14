@@ -78,7 +78,7 @@ std::wstring utils::ExtractExtension( const std::wstring & filename )
 	if (pos == filename.npos)
 		return std::wstring();
 	else
-		return filename.substr(0, pos);
+		return filename.substr(pos + 1, filename.npos);
 }
 
 bool utils::IsNumber( const std::string & str )
