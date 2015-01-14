@@ -17,18 +17,11 @@ namespace ShiftEngine
 	{
 	public:
 		cMeshLoader(ID3D10Device * _device);
-
-		bool Load(std::wstring filename, MeshData * mesh); //загрузка из файла
+		bool Load(std::wstring filename, MeshData * mesh);
 
 	private:
-		bool LoadFromFile(std::wstring filename, 
-			MeshData * mesh, 
-			ShiftEngine::DefaultVertex ** vertices, 
-			long ** indices);			//выполняет загрузку меша из файла
-
-		void UpdateVertices(MeshData * mesh, 
-			ShiftEngine::DefaultVertex * vertices, 
-			long * indices);		//"обновляет" вершины и индексы для использования в принятой СК
+		bool LoadFromFile(std::wstring filename, MeshData * mesh, std::unique_ptr<DefaultVertex[]> & vertices, std::unique_ptr<long[]> & indices);
+		void UpdateVertices(MeshData * mesh, ShiftEngine::DefaultVertex * vertices, long * indices);
 
 		ID3D10Device * pDevice;
 

@@ -8,16 +8,16 @@ namespace ShiftEngine
 {
 	namespace Utilities
 	{
-		bool getVerticesFromFile(const std::wstring & filename, 
-								ShiftEngine::DefaultVertex ** vertices, 
-								unsigned int * verticesCount, 
-								long ** indices, 
-								unsigned int * indicesCount);	//возвращает данные о вершинах из целевого .limr файла
+		bool getVerticesFromFile(const std::wstring & filename,
+								std::unique_ptr<DefaultVertex[]>& vertices,
+								unsigned int * verticesCount,
+								std::unique_ptr<long[]>& indices,
+								unsigned int * indicesCount);
 
 		MathLib::AABB getBBoxFromMesh(MeshDataPtr meshData);
 
-		MeshDataPtr createCube();		//создает куб, размером в одну кубическую единицу
-		MeshDataPtr createPlane();		//создает плоскость, размером 1x1
-		MeshDataPtr createSphere();		//создает сферу, радиусом в 1, с разбиением в 36
+		MeshDataPtr createCube();
+		MeshDataPtr createPlane();
+		MeshDataPtr createSphere();
 	}
 }

@@ -1,11 +1,13 @@
 #include "cMesh.h"
 
-#define SAFE_RELEASE(obj) if (obj) { obj->Release(); obj = nullptr; }
-
 ShiftEngine::MeshData::MeshData( D3D10VDPtr _vertexDeclaration, ID3D10Buffer * _VB /*= nullptr*/, ID3D10Buffer * _IB /*= nullptr*/ )
-	: VertexBuffer(_VB), IndexBuffer(_IB), verticesCount(0), 
-	indicesCount(0), vertexSize(0), vertexDeclaration(_vertexDeclaration),
-	vertexSemantic(nullptr)
+	: VertexBuffer(_VB)
+    , IndexBuffer(_IB)
+    , verticesCount(0)
+    , indicesCount(0)
+    , vertexSize(0)
+    , vertexDeclaration(_vertexDeclaration)
+    , vertexSemantic(nullptr)
 {
 }
 
@@ -118,8 +120,17 @@ bool ShiftEngine::MeshData::CreateBuffers( bool dynamic,
 
 void ShiftEngine::MeshData::Clear()
 {
-	SAFE_RELEASE(VertexBuffer);
-	SAFE_RELEASE(IndexBuffer);
+    if (VertexBuffer) 
+    {
+        VertexBuffer->Release(); 
+        VertexBuffer = nullptr; 
+    }
+
+    if (IndexBuffer) 
+    { 
+        IndexBuffer->Release(); 
+        IndexBuffer = nullptr;
+    }
 }
 
 int ShiftEngine::MeshData::Draw( ID3D10Device * device )

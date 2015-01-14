@@ -1,57 +1,50 @@
 #include "Utils.h"
 
-#include <D3DX10.h>
 #include "ShiftEngine.h"
 
+#include <D3DX10.h>
 #include <fstream>
 
-bool ShiftEngine::Utilities::getVerticesFromFile( const std::wstring & filename, 
-											 DefaultVertex ** vertices, 
-											 unsigned int * verticesCount, 
-											 long ** indices, 
-											 unsigned int * indicesCount )
+bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
+                                                std::unique_ptr<DefaultVertex[]>& vertices,
+                                                unsigned int * verticesCount,
+                                                std::unique_ptr<long[]>& indices,
+                                                unsigned int * indicesCount)
 {
-	std::ifstream in(filename.c_str(), std::ios::binary);
+    std::ifstream in(filename.c_str(), std::ios::binary);
 
-	if(!in || in.fail())
-		return false;
+    if (!in || in.fail())
+        return false;
 
-	//стандартный хидер для формата
-	MeshLIMHeader head;
-	in.read(reinterpret_cast<char*>(&head), sizeof(MeshLIMHeader));
-	if(head.VERSION != LIM_HEADER_VERSION)
-		return false;
+    MeshLIMHeader head;
+    in.read(reinterpret_cast<char*>(&head), sizeof(MeshLIMHeader));
+    if (head.VERSION != LIM_HEADER_VERSION)
+        return false;
 
-	int size = head.verticesCount;
-	*verticesCount = size;
+    int size = head.verticesCount;
+    *verticesCount = size;
 
-	(*vertices) = new DefaultVertex[head.verticesCount];
+    vertices.reset(new DefaultVertex[head.verticesCount]);
 
-	//читаем позицию
-	for (int i = 0; i < size ; i++)
-		in.read(reinterpret_cast<char*>( ((*vertices)[i]).Pos ), sizeof(float) * 3);
+    for (int i = 0; i < size; i++)
+        in.read(reinterpret_cast<char*>(vertices[i].Pos), sizeof(float) * 3);
 
-	//нормали
-	if(head.hasNormals)
-		for (int i = 0; i < size ; i++)
-			in.read(reinterpret_cast<char*>( ((*vertices)[i]).Normal ), sizeof(float) * 3);
+    if (head.hasNormals)
+        for (int i = 0; i < size; i++)
+            in.read(reinterpret_cast<char*>(vertices[i].Normal), sizeof(float) * 3);
 
-	//текстурные координаты
-	if(head.hasTexCoords)
-		for (int i = 0; i < size ; i++)
-			in.read(reinterpret_cast<char*>( ((*vertices)[i]).Texcoord ), sizeof(float) * 2);
+    if (head.hasTexCoords)
+        for (int i = 0; i < size; i++)
+            in.read(reinterpret_cast<char*>(vertices[i].Texcoord), sizeof(float) * 2);
 
+    int sizeInd = head.indicesCount;
 
-	//читаем количество индексов из файла
-	int sizeInd = head.indicesCount;
+    indices.reset(new long[head.indicesCount]);
+    *indicesCount = sizeInd;
 
-	*indices = new long[head.indicesCount];
-	*indicesCount = sizeInd;
-
-	//читаем индексы из файла
-	in.read(reinterpret_cast<char*>( *indices ), sizeof(long) * sizeInd);
-	in.close();
-	return true;
+    in.read(reinterpret_cast<char*>(indices.get()), sizeof(long) * sizeInd);
+    in.close();
+    return true;
 }
 
 ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createCube()

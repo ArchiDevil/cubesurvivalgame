@@ -28,9 +28,9 @@ namespace ShiftEngine
 		D3D10VDPtr vertexDeclaration;
 		ID3D10Buffer * VertexBuffer;
 		ID3D10Buffer * IndexBuffer;
-		unsigned int verticesCount;
-		unsigned int indicesCount;
-		unsigned int vertexSize;
+		size_t verticesCount;
+		size_t indicesCount;
+		size_t vertexSize;
 	};
 
 	typedef std::shared_ptr<MeshData> MeshDataPtr;
