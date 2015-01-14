@@ -163,13 +163,9 @@ bool cObjConverter::Convert(const std::wstring & in, const std::wstring & out)
 		header.hasNormals = true;
 	if(!texCoords.empty())
 		header.hasTexCoords = true;
-	header.VERSION =  LIM_HEADER_VERSION;
-
+    header.version = LIM_HEADER_VERSION;
 	header.indicesCount = indices.size();
 	header.verticesCount = MeshData.size();
 
-	LIMSaver saver;
-	bool result = saver.Save(out, MeshData.data(), indices.data(), header);
-
-	return result;
+	return LIMSaver::Save(out, MeshData.data(), indices.data(), header);
 }

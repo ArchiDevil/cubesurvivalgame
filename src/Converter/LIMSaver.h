@@ -7,8 +7,8 @@
 class LIMSaver
 {
 public:
-	bool Save(const std::wstring & fileName, const Vertex * verticesArray, 
-		const unsigned long * indicesArray, MeshLIMHeader header) const
+	static bool Save(const std::wstring & fileName, const Vertex * verticesArray, 
+		const unsigned long * indicesArray, MeshLIMHeader header)
 	{
 		std::ofstream output;
 #ifdef WIN32
@@ -32,9 +32,13 @@ public:
 			for (unsigned int i = 0; i < header.verticesCount ; i++)
 				output.write(reinterpret_cast<const char*>(&(verticesArray[i].TexCoord)), 2 * sizeof(float));
 
-		output.write(reinterpret_cast<const char*>(indicesArray), sizeof(long) * header.indicesCount);
+        if (header.hasColors)
+            for (unsigned int i = 0; i < header.verticesCount; ++i)
+                output.write(reinterpret_cast<const char*>(&(verticesArray[i].Color)), 2 * sizeof(float));
 
+		output.write(reinterpret_cast<const char*>(indicesArray), sizeof(long) * header.indicesCount);
 		output.close();
+
 		return true;
 	}
 };

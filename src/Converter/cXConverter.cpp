@@ -21,12 +21,8 @@ bool cXConverter::Convert( const std::wstring & in, const std::wstring & out )
 	unsigned int DelimiterPosition;
 
 	while (input >> bufStr)
-	{
 		if(bufStr == "Mesh")
-		{
 			break;	//we found beginning of mesh description
-		}
-	}
 
 	getline(input, bufStr);
 	getline(input, bufStr, ';');
@@ -39,7 +35,7 @@ bool cXConverter::Convert( const std::wstring & in, const std::wstring & out )
 	bool haveNormals = false;
 	bool haveTextureCoords = false;
 
-	Vertex * Mesh = new Vertex [verticesCount]; // создаём мaссив структур под координаты вершин
+	Vertex * Mesh = new Vertex [verticesCount];
 	memset(Mesh, 0, sizeof(Vertex) * verticesCount);
 
 	unsigned int VertexNum = 0;
@@ -78,8 +74,8 @@ bool cXConverter::Convert( const std::wstring & in, const std::wstring & out )
 	Reader.clear();
 	bufStr.clear();
 
-	const int indicesInString = 3; //количество индексов в строке
-	unsigned long * Ind = new unsigned long[indicesCount * indicesInString]; // создаём буфер на индексы
+	const int indicesInString = 3;
+	unsigned long * Ind = new unsigned long[indicesCount * indicesInString];
 	memset(Ind, 0, sizeof(long) * indicesCount * indicesInString);
 
 	VertexNum = 0;
@@ -196,17 +192,14 @@ bool cXConverter::Convert( const std::wstring & in, const std::wstring & out )
 	}
 
 	MeshLIMHeader header;
-	header.VERSION = LIM_HEADER_VERSION;
+    header.version = LIM_HEADER_VERSION;
 	header.hasNormals = haveNormals;
 	header.hasTexCoords = haveTextureCoords;
 	header.verticesCount = verticesCount;
 	header.indicesCount = indicesCount * indicesInString;
 
-	LIMSaver saver;
-	bool result = saver.Save(out, Mesh, Ind, header);
+	delete[] Mesh;
+	delete[] Ind;
 
-	delete [] Mesh;
-	delete [] Ind;
-
-	return result;
+	return LIMSaver::Save(out, Mesh, Ind, header);
 }

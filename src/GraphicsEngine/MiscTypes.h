@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-#include "../MathLib/math.h"
+#include <MathLib/math.h>
 
 #define LIM_HEADER_VERSION 2
 
@@ -33,7 +33,14 @@ namespace ShiftEngine
 			bool htc = false, 
 			unsigned int vc = 0, 
 			unsigned int ic = 0) 
-			: VERSION(ver), hasNormals(hn), hasTexCoords(htc), verticesCount(vc), indicesCount(ic) {};
+			: VERSION(ver)
+            , hasNormals(hn)
+            , hasTexCoords(htc)
+            , verticesCount(vc)
+            , indicesCount(ic)
+        {
+        }
+
 		unsigned int VERSION;
 		bool hasNormals;
 		bool hasTexCoords;
@@ -62,7 +69,8 @@ namespace ShiftEngine
 			, zNear(0.1f)
 			, zFar(200.0f)
 			, anisotropyLevel(0)
-		{}
+		{
+        }
 
 		int screenWidth;
 		int screenHeight;
