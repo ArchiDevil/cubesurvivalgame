@@ -58,39 +58,6 @@ bool ShiftEngine::MaterialInfo::operator<( const MaterialInfo & ref ) const
 		return false;
 
 	return this->GetHash() < ref.GetHash();
-
-	//std::hash<std::string> stringHash;
-
-	////std::string str = diffuseMap + normalMap + specularMap + alphaMap + environmentMap;
-	//size_t curHash;// = stringHash(str);
-
-	////str = ref.diffuseMap + ref.normalMap + ref.specularMap + ref.alphaMap + ref.environmentMap;
-	//size_t refHash;// = stringHash(str);
-
-	////if(curHash != refHash)
-	////	return curHash < refHash;
-
-	//std::string curBytes;
-	//uint8_t * start = (uint8_t*)this;
-	//uint8_t * end = (uint8_t*)&diffuseMap;
-	//while(start != end)
-	//{
-	//	curBytes.push_back(*start);
-	//	start++;
-	//}
-	//curHash = stringHash(curBytes);
-
-	//curBytes.clear();
-	//start = (uint8_t*)&ref;
-	//end = (uint8_t*)&ref.diffuseMap;
-	//while(start != end)
-	//{
-	//	curBytes.push_back(*start);
-	//	start++;
-	//}
-	//refHash = stringHash(curBytes);
-
-	//return curHash < refHash;
 }
 
 bool ShiftEngine::MaterialInfo::operator==( const MaterialInfo & ref ) const

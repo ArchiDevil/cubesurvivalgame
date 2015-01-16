@@ -4,202 +4,202 @@
 #include <string>
 #include <sstream>
 
-bool cXConverter::Convert( const std::wstring & in, const std::wstring & out )
+bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 {
-	std::ifstream input;
+    std::ifstream input;
 #ifdef _MSC_VER
-	input.open(in.c_str());
+    input.open(in.c_str());
 #else
-	std::string str(in.begin(), in.end());
-	input.open(str.c_str());
+    std::string str(in.begin(), in.end());
+    input.open(str.c_str());
 #endif
-	if(input.fail())
-		return false;
+    if (input.fail())
+        return false;
 
-	std::string bufStr;
-	std::stringstream Reader;
-	unsigned int DelimiterPosition;
+    std::string bufStr;
+    std::stringstream Reader;
+    unsigned int DelimiterPosition;
 
-	while (input >> bufStr)
-		if(bufStr == "Mesh")
-			break;	//we found beginning of mesh description
+    while (input >> bufStr)
+        if (bufStr == "Mesh")
+            break;	//we found beginning of mesh description
 
-	getline(input, bufStr);
-	getline(input, bufStr, ';');
-	Reader << bufStr;
-	unsigned int verticesCount;	//count of vertices
-	Reader >> verticesCount;
-	Reader.clear();
-	bufStr.clear();
+    getline(input, bufStr);
+    getline(input, bufStr, ';');
+    Reader << bufStr;
+    unsigned int verticesCount;	//count of vertices
+    Reader >> verticesCount;
+    Reader.clear();
+    bufStr.clear();
 
-	bool haveNormals = false;
-	bool haveTextureCoords = false;
+    bool haveNormals = false;
+    bool haveTextureCoords = false;
 
-	Vertex * Mesh = new Vertex [verticesCount];
-	memset(Mesh, 0, sizeof(Vertex) * verticesCount);
+    Vertex * Mesh = new Vertex[verticesCount];
+    memset(Mesh, 0, sizeof(Vertex) * verticesCount);
 
-	unsigned int VertexNum = 0;
+    unsigned int VertexNum = 0;
 
-	while(getline(input, bufStr))
-	{
-		if(bufStr.size() == 0)
-			continue;
-		else if(bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
-			continue;
+    while (getline(input, bufStr))
+    {
+        if (bufStr.size() == 0)
+            continue;
+        else if (bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
+            continue;
 
-		for (int index = 0; index < 3; index++)
-		{
-			DelimiterPosition = bufStr.find(';');
-			std::string curKey = bufStr.substr(0, DelimiterPosition);
-			bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
+        for (int index = 0; index < 3; index++)
+        {
+            DelimiterPosition = bufStr.find(';');
+            std::string curKey = bufStr.substr(0, DelimiterPosition);
+            bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
-			Reader << curKey;
-			Reader >> Mesh[VertexNum].Pos.el[index];
-			Reader.clear();
-		}
+            Reader << curKey;
+            Reader >> Mesh[VertexNum].Pos.el[index];
+            Reader.clear();
+        }
 
-		VertexNum++;
+        VertexNum++;
 
-		if(bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
-			break;
-	}
+        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+            break;
+    }
 
 
-	getline(input, bufStr);
-	getline(input, bufStr, ';');
+    getline(input, bufStr);
+    getline(input, bufStr, ';');
 
-	Reader << bufStr;
-	int indicesCount;	//count of indices
-	Reader >> indicesCount;
-	Reader.clear();
-	bufStr.clear();
+    Reader << bufStr;
+    int indicesCount;	//count of indices
+    Reader >> indicesCount;
+    Reader.clear();
+    bufStr.clear();
 
-	const int indicesInString = 3;
-	unsigned long * Ind = new unsigned long[indicesCount * indicesInString];
-	memset(Ind, 0, sizeof(long) * indicesCount * indicesInString);
+    const int indicesInString = 3;
+    unsigned long * Ind = new unsigned long[indicesCount * indicesInString];
+    memset(Ind, 0, sizeof(long) * indicesCount * indicesInString);
 
-	VertexNum = 0;
+    VertexNum = 0;
 
-	while(getline(input, bufStr))
-	{
-		if(bufStr.size() == 0)
-			continue;
-		else if(bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
-			continue;
+    while (getline(input, bufStr))
+    {
+        if (bufStr.size() == 0)
+            continue;
+        else if (bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
+            continue;
 
-		DelimiterPosition = bufStr.find(';');
-		bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
+        DelimiterPosition = bufStr.find(';');
+        bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
-		for (int index = 0; index < 3; index++)
-		{
-			if(index != 2)
-				DelimiterPosition = bufStr.find(',');
-			else
-				DelimiterPosition = bufStr.find(';');
+        for (int index = 0; index < 3; index++)
+        {
+            if (index != 2)
+                DelimiterPosition = bufStr.find(',');
+            else
+                DelimiterPosition = bufStr.find(';');
 
-			std::string curKey = bufStr.substr(0, DelimiterPosition);
-			bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
+            std::string curKey = bufStr.substr(0, DelimiterPosition);
+            bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
-			Reader << curKey;
-			Reader >> Ind[VertexNum * indicesInString + index];
-			Reader.clear();
-		}
+            Reader << curKey;
+            Reader >> Ind[VertexNum * indicesInString + index];
+            Reader.clear();
+        }
 
-		VertexNum++;
+        VertexNum++;
 
-		if(bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
-			break;
-	}
+        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+            break;
+    }
 
-	while(getline(input, bufStr))
-	{
-		if(bufStr.find("MeshNormals") != std::string::npos)
-		{
-			haveNormals = true;
-			break;
-		}
-	}
+    while (getline(input, bufStr))
+    {
+        if (bufStr.find("MeshNormals") != std::string::npos)
+        {
+            haveNormals = true;
+            break;
+        }
+    }
 
-	getline(input, bufStr);
+    getline(input, bufStr);
 
-	if(haveNormals)
-	{
-		VertexNum = 0;
+    if (haveNormals)
+    {
+        VertexNum = 0;
 
-		while(getline(input, bufStr))
-		{
-			if(bufStr.size() == 0)
-				continue;
-			else if(bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
-				continue;
+        while (getline(input, bufStr))
+        {
+            if (bufStr.size() == 0)
+                continue;
+            else if (bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
+                continue;
 
-			for (int index = 0; index < 3; index++)
-			{
-				DelimiterPosition = bufStr.find(';');
-				std::string curKey = bufStr.substr(0, DelimiterPosition);
-				bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
+            for (int index = 0; index < 3; index++)
+            {
+                DelimiterPosition = bufStr.find(';');
+                std::string curKey = bufStr.substr(0, DelimiterPosition);
+                bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
-				Reader << curKey;
-				Reader >> Mesh[VertexNum].Normal.el[index];
-				Reader.clear();
-			}
+                Reader << curKey;
+                Reader >> Mesh[VertexNum].Normal.el[index];
+                Reader.clear();
+            }
 
-			VertexNum++;
+            VertexNum++;
 
-			if(bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
-				break;
-		}
-	}
+            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+                break;
+        }
+    }
 
-	while(getline(input, bufStr))
-	{
-		if(bufStr.find("MeshTextureCoords") != std::string::npos)
-		{
-			haveTextureCoords = true;
-			break;
-		}
-	}
+    while (getline(input, bufStr))
+    {
+        if (bufStr.find("MeshTextureCoords") != std::string::npos)
+        {
+            haveTextureCoords = true;
+            break;
+        }
+    }
 
-	getline(input, bufStr);
+    getline(input, bufStr);
 
-	if(haveTextureCoords)
-	{
-		VertexNum = 0;
+    if (haveTextureCoords)
+    {
+        VertexNum = 0;
 
-		while(getline(input, bufStr))
-		{
-			if(bufStr.size() == 0)
-				continue;
-			else if(bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
-				continue;
+        while (getline(input, bufStr))
+        {
+            if (bufStr.size() == 0)
+                continue;
+            else if (bufStr[0] != '-' && bufStr[0] != '\t' && bufStr[0] != ' ' && !::isdigit(bufStr[0]))
+                continue;
 
-			for (int index = 0; index < 2; index++)
-			{
-				DelimiterPosition = bufStr.find(';');
-				std::string curKey = bufStr.substr(0, DelimiterPosition);
-				bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
+            for (int index = 0; index < 2; index++)
+            {
+                DelimiterPosition = bufStr.find(';');
+                std::string curKey = bufStr.substr(0, DelimiterPosition);
+                bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
-				Reader << curKey;
-				Reader >> Mesh[VertexNum].TexCoord.el[index];
-				Reader.clear();
-			}
+                Reader << curKey;
+                Reader >> Mesh[VertexNum].TexCoord.el[index];
+                Reader.clear();
+            }
 
-			VertexNum++;
+            VertexNum++;
 
-			if(bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
-				break;
-		}
-	}
+            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+                break;
+        }
+    }
 
-	MeshLIMHeader header;
+    MeshLIMHeader header;
     header.version = LIM_HEADER_VERSION;
-	header.hasNormals = haveNormals;
-	header.hasTexCoords = haveTextureCoords;
-	header.verticesCount = verticesCount;
-	header.indicesCount = indicesCount * indicesInString;
+    header.hasNormals = haveNormals;
+    header.hasTexCoords = haveTextureCoords;
+    header.verticesCount = verticesCount;
+    header.indicesCount = indicesCount * indicesInString;
 
-	delete[] Mesh;
-	delete[] Ind;
+    delete[] Mesh;
+    delete[] Ind;
 
-	return LIMSaver::Save(out, Mesh, Ind, header);
+    return LIMSaver::Save(out, Mesh, Ind, header);
 }

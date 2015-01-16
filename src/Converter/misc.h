@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <cstring>
-
 #define LIM_HEADER_VERSION 3
 
 #include <MathLib/math.h>
@@ -12,40 +9,38 @@ using MathLib::Vector3F;
 
 struct MeshLIMHeader
 {
-	MeshLIMHeader(int version = 0, 
-				bool hasNormals = false, 
-				bool hasTexcoords = false, 
-				unsigned int verticesCount = 0, 
-				unsigned int indicesCount = 0) 
-                : version(version)
-                , hasNormals(hasNormals)
-                , hasTexCoords(hasTexcoords)
-                , verticesCount(verticesCount)
-                , indicesCount(indicesCount)
-	{
+    MeshLIMHeader(int version = 0, bool hasNormals = false, bool hasTexcoords = false, bool hasColors = false,
+        unsigned int verticesCount = 0, unsigned int indicesCount = 0)
+        : version(version)
+        , hasNormals(hasNormals)
+        , hasTexCoords(hasTexcoords)
+        , hasColors(hasColors)
+        , verticesCount(verticesCount)
+        , indicesCount(indicesCount)
+    {
     }
 
     unsigned int version;
-	bool hasNormals;
-	bool hasTexCoords;
+    bool hasNormals;
+    bool hasTexCoords;
     bool hasColors;
-	unsigned int verticesCount;
-	unsigned int indicesCount;
+    unsigned int verticesCount;
+    unsigned int indicesCount;
 };
 
 struct Vertex
 {
-    Vertex(const Vector3F &Pos = {}, const Vector3F &Normal = {}, const Vector2F &TexCoord = {}, const Vector3F &Color = {})
+    Vertex(const MathLib::Vector3F &Pos = {}, const MathLib::Vector3F &Normal = {}, const MathLib::Vector2F &TexCoord = {}, const MathLib::Vector3F &Color = {})
         : Pos(Pos)
         , Normal(Normal)
         , TexCoord(TexCoord)
         , Color(Color)
-	{
+    {
     }
 
-	Vector3F Pos;
-	Vector3F Normal;
-	Vector2F TexCoord;
-    Vector3F Color;
+    MathLib::Vector3F Pos;
+    MathLib::Vector3F Normal;
+    MathLib::Vector2F TexCoord;
+    MathLib::Vector3F Color;
 };
 
