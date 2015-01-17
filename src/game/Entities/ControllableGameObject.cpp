@@ -60,9 +60,10 @@ void ControllableGameObject::CancelCommands()
 
 void ControllableGameObject::CancelCurrentCommand()
 {
-	if (!Actions.empty())
+	// HACK IT'S TEMPORARY, WHILE AGGREGATOR IS NOT IMPLEMENTED
+	while (!Actions.empty())
 	{
-		auto action = std::move(Actions.back());
+		auto action = std::move(Actions.front());
 		Actions.pop();
 		action->Cancel(this);
 	}
@@ -87,10 +88,10 @@ void ControllableGameObject::Update(double dt)
 	LiveGameObject::Update(dt);
 }
 
-void ControllableGameObject::OnStateChange(EntityState /*from*/, EntityState to)
+void ControllableGameObject::OnStateChange(EntityState from, EntityState to)
 {
 	if (!Actions.empty())
-		Actions.front()->OnStateChange(this, to);
+		Actions.front()->StateChange(this, from, to);
 }
 
 void ControllableGameObject::Interact(InteractableGameObject * target, InteractionType interaction)

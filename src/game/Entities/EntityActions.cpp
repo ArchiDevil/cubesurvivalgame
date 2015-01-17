@@ -8,6 +8,7 @@
 IEntityAction::IEntityAction()
 	: m_dead(false)
 	, m_started(false)
+	, m_cancelled(false)
 {
 }
 
@@ -18,16 +19,6 @@ IEntityAction::~IEntityAction()
 void IEntityAction::die()
 {
 	m_dead = true;
-}
-
-bool IEntityAction::IsDead() const
-{
-	return m_dead;
-}
-
-bool IEntityAction::IsStarted() const
-{
-	return m_started;
 }
 
 void IEntityAction::Start(ControllableGameObject * gameObject)
@@ -50,6 +41,8 @@ void IEntityAction::End(ControllableGameObject * gameObject)
 
 void IEntityAction::Cancel(ControllableGameObject * gameObject)
 {
+	m_cancelled = true;
+
 	if (!gameObject)
 		return;
 
@@ -57,8 +50,25 @@ void IEntityAction::Cancel(ControllableGameObject * gameObject)
 	die();
 }
 
-void IEntityAction::OnStateChange(ControllableGameObject * /*gameObject*/, EntityState /*newState*/)
+void IEntityAction::StateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState)
 {
+	if (!m_cancelled)
+		onStateChange(gameObject, oldState, newState);
+}
+
+bool IEntityAction::IsDead() const
+{
+	return m_dead;
+}
+
+bool IEntityAction::IsStarted() const
+{
+	return m_started;
+}
+
+bool IEntityAction::IsCancelled() const
+{
+	return m_cancelled;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -84,7 +94,7 @@ void MoveAction::onCancel(ControllableGameObject * gameObject)
 	gameObject->Stop();
 }
 
-void MoveAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
+void MoveAction::onStateChange(ControllableGameObject * gameObject, EntityState /*oldState*/, EntityState newState)
 {
 	if (newState != EntityState::Waiting) // entity stops
 		return;
@@ -125,15 +135,15 @@ void CollectingAction::onCancel(ControllableGameObject * gameObject)
 	gameObject->DispatchState(std::make_unique<WaitingState>());
 }
 
-void CollectingAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
+void CollectingAction::onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState)
 {
-	if (newState == EntityState::Waiting)
-		this->End(gameObject);
+	if (oldState == EntityState::Collecting && newState == EntityState::Waiting)
+		End(gameObject);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-void ActionAggregator::OnStateChange(ControllableGameObject * /*gameObject*/, EntityState /*newState*/)
+void ActionAggregator::onStateChange(ControllableGameObject * /*gameObject*/, EntityState /*oldState*/, EntityState /*newState*/)
 {
 }
 
@@ -172,9 +182,9 @@ void AttackAction::onCancel(ControllableGameObject * gameObject)
 	gameObject->DispatchState(std::make_unique<WaitingState>());
 }
 
-void AttackAction::OnStateChange(ControllableGameObject * gameObject, EntityState newState)
+void AttackAction::onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState)
 {
-	if (newState != EntityState::Waiting)
+	if (oldState != EntityState::Attacking && newState != EntityState::Waiting)
 		return;
 
 	if (target->GetHealth() > 0) // target is dead
