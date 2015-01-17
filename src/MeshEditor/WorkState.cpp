@@ -112,7 +112,7 @@ bool WorkState::update(double dt)
 		auto & Input = cInputEngine::GetInstance();
 		newCoordinates = Vector2I(Input.GetMouseInfo().absoluteX, Input.GetMouseInfo().absoluteY);
 		float distance = 0.0f;
-		distance = MathLib::distance(oldCoordinates, newCoordinates);
+		distance = (float)MathLib::distance(oldCoordinates, newCoordinates);
 		oldCoordinates = newCoordinates;
 		lenghtOfMove += distance;
 	}
@@ -171,8 +171,8 @@ void WorkState::onResume(){}
 
 void WorkState::CreateGUI()
 {
-	int screenWidth = ShiftEngine::GetContextManager()->GetParameters().screenWidth;
-	int screenHeight = ShiftEngine::GetContextManager()->GetParameters().screenHeight;
+	int screenWidth = ShiftEngine::GetContextManager()->GetEngineSettings().screenWidth;
+	int screenHeight = ShiftEngine::GetContextManager()->GetEngineSettings().screenHeight;
 	/////////	
 	SimpleGUI::Text * f = new SimpleGUI::Text(pCanvas, "Filename: ");
 	f->SetPosition(50, screenHeight - 45);
@@ -195,7 +195,7 @@ void WorkState::CreateGUI()
 	butSave->SetText("Save");
 
 	butSave->SetClickHandler(
-		[=](int mb, int x, int y)
+		[=](int /*mb*/, int /*x*/, int /*y*/)
 	{
 		f->Show();
 		fname->Show();
@@ -204,7 +204,7 @@ void WorkState::CreateGUI()
 	);
 
 	butSaveOk->SetClickHandler(
-		[=](int mb, int x, int y)
+		[=](int /*mb*/, int /*x*/, int /*y*/)
 	{
 		const std::wstring rr = L".block";
 		Workspace->Save(L"saves/" + fname->GetText() + rr);
@@ -223,15 +223,15 @@ void WorkState::CreateGUI()
 	float panelHeight = 3 * 20 + 3 * 5; //(75)
 
 	SimpleGUI::ValueBox * boxR = new SimpleGUI::ValueBox(pCanvas);
-	boxR->SetPosition(screenWidth - 5 - panelWidth - 35, screenHeight - panelHeight - 5);
-	boxR->SetSize(panelWidth, 20);
+	boxR->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5);
+	boxR->SetSize((int)panelWidth, 20);
 	boxR->SetMaxValue(255);
 	boxR->SetValue(100);
 	boxR->SetName("Name");
 	boxR->Hide();
 
 	SimpleGUI::Text * texR = new SimpleGUI::Text(pCanvas, "100");
-	texR->SetPosition(screenWidth - 5 - 25, screenHeight - panelHeight - 5);
+	texR->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5);
 	texR->SetName("Name");
 	texR->Hide();
 
@@ -242,15 +242,15 @@ void WorkState::CreateGUI()
 	});
 
 	SimpleGUI::ValueBox * boxG = new SimpleGUI::ValueBox(pCanvas);
-	boxG->SetPosition(screenWidth - 5 - panelWidth - 35, screenHeight - panelHeight - 5 + 20 + 5);
-	boxG->SetSize(panelWidth, 20);
+	boxG->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5 + 20 + 5);
+	boxG->SetSize((int)panelWidth, 20);
 	boxG->SetMaxValue(255);
 	boxG->SetValue(100);
 	boxG->SetName("Name");
 	boxG->Hide();
 
 	SimpleGUI::Text * texG = new SimpleGUI::Text(pCanvas, "100");
-	texG->SetPosition(screenWidth - 5 - 25, screenHeight - panelHeight - 5 + 20 + 5);
+	texG->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5 + 20 + 5);
 	texG->SetName("Name");
 	texG->Hide();
 
@@ -261,15 +261,15 @@ void WorkState::CreateGUI()
 	});
 
 	SimpleGUI::ValueBox * boxB = new SimpleGUI::ValueBox(pCanvas);
-	boxB->SetPosition(screenWidth - 5 - panelWidth - 35, screenHeight - panelHeight - 5 + 20 + 5 + 20 + 5);
-	boxB->SetSize(panelWidth, 20);
+	boxB->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5 + 20 + 5 + 20 + 5);
+	boxB->SetSize((int)panelWidth, 20);
 	boxB->SetMaxValue(255);
 	boxB->SetValue(100);
 	boxB->SetName("Name");
 	boxB->Hide();
 
 	SimpleGUI::Text * texB = new SimpleGUI::Text(pCanvas, "100");
-	texB->SetPosition(screenWidth - 5 - 25, screenHeight - panelHeight - 5 + 20 + 5 + 20 + 5);
+	texB->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5 + 20 + 5 + 20 + 5);
 	texB->SetName("Name");
 	texB->Hide();
 

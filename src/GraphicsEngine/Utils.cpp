@@ -172,7 +172,7 @@ ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createSphere()
 		return pDefaultMesh;
 
 	const int subdivisions = 36;
-	const float radius = 1.0f;
+	//const float radius = 1.0f;
 
 	DefaultVertex * vertices = new DefaultVertex[subdivisions * subdivisions * 6];
 	memset(vertices, 0, sizeof(DefaultVertex) * subdivisions * subdivisions * 6);

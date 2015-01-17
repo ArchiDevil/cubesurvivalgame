@@ -15,14 +15,14 @@ bool MenuState::initState()
 	return true;
 }
 
-bool MenuState::update( double dt )
+bool MenuState::update( double /*dt*/ )
 {
 	if(!ProcessInput())
 		return false;
 	return true;
 }
 
-bool MenuState::render( double dt )
+bool MenuState::render( double /*dt*/ )
 {
 	auto t = cInputEngine::GetInstance().GetMouseInfo();
 
@@ -96,7 +96,7 @@ void MenuState::CreateGUI()
 	butNext->SetSize(120, 20);
 	butNext->SetText("Next");
 	butNext->SetClickHandler(
-		[=] (int mb, int innerX, int innerY)
+		[=] (int /*mb*/, int /*innerX*/, int /*innerY*/)
 		{
 			if(utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
 				utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
@@ -115,7 +115,7 @@ void MenuState::CreateGUI()
 	loadingList->SetPosition(400, 150);
 	loadingList->SetSize(160, 240);
 	auto files = utils::filesystem::CollectFileNames(L"saves", L"block");
-	for (int i = 0; i < files.size() ; i++)
+	for (size_t i = 0; i < files.size() ; i++)
 	{
 		loadingList->GetTable()->AddRow(utils::WStrToStr(files[i]));
 	}
@@ -125,7 +125,7 @@ void MenuState::CreateGUI()
 	butLoad->SetSize(160, 20);
 	butLoad->SetText("Load");
 	butLoad->SetClickHandler(
-		[=] (int mb, int innerX, int innerY)
+		[=] (int /*mb*/, int /*innerX*/, int /*innerY*/)
 	{
 		if(loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
 		{

@@ -89,8 +89,9 @@ std::vector<std::string> Console::Tokenize(const std::string & input) const
 
 void Console::ProcessInputKey(long key)
 {
+	// TODO: check if input is invalid
 	if(key != '`' && key != '~')
-		inputBuffer.push_back(key);
+		inputBuffer.push_back((char)key);
 	else
 		inputBuffer.clear();
 }

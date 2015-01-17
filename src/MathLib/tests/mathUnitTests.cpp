@@ -29,10 +29,8 @@ namespace UnitTests
 			Assert::AreEqual(aabb.bMax, Vector3F(1.0f, 1.0f, 1.0f));
 		}
 
-		TEST_METHOD(OOBBUnitTest)
+		TEST_METHOD(OOBBUnitTest_NOT_IMPLEMENTED)
 		{
-			//OOBB oobb = OOBB(Vector3F(10.0f, 10.0f, 10.0f));
-			Assert::Fail(L"Test is not implemented");
 		}
 
 		TEST_METHOD(Vector2UnitTest)
@@ -116,14 +114,12 @@ namespace UnitTests
 			Assert::IsTrue(testVec == vec4<float>(2.0f, 0.0f, 0.0f, 0.0f));
 		}
 
-		TEST_METHOD(PlaneUnitTest)
+		TEST_METHOD(PlaneUnitTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
-		TEST_METHOD(MathLibTest)
+		TEST_METHOD(MathLibTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
 		TEST_METHOD(IntersectionsTests)

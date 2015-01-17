@@ -63,9 +63,9 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 	{
 		for (int j = 0; j < chunkWidth; j++)
 		{
-			float shift1 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
-			float shift2 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
-			float shift3 = noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
+			float shift1 = (float)noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
+			float shift2 = (float)noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
+			float shift3 = (float)noiseGen.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
 			Vector3F randVector = Vector3F(shift1, shift2, shift3);
 
 			unsigned long curIndex = vertices.size();
@@ -115,11 +115,11 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 
 			//LEFT
 
-			float neighboorHeight = ws->GetFullHeight(blockXstart + i - 1, blockYstart + j);
+			float neighboorHeight = (float)ws->GetFullHeight(blockXstart + i - 1, blockYstart + j);
 
 			if(neighboorHeight < height)
 			{
-				for (int k = neighboorHeight; k < height; k++)
+				for (int k = (int)neighboorHeight; k < (int)height; k++)
 				{
 					curIndex = vertices.size();
 
@@ -141,11 +141,11 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 
 			//RIGHT
 
-			neighboorHeight = ws->GetFullHeight(blockXstart + i + 1, blockYstart + j);
+			neighboorHeight = (float)ws->GetFullHeight(blockXstart + i + 1, blockYstart + j);
 
 			if(neighboorHeight < height)
 			{
-				for (int k = neighboorHeight; k < height; k++)
+				for (int k = (int)neighboorHeight; k < (int)height; k++)
 				{
 					curIndex = vertices.size();
 
@@ -167,11 +167,11 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 
 			//FRONT
 
-			neighboorHeight = ws->GetFullHeight(blockXstart + i, blockYstart + j - 1);
+			neighboorHeight = (float)ws->GetFullHeight(blockXstart + i, blockYstart + j - 1);
 
 			if(neighboorHeight < height)
 			{
-				for (int k = neighboorHeight; k < height; k++)
+				for (int k = (int)neighboorHeight; k < (int)height; k++)
 				{
 					curIndex = vertices.size();
 
@@ -193,11 +193,11 @@ bool WorldTesselator::TesselateChunk( int ChunkX, int ChunkY, ShiftEngine::MeshN
 
 			//BOTTOM
 
-			neighboorHeight = ws->GetFullHeight(blockXstart + i, blockYstart + j + 1);
+			neighboorHeight = (float)ws->GetFullHeight(blockXstart + i, blockYstart + j + 1);
 
 			if(neighboorHeight < height)
 			{
-				for (int k = neighboorHeight; k < height; k++)
+				for (int k = (int)neighboorHeight; k < (int)height; k++)
 				{
 					curIndex = vertices.size();
 

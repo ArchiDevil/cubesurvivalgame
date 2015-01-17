@@ -147,7 +147,7 @@ void SimpleGUI::Skinner::DrawListRow( TableRow * row )
 	pFntMgr->SetFont(prevFont);
 }
 
-void SimpleGUI::Skinner::SetControlParameters( ShiftEngine::Sprite * spr, Base * control, const Point & pos, const Point & size )
+void SimpleGUI::Skinner::SetControlParameters( ShiftEngine::Sprite * spr, Base * /*control*/, const Point & pos, const Point & size )
 {
 	spr->SetPosition(Vector2F((float)pos.x + size.x / 2, (float)pos.y + size.y / 2));
 	FloatSize scale = CalculateScaling(size.x, size.y, (int)spr->GetTextureDimensions().x, (int)spr->GetTextureDimensions().y);

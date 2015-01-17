@@ -87,7 +87,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial( const std::
 		PARSING_ERROR("Unable to find any materials");
 	}
 
-	while(true)
+	for (;;)
 	{
 		if(!materialNode)
 		{
@@ -135,8 +135,10 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial( const std::
 			shaderName = shaderNode->Attribute("name");
 			std::string apiName = shaderNode->Attribute("api");
 			auto bindsNode = customNode->FirstChildElement("binds");
+			bindsNode;
 			//binds just ignored now
 			auto uniformsNode = customNode->FirstChildElement("uniforms");
+			uniformsNode;
 			//uniforms also ingored
 		}
 		else

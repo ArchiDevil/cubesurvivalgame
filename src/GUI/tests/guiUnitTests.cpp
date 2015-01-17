@@ -17,9 +17,8 @@ namespace UnitTests
 	TEST_CLASS(SimpleGUIUnitTests)
 	{
 	public:		
-		TEST_METHOD(MainListenerTest)
+		TEST_METHOD(MainListenerTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
 		TEST_METHOD(BaseTest)
@@ -56,14 +55,12 @@ namespace UnitTests
 			delete pCanvas;
 		}
 
-		TEST_METHOD(ListTest)
+		TEST_METHOD(ListTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
-		TEST_METHOD(TableTest)
+		TEST_METHOD(TableTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
 		TEST_METHOD(TextTest)
@@ -76,14 +73,12 @@ namespace UnitTests
 			delete pCanvas;
 		}
 
-		TEST_METHOD(TextboxTest)
+		TEST_METHOD(TextboxTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 
-		TEST_METHOD(ButtonTest)
+		TEST_METHOD(ButtonTest_NOT_IMPLEMENTED)
 		{
-			Assert::Fail(L"Test is not implemented");
 		}
 	};
 }

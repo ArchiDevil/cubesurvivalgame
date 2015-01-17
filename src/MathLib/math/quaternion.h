@@ -210,7 +210,7 @@ namespace MathLib
 	template<typename T>
 	quaternion<T> quaternionFromMatrix(const matrix<T, 3> & ref)
 	{
-		float  tr, s, q[4];
+		double tr, s, q[4];
 		quaternion<T> out;
 
 		tr = ref.arr[0][0] + ref.arr[1][1] + ref.arr[2][2];
@@ -218,11 +218,11 @@ namespace MathLib
 		if (tr > 0.0)
 		{
 			s = sqrt(tr + 1.0);
-			out.w = s / 2.0;
+			out.w = (T)(s / 2.0);
 			s = 0.5 / s;
-			out.vector.x = (ref.arr[1][2] - ref.arr[2][1]) * s;
-			out.vector.y = (ref.arr[2][0] - ref.arr[0][2]) * s;
-			out.vector.z = (ref.arr[0][1] - ref.arr[1][0]) * s;
+			out.vector.x = (ref.arr[1][2] - ref.arr[2][1]) * (T)s;
+			out.vector.y = (ref.arr[2][0] - ref.arr[0][2]) * (T)s;
+			out.vector.z = (ref.arr[0][1] - ref.arr[1][0]) * (T)s;
 		}
 		else
 		{
@@ -235,20 +235,21 @@ namespace MathLib
 			j = nxt[i];
 			k = nxt[j];
 
-			s = sqrt((ref.arr[i][i] - (ref.arr[j][j] + ref.arr[k][k])) + 1.0);
+			s = sqrt((ref.arr[i][i] - (ref.arr[j][j] + ref.arr[k][k])) + 1.0f);
 
 			q[i] = s * 0.5;
 
-			if (s != 0.0) s = 0.5 / s;
+			if (s != 0.0) 
+				s = 0.5 / s;
 
 			q[3] = (ref.arr[j][k] - ref.arr[k][j]) * s;
 			q[j] = (ref.arr[i][j] + ref.arr[j][i]) * s;
 			q[k] = (ref.arr[i][k] + ref.arr[k][i]) * s;
 
-			out.vector.x = q[0];
-			out.vector.y = q[1];
-			out.vector.z = q[2];
-			out.w = q[3];
+			out.vector.x = (T)q[0];
+			out.vector.y = (T)q[1];
+			out.vector.z = (T)q[2];
+			out.w = (T)q[3];
 		}
 		return out;
 	}
@@ -312,7 +313,7 @@ namespace MathLib
 		else
 		{        
 			// если маленький угол - линейна€ интерпол€ци€
-			scale0 = 1.0 - t;
+			scale0 = (T)1.0 - t;
 			scale1 = t;
 		}
 

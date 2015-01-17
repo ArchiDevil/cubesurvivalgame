@@ -7,7 +7,7 @@ class PhysicsGameObject;
 class ItemGameObject : public PhysicsGameObject
 {
 public:
-	ItemGameObject(uint64_t itemId, uint64_t count, PhysObjectPtr _obj, ShiftEngine::MeshNode * meshNode);
+	ItemGameObject(uint64_t itemId, size_t count, PhysObjectPtr _obj, ShiftEngine::MeshNode * meshNode);
 	~ItemGameObject();
 
 	uint64_t GetItemId() const;

@@ -156,7 +156,7 @@ void Application::Activate()
 	statesStack.top()->onResume();
 }
 
-void Application::ProcessMessage( MSG msg )
+void Application::ProcessMessage( MSG /*msg*/ )
 {
 	static AppState prevState = AS_Running;
 	AppState currState = System.GetState();

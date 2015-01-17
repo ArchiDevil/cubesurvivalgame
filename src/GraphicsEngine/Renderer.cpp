@@ -24,7 +24,7 @@ ShiftEngine::Renderer::~Renderer()
 {
 }
 
-void ShiftEngine::Renderer::DrawAll( RenderQueue & rq, double dt )
+void ShiftEngine::Renderer::DrawAll( RenderQueue & rq, double /*dt*/ )
 {
 	static double baseTime = 0.0f;
 	if (FPSTimer.GetRunningTime() - baseTime >= 1.0f)
@@ -235,11 +235,8 @@ void ShiftEngine::Renderer::bindEngineUniforms( MeshNode * currentNode, const Re
 	}
 }
 
-void ShiftEngine::Renderer::bindCustomUniforms( MeshNode * currentNode, const RenderQueue & list )
+void ShiftEngine::Renderer::bindCustomUniforms( MeshNode * currentNode, const RenderQueue & /*list*/ )
 {
-	bool stateChanged = false;
-	//other uniforms
-
 	auto mat = currentNode->GetMaterialPtr();
 
 	if(!currentState.shaderChanged)

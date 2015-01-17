@@ -78,10 +78,10 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode()
 	CameraSceneNode * cam = new CameraSceneNode();
 	cam->SetSceneGraph(this);
 	rootNode->AddChild(cam);
-	cam->Initialize((float)ContextManager->GetParameters().screenWidth, 
-					(float)ContextManager->GetParameters().screenHeight,
-					ContextManager->GetParameters().zNear, 
-					ContextManager->GetParameters().zFar, 
+	cam->Initialize((float)ContextManager->GetEngineSettings().screenWidth, 
+					(float)ContextManager->GetEngineSettings().screenHeight,
+					ContextManager->GetEngineSettings().zNear, 
+					ContextManager->GetEngineSettings().zFar, 
 					60.0f);
 
 	if(!activeCamera)
@@ -102,7 +102,9 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::GetActiveCamera() const
 
 ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
 {
-	SkySceneNode * out = new SkySceneNode(&Material(GetContextManager()->LoadShader(L"sky.fx")), GetContextManager()->LoadMesh(L"sky.lim"));
+	ShiftEngine::Material material(GetContextManager()->LoadShader(L"sky.fx"));
+	ShiftEngine::MeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
+	SkySceneNode * out = new SkySceneNode(&material, mesh);
 	activeSky = out;
 	out->SetSceneGraph(this);
 	return out;

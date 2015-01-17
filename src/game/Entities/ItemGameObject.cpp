@@ -2,10 +2,10 @@
 
 #include "../game.h"
 
-ItemGameObject::ItemGameObject(uint64_t itemId, uint64_t count, PhysObjectPtr obj, ShiftEngine::MeshNode * meshNode)
+ItemGameObject::ItemGameObject(uint64_t itemId, size_t count, PhysObjectPtr _obj, ShiftEngine::MeshNode * meshNode) 
 	: itemId(itemId)
 	, count(count)
-	, PhysicsGameObject(obj, meshNode)
+	, PhysicsGameObject(_obj, meshNode)
 {
 }
 
@@ -25,7 +25,7 @@ void ItemGameObject::Update(double dt)
 	auto ppos = pGame->Player->GetPosition();
 	if (MathLib::distance((Vector3F)ppos, GetPosition()) < 1.0f)
 	{
-		pGame->Player->GetInventoryPtr()->AddItem(itemId, count);
+		pGame->GlobalEventHandler->onPlayerPicksItem(itemId, count);
 		Delete();
 	}
 }

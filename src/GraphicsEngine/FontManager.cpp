@@ -23,7 +23,6 @@ void ShiftEngine::FontManager::Shutdown()
 void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y)
 {
 	D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
-	ID3D10Device *pContext = pCntMng->GetDevicePointer();
 
 	if (!pCurrentFont || !Text.size())
 		return;
@@ -37,7 +36,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 
 	D3DXMATRIX mat, matOrtho, matT;
 	D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
-	GraphicEngineSettings pSettings = pCntMng->GetParameters();
+	GraphicEngineSettings pSettings = pCntMng->GetEngineSettings();
 	D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
 	mat = matT * matOrtho;
 	TextShader->SetMatrixConstantByName("matOrtho", (float*)mat);
@@ -75,7 +74,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
 
 	D3DXMATRIX mat, matOrtho, matT;
 	D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
-	GraphicEngineSettings pSettings = pCntMng->GetParameters();
+	GraphicEngineSettings pSettings = pCntMng->GetEngineSettings();
 	D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
 	mat = matT * matOrtho;
 	TextShader->SetMatrixConstantByName("matOrtho", (float*)mat);

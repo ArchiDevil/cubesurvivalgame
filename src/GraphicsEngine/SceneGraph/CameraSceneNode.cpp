@@ -107,7 +107,7 @@ void ShiftEngine::CameraSceneNode::LookAt( D3DXVECTOR3 point )
 	D3DXVec3Normalize(&LOOK, &point);
 }
 
-void ShiftEngine::CameraSceneNode::PushToRQ( RenderQueue & rq )
+void ShiftEngine::CameraSceneNode::PushToRQ( RenderQueue & /*rq*/ )
 {
 }
 

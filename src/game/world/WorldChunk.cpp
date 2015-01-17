@@ -29,15 +29,15 @@ int WorldChunk::GetWorldY() const
 void WorldChunk::SetWorldX( int _x )
 {
 	WorldX = _x;
-	landNode->SetPosition(Vector3F(WorldX * (int)chunkWidth, WorldY * (int)chunkWidth, 0.0f));
-	waterNode->SetPosition(Vector3F(WorldX * (int)chunkWidth, WorldY * (int)chunkWidth, 0.0f));
+	landNode->SetPosition(Vector3F((float)WorldX * (float)chunkWidth, (float)WorldY * (float)chunkWidth, 0.0f));
+	waterNode->SetPosition(Vector3F((float)WorldX * (float)chunkWidth, (float)WorldY * (float)chunkWidth, 0.0f));
 }
 
 void WorldChunk::SetWorldY( int _y )
 {
 	WorldY = _y;
-	landNode->SetPosition(Vector3F(WorldX * (int)chunkWidth, WorldY * (int)chunkWidth, 0.0f));
-	waterNode->SetPosition(Vector3F(WorldX * (int)chunkWidth, WorldY * (int)chunkWidth, 0.0f));
+	landNode->SetPosition(Vector3F((float)WorldX * (float)chunkWidth, (float)WorldY * (float)chunkWidth, 0.0f));
+	waterNode->SetPosition(Vector3F((float)WorldX * (float)chunkWidth, (float)WorldY * (float)chunkWidth, 0.0f));
 }
 
 ChunkStatus WorldChunk::GetStatus() const

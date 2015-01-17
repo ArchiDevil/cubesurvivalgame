@@ -63,12 +63,12 @@ namespace SimpleGUI
 	bool Base::OnMouseMove(){return false;}
 	bool Base::OnMouseEnter(){return false;}
 	bool Base::OnMouseLeave(){return false;}
-	bool Base::OnMouseDown( int mb, int x, int y ){return false;}
-	bool Base::OnMouseUp( int mb, int x, int y ){return false;}
+	bool Base::OnMouseDown( int /*mb*/, int /*x*/, int /*y*/ ){return false;}
+	bool Base::OnMouseUp( int /*mb*/, int /*x*/, int /*y*/ ){return false;}
 
-	bool Base::OnKeyChar( wchar_t Key ){return false;}
-	bool Base::OnKeyUp( wchar_t Key ){return false;}
-	bool Base::OnKeyDown( wchar_t Key ){return false;}
+	bool Base::OnKeyChar( wchar_t /*Key*/ ){return false;}
+	bool Base::OnKeyUp( wchar_t /*Key*/ ){return false;}
+	bool Base::OnKeyDown( wchar_t /*Key*/ ){return false;}
 
 	bool Base::CanHaveFocus() const {return false;}
 

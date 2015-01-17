@@ -2,7 +2,7 @@
 
 using namespace SimpleGUI;
 
-Application::Application(HINSTANCE hInstance, int Width, int Height, LPCWSTR AppName)
+Application::Application(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
 	: cApplication(Width, Height, AppName)
 {
 	::ShowCursor(true);

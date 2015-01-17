@@ -50,7 +50,7 @@ namespace SimpleGUI
 		}
 	}
 
-	void InputHandler::ProcessMouseMoving( Point oldPos, Point newPos )
+	void InputHandler::ProcessMouseMoving( Point /*oldPos*/, Point newPos )
 	{
 		//much more?
 		UpdateHoveredControl(newPos.x, newPos.y);
@@ -62,7 +62,7 @@ namespace SimpleGUI
 			FocusedControl->OnKeyChar(character);
 	}
 
-	void InputHandler::ProcessSpecialKeyUp( unsigned int key )
+	void InputHandler::ProcessSpecialKeyUp( unsigned int /*key*/ )
 	{
 		return;
 	}

@@ -14,13 +14,13 @@ cChunkStreamer::cChunkStreamer( WorldStorage * ws )
 
 cChunkStreamer::~cChunkStreamer() {}
 
-bool cChunkStreamer::Check( int x, int y ) const
+bool cChunkStreamer::Check( int /*x*/, int /*y*/ ) const
 {
 	return false;
 	//return (bool)std::ifstream(BuildFileName(x, y));
 }
 
-void cChunkStreamer::Load( int x, int y ) const
+void cChunkStreamer::Load( int /*x*/, int /*y*/ ) const
 {
 	////already checked? no, sure =)
 	//if(!Check(x, y))
@@ -46,7 +46,7 @@ void cChunkStreamer::Load( int x, int y ) const
 	//delete [] buffer;
 }
 
-void cChunkStreamer::Save( int x, int y ) const
+void cChunkStreamer::Save( int /*x*/, int /*y*/ ) const
 {
 // 	std::ofstream output(BuildFileName(x, y), std::ios_base::binary);
 // 	size_t bufferSize = ws->GetChunkHeight() * sizeof(Block);

@@ -72,13 +72,13 @@ namespace ShiftEngine
 		virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) = 0;
 		virtual bool SetVectorConstantByName(const char * nameInShader, const float * vec) = 0;
 		virtual bool SetArrayConstantByName(const char * nameInShader, const void * data) = 0;
-		virtual bool SetTextureByName(const char * textureName, TexturePtr & texture) = 0;
+		virtual bool SetTextureByName(const char * textureName, const TexturePtr & texture) = 0;
 
 		virtual void SetMatrixConstantByIndex(unsigned int index, const float * mat) = 0;
 		virtual void SetScalarConstantByIndex(unsigned int index, const float * mat) = 0;
 		virtual void SetVectorConstantByIndex(unsigned int index, const float * mat) = 0;
 		virtual void SetArrayConstantByIndex(unsigned int index, const void * data) = 0;
-		virtual bool SetTextureByIndex(unsigned int index, TexturePtr & texture) = 0;
+		virtual bool SetTextureByIndex(unsigned int index, const TexturePtr & texture) = 0;
 
 		virtual bool GetVariableIndex(const char * name, unsigned int * index) = 0;
 		virtual bool GetResourceIndex(const char * name, unsigned int * index) = 0;
@@ -97,13 +97,13 @@ namespace ShiftEngine
 		virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) override;
 		virtual bool SetVectorConstantByName(const char * nameInShader, const float * vec) override;
 		virtual bool SetArrayConstantByName( const char * nameInShader, const void * data ) override;
-		virtual bool SetTextureByName(const char * textureName, TexturePtr & texture) override;	
+		virtual bool SetTextureByName(const char * textureName, const TexturePtr & texture) override;
 
 		virtual void SetMatrixConstantByIndex(unsigned int index, const float * mat) override;
 		virtual void SetScalarConstantByIndex(unsigned int index, const float * mat) override;
 		virtual void SetVectorConstantByIndex(unsigned int index, const float * mat) override;
 		virtual void SetArrayConstantByIndex(unsigned int index, const void * data) override;
-		virtual bool SetTextureByIndex(unsigned int index, TexturePtr & texture) override;
+		virtual bool SetTextureByIndex(unsigned int index, const TexturePtr & texture) override;
 
 		virtual bool GetVariableIndex(const char * name, unsigned int * index) override;
 		virtual bool GetResourceIndex(const char * name, unsigned int * index) override;

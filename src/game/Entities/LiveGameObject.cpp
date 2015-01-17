@@ -47,7 +47,7 @@ void LiveGameObject::Update(double dt)
 	float maxHeight = (float)heights[0];
 	for (int i = 0; i < 4; ++i)
 		if (maxHeight < heights[i])
-			maxHeight = heights[i];
+			maxHeight = (float)heights[i];
 
 	auto position = GetPosition();
 	position.z = (float)maxHeight;
@@ -65,6 +65,6 @@ GameObjectInventory * LiveGameObject::GetInventory()
 	return &inventory;
 }
 
-void LiveGameObject::Attack(LiveGameObject * target) const
+void LiveGameObject::Attack(LiveGameObject * /*target*/) const
 {
 }

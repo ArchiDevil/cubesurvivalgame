@@ -9,7 +9,7 @@ SimpleGUI::ValueBox::~ValueBox()
 {
 }
 
-bool SimpleGUI::ValueBox::OnMouseDown( int mb, int x, int y )
+bool SimpleGUI::ValueBox::OnMouseDown( int /*mb*/, int x, int /*y*/ )
 {
 	isMoving = true;
 	//first we need to recalculate coords into inner space
@@ -25,7 +25,7 @@ bool SimpleGUI::ValueBox::OnMouseDown( int mb, int x, int y )
 	return true;
 }
 
-bool SimpleGUI::ValueBox::OnMouseUp( int mb, int x, int y )
+bool SimpleGUI::ValueBox::OnMouseUp( int /*mb*/, int /*x*/, int /*y*/ )
 {
 	isMoving = false;
 	OnValueChanged();

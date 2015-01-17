@@ -249,7 +249,7 @@ bool ShiftEngine::D3D10Program::SetArrayConstantByName( const char * nameInShade
 	return false;
 }
 
-bool ShiftEngine::D3D10Program::SetTextureByName( const char * textureName, TexturePtr & texture )
+bool ShiftEngine::D3D10Program::SetTextureByName(const char * textureName, const TexturePtr & texture)
 {
 	unsigned int index = 0;
 	if(GetResourceIndex(textureName, &index))
@@ -371,7 +371,7 @@ void ShiftEngine::D3D10Program::SetUniformByIndex( unsigned int index, const voi
 	memcpy(buffer.bufferData + var.Offset, data, var.Size);
 }
 
-bool ShiftEngine::D3D10Program::SetTextureByIndex( unsigned int index, TexturePtr & texture )
+bool ShiftEngine::D3D10Program::SetTextureByIndex(unsigned int index, const TexturePtr & texture)
 {
 	if (!texture)
 		return false;

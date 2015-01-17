@@ -28,7 +28,7 @@ size_t CollectableGameObject::GetCount() const
 	return count;
 }
 
-void CollectableGameObject::Update(double dt)
+void CollectableGameObject::Update(double /*dt*/)
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto bbox = SceneNode->GetBBox();
@@ -45,7 +45,7 @@ void CollectableGameObject::Update(double dt)
 	float maxHeight = (float)heights[0];
 	for (int i = 0; i < 4; ++i)
 		if (maxHeight < heights[i])
-			maxHeight = heights[i];
+			maxHeight = (float)heights[i];
 
 	auto position = GetPosition();
 	position.z = (float)maxHeight;

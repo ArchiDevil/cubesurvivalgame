@@ -11,7 +11,7 @@ if(NOT MSVC)
 endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
-option(BUILD_TESTS "Generate projects for tests building" OFF)
+option(BUILD_TESTS "Generate projects for tests building" ON)
 
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -92,7 +92,7 @@ endfunction(VSTestLinkLibraries)
 
 if(MSVC)
 	add_definitions(-DUNICODE -D_UNICODE)
-	add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /D_CRT_SECURE_NO_WARNINGS /W4")
+	add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS /W4")
 endif()
 
 include_directories(${RootDir})

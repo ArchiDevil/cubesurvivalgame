@@ -4,6 +4,8 @@
 
 #define waterLevel 70
 
+using MathLib::Vector2D;
+
 cWorld::cWorld()
 {
 }
@@ -76,9 +78,9 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
 			Generator->GetNoise()->SetOctaves(5);
 
 			double noise = Generator->GetNoise()->SimplexNoise(i, j) * 6.0f;
-			double distance = MathLib::distance(Vector2F(), Vector2F(i, j)) / 400.0;
-			int result = (noise + 90) * (1.0 - distance);
-			unsigned int kMax = result < 3 ? 3 : result; //+ GetInterpolatedHeight(i, j);
+			double distance = MathLib::distance(Vector2D(), Vector2D((double)i, (double)j)) / 400.0;
+			int result = (int)((noise + 90.0) * (1.0 - distance));
+			unsigned char kMax = result < 3 ? 3 : (unsigned char)result; //+ GetInterpolatedHeight(i, j);
 			//unsigned int kMax = 90;
 
 			DataStorage->SetColumn(i, j, 0, BlockColumn(BlockTypes::BT_Stone, kMax));
@@ -100,7 +102,7 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
 	}
 }
 
-void cWorld::ShiftChunkX(int ShiftingValue)
+void cWorld::ShiftChunkX(int /*ShiftingValue*/)
 {
 	//updatingSection.lock();
 
@@ -140,7 +142,7 @@ void cWorld::ShiftChunkX(int ShiftingValue)
 	//updatingSection.unlock();
 }
 
-void cWorld::ShiftChunkY(int ShiftingValue)
+void cWorld::ShiftChunkY(int /*ShiftingValue*/)
 {
 	//updatingSection.lock();
 
@@ -272,19 +274,19 @@ float cWorld::GetInterpolatedHeight(int x, int y)
 {
 	unsigned int ChunkWidth = DataStorage->GetChunkWidth();
 
-	int LeftChunkX = floor((float)(x - (int)ChunkWidth / 2) / (int)ChunkWidth);
+	int LeftChunkX = (int)floor((float)(x - (int)ChunkWidth / 2) / (int)ChunkWidth);
 	int RightChunkX = LeftChunkX + 1;
-	int TopChunkY = floor((float)(y - (int)ChunkWidth / 2) / (int)ChunkWidth);
+	int TopChunkY = (int)floor((float)(y - (int)ChunkWidth / 2) / (int)ChunkWidth);
 	int BottomChunkY = TopChunkY + 1;
 
 	int left = LeftChunkX * ChunkWidth + (int)ChunkWidth / 2;
 	int top = TopChunkY * ChunkWidth + (int)ChunkWidth / 2;
 
 	float k = (float)(x - left) / (int)ChunkWidth;
-	float v1 = MathLib::LinearInterpolation(Generator->GetHeight(LeftChunkX, TopChunkY),
-		Generator->GetHeight(RightChunkX, TopChunkY), k);
-	float v2 = MathLib::LinearInterpolation(Generator->GetHeight(LeftChunkX, BottomChunkY),
-		Generator->GetHeight(RightChunkX, BottomChunkY), k);
+	float v1 = MathLib::LinearInterpolation((float)Generator->GetHeight(LeftChunkX, TopChunkY),
+											(float)Generator->GetHeight(RightChunkX, TopChunkY), k);
+	float v2 = MathLib::LinearInterpolation((float)Generator->GetHeight(LeftChunkX, BottomChunkY),
+											(float)Generator->GetHeight(RightChunkX, BottomChunkY), k);
 	k = (float)(y - top) / (int)ChunkWidth;
 	float v3 = MathLib::LinearInterpolation(v1, v2, k);
 
@@ -367,8 +369,8 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
 			for (int yStart = WorldY * ChunkWidth; yStart < WorldY * ChunkWidth + ChunkWidth; ++yStart)
 			{
 				MathLib::AABB bbox;
-				bbox.bMin = Vector3F(xStart, yStart, DataStorage->GetFullHeight(xStart, yStart));
-				bbox.bMax = Vector3F(xStart + 1, yStart + 1, DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
+				bbox.bMin = Vector3F((float)xStart, (float)yStart, (float)DataStorage->GetFullHeight(xStart, yStart));
+				bbox.bMax = Vector3F((float)xStart + 1.0f, (float)yStart + 1.0f, (float)DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
 				if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
 				{
 					foundBBoxes.push_back(bbox);

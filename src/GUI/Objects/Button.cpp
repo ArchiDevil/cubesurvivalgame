@@ -53,7 +53,7 @@ bool SimpleGUI::Button::OnMouseUp( int mb, int innerX, int innerY )
 	return true;
 }
 
-void SimpleGUI::Button::SetPicture( const std::wstring & str, bool center )
+void SimpleGUI::Button::SetPicture( const std::wstring & str, bool /*center*/ )
 {
 	//TODO: create alignment to the: center / left-top corner
 	textureName = str;

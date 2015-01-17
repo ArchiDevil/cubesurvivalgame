@@ -50,7 +50,7 @@ MathLib::AABB MathLib::OOBB::GetAABB() const
 	return AABB(min, max);
 }
 
-bool MathLib::OOBB::IntersectsAABB( const AABB & bbox )
+bool MathLib::OOBB::IntersectsAABB( const AABB & /*bbox*/ )
 {
 	throw;
 }
@@ -163,7 +163,7 @@ bool MathLib::OOBB::IntersectsOOBB( const OOBB & bbox )
 	return true;
 }
 
-bool MathLib::OOBB::IntersectsSphere( const Vector3F & center, float raduis )
+bool MathLib::OOBB::IntersectsSphere( const Vector3F & /*center*/, float /*raduis*/ )
 {
 	throw;
 }
@@ -204,7 +204,7 @@ bool MathLib::OOBB::IntersectsLineSegment( const Vector3F &mid, const Vector3F &
 	return true;
 }
 
-bool MathLib::OOBB::IntersectsTriangle( const Vector3F &pnt1, const Vector3F &pnt2, const Vector3F &pnt3 )
+bool MathLib::OOBB::IntersectsTriangle( const Vector3F &/*pnt1*/, const Vector3F &/*pnt2*/, const Vector3F &/*pnt3*/ )
 {
 	throw;
 }

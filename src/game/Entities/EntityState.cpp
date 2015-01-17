@@ -125,12 +125,12 @@ void DyingState::Update(LiveGameObject * entity, double dt)
 	if (!pSceneNode)
 		return;
 
-	float scale = (fullTime - accumulatedTime) / fullTime;
+	float scale = (float)((fullTime - accumulatedTime) / fullTime);
 	pSceneNode->SetScale(scale);
 	if (accumulatedTime > fullTime)
 	{
 		LostIsland::GetGamePtr()->GlobalEventHandler->onLivingObjectDies(entity);
-		entity->DispatchState(std::make_unique<DecayState>(2.0));
+		entity->DispatchState(std::make_unique<DecayState>(2.0f));
 	}
 }
 

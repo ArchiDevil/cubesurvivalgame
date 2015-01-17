@@ -51,8 +51,8 @@ void cChunksStorage::Initialize( int ChunksPerSide, int CenterChunkX, int Center
 		MeshDataPtr waterMesh = std::make_shared<MeshData>(waterIL);
 		waterMesh->vertexSemantic = &waterSemantics;
 		Chunks[i].Initialize(
-			GetSceneGraph()->AddMeshNode(landMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, 256.0f)), worldChunkMtl.get()),
-			GetSceneGraph()->AddMeshNode(waterMesh, MathLib::AABB(Vector3F(), Vector3F(chunkWidth, chunkWidth, 256.0f)), waterChunkMtl.get()),
+			GetSceneGraph()->AddMeshNode(landMesh, MathLib::AABB({}, { (float)chunkWidth, (float)chunkWidth, 256.0f }), worldChunkMtl.get()),
+			GetSceneGraph()->AddMeshNode(waterMesh, MathLib::AABB({}, { (float)chunkWidth, (float)chunkWidth, 256.0f }), waterChunkMtl.get()),
 			chunkWidth);
 	}
 

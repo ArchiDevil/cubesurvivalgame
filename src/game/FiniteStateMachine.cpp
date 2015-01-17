@@ -59,6 +59,6 @@ IEntityState * FiniteStateMachine::GetCurrentState()
 	return currentState.get();
 }
 
-void FiniteStateMachine::OnStateChange(EntityState from, EntityState to)
+void FiniteStateMachine::OnStateChange(EntityState /*from*/, EntityState /*to*/)
 {
 }

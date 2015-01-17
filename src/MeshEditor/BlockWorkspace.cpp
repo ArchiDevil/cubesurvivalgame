@@ -98,7 +98,7 @@ void BlockWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int
 	createUndo(x_size * y_size * z_size);
 }
 
-int BlockWorkspace::GetIndexNew(int x, int y, int z, int xSize, int ySize, int zSize)
+int BlockWorkspace::GetIndexNew(int x, int y, int z, int /*xSize*/, int ySize, int zSize)
 {
 	return x * zSize * ySize + y * zSize + z;
 }
@@ -190,7 +190,7 @@ float BlockWorkspace::GetAOFactor( float x1, float x2, float y1, float y2, float
 	for (float i = x1; i <= x2; i++)
 		for (float j = y1; j <= y2; j++)
 			for (float k = z1; k <= z2; k++)
-				if(GetElem(i, j, k).exist)
+				if (GetElem((int)i, (int)j, (int)k).exist)
 					shadowFactor += pow(MathLib::distance(center, Vector3F(i, j, k)) / maxDist, 2);
 
 	//dividing
@@ -401,7 +401,7 @@ void BlockWorkspace::Tesselate()
 	cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(semantic);
 
 	if(!mesh)
-		mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB(Vector3F(), Vector3F(x_size, y_size, z_size)), &GeometryMaterial);
+		mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB({}, { (float)x_size, (float)y_size, (float)z_size }), &GeometryMaterial);
 	else
 		mesh->SetDataPtr(meshData);
 

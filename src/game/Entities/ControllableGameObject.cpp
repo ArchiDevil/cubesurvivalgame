@@ -29,7 +29,7 @@ bool ControllableGameObject::Go(const MathLib::Vector2F & target)
 
 	for (unsigned i = 0;; ++i)
 	{
-		BlockTypes currentBlock = pGame->World->GetDataStorage()->GetBlockType(std::floor(target.x), std::floor(target.y), i++);
+		BlockTypes currentBlock = pGame->World->GetDataStorage()->GetBlockType((int)std::floor(target.x), (int)std::floor(target.y), i++);
 		if (currentBlock == BT_Empty)
 			break;
 		topColumn = currentBlock;
@@ -102,13 +102,13 @@ void ControllableGameObject::Interact(InteractableGameObject * target, Interacti
 		break;
 	case InteractionType::Collecting:
 		PushCommand(std::make_unique<MoveAction>(targetPosition));
-		PushCommand(std::make_unique<CollectingAction>(3.0, (CollectableGameObject*)target, 3.0));
+		PushCommand(std::make_unique<CollectingAction>(3.0, (CollectableGameObject*)target, 3.0f));
 		break;
 	case InteractionType::Attacking:
 		PushCommand(std::make_unique<MoveAction>(targetPosition));
-		if ((LiveGameObject*)target == nullptr) 
+		if (!(LiveGameObject*)target)
 			throw std::runtime_error("Unable to cast GameObject into LiveGameObject");
-		PushCommand(std::make_unique<AttackAction>((LiveGameObject*)target, 1.0));
+		PushCommand(std::make_unique<AttackAction>((LiveGameObject*)target, 1.0f));
 		break;
 	default:
 		assert(false);

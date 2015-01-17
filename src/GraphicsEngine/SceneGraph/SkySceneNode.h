@@ -14,7 +14,7 @@ namespace ShiftEngine
 	class SkySceneNode : public MeshNode
 	{
 	public:
-		SkySceneNode(const Material * material, MeshDataPtr & _meshData);
+		SkySceneNode(const Material * material, const MeshDataPtr & meshData);
 		~SkySceneNode();
 
 		virtual void PushToRQ( RenderQueue & rq );

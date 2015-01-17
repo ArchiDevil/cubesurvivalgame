@@ -70,7 +70,7 @@ bool MathLib::SphereSphereIntersect(Vector3F s1, Vector3F s2, float r1, float r2
 	return false;
 }
 
-bool MathLib::RaySphereIntersect(Ray & r, Vector3F & s1, float r1)
+bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
 {
 	Vector3F diff = s1 - r.Origin;
 

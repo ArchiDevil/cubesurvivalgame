@@ -38,7 +38,9 @@ void SimplePhysicsEngine::UpdatePhysics(double dt)
 {
 	for (auto &object : physEntities)
 	{
-		float l = 0.0f, r = (float)dt, eps = 1e-6;
+		float l = 0.0f;
+		float r = (float)dt;
+		float eps = 1e-6f;
 		Vector3F newPos = object->Position;
 		while (fabs(l - r) > eps)
 		{

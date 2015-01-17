@@ -122,7 +122,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateInput(ostringstream & stream, cons
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
 {
     ADD_LINE("struct VS_OUT" << endl << "{");
     ADD_LINE("float4 OutPos : SV_Position;");
@@ -154,7 +154,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, con
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
 {
     ADD_LINE("VS_OUT VS(VS_IN Input)" << endl << "{");
     ADD_LINE("VS_OUT Output;");
@@ -188,7 +188,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const V
     ADD_LINE("}");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
 {
     ADD_LINE("float4 PS(VS_OUT Input) : SV_TARGET" << endl << "{");
 

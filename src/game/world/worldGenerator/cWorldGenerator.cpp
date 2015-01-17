@@ -41,7 +41,7 @@ void cWorldGenerator::GenerateHeightMap( int size )
 
 			int cellX = (int)(i * mapSize / 2);
 			int cellY = (int)(j * mapSize / 2);
-			heightMap[(int)cellX][(int)cellY] = value * 100.0;
+			heightMap[(int)cellX][(int)cellY] = (int)(value * 100.0);
 		}
 	}
 }

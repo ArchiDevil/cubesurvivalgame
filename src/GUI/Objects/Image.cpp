@@ -13,7 +13,7 @@ namespace SimpleGUI
 		this->RecursiveDrawing(skin);
 	}
 
-	void Image::SetImage( const std::wstring & image )
+	void Image::SetImage( const std::wstring & /*image*/ )
 	{
 		return;
 		//this->image.

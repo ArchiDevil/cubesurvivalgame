@@ -4,7 +4,7 @@ SimpleGUI::TableRow::TableRow( Base * parent, AnsiString _text )
 	: Base(parent), text(_text), Selected(false)
 {}
 
-bool SimpleGUI::TableRow::OnMouseUp( int mb, int innerX, int innerY )
+bool SimpleGUI::TableRow::OnMouseUp( int mb, int /*innerX*/, int /*innerY*/ )
 {
 	if(mb != 0) //left
 		return false;
@@ -72,7 +72,7 @@ void SimpleGUI::Table::Clear()
 	Base::RemoveAllChildrens();
 }
 
-SimpleGUI::TableRow * SimpleGUI::Table::GetRow( int num )
+SimpleGUI::TableRow * SimpleGUI::Table::GetRow( int /*num*/ )
 {
 	LOG_FATAL_ERROR("Fatal error");
 	return nullptr;

@@ -57,7 +57,7 @@ namespace UtilTest
 			for(auto elem : blocks)
 			{
 				uint8_t * dt = elem->GetData();
-				for(int i = 0; i < elem->GetSize(); i++)
+				for(uint32_t i = 0; i < elem->GetSize(); i++)
 				{
 					Assert::AreEqual(dt[i], data[i], L"Wrong loaded data");
 				}

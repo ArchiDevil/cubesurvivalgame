@@ -2,9 +2,9 @@
 
 #include "appclass.h" //Win32 application class
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nShowCmd)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nShowCmd*/)
 {
-	srand(time(nullptr));
+	srand((unsigned)time(nullptr));
 
 	IniWorker i;
 	if(!i.Initialize("settings.ini"))
