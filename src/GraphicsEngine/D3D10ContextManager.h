@@ -73,20 +73,20 @@ namespace ShiftEngine
 		ID3D10Device *						GetDevicePointer();
 		D3D10TextureManager *				GetTextureManager();
 
-		GraphicEngineSettings				GetParameters() const;
+		GraphicEngineSettings				GetEngineSettings() const;
 		PathSettings						GetPaths() const;
 
 		int									DrawMesh(MeshDataPtr & mesh);
 
 		FontManager*						GetFontManager();
 
-		void								RegisterVertexSemantic(VertexSemantic & semantic);
+		void RegisterVertexSemantic(const VertexSemantic & semantic);
 		D3D10VDPtr							GetVertexDeclaration(const VertexSemantic & semantic);
 
 		D3DMATRIX							GetOrthoMatrix() const;
 
 	private:
-		ShiftEngine::D3D10VertexDeclaration CreateVDFromDescription( VertexSemantic & semantic );
+		ShiftEngine::D3D10VertexDeclaration CreateVDFromDescription( const VertexSemantic & semantic );
 
 		HWND								m_HWND;
 		cD3D10								Context;

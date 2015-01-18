@@ -37,7 +37,7 @@ void ShiftEngine::Sprite::Draw()
 	if(!texture)
 		return;
 
-	auto settings = ShiftEngine::GetContextManager()->GetParameters();
+	auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
 
 	D3DXMATRIX mat, scale, pos, rot;
 	D3DXMatrixTranslation(&pos, Position.x, Position.y, 0.0f);

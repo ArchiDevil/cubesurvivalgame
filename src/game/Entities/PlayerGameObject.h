@@ -12,11 +12,15 @@ public:
 	~PlayerGameObject();
 
 	//Getters
-	unsigned GetHunger() const;
-	unsigned GetTemperature() const;
+	unsigned int GetHunger() const;
+	unsigned int GetWarmth() const;
+
+	void SetHunger(unsigned int hunger);
+	void SetWarmth(unsigned int temperature);
+
 	PlayerInventory * GetInventoryPtr();
-	void SetHunger(int hunger);
-	void SetTemperature(int temperature);
+
+
 	void Update(double dt) override;
 	bool Go(const MathLib::Vector2F & target) override;
 	void Attack(LiveGameObject * target) const override;
@@ -26,7 +30,7 @@ private:
 	PlayerInventory Inventory;
 
 	unsigned int hunger;
-	unsigned int temperature;
+	unsigned int warmth;
 
 	ShiftEngine::MeshNode * targetMarker;
 

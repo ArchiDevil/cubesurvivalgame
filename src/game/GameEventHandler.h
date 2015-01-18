@@ -30,7 +30,7 @@ public:
 	//player events
 	void onPlayerMoves(double dt);
 	bool onPlayerPicksItem(uint64_t itemId, size_t count);
-	void onPlayerDropsItem(uint64_t itemId, size_t count);
+	void onPlayerDropsItem(unsigned slot, uint64_t itemId, size_t count);
 	void onLivingObjectDies(LiveGameObject * object);
 	void onPlayerUsesItem(bool self, item_id_t itemId);
 };

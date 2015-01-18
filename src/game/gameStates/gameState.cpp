@@ -24,7 +24,6 @@ bool gameState::initState()
 	LostIsland::CreateGame();
 
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-	ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
 	cGame * pGame = LostIsland::GetGamePtr();
 
 	console.subscribe(&cInputEngine::GetInstance());
@@ -46,8 +45,7 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
 	LOG_INFO("Items have been loaded");
 
-	auto settings = pCtxMgr->GetParameters();
-	pGame->gameHud->Initialize(settings.screenWidth, settings.screenHeight);
+	pGame->gameHud->Initialize();
 	LOG_INFO("HUD has been created");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
@@ -56,7 +54,7 @@ bool gameState::initState()
 	pGame->EntityMgr->LoadEntities();
 
 	pScene->AddCameraSceneNode();
-	pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.33f));
+	pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
 	pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
 	pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 	pSun = pScene->AddDirectionalLightNode(Vector3F());
@@ -97,26 +95,20 @@ bool gameState::render(double dt)
 	cGame * pGame = LostIsland::GetGamePtr();
 
 #if defined (DEBUG) || (_DEBUG)
-	const int infoSize = 9;
+	const int infoSize = 6;
 	std::ostringstream di[infoSize];
 
-	di[0] << "Health: " << pGame->Player->GetHealth();
-	di[1] << "Warmth: " << pGame->Player->GetTemperature();
-	di[2] << "Hunger: " << pGame->Player->GetHunger();
-	di[3] << "FPS: " << pRenderer->GetFPS();
-	di[4] << "Shader changes: " << pRenderer->GetShaderChanges();
-	di[5] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
-	di[6] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
-	di[7] << "Texture bindings: " << pRenderer->GetTextureBindings();
-	di[8] << "Draw calls: " << pRenderer->GetDrawCalls();
+	di[0] << "FPS: " << pRenderer->GetFPS();
+	di[1] << "Shader changes: " << pRenderer->GetShaderChanges();
+	di[2] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
+	di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
+	di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
+	di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
 #else
-	const int infoSize = 5;
+	const int infoSize = 2;
 	std::ostringstream di[infoSize];
-	di[0] << "Health: " << pGame->Player->GetHealth();
-	di[1] << "Warmth: " << pGame->Player->GetTemperature();
-	di[2] << "Hunger: " << pGame->Player->GetHunger();
-	di[3] << "FPS: " << pRenderer->GetFPS();
-	di[4] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
+	di[0] << "FPS: " << pRenderer->GetFPS();
+	di[1] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":" 
 		<< pGame->environmentMgr->GetTime().getMinutes();
 #endif
 
@@ -174,7 +166,7 @@ void gameState::ProcessInput(double dt)
 	if (InputEngine->IsKeyUp(DIK_GRAVE))
 		console.SetVisibility(!console.IsVisible());
 
-	if (console.IsVisible()) 
+	if (console.IsVisible())
 		return;
 
 	if (InputEngine->IsKeyDown(DIK_ESCAPE))
@@ -196,8 +188,8 @@ void gameState::ProcessInput(double dt)
 
 	if (InputEngine->IsMouseMoved() && InputEngine->IsMouseDown(RButton))
 	{
-		theta -= mouseInfo.deltaY * dt * 10.0f;
-		phi += mouseInfo.deltaX * dt * 10.0f;
+		theta -= (float)mouseInfo.deltaY * (float)dt * 10.0f;
+		phi += (float)mouseInfo.deltaX * (float)dt * 10.0f;
 		if (theta <= -35.0f)
 			theta = -35.0f;
 		if (theta >= -5.0f)
@@ -207,8 +199,8 @@ void gameState::ProcessInput(double dt)
 	// do the raycasting
 	mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
 	mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-	Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
-	Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F(mouseInfo.clientX, mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
+	Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
+	Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
 	Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
 
 	pGame->EntityMgr->HighlightEntity(unprojectedRay);
@@ -242,9 +234,20 @@ void gameState::ProcessInput(double dt)
 	if (InputEngine->IsMouseDown(RButton))
 		mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
-	r -= mouseInfo.deltaZ * dt;
+	r -= (float)mouseInfo.deltaZ * (float)dt;
 	if (r > 60.0f)
 		r = 60.0f;
 	if (r < 15.0f)
 		r = 15.0f;
+
+	if (InputEngine->IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
+	if (InputEngine->IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
+	if (InputEngine->IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
+	if (InputEngine->IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
+	if (InputEngine->IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
+	if (InputEngine->IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
+	if (InputEngine->IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
+	if (InputEngine->IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
+	if (InputEngine->IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
+	if (InputEngine->IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
 }

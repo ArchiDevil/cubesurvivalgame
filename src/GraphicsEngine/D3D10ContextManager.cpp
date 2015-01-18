@@ -267,7 +267,7 @@ ID3D10Device * ShiftEngine::D3D10ContextManager::GetDevicePointer()
 	return Context.Device;
 }
 
-ShiftEngine::GraphicEngineSettings ShiftEngine::D3D10ContextManager::GetParameters() const
+ShiftEngine::GraphicEngineSettings ShiftEngine::D3D10ContextManager::GetEngineSettings() const
 {
 	return Settings;
 }
@@ -360,7 +360,7 @@ ShiftEngine::FontManager * ShiftEngine::D3D10ContextManager::GetFontManager()
 	return pFntMng;
 }
 
-void ShiftEngine::D3D10ContextManager::RegisterVertexSemantic( VertexSemantic & semantic )
+void ShiftEngine::D3D10ContextManager::RegisterVertexSemantic( const VertexSemantic & semantic )
 {
 	auto iter = Declarations.find(semantic);
 	if(iter == Declarations.end())
@@ -374,7 +374,7 @@ void ShiftEngine::D3D10ContextManager::RegisterVertexSemantic( VertexSemantic & 
 	}
 }
 
-ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFromDescription( VertexSemantic & semantic )
+ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFromDescription( const VertexSemantic & semantic )
 {
 	ID3D10Device * pDevice = Context.Device;
 	ID3D10InputLayout * outIL = nullptr;

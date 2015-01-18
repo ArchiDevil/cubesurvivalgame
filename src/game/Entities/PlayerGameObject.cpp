@@ -7,7 +7,7 @@
 PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr)
 	: ControllableGameObject(sceneNode)
 	, hunger(25)
-	, temperature(100)
+	, warmth(100)
 	, targetMarker(nullptr)
 	, Inventory(pItemMgr, 10)
 {
@@ -34,19 +34,19 @@ unsigned PlayerGameObject::GetHunger() const
 	return hunger;
 }
 
-unsigned PlayerGameObject::GetTemperature() const
+unsigned int PlayerGameObject::GetWarmth() const
 {
-	return temperature;
+	return warmth;
 }
 
-void PlayerGameObject::SetHunger(int in_hunger)
+void PlayerGameObject::SetHunger(unsigned int in_hunger)
 {
-	this->hunger = in_hunger;
+	hunger = in_hunger;
 }
 
-void PlayerGameObject::SetTemperature(int in_temperature)
+void PlayerGameObject::SetWarmth(unsigned int in_temperature)
 {
-	this->temperature = in_temperature;
+	warmth = in_temperature;
 }
 
 void PlayerGameObject::Update(double dt)
@@ -60,14 +60,27 @@ void PlayerGameObject::Update(double dt)
 	}
 
 	static double accumulatedTime = 0.0;
+	static double prevTime = 0.0;
+
+	prevTime = accumulatedTime;
 	accumulatedTime += dt;
-	if ((int)accumulatedTime % 10 == 0)
+
+	if ((int)accumulatedTime % 10 == 0 && ((int)accumulatedTime - (int)prevTime == 1))
 	{
 		if (hunger)
 			hunger--;
+	}
+
+	if ((int)accumulatedTime % 3 == 0 && ((int)accumulatedTime - (int)prevTime == 1))
+	{
 		if (!hunger)
 			SetHealth(GetHealth() - 1);
-		accumulatedTime = 1.0;
+	}
+
+	if ((int)accumulatedTime % 2 == 0 && ((int)accumulatedTime - (int)prevTime == 1))
+	{
+		if (warmth < 10)
+			SetHealth(GetHealth() - 1);
 	}
 }
 
@@ -80,9 +93,9 @@ bool PlayerGameObject::Go(const MathLib::Vector2F & target)
 	auto pGame = LostIsland::GetGamePtr();
 	targetMarker->SetVisibility(true);
 	targetMarker->SetPosition(Vector3F(target.x, target.y, 0.0f));
-	float height = pGame->World->GetDataStorage()->GetFullHeight(std::floor(target.x), std::floor(target.y));
+	float height = (float)pGame->World->GetDataStorage()->GetFullHeight((int)std::floor(target.x), (int)std::floor(target.y));
 	auto position = targetMarker->GetPosition();
-	position.z = (float)height;
+	position.z = height;
 	targetMarker->SetPosition(position);
 
 	return true;
@@ -90,22 +103,22 @@ bool PlayerGameObject::Go(const MathLib::Vector2F & target)
 
 void PlayerGameObject::Attack(LiveGameObject * target) const
 {
+	if (!target || target->GetHealth() <= 0)
+		return;
+
 	auto pGame = LostIsland::GetGamePtr();
 	auto itemInHand = pGame->ItemMgr->GetItemById(Inventory.GetItemInRightHand().itemId);
 
-	if (!itemInHand)
-		return;
+	int damage = 0;
 
-	if (itemInHand->GetType() == IT_Weapon)
-	{
-		LOG_INFO("Entity ", target, " damaged with ", ((WeaponItem*)itemInHand)->GetDamageCount(), ". Remains ", target->GetHealth());
-		target->SetHealth(target->GetHealth() - ((WeaponItem*)itemInHand)->GetDamageCount());
-	}
-	else
-	{
-		LOG_INFO("Entity ", target, " damaged with ", 1, ". Remains ", target->GetHealth());
-		target->SetHealth(target->GetHealth() - 1);
-	}
+	if (!itemInHand || itemInHand->GetType() != IT_Weapon)
+		damage = 1;
+
+	if (!damage)
+		damage = ((WeaponItem*)itemInHand)->GetDamageCount();
+
+	LOG_INFO("Entity ", target, " damaged with ", damage, ". Remains ", target->GetHealth());
+	target->SetHealth(target->GetHealth() - damage);
 }
 
 InteractionType PlayerGameObject::GetInteraction() const
