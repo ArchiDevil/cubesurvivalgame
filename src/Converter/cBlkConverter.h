@@ -9,12 +9,12 @@ class cBlkConverter : public IConverter
     struct Block
     {
         Block()
-            : exist(false)
-            , color()
+            : color()
+            , exist(false)
         {}
 
-        bool exist;
         Vector3F color;
+        bool exist;
     };
 
 public:

@@ -62,8 +62,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                 auto block = GetBlock((unsigned)x, (unsigned)y, (unsigned)z);
                 if (block->exist)
                 {
-                    block = GetBlock((unsigned)x - 1, (unsigned)y, (unsigned)z);
-                    if (!block->exist)
+                    auto buffer = GetBlock((unsigned)x - 1, (unsigned)y, (unsigned)z);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x, y, z }, FRONT, {}, block->color));
                         vertices.push_back(Vertex({ x, y + 1, z }, FRONT, {}, block->color));
@@ -80,8 +80,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                         ind_index += 4;
                     }
 
-                    block = GetBlock((unsigned)x + 1, (unsigned)y, (unsigned)z);
-                    if (!block->exist)
+					buffer = GetBlock((unsigned)x + 1, (unsigned)y, (unsigned)z);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x + 1, y, z }, BACK, {}, block->color));
                         vertices.push_back(Vertex({ x + 1, y + 1, z }, BACK, {}, block->color));
@@ -98,8 +98,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                         ind_index += 4;
                     }
 
-                    block = GetBlock((unsigned)x, (unsigned)y - 1, (unsigned)z);
-                    if (!block->exist)
+					buffer = GetBlock((unsigned)x, (unsigned)y - 1, (unsigned)z);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x, y, z }, LEFT, {}, block->color));
                         vertices.push_back(Vertex({ x + 1, y, z }, LEFT, {}, block->color));
@@ -116,8 +116,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                         ind_index += 4;
                     }
 
-                    block = GetBlock((unsigned)x, (unsigned)y + 1, (unsigned)z);
-                    if (!block->exist)
+					buffer = GetBlock((unsigned)x, (unsigned)y + 1, (unsigned)z);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x, y + 1, z }, RIGHT, {}, block->color));
                         vertices.push_back(Vertex({ x + 1, y + 1, z }, RIGHT, {}, block->color));
@@ -134,8 +134,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                         ind_index += 4;
                     }
 
-                    block = GetBlock((unsigned)x, (unsigned)y, (unsigned)z - 1);
-                    if (!block->exist)
+					buffer = GetBlock((unsigned)x, (unsigned)y, (unsigned)z - 1);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x, y, z }, DOWN, {}, block->color));
                         vertices.push_back(Vertex({ x + 1, y, z }, DOWN, {}, block->color));
@@ -152,8 +152,8 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
                         ind_index += 4;
                     }
 
-                    block = GetBlock((unsigned)x, (unsigned)y, (unsigned)z + 1);
-                    if (!block->exist)
+					buffer = GetBlock((unsigned)x, (unsigned)y, (unsigned)z + 1);
+					if (!buffer->exist)
                     {
                         vertices.push_back(Vertex({ x, y, z + 1 }, UP, {}, block->color));
                         vertices.push_back(Vertex({ x + 1, y, z + 1 }, UP, {}, block->color));
@@ -195,6 +195,7 @@ bool cBlkConverter::Convert(const std::wstring & in, const std::wstring & out)
     header.version = LIM_HEADER_VERSION;
     header.hasNormals = true;
     header.hasTexCoords = false;
+	header.hasColors = true;
     header.verticesCount = (unsigned int)vertices.size();
     header.indicesCount = (unsigned int)indices.size();
     return LIMSaver::Save(out, vertices.data(), indices.data(), header);

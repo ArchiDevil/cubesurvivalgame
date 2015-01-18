@@ -3,8 +3,7 @@
 #include <D3D10.h>
 
 #include <string>
-#include <fstream>
-#include <iostream>
+#include <set>
 
 #include "cMesh.h"
 #include "VertexTypes.h"
@@ -17,13 +16,14 @@ namespace ShiftEngine
 	{
 	public:
 		cMeshLoader(ID3D10Device * _device);
-		bool Load(std::wstring filename, MeshData * mesh);
+		bool Load(const std::wstring &filename, MeshData * mesh);
 
 	private:
-		bool LoadFromFile(std::wstring filename, MeshData * mesh, std::unique_ptr<DefaultVertex[]> & vertices, std::unique_ptr<long[]> & indices);
-		void UpdateVertices(MeshData * mesh, ShiftEngine::DefaultVertex * vertices, long * indices);
+		void UpdateVertices(SerializedLIM & vertices, std::vector<unsigned long> & indices) const;
+		const VertexSemantic * CreateSemantic(const SerializedLIM & vertices);
 
 		ID3D10Device * pDevice;
+		std::set<VertexSemantic> semantics;
 
 	};
 }

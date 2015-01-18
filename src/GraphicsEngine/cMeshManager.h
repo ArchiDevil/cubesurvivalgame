@@ -16,13 +16,13 @@ namespace ShiftEngine
 		cMeshManager(ID3D10Device * _device);
 		~cMeshManager();
 
-		void		Initialize();						//инициализатор
-		MeshDataPtr LoadMesh(const std::wstring & fileName);				//загружает меш из файла
-		void		AddDirectly(MeshDataPtr meshPtr, std::wstring name);	//добавляет меш напрямую
-		MeshDataPtr CreateMeshFromVertices(const void * verticesData, size_t verticesCount, 
-			const void * indexData, size_t indicesCount,
-			const ShiftEngine::VertexSemantic * semantic,
-			const D3D10VDPtr declaration);
+		void		Initialize();
+		MeshDataPtr LoadMesh(const std::wstring & fileName);
+		void		AddDirectly(MeshDataPtr meshPtr, std::wstring name);
+		MeshDataPtr CreateMeshFromVertices(const void * verticesData, size_t verticesCount,
+										   const void * indexData, size_t indicesCount,
+										   const ShiftEngine::VertexSemantic * semantic,
+										   const D3D10VDPtr declaration);
 
 	private:
 		MeshDataPtr ErrorMesh;

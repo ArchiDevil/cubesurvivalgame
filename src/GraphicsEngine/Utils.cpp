@@ -2,14 +2,11 @@
 
 #include "ShiftEngine.h"
 
-#include <D3DX10.h>
 #include <fstream>
 
 bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
-                                                std::unique_ptr<DefaultVertex[]>& vertices,
-                                                unsigned int * verticesCount,
-                                                std::unique_ptr<long[]>& indices,
-                                                unsigned int * indicesCount)
+												 SerializedLIM & vertices,
+												 std::vector<unsigned long> & indices)
 {
     std::ifstream in(filename.c_str(), std::ios::binary);
 
@@ -21,28 +18,32 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
     if (head.VERSION != LIM_HEADER_VERSION)
         return false;
 
-    int size = head.verticesCount;
-    *verticesCount = size;
+    unsigned int size = head.verticesCount;
 
-    vertices.reset(new DefaultVertex[head.verticesCount]);
+	vertices.position.resize(size);
+	in.read(reinterpret_cast<char*>(vertices.position.data()), sizeof(float) * 3 * size);
 
-    for (int i = 0; i < size; i++)
-        in.read(reinterpret_cast<char*>(vertices[i].Pos), sizeof(float) * 3);
+	if (head.hasNormals)
+	{
+		vertices.normal.resize(size);
+		in.read(reinterpret_cast<char*>(vertices.normal.data()), sizeof(float) * 3 * size);
+	}
+	if (head.hasTexCoords)
+	{
+		vertices.texcoord.resize(size);
+		in.read(reinterpret_cast<char*>(vertices.texcoord.data()), sizeof(float) * 2 * size);
+	}
+	if (head.hasColors)
+	{
+		vertices.colors.resize(size);
+		in.read(reinterpret_cast<char*>(vertices.colors.data()), sizeof(float) * 3 * size);
+	}
 
-    if (head.hasNormals)
-        for (int i = 0; i < size; i++)
-            in.read(reinterpret_cast<char*>(vertices[i].Normal), sizeof(float) * 3);
-
-    if (head.hasTexCoords)
-        for (int i = 0; i < size; i++)
-            in.read(reinterpret_cast<char*>(vertices[i].Texcoord), sizeof(float) * 2);
 
     int sizeInd = head.indicesCount;
+	indices.resize(sizeInd);
 
-    indices.reset(new long[head.indicesCount]);
-    *indicesCount = sizeInd;
-
-    in.read(reinterpret_cast<char*>(indices.get()), sizeof(long) * sizeInd);
+    in.read(reinterpret_cast<char*>(indices.data()), sizeof(long) * sizeInd);
     in.close();
     return true;
 }

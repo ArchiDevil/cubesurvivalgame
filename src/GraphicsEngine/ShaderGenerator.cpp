@@ -31,7 +31,10 @@ std::string ShiftEngine::D3D10ShaderGenerator::CreateShaderCode(const VertexSema
     ostringstream stream;
     ADD_LINE("//generated with D3D10 shader generator");
     CreateUniforms(stream, info);
-    CreateSamplers(stream, info);
+
+	if (verticesInfo.isTexcoordsHere())
+	    CreateSamplers(stream, info);
+
     CreateInput(stream, verticesInfo);
     CreateOutput(stream, verticesInfo, info);
     CreateVS(stream, verticesInfo, info);
@@ -122,7 +125,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateInput(ostringstream & stream, cons
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("struct VS_OUT" << endl << "{");
     ADD_LINE("float4 OutPos : SV_Position;");
@@ -133,8 +136,9 @@ void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, con
         ADD_LINE("float3 Normal : NORMAL;");
     }
 
-    if (info.diffuseMap.GetType() != TextureType::Unknown ||
-        info.alphaMap.GetType() != TextureType::Unknown)
+    if ((info.diffuseMap.GetType() != TextureType::Unknown ||
+        info.alphaMap.GetType() != TextureType::Unknown) &&
+		verticesInfo.isTexcoordsHere())
     {
         if (info.diffuseMap.GetType() == TextureType::Texture2DArray)
         {
@@ -146,7 +150,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, con
         }
     }
 
-    if (info.GetFlags()->useVertexColors)
+    if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
     {
         ADD_LINE("float3 Color : COLOR;");
     }
@@ -154,7 +158,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, con
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("VS_OUT VS(VS_IN Input)" << endl << "{");
     ADD_LINE("VS_OUT Output;");
@@ -173,13 +177,14 @@ void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const V
         ADD_LINE("Output.Normal = mul(Input.Normal, (float3x3)matWorld);");
     }
 
-    if (info.diffuseMap.GetType() != TextureType::Unknown ||
-        info.alphaMap.GetType() != TextureType::Unknown)
+    if ((info.diffuseMap.GetType() != TextureType::Unknown ||
+        info.alphaMap.GetType() != TextureType::Unknown) &&
+		verticesInfo.isTexcoordsHere())
     {
         ADD_LINE("Output.Texcoord = Input.Texcoord;");
     }
 
-    if (info.GetFlags()->useVertexColors)
+    if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
     {
         ADD_LINE("Output.Color = Input.Color;");
     }
@@ -188,7 +193,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const V
     ADD_LINE("}");
 }
 
-void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & /*verticesInfo*/, const MaterialInfo & info)
+void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("float4 PS(VS_OUT Input) : SV_TARGET" << endl << "{");
 
@@ -196,7 +201,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
     {
         ADD_LINE("float4 resultColor = float4(0.0f, 0.0f, 0.0f, 1.0f);");
 
-        if (info.diffuseMap.GetType() != TextureType::Unknown)
+        if (verticesInfo.isTexcoordsHere() && info.diffuseMap.GetType() != TextureType::Unknown)
         {
             ADD_LINE("float4 sampledColor = diffuseMap.Sample(SS, Input.Texcoord);");
         }
@@ -205,8 +210,15 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
             ADD_LINE("float4 sampledColor = float4(1.0f, 1.0f, 1.0f, 1.0f);");
         }
 
-        ADD_LINE("resultColor.xyz += ambientColor;");
+		if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
+		{
+			ADD_LINE("sampledColor.x *= Input.Color.x;");
+			ADD_LINE("sampledColor.y *= Input.Color.y;");
+			ADD_LINE("sampledColor.z *= Input.Color.z;");
+		}
+
         ADD_LINE("resultColor *= sampledColor;");
+        ADD_LINE("resultColor.xyz += ambientColor;");
         ADD_LINE("float3 CurrentNormal = normalize(Input.Normal);");
         ADD_LINE("float3 localEyePos = normalize(eyePos - Input.Position);");
         ADD_LINE("for(int i = 0; i < lightsCount; i++) {");
@@ -233,17 +245,17 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
     else
     {
         ADD_LINE("float4 resultColor = float4(1.0f, 1.0f, 1.0f, 1.0f);");
-        if (info.diffuseMap.GetType() != TextureType::Unknown)
+		if (verticesInfo.isTexcoordsHere() && info.diffuseMap.GetType() != TextureType::Unknown)
         {
             ADD_LINE("resultColor *= diffuseMap.Sample(SS, Input.Texcoord);");
         }
-    }
 
-    if (info.GetFlags()->useVertexColors)
-    {
-        ADD_LINE("resultColor.x *= Input.Color.x;");
-        ADD_LINE("resultColor.y *= Input.Color.y;");
-        ADD_LINE("resultColor.z *= Input.Color.z;");
+		if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
+		{
+			ADD_LINE("resultColor.x *= Input.Color.x;");
+			ADD_LINE("resultColor.y *= Input.Color.y;");
+			ADD_LINE("resultColor.z *= Input.Color.z;");
+		}
     }
 
     if (info.GetFlags()->isTransparent)
@@ -253,7 +265,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
 
     ADD_LINE("resultColor.xyz += emissionColor.xyz;");
 
-    if (info.alphaMap.GetType() != TextureType::Unknown)
+	if (verticesInfo.isTexcoordsHere() && info.alphaMap.GetType() != TextureType::Unknown)
     {
         ADD_LINE("float4 alphaColor = alphaMap.Sample(SS, Input.Texcoord);");
         ADD_LINE("resultColor.a *= alphaColor.r;");

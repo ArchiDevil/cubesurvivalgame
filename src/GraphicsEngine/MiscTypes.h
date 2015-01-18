@@ -5,7 +5,7 @@
 
 #include <MathLib/math.h>
 
-#define LIM_HEADER_VERSION 2
+#define LIM_HEADER_VERSION 3
 
 namespace ShiftEngine
 {
@@ -31,11 +31,13 @@ namespace ShiftEngine
 		MeshLIMHeader(int ver = 0, 
 			bool hn = false, 
 			bool htc = false, 
+			bool hc = false,
 			unsigned int vc = 0, 
 			unsigned int ic = 0) 
 			: VERSION(ver)
             , hasNormals(hn)
             , hasTexCoords(htc)
+			, hasColors(hc)
             , verticesCount(vc)
             , indicesCount(ic)
         {
@@ -44,6 +46,7 @@ namespace ShiftEngine
 		unsigned int VERSION;
 		bool hasNormals;
 		bool hasTexCoords;
+		bool hasColors;
 		unsigned int verticesCount;
 		unsigned int indicesCount;
 	};

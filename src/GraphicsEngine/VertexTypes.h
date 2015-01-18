@@ -2,10 +2,20 @@
 
 #include <vector>
 
+#include <MathLib/math.h>
+
 #include "MiscTypes.h"
 
 namespace ShiftEngine
 {
+	struct SerializedLIM
+	{
+		std::vector<MathLib::Vector3F> position;
+		std::vector<MathLib::Vector3F> normal;
+		std::vector<MathLib::Vector2F> texcoord;
+		std::vector<MathLib::Vector3F> colors;
+	};
+
 	enum ElemType
 	{
 		ET_FLOAT,

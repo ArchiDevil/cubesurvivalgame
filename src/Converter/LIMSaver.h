@@ -34,9 +34,9 @@ public:
 
         if (header.hasColors)
             for (unsigned int i = 0; i < header.verticesCount; ++i)
-                output.write(reinterpret_cast<const char*>(&(verticesArray[i].Color)), 2 * sizeof(float));
+                output.write(reinterpret_cast<const char*>(&(verticesArray[i].Color)), 3 * sizeof(float));
 
-        output.write(reinterpret_cast<const char*>(indicesArray), sizeof(long) * header.indicesCount);
+		output.write(reinterpret_cast<const char*>(indicesArray), sizeof(unsigned long) * header.indicesCount);
         output.close();
 
         return true;
