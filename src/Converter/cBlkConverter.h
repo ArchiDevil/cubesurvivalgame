@@ -19,7 +19,7 @@ class cBlkConverter : public IConverter
 
 public:
     cBlkConverter();
-    virtual bool Convert(const std::wstring & in, const std::wstring & out) override;
+    virtual bool Convert(const std::string & in, const std::string & out) override;
 
 private:
     void SetSize(unsigned int x_size, unsigned int y_size, unsigned int z_size);

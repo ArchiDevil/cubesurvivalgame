@@ -6,6 +6,5 @@
 class cXConverter : public IConverter
 {
 public:
-	virtual bool Convert( const std::wstring & in, const std::wstring & out );
+    virtual bool Convert(const std::string & in, const std::string & out) override;
 };
-

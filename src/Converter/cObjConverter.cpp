@@ -26,15 +26,10 @@ std::vector<std::string> split(const std::string &s, char delim)
     return elems;
 }
 
-bool cObjConverter::Convert(const std::wstring & in, const std::wstring & out)
+bool cObjConverter::Convert(const std::string & in, const std::string & out)
 {
     std::ifstream input;
-#ifdef _MSC_VER
     input.open(in.c_str());
-#else
-    std::string str(in.begin(), in.end());
-    input.open(str.c_str());
-#endif
 
     if (input.fail())
         return false;
@@ -163,6 +158,7 @@ bool cObjConverter::Convert(const std::wstring & in, const std::wstring & out)
         header.hasNormals = true;
     if (!texCoords.empty())
         header.hasTexCoords = true;
+    header.hasColors = false;
     header.version = LIM_HEADER_VERSION;
     header.indicesCount = indices.size();
     header.verticesCount = MeshData.size();

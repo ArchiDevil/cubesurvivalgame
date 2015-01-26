@@ -3,9 +3,8 @@
 #include "IConverter.h"
 #include "misc.h"
 
-class cObjConverter: public IConverter
+class cObjConverter : public IConverter
 {
 public:
-	virtual bool Convert(const std::wstring & input, const std::wstring & output);
-
+    virtual bool Convert(const std::string & input, const std::string & output) override;
 };

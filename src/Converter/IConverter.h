@@ -6,7 +6,6 @@
 class IConverter
 {
 public:
-	virtual ~IConverter() {}
-	virtual bool Convert(const std::wstring & in, const std::wstring & out) = 0;
+    virtual ~IConverter() {}
+    virtual bool Convert(const std::string & in, const std::string & out) = 0;
 };
-

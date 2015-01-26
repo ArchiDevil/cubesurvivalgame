@@ -3,16 +3,12 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
 
-bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
+bool cXConverter::Convert(const std::string & in, const std::string & out)
 {
     std::ifstream input;
-#ifdef _MSC_VER
     input.open(in.c_str());
-#else
-    std::string str(in.begin(), in.end());
-    input.open(str.c_str());
-#endif
     if (input.fail())
         return false;
 
@@ -22,12 +18,12 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 
     while (input >> bufStr)
         if (bufStr == "Mesh")
-            break;	//we found beginning of mesh description
+            break;  //we found beginning of mesh description
 
     getline(input, bufStr);
     getline(input, bufStr, ';');
     Reader << bufStr;
-    unsigned int verticesCount;	//count of vertices
+    unsigned int verticesCount; //count of vertices
     Reader >> verticesCount;
     Reader.clear();
     bufStr.clear();
@@ -35,9 +31,7 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
     bool haveNormals = false;
     bool haveTextureCoords = false;
 
-    Vertex * Mesh = new Vertex[verticesCount];
-    memset(Mesh, 0, sizeof(Vertex) * verticesCount);
-
+    std::vector<Vertex> Mesh(verticesCount);
     unsigned int VertexNum = 0;
 
     while (getline(input, bufStr))
@@ -60,7 +54,7 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 
         VertexNum++;
 
-        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';') //last element is ';'
             break;
     }
 
@@ -69,14 +63,13 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
     getline(input, bufStr, ';');
 
     Reader << bufStr;
-    int indicesCount;	//count of indices
+    int indicesCount;   //count of indices
     Reader >> indicesCount;
     Reader.clear();
     bufStr.clear();
 
     const int indicesInString = 3;
-    unsigned long * Ind = new unsigned long[indicesCount * indicesInString];
-    memset(Ind, 0, sizeof(long) * indicesCount * indicesInString);
+    std::vector<unsigned long> Ind(indicesCount * indicesInString);
 
     VertexNum = 0;
 
@@ -107,7 +100,7 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 
         VertexNum++;
 
-        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+        if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';') //last element is ';'
             break;
     }
 
@@ -146,7 +139,7 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 
             VertexNum++;
 
-            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';') //last element is ';'
                 break;
         }
     }
@@ -186,7 +179,7 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
 
             VertexNum++;
 
-            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';')	//last element is ';'
+            if (bufStr.size() != 0 && bufStr[bufStr.size() - 1] == ';') //last element is ';'
                 break;
         }
     }
@@ -195,11 +188,8 @@ bool cXConverter::Convert(const std::wstring & in, const std::wstring & out)
     header.version = LIM_HEADER_VERSION;
     header.hasNormals = haveNormals;
     header.hasTexCoords = haveTextureCoords;
+    header.hasColors = false;
     header.verticesCount = verticesCount;
     header.indicesCount = indicesCount * indicesInString;
-
-    delete[] Mesh;
-    delete[] Ind;
-
-    return LIMSaver::Save(out, Mesh, Ind, header);
+    return LIMSaver::Save(out, Mesh.data(), Ind.data(), header);
 }
