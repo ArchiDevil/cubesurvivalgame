@@ -5,7 +5,6 @@
 #include <MathLib/math.h>
 
 //STL INCLUDES
-#include <string>
 #include <vector>
 
 //D3D INCLUDES
@@ -17,70 +16,64 @@ using MathLib::qaFloat;
 
 namespace ShiftEngine
 {
-	class SceneGraph;
-	class RenderQueue;
-	class CameraSceneNode;
+    class SceneGraph;
+    class RenderQueue;
+    class CameraSceneNode;
 
-	class ISceneNode : public Refcounted
-	{
-	public:
-		typedef std::vector<ISceneNode*> ChildsList;
+    class ISceneNode : public Refcounted
+    {
+    public:
+        typedef std::vector<ISceneNode*> ChildsList;
 
-		ISceneNode(const MathLib::AABB & _bbox);
-		virtual ~ISceneNode();
+        ISceneNode();
+        virtual ~ISceneNode();
 
-		void Draw(RenderQueue & rq);
+        void Draw(RenderQueue & rq);
 
-		virtual void AddChild(ISceneNode * node);
-		void RemoveChild(ISceneNode * node);
+        virtual void AddChild(ISceneNode * node);
+        void RemoveChild(ISceneNode * node);
+        const ChildsList & GetChilds() const;
+        virtual void KillSelf();
 
-		ISceneNode * GetParent() const;
-		void SetParent(ISceneNode * _parent);
-		void RemoveParent();
+        ISceneNode * GetParent() const;
+        void SetParent(ISceneNode * _parent);
+        void RemoveParent();
 
-		Vector3F GetPosition() const;
-		void SetPosition(const Vector3F & val);
+        Vector3F GetPosition() const;
+        void SetPosition(const Vector3F & val);
 
-		Vector3F GetScale() const;
-		void SetScale(const Vector3F & val);
-		void SetScale(float val);
+        Vector3F GetScale() const;
+        void SetScale(const Vector3F & val);
+        void SetScale(float val);
 
-		qaFloat GetRotation() const;
-		void SetRotation(const qaFloat & val);
-		void RotateBy(const qaFloat & val);
+        qaFloat GetRotation() const;
+        void SetRotation(const qaFloat & val);
+        void RotateBy(const qaFloat & val);
 
-		//Vector3F GetRotation() const;
-		//void SetRotation(const Vector3F & val);
+        SceneGraph * GetSceneGraph() const;
+        void SetSceneGraph(SceneGraph * val);
 
-		SceneGraph * GetSceneGraph() const;
-		void SetSceneGraph(SceneGraph * val);
+        virtual D3DXMATRIX GetWorldMatrix() const;
 
-		virtual D3DXMATRIX GetWorldMatrix() const;
-		MathLib::AABB GetBBox() const;
+        virtual MathLib::AABB GetBBox() const = 0;
 
-		virtual void KillSelf();
+    protected:
+        virtual void PushToRQ(RenderQueue & rq) = 0;
+        virtual int CheckVisibility(CameraSceneNode * activeCam) const;
 
-		const ChildsList & GetChilds() const;
+        void CreateWorldMatrix();
 
-	protected:
-		virtual void PushToRQ(RenderQueue & rq) = 0;
-		virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+        SceneGraph * pSceneGraph;
 
-		void CreateWorldMatrix();
+    private:
+        Vector3F Position;
+        Vector3F Scale;
+        qaFloat Rotation;
 
-		MathLib::AABB bbox;
-		SceneGraph * pSceneGraph;
+        D3DXMATRIX worldMatrix;
 
-	private:
-		Vector3F Position;
-		Vector3F Scale;
-		qaFloat Rotation;
-		//Vector3F Rotation;	//euler angles
+        ISceneNode * parent;
+        ChildsList children;    //semi-automatic shared ptrs
 
-		D3DXMATRIX worldMatrix;
-
-		ISceneNode * parent;
-		ChildsList children;	//semi-automatic shared ptrs
-
-	};
+    };
 }

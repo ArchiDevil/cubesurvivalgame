@@ -4,16 +4,21 @@
 
 namespace ShiftEngine
 {
-	class PlainTreeNode : public ISceneNode
-	{
-	public:
-		PlainTreeNode()
-			: ISceneNode(MathLib::AABB()) 
-		{}
+    class PlainTreeNode : public ISceneNode
+    {
+    public:
+        PlainTreeNode()
+            : ISceneNode()
+        {
+        }
 
-	protected:
-		//just stub only for plain scene graph
-		virtual void PushToRQ( RenderQueue & /*rq*/ ) {}
-	};
+        virtual MathLib::AABB GetBBox() const override
+        {
+            return MathLib::AABB();
+        }
 
+    protected:
+        //just stub only for plain scene graph
+        virtual void PushToRQ(RenderQueue&){}
+    };
 }
