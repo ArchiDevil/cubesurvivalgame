@@ -1,6 +1,46 @@
 cmake_minimum_required(VERSION 2.8)
 
-file(GLOB_RECURSE SRC *.cpp *.h)
+file(GLOB SRC *.cpp *.h)
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/world/*.cpp)
+source_group("Source Files\\World" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/world/*.h)
+source_group("Header Files\\World" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Entities/*.cpp)
+source_group("Source Files\\Entities" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Entities/*.h)
+source_group("Header Files\\Entities" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Environment/*.cpp)
+source_group("Source Files\\Environment" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Environment/*.h)
+source_group("Header Files\\Environment" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/gameStates/*.cpp)
+source_group("Source Files\\Game States" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/gameStates/*.h)
+source_group("Header Files\\Game States" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Items/*.cpp)
+source_group("Source Files\\Items" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Items/*.h)
+source_group("Header Files\\Items" FILES ${LS})
+list(APPEND SRC ${LS})
 
 include_directories(../../3rdparty/jsoncpp/include)
 include_directories($ENV{DXSDK_DIR}/include)
