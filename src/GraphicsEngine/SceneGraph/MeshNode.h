@@ -30,6 +30,7 @@ namespace ShiftEngine
         void SetMaterial(const ShiftEngine::Material * val);
 
         virtual MathLib::AABB GetBBox() const override;
+        void SetBBox(const MathLib::AABB &bbox);
 
     private:
         MathLib::AABB bbox;

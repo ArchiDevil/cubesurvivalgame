@@ -102,3 +102,8 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
     MathLib::AABB newBbox(Vector3F(min.x, min.y, min.z), Vector3F(max.x, max.y, max.z));
     return newBbox;
 }
+
+void ShiftEngine::MeshNode::SetBBox(const MathLib::AABB &bbox)
+{
+    this->bbox = bbox;
+}

@@ -2,20 +2,17 @@
 
 #include "cNoise.h"
 
-#include <cmath>
-#include <fstream>
 #include <string>
 
-class cWorldGenerator
+class WorldGenerator
 {
 public:
-	cWorldGenerator();
+	WorldGenerator();
 
 	void GenerateHeightMap(int size);
 	void LoadHeightMap(const std::string & filename);
 	void SaveHeightMap(const std::string & filename);
 	int GetHeight(int ChunkX, int ChunkY);
-	
 	cNoise * GetNoise();
 
 private:
