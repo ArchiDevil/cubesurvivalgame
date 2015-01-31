@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../GUI/GUI.h"
+#include <GUI/GUI.h>
 
 #include "cAppStateBase.h"
 #include "BlockWorkspace.h"
@@ -10,42 +10,45 @@ class Application;
 
 struct Brush
 {
-	Brush(Vector3F _Color = Vector3F(1.0f, 1.0f, 1.0f)) : Color(_Color) {};
-	Vector3F Color;
+    Brush(Vector3F _Color = Vector3F(1.0f, 1.0f, 1.0f)) 
+        : Color(_Color) 
+    {}
+
+    Vector3F Color;
 };
 
 class WorkState : public appState
 {
 public:
-	WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-	WorkState(const std::wstring & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-	~WorkState();
+    WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
+    WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
+    ~WorkState();
 
-	virtual bool initState();
-	virtual bool update( double dt );
-	virtual bool render( double dt );
-	virtual void onKill();
-	virtual void onSuspend();
-	virtual void onResume();
-	
+    virtual bool initState() override;
+    virtual bool update(double dt) override;
+    virtual bool render(double dt) override;
+    virtual void onKill() override;
+    virtual void onSuspend() override;
+    virtual void onResume() override;
+
 private:
-	void MoveToGeometryMode();
-	void MoveToColorMode();
+    void MoveToGeometryMode();
+    void MoveToColorMode();
 
-	void FillByDefault();
-	void CreateGUI();
-	bool ProcessInput(double ElapsedTime);
-	void ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val);
+    void FillByDefault();
+    void CreateGUI();
+    bool ProcessInput(double ElapsedTime);
+    void ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val);
 
-	BlockWorkspace * Workspace;
-	SimpleGUI::Canvas * pCanvas;
-	SimpleGUI::Skinner * pSkinner;
+    MeshEditor::BlockWorkspace * Workspace;
+    SimpleGUI::Canvas * pCanvas;
+    SimpleGUI::Skinner * pSkinner;
 
-	Brush curBrush;
+    Brush curBrush;
 
-	Vector2I oldCoordinates;
-	Vector2I newCoordinates;
-	bool flag;
-	bool geometryMode;
-	
+    Vector2I oldCoordinates;
+    Vector2I newCoordinates;
+    bool flag;
+    bool geometryMode;
+
 };
