@@ -11,6 +11,8 @@
 
 namespace MeshEditor
 {
+    class IAction;
+
     struct Block
     {
         Block() : exist(false) {}
@@ -20,7 +22,6 @@ namespace MeshEditor
 
     class BlockWorkspace : public IManager
     {
-        friend class IAction;
     public:
         BlockWorkspace(int _x, int _y, int _z);
         ~BlockWorkspace();

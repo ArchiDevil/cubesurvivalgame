@@ -13,56 +13,13 @@ const float threshold = 20.0f;
 
 using namespace MeshEditor;
 
-//0 Ч чЄрный				#000000
-//1 Ч синий					#0000AA
-//2 Ч зелЄный				#00AA00
-//3 Ч сине-зелЄный			#00AAAA
-
-//4 Ч красный				#AA0000
-//5 Ч пурпурный				#AA00AA
-//6 Ч коричневый			#AA5500
-//7 Ч белый (светло-серый)	#AAAAAA
-
-//8 Ч (тЄмно-) серый		#555555
-//9 Ч голубой				#5555FF
-//10 Ч €рко-зелЄный			#55FF55
-//11 Ч €ркий сине-зелЄный	#55FFFF
-
-//12 Ч €рко-красный			#FF5555
-//13 Ч €рко-пурпурный		#FF55FF
-//14 Ч жЄлтый				#FFFF55
-//15 Ч €рко-белый			#FFFFFF
-
-const float CGA_colors[16][3] = {
-    { 0.0f, 0.0f, 0.0f },
-    { 0.0f, 0.0f, 0.666f },
-    { 0.0f, 0.666f, 0.0f },
-    { 0.0f, 0.666f, 0.666f },
-
-    { 0.666f, 0.0f, 0.0f },
-    { 0.666f, 0.0f, 0.666f },
-    { 0.666f, 0.333f, 0.0f },
-    { 0.666f, 0.666f, 0.666f },
-
-    { 0.333f, 0.333f, 0.333f },
-    { 0.333f, 0.333f, 1.0f },
-    { 0.333f, 1.0f, 0.333f },
-    { 0.333f, 1.0f, 1.0f },
-
-    { 1.0f, 0.333f, 0.333f },
-    { 1.0f, 0.333f, 1.0f },
-    { 1.0f, 1.0f, 0.333f },
-    { 1.0f, 1.0f, 1.0f },
-};
-
 WorkState::WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
     : pCanvas(_pCanvas)
     , pSkinner(_pSkinner)
     , flag(false)
     , geometryMode(true)
 {
-    Workspace = new BlockWorkspace(x_size, y_size, z_size);
-    FillByDefault();
+    Workspace.reset(new BlockWorkspace(x_size, y_size, z_size));
 }
 
 WorkState::WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
@@ -71,14 +28,8 @@ WorkState::WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas,
     , flag(false)
     , geometryMode(true)
 {
-    Workspace = new BlockWorkspace(1, 1, 1);
+    Workspace.reset(new BlockWorkspace(1, 1, 1));
     Workspace->Load(loadFile);
-}
-
-WorkState::~WorkState()
-{
-    if (Workspace)
-        delete Workspace;
 }
 
 bool WorkState::initState()
@@ -148,8 +99,8 @@ bool WorkState::render(double dt)
     di[1] << " mode";
 #if defined (DEBUG) || (_DEBUG)
     di[2] << "FPS: " << pRenderer->GetFPS();
-    di[3] << "MousePos: " << t.clientX << "/" << t.clientY;
-    di[4] << "CBColors: " << curBrush.Color.x << "/" << curBrush.Color.y << "/" << curBrush.Color.z;
+    di[3] << "Mouse pos: " << t.clientX << "/" << t.clientY;
+    di[4] << "Brush colors: " << curBrush.Color.x << "/" << curBrush.Color.y << "/" << curBrush.Color.z;
     di[5] << "Mouse distance: " << lenghtOfMove;
     di[6] << "Polygons rendered: " << pRenderer->GetDrawnPolygonsCount();
 #endif // DEBUG
@@ -203,7 +154,7 @@ void WorkState::CreateGUI()
     butSave->SetText("Save");
 
     butSave->SetClickHandler(
-        [=](int /*mb*/, int /*x*/, int /*y*/)
+        [=](int, int, int)
     {
         f->Show();
         fname->Show();
@@ -212,7 +163,7 @@ void WorkState::CreateGUI()
     );
 
     butSaveOk->SetClickHandler(
-        [=](int /*mb*/, int /*x*/, int /*y*/)
+        [=](int, int, int)
     {
         const std::string rr = ".block";
         Workspace->Save("saves/" + utils::WStrToStr(fname->GetText()) + rr);
@@ -332,20 +283,66 @@ bool WorkState::ProcessInput(double ElapsedTime)
                 for (float mult = 0.0f; mult < distance * 2.0f; mult += step)
                 {
                     Vector3F temp = dir * mult + nearV;
+                    Vector3I integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
 
                     // this block only to check, block that would be modified must be got in other referenced variable!
-                    const Block & block = Workspace->GetBlock((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z));
+                    const Block & block = Workspace->GetBlock(integerPos.x, integerPos.y, integerPos.z);
                     if (!block.exist)
                         continue;
 
                     mult -= step;
                     temp = dir * mult + nearV;
-                    auto vector = Workspace->GetHalfSize();
-                    vector *= 2.0f;
-                    if (temp.x >= 0.0f && temp.x <= vector.x &&
-                        temp.y >= 0.0f && temp.y <= vector.y &&
-                        temp.z >= 0.0f && temp.z <= vector.z)
-                        Workspace->AddBlock((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z));
+                    integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
+                    auto workspaceSize = Workspace->GetHalfSize();
+                    workspaceSize *= 2.0f;
+                    if (temp.x >= 0.0f && temp.x <= workspaceSize.x &&
+                        temp.y >= 0.0f && temp.y <= workspaceSize.y &&
+                        temp.z >= 0.0f && temp.z <= workspaceSize.z)
+                    {
+                        Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                    }
+                    else
+                    {
+                        if ((int)floor(temp.z) == 0)
+                        {
+                            bool no = true;
+                            if (Workspace->GetBlock(integerPos.x + 1, integerPos.y, integerPos.z).exist) no = false;
+                            if (Workspace->GetBlock(integerPos.x - 1, integerPos.y, integerPos.z).exist) no = false;
+                            if (Workspace->GetBlock(integerPos.x, integerPos.y + 1, integerPos.z).exist) no = false;
+                            if (Workspace->GetBlock(integerPos.x, integerPos.y - 1, integerPos.z).exist) no = false;
+                            if (no) break;
+                        }
+
+                        if (temp.x <= 0.0f)
+                        {
+                            Workspace->Resize(0, 0, 0, 1, 0, 0);
+                            Workspace->AddBlock(integerPos.x + 1, integerPos.y, integerPos.z);
+                        }
+
+                        if (temp.y <= 0.0f)
+                        {
+                            Workspace->Resize(0, 0, 0, 0, 1, 0);
+                            Workspace->AddBlock(integerPos.x, integerPos.y + 1, integerPos.z);
+                        }
+
+                        if (temp.x >= workspaceSize.x)
+                        {
+                            Workspace->Resize(1, 0, 0, 0, 0, 0);
+                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                        }
+
+                        if (temp.y >= workspaceSize.y)
+                        {
+                            Workspace->Resize(0, 1, 0, 0, 0, 0);
+                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                        }
+
+                        if (temp.z >= workspaceSize.z)
+                        {
+                            Workspace->Resize(0, 0, 1, 0, 0, 0);
+                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                        }
+                    }
                     break;
                 }
             }
@@ -430,22 +427,6 @@ bool WorkState::ProcessInput(double ElapsedTime)
         Workspace->Undo();
 
     return true;
-}
-
-void WorkState::FillByDefault()
-{
-    Block a;
-    a.exist = true;
-    a.color.x = 0.7f;
-    a.color.y = 0.8f;
-    a.color.z = 1.0f;
-
-    //temporary!
-
-    for (int i = 0; i < Workspace->GetHalfSize().x * 2; i++)
-        for (int j = 0; j < Workspace->GetHalfSize().y * 2; j++)
-            for (int k = 0; k < Workspace->GetHalfSize().z * 2; k++)
-                Workspace->GetBlock(i, j, k) = a;
 }
 
 void WorkState::MoveToGeometryMode()

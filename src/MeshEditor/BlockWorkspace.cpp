@@ -5,8 +5,6 @@
 
 #include <Utilities/ut.h>
 
-#define AO_DEBUG
-
 ShiftEngine::VertexSemantic MeshEditor::BlockWorkspace::semantic;
 
 MeshEditor::BlockWorkspace::BlockWorkspace(int _x, int _y, int _z)
@@ -19,7 +17,7 @@ MeshEditor::BlockWorkspace::BlockWorkspace(int _x, int _y, int _z)
     , mesh(nullptr)
     , tesselated(false)
 {
-    assert(x_size > 0 || y_size > 0 || z_size > 0);
+    assert(x_size > 0 && y_size > 0 && z_size > 0);
     Elements = new Block[x_size * y_size * z_size];
 
     GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
@@ -150,7 +148,6 @@ MeshEditor::Block MeshEditor::BlockWorkspace::GetBlock(int x, int y, int z) cons
 
 float MeshEditor::BlockWorkspace::GetAOFactor(float x1, float x2, float y1, float y2, float z1, float z2)
 {
-#ifdef AO_DEBUG
     //checking maximum distance here
 
     const float maxDist = 2.1213f;
@@ -177,9 +174,6 @@ float MeshEditor::BlockWorkspace::GetAOFactor(float x1, float x2, float y1, floa
 
     //dividing
     return 1.0f - shadowFactor / maxShadowFactor;
-#else
-    return 1.0f;
-#endif
 }
 
 void MeshEditor::BlockWorkspace::Tesselate()
@@ -414,12 +408,8 @@ void MeshEditor::BlockWorkspace::Save(const std::string & filename)
     if (!stream || stream.fail())
         LOG_ERROR("Unable to save ", buff);
 
-    stream.write(reinterpret_cast<char *>(&h), sizeof(Header));
-
-    for (int i = 0; i < x_size; i++)
-        for (int j = 0; j < y_size; j++)
-            for (int k = 0; k < z_size; k++)
-                stream.write(reinterpret_cast<char *>(&GetBlock(i, j, k)), sizeof(Block));
+    stream.write((char*)&h, sizeof(Header));
+    stream.write((char*)Elements, sizeof(Block) * x_size * y_size * z_size);
 }
 
 void MeshEditor::BlockWorkspace::Load(const std::string & filename)
@@ -441,13 +431,8 @@ void MeshEditor::BlockWorkspace::Load(const std::string & filename)
     }
 
     stream.read(reinterpret_cast<char*>(&h), sizeof(Header));
-
     ResizeWithoutSaved(h.size[0], h.size[1], h.size[2]);
-
-    for (int i = 0; i < x_size; i++)
-        for (int j = 0; j < y_size; j++)
-            for (int k = 0; k < z_size; k++)
-                stream.read(reinterpret_cast<char *>(&GetBlock(i, j, k)), sizeof(Block));
+    stream.read((char *)Elements, sizeof(Block) * x_size * y_size * z_size);
 }
 
 int MeshEditor::BlockWorkspace::GetIndex(int x, int y, int z) const

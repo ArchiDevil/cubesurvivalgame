@@ -22,7 +22,6 @@ class WorkState : public appState
 public:
     WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
     WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-    ~WorkState();
 
     virtual bool initState() override;
     virtual bool update(double dt) override;
@@ -35,12 +34,11 @@ private:
     void MoveToGeometryMode();
     void MoveToColorMode();
 
-    void FillByDefault();
     void CreateGUI();
     bool ProcessInput(double ElapsedTime);
     void ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val);
 
-    MeshEditor::BlockWorkspace * Workspace;
+    std::unique_ptr<MeshEditor::BlockWorkspace> Workspace;
     SimpleGUI::Canvas * pCanvas;
     SimpleGUI::Skinner * pSkinner;
 
