@@ -11,7 +11,7 @@ class FiniteStateMachine
 {
 public:
     FiniteStateMachine();
-    ~FiniteStateMachine();
+    virtual ~FiniteStateMachine();
     
     void AddTransition(EntityState from, EntityState to);
 	bool DispatchState(std::unique_ptr<IEntityState> state);

@@ -3,8 +3,8 @@
 class IManager
 {
 public:
-	IManager() {}
-    ~IManager() {}
+    IManager() = default;
+    virtual ~IManager() = default;
     
     IManager(const IManager & ref) = delete;
 	IManager(IManager && ref) = delete;

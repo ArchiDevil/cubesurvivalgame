@@ -33,7 +33,7 @@ bool FiniteStateMachine::CanDispatchState(EntityState state) const
 
 bool FiniteStateMachine::DispatchState(std::unique_ptr<IEntityState> state)
 {
-	LOG_INFO("Entity: ", (size_t)this, " moved into ", (int)state->GetType());
+	//LOG_INFO("Entity: ", (size_t)this, " moved into ", (int)state->GetType());
 	EntityState fromState = currentState->GetType();
 	EntityState toState = state->GetType();
 	if (currentState && CanDispatchState(state->GetType()))
