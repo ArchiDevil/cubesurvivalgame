@@ -1,6 +1,9 @@
 #include "PlayerGameObject.h"
+
 #include "../game.h"
 #include "../Items/WeaponItem.h"
+#include "../world/world.h"
+#include "../world/worldStorage.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 

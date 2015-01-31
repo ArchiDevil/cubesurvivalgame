@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Entities/PlayerGameObject.h"
-#include "world/world.h"
-#include "Entities/GameObjectsManager.h"
-#include "Items/ItemManager.h"
-#include "Environment/EnvironmentManager.h"
-#include "GameEventHandler.h"
-#include "gameHud.h"
-
 #include <memory>
+
+class cWorld;
+class PlayerGameObject;
+class GameObjectsManager;
+class GameEventHandler;
+class ItemManager;
+class CraftingManager;
+class EnvironmentManager;
+class gameHUD;
 
 struct cGame
 {
@@ -25,6 +26,7 @@ struct cGame
 	std::unique_ptr<GameObjectsManager> EntityMgr;
 	std::unique_ptr<GameEventHandler> GlobalEventHandler;
 	std::unique_ptr<ItemManager> ItemMgr;
+    std::unique_ptr<CraftingManager> CratingMgr;
 	std::unique_ptr<EnvironmentManager> environmentMgr;
 	std::unique_ptr<gameHUD> gameHud;
 

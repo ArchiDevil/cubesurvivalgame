@@ -17,9 +17,6 @@ public:
 	uint32_t GetSelectedSlot() const;
 
 private:
-	//std::unique_ptr<ShiftEngine::Sprite> liHandItem;
-	//std::unique_ptr<ShiftEngine::Sprite> liHandI;
-
 	// new GUI
 	uint32_t selectedSlot;
 	std::unique_ptr<ShiftEngine::Sprite> itemPanel;

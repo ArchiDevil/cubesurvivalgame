@@ -3,6 +3,7 @@
 #include "Item.h"
 
 #include "../game.h"
+#include "../Entities/PlayerGameObject.h"
 
 class Item;
 

@@ -1,5 +1,13 @@
 #include "world.h"
 
+#include "worldGenerator/WorldGenerator.h"
+#include "worldStorage.h"
+#include "cChunksStorage.h"
+#include "cChunkStreamer.h"
+#include "worldTesselator.h"
+
+#include "../Environment/EnvironmentManager.h"
+
 #include <sstream>
 
 #define waterLevel 70
@@ -26,7 +34,7 @@ void cWorld::Initialize(unsigned int ChunksPerSide, int CentralChunkX, int Centr
 	if (ChunksPerSide % 2 == 0)
 		ChunksPerSide++;		//необходимо для нечетного числа в чанках
 
-	Generator.reset(new cWorldGenerator);
+	Generator.reset(new WorldGenerator);
 	ChunksStorage.reset(new cChunksStorage);
 	DataStorage.reset(new WorldStorage(ChunksPerSide * DataStorage->GetChunkWidth()));
 	Streamer.reset(new cChunkStreamer(DataStorage.get()));
@@ -254,7 +262,7 @@ int cWorld::ProcessChunk(int WorldX, int WorldY, Action action)
 		if (!ChunksStorage->HaveRightNeighbors(WorldX, WorldY, CS_FILLED))
 			return NOTLOADED;
 
-		if (Tesselator->TesselateChunk(WorldX, WorldY, ChunkPtr->GetLandNode()))
+		if (Tesselator->TesselateChunk(WorldX, WorldY, ChunkPtr->GetLandNode(), ChunkPtr->GetWaterNode()))
 		{
 			//Tesselator->BuildWaterMesh(WorldX, WorldY);
 			ChunkPtr->SetStatus(CS_TESSELATED);

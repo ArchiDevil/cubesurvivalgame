@@ -4,6 +4,7 @@
 #include "ControllableGameObject.h"
 
 #include "../game.h"
+#include "../GameEventHandler.h"
 
 IEntityState::IEntityState()
 	: dead(false)

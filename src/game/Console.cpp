@@ -1,5 +1,8 @@
 #include "Console.h"
 #include "Entities/GameObjectInventory.h"
+#include "Entities/GameObjectsManager.h"
+#include "GameEventHandler.h"
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <sstream>

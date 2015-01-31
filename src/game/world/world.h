@@ -4,21 +4,24 @@
 #include <deque>
 #include <vector>
 #include <mutex>
+#include <string>
+#include <memory>
 
 #include <Utilities/ut.h>
-
-#include "worldGenerator/cWorldGenerator.h"
-#include "../Environment/EnvironmentManager.h"
-#include "worldStorage.h"
-#include "cChunksStorage.h"
-#include "cChunkStreamer.h"
-#include "worldTesselator.h"
+#include <MathLib/math/ray.h>
+#include <MathLib/math/vector3.h>
 
 #define NOTLOADED 0
 #define LOADED 1
 #define ALREADYLOADED 2
 
 #define MAX_SUN_LIGHT_INDEX 10
+
+class WorldStorage;
+class cChunksStorage;
+class WorldGenerator;
+class cChunkStreamer;
+class WorldTesselator;
 
 enum Action
 {
@@ -43,7 +46,7 @@ public:
 	void			 Unload();
 	void			 GenerateChunk(int x, int y);
 	void			 ProcessLoading();
-	bool			 SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & out) const;
+	bool			 SelectColumnByRay(const MathLib::Ray & unprojectedRay, MathLib::Vector3F & out) const;
 					 
 	//Getters		 
 	WorldStorage *	 GetDataStorage();
@@ -71,9 +74,10 @@ private:
 	void			 LightProp(int PTR, unsigned char value);
 					 
 	float			 GetInterpolatedHeight(int x, int y);
+
 	std::unique_ptr<WorldStorage>		DataStorage;
 	std::unique_ptr<cChunksStorage>		ChunksStorage;
-	std::unique_ptr<cWorldGenerator>	Generator;
+	std::unique_ptr<WorldGenerator>	    Generator;
 	std::unique_ptr<cChunkStreamer>		Streamer;
 	std::unique_ptr<WorldTesselator>	Tesselator;
 

@@ -1,6 +1,8 @@
 #include "ItemGameObject.h"
 
 #include "../game.h"
+#include "../Entities/PlayerGameObject.h"
+#include "../GameEventHandler.h"
 
 ItemGameObject::ItemGameObject(uint64_t itemId, size_t count, PhysObjectPtr _obj, ShiftEngine::MeshNode * meshNode) 
 	: itemId(itemId)

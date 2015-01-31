@@ -1,6 +1,9 @@
 #include "ControllableGameObject.h"
 
 #include "../game.h"
+#include "../world/world.h"
+#include "../world/blockColumn.h"
+#include "../world/worldStorage.h"
 
 ControllableGameObject::ControllableGameObject(ShiftEngine::MeshNode * sceneNode)
 	: LiveGameObject(sceneNode)

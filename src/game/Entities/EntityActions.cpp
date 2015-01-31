@@ -4,6 +4,7 @@
 #include "CollectableGameObject.h"
 
 #include "../game.h"
+#include "../GameEventHandler.h"
 
 IEntityAction::IEntityAction()
 	: m_dead(false)

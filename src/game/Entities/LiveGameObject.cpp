@@ -1,6 +1,8 @@
 #include "LiveGameObject.h"
 
 #include "../game.h"
+#include "../world/world.h"
+#include "../world/worldStorage.h"
 
 LiveGameObject::LiveGameObject(ShiftEngine::MeshNode * sceneNode)
 	: InteractableGameObject(sceneNode)

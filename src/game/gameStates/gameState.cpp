@@ -2,6 +2,13 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 
+#include "../world/world.h"
+#include "../Items/ItemManager.h"
+#include "../gameHud.h"
+#include "../Entities/GameObjectsManager.h"
+#include "../Environment/EnvironmentManager.h"
+#include "../CraftingManager.h"
+
 //TEMPORARY
 float phi = 0.0f;
 float theta = -35.0f;
@@ -33,20 +40,20 @@ bool gameState::initState()
 	::utils::filesystem::CreateDir(L"saves/worlds/tempWorld/");
 
 	int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
-	int CenterX = (int)pIniLoader->GetFloat("PlayerXPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
-	int CenterY = (int)pIniLoader->GetFloat("PlayerYPosition") / (int)pGame->World->GetDataStorage()->GetChunkWidth();
-	pGame->World->Initialize(ChunksPerSide, CenterX, CenterY, "tempWorld");
+	pGame->World->Initialize(ChunksPerSide, 0, 0, "tempWorld");
 	LOG_INFO("World Manager has been initialized");
 
 	SimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
 	LOG_INFO("Physics initialized");
 
-	pGame->ItemMgr.reset(new ItemManager());
-	pGame->ItemMgr->Initialize(L"resources/gamedata/Items/");
+	pGame->ItemMgr->Initialize("resources/gamedata/Items/");
 	LOG_INFO("Items have been loaded");
 
 	pGame->gameHud->Initialize();
 	LOG_INFO("HUD has been created");
+
+    pGame->CratingMgr->Initialize("resources/gamedata/crafting/");
+    LOG_INFO("Crafting manager has been initialized");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
 

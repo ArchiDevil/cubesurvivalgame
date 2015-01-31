@@ -1,6 +1,8 @@
 #include "CollectableGameObject.h"
 
 #include "../game.h"
+#include "../world/world.h"
+#include "../world/worldStorage.h"
 
 CollectableGameObject::CollectableGameObject(ShiftEngine::MeshNode * sceneNode, item_id_t itemId, size_t count)
 	: itemId(itemId)

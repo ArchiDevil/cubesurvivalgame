@@ -4,6 +4,8 @@
 #include "../game.h"
 #include "../Console.h"
 
+#include <MathLib/math.h>
+
 #include <Utilities/ut.h>
 #include <Utilities/iniloader.h>
 #include <Utilities/InputEngine.h>

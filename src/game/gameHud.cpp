@@ -2,14 +2,14 @@
 
 #include "game.h"
 #include "Entities/GameObjectInventory.h"
+#include "Entities/PlayerGameObject.h"
+#include "Items/Item.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
 using ShiftEngine::Sprite;
 
 gameHUD::gameHUD()
-	//: liHandItem(nullptr)
-	//, liHandI(nullptr)
 	: itemPanel(nullptr)
 	, selectedSlot(0)
 	, progressBarBack(nullptr)
@@ -25,13 +25,6 @@ void gameHUD::Initialize()
 	int screenWidth = settings.screenWidth;
 	int screenHeight = settings.screenHeight;
 
-	//liHandItem.reset(new Sprite(L""));
-	//liHandItem->SetPosition({ screenWidth - 70.0f, screenHeight - 70.0f });
-	//liHandItem->SetScale({ 1.4f, 1.4f });
-
-	//liHandI.reset(new Sprite(L"gui/selectcube.png"));
-	//liHandI->SetPosition({ screenWidth - 70.0f, screenHeight - 70.0f });
-	//liHandI->SetScale({ 1.4f, 1.4f });
 
 	itemPanel.reset(new Sprite(L"gui/itemPanel.png"));
 	float xPos = (float)screenWidth / 2.0f;
@@ -68,19 +61,9 @@ void gameHUD::Draw()
 	int screenHeight = settings.screenHeight;
 
 	auto pGame = LostIsland::GetGamePtr();
-	// auto &pItemMgr = pGame->ItemMgr;
 	auto pPlayer = pGame->Player;
 	SlotUnit handItem = pPlayer->GetInventoryPtr()->GetItemInRightHand();
 
-	// OLD UI
-	//if (handItem.itemId)
-	//	liHandItem->SetTexture(pItemMgr->GetItemById(handItem.itemId)->GetTexturePtr());
-	//else
-	//	liHandItem->SetTexture(nullptr);
-
-	//liHandI->Draw();
-	//liHandItem->Draw();
-	//pCtxMgr->GetFontManager()->DrawTextTL(std::to_string(handItem.count), screenWidth - 70, screenHeight - 70);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -116,10 +99,6 @@ void gameHUD::Draw()
 	selectedBorder->Draw();
 
 	const std::vector<SlotUnit> &items = pPlayer->GetInventoryPtr()->GetItems();
-	size_t maxi = items.size();
-	if (maxi > 10)
-		maxi = 10;
-
 	for (size_t i = 0; i < itemsSprites.size(); ++i)
 	{
 		itemsSprites[i]->Draw();

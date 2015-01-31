@@ -2,8 +2,12 @@
 
 #include <MathLib/math.h>
 
-#include "Entities/GameObjectInventory.h"
 #include "game.h"
+#include "Entities/PlayerGameObject.h"
+#include "world/world.h"
+#include "gameHud.h"
+#include "Entities/GameObjectsManager.h"
+#include "Entities/GameObjectInventory.h"
 
 void GameEventHandler::onPlayerMoves(double /*dt*/)
 {

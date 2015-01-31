@@ -1,5 +1,14 @@
 #include "game.h"
 
+#include "world/world.h"
+#include "Entities/PlayerGameObject.h"
+#include "Entities/GameObjectsManager.h"
+#include "Items/ItemManager.h"
+#include "Environment/EnvironmentManager.h"
+#include "GameEventHandler.h"
+#include "gameHud.h"
+#include "CraftingManager.h"
+
 cGame::cGame()
 	: Player(nullptr)
 {
@@ -8,6 +17,8 @@ cGame::cGame()
 	EntityMgr.reset(new GameObjectsManager);
 	GlobalEventHandler.reset(new GameEventHandler);
 	gameHud.reset(new gameHUD);
+    ItemMgr.reset(new ItemManager());
+    CratingMgr.reset(new CraftingManager);
 }
 
 cGame::~cGame()
