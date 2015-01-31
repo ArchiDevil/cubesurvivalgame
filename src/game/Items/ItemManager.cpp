@@ -14,24 +14,24 @@
 
 #include <cassert>
 
-void ItemManager::Initialize(const std::wstring & PathName)
+void ItemManager::Initialize(const std::string & PathName)
 {
 	LoadDefinitions(PathName);
 }
 
-void ItemManager::LoadDefinitions(const std::wstring & path)
+void ItemManager::LoadDefinitions(const std::string & path)
 {
 	auto files = utils::filesystem::CollectFileNames(path);
 	for (auto & file : files)
 	{
 		if (utils::filesystem::IsDirectory(path + file))
 		{
-			LoadDefinitions(path + file + L"/");
+			LoadDefinitions(path + file + "/");
 			continue;
 		}
 
 		//load this file, yeah
-		std::ifstream stream(utils::WStrToStr(path + file));
+		std::ifstream stream(path + file);
 		Json::Reader reader;
 		Json::Value root, null;
 		reader.parse(stream, root);
@@ -48,7 +48,7 @@ void ItemManager::LoadDefinitions(const std::wstring & path)
 			if (root.get(key, null).empty())
 			{
 				errorFlag = true;
-				LOG_ERROR("Unable to get required key ", key, " from ", utils::WStrToStr(file));
+				LOG_ERROR("Unable to get required key ", key, " from ", file);
 			}
 		}
 
