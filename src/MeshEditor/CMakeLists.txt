@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 file(GLOB_RECURSE SRC *.cpp *.h)
 
-include_directories(../../3rdparty/jsoncpp/include)
 include_directories($ENV{DXSDK_DIR}/include)
 
 if(${EX_PLATFORM} EQUAL 64)

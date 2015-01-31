@@ -29,7 +29,7 @@ bool MenuState::render( double /*dt*/ )
 	auto ge = ShiftEngine::GetContextManager();
 
 	std::ostringstream di[1];
-	di[0] << "Alpha build number 55, for testing purposes only";
+	di[0] << "Alpha build number 140, for testing purposes only";
 
 	////////////
 	// RENDER //
@@ -129,7 +129,7 @@ void MenuState::CreateGUI()
 	{
 		if(loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
 		{
-			pApp->PushState(new WorkState(utils::StrToWStr("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()),
+			pApp->PushState(new WorkState("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString(),
 				pCanvas,
 				pSkinner));
 		}
