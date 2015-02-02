@@ -20,8 +20,9 @@ struct Brush
 class WorkState : public appState
 {
 public:
-    WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
-    WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner);
+    WorkState(int x_size, int y_size, int z_size);
+    WorkState(const std::string & loadFile);
+    ~WorkState();
 
     virtual bool initState() override;
     virtual bool update(double dt) override;

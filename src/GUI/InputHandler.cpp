@@ -21,76 +21,86 @@
 
 namespace SimpleGUI
 {
-	InputHandler::InputHandler( Canvas * Canv )
-		: pCanvas(Canv)	
-	{
-		HoveredControl = nullptr;
-		FocusedControl = nullptr;
-	}
+    InputHandler::InputHandler(Canvas * Canv)
+        : pCanvas(Canv)
+    {
+        HoveredControl = nullptr;
+        FocusedControl = nullptr;
+    }
 
-	InputHandler::~InputHandler() {}
+    InputHandler::~InputHandler()
+    {
+    }
 
-	void InputHandler::UpdateHoveredControl( int mouseX, int mouseY )
-	{
-		auto HC = pCanvas->GetControlAt(mouseX, mouseY);
+    void InputHandler::UpdateHoveredControl(int mouseX, int mouseY)
+    {
+        if (!pCanvas)
+            return;
 
-		if(HC == HoveredControl && HC)
-		{
-			HoveredControl->OnMouseMove();
-		}
-		else
-		{
-			if(HoveredControl)
-				HoveredControl->OnMouseLeave();
+        auto HC = pCanvas->GetControlAt(mouseX, mouseY);
 
-			HoveredControl = HC;
+        if (HC == HoveredControl && HC)
+        {
+            HoveredControl->OnMouseMove();
+        }
+        else
+        {
+            if (HoveredControl)
+                HoveredControl->OnMouseLeave();
 
-			if(HoveredControl)
-				HoveredControl->OnMouseEnter();
-		}
-	}
+            HoveredControl = HC;
 
-	void InputHandler::ProcessMouseMoving( Point /*oldPos*/, Point newPos )
-	{
-		//much more?
-		UpdateHoveredControl(newPos.x, newPos.y);
-	}
+            if (HoveredControl)
+                HoveredControl->OnMouseEnter();
+        }
+    }
 
-	void InputHandler::ProcessKeyChar( wchar_t character )
-	{
-		if(FocusedControl)
-			FocusedControl->OnKeyChar(character);
-	}
+    void InputHandler::ProcessMouseMoving(Point /*oldPos*/, Point newPos)
+    {
+        //much more?
+        UpdateHoveredControl(newPos.x, newPos.y);
+    }
 
-	void InputHandler::ProcessSpecialKeyUp( unsigned int /*key*/ )
-	{
-		return;
-	}
+    void InputHandler::ProcessKeyChar(wchar_t character)
+    {
+        if (FocusedControl)
+            FocusedControl->OnKeyChar(character);
+    }
 
-	void InputHandler::ProcessMouseUp( const MouseEventInfo & event )
-	{
-		if(HoveredControl)
-		{
-			if(HoveredControl->CanHaveFocus())
-				FocusedControl = HoveredControl;
+    void InputHandler::ProcessSpecialKeyUp(unsigned int /*key*/)
+    {
+        return;
+    }
 
-			HoveredControl->OnMouseUp(event.button, event.x, event.y);
+    void InputHandler::ProcessMouseUp(const MouseEventInfo & event)
+    {
+        if (!HoveredControl)
+            return;
 
-			return;
-		}
-	}
+        if (HoveredControl->CanHaveFocus())
+            FocusedControl = HoveredControl;
 
-	void InputHandler::ProcessMouseDown( const MouseEventInfo & event )
-	{
-		if(HoveredControl)
-		{
-			if(HoveredControl->CanHaveFocus())
-				FocusedControl = HoveredControl;
+        HoveredControl->OnMouseUp(event.button, event.x, event.y);
+    }
 
-			HoveredControl->OnMouseDown(event.button, event.x, event.y);
+    void InputHandler::ProcessMouseDown(const MouseEventInfo & event)
+    {
+        if (!HoveredControl)
+            return;
 
-			return;
-		}
-	}
+        if (HoveredControl->CanHaveFocus())
+            FocusedControl = HoveredControl;
 
+        HoveredControl->OnMouseDown(event.button, event.x, event.y);
+    }
+
+    const Canvas * InputHandler::GetCanvas() const
+    {
+        return pCanvas;
+    }
+
+    void InputHandler::SetCanvas(Canvas * pCanvas)
+    {
+        this->pCanvas = pCanvas;
+    }
 }

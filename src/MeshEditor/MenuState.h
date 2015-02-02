@@ -12,7 +12,7 @@ class Application;
 class MenuState : public appState
 {
 public:
-    MenuState(SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner, Application * _pApp);
+    MenuState(Application * _pApp);
     ~MenuState();
 
     virtual bool initState() override;

@@ -5,16 +5,11 @@ using namespace SimpleGUI;
 Application::Application(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
     : cApplication(Width, Height, AppName)
 {
-    ::ShowCursor(true);
     utils::filesystem::CreateDir(L"saves");
-    Skin = new SimpleGUI::Skinner;
-    MainCanvas = new SimpleGUI::Canvas;
 }
 
 Application::~Application()
 {
-    delete Skin;
-    delete MainCanvas;
 }
 
 bool Application::Initialize()
@@ -52,12 +47,10 @@ bool Application::Initialize()
     else
         LOG_INFO("Input system has been initialized");
 
-    MainCanvas = new SimpleGUI::Canvas();
-    GUIListener = new SimpleGUI::MainListener(MainCanvas, &(cInputEngine::GetInstance()), charQueue);
+    GUIListener = new SimpleGUI::MainListener(nullptr, &(cInputEngine::GetInstance()), charQueue);
+    SimpleGUI::ActiveListener = GUIListener;
 
-    Skin->Initialize();
-
-    MenuState * state = new MenuState(MainCanvas, Skin, this);
+    MenuState * state = new MenuState(this);
     statesStack.push(state);
 
     state->initState();

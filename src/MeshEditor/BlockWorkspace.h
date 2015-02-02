@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorkspaceActions.h"
+#include "BlockStorage.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>
@@ -13,50 +14,38 @@ namespace MeshEditor
 {
     class IAction;
 
-    struct Block
-    {
-        Block() : exist(false) {}
-        Vector3F color;
-        bool exist;
-    };
-
-    class BlockWorkspace : public IManager
+    class BlockWorkspace final : public IManager
     {
     public:
-        BlockWorkspace(int _x, int _y, int _z);
+        BlockWorkspace(size_t x, size_t y, size_t z);
         ~BlockWorkspace();
 
         void Initialize();
-
-        void ResizeWithoutSaved(int x_size, int y_size, int z_size);
         void Update();
 
-        void AddBlock(int x, int y, int z);
-        void RemoveBlock(int x, int y, int z);
-        void SetBlockColor(int x, int y, int z, const Vector3F & color);
-        Block & GetBlock(int x, int y, int z);
-        Block GetBlock(int x, int y, int z) const;
+        void AddBlock(size_t x, size_t y, size_t z);
+        void RemoveBlock(size_t x, size_t y, size_t z);
+        void SetBlockColor(size_t x, size_t y, size_t z, const Vector3F & color);
+
+        Block GetBlock(size_t x, size_t y, int z) const;
         void Undo();
 
         void ShowBoundingBox();
         void HideBoundingBox();
         bool IsBBoxShowed() const;
 
-        Vector3F GetHalfSize() const;
-
         void Save(const std::string & filename);
         void Load(const std::string & filename);
 
-        void Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown);
-        int GetMaxSize() const;
-
         void VanishColor(bool flag);
+        void Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown);
+
+        Vector3F GetHalfSize() const;
+        int GetMaxSize() const;
 
     private:
         void SetNotTesselated();
         void Tesselate();
-        int GetIndex(int x, int y, int z) const;
-        int GetIndexNew(int x, int y, int z, int xSize, int ySize, int zSize);
         inline float GetAOFactor(float x1, float x2,
                                  float y1, float y2,
                                  float z1, float z2);
@@ -64,18 +53,18 @@ namespace MeshEditor
         void CreateBBox();
 
         bool tesselated;
-        int x_size, y_size, z_size;
-        Block * Elements;
+        BlockStorage storage;
 
         ShiftEngine::MeshNode * bbox;
         ShiftEngine::MeshNode * plane;
         ShiftEngine::MeshNode * mesh;
+        ShiftEngine::LightNode * light;
 
         ShiftEngine::Material ColorMaterial;
         ShiftEngine::Material GeometryMaterial;
         ShiftEngine::TexturePtr GridTexture;
 
-        static ShiftEngine::VertexSemantic semantic;
+        ShiftEngine::VertexSemantic semantic;
         std::stack<std::unique_ptr<IAction>> actions;
         bool isBboxShown;
     };

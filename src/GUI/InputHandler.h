@@ -7,7 +7,12 @@ namespace SimpleGUI
 	struct MouseEventInfo
 	{
 		MouseEventInfo(int _button, int _x, int _y)
-			: button(_button), x(_x), y(_y) {}
+			: button(_button)
+            , x(_x)
+            , y(_y) 
+        {
+        }
+
 		int button, x, y;
 	};
 
@@ -22,6 +27,9 @@ namespace SimpleGUI
 		void ProcessMouseUp(const MouseEventInfo & event);
 		void ProcessMouseMoving(Point oldPos, Point newPos);
 		void ProcessSpecialKeyUp(unsigned int key);
+
+        const Canvas * GetCanvas() const;
+        void SetCanvas(Canvas * pCanvas);
 
 	private:
 		void UpdateHoveredControl(int mouseX, int mouseY);

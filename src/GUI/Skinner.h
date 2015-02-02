@@ -42,5 +42,4 @@ namespace SimpleGUI
 		ShiftEngine::Sprite * ListCache;
 		ShiftEngine::Sprite * ValueBoxCache;
 	};
-
 }

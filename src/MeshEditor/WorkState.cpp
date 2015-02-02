@@ -13,28 +13,39 @@ const float threshold = 20.0f;
 
 using namespace MeshEditor;
 
-WorkState::WorkState(int x_size, int y_size, int z_size, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
-    : pCanvas(_pCanvas)
-    , pSkinner(_pSkinner)
-    , flag(false)
+WorkState::WorkState(int x_size, int y_size, int z_size)
+    : flag(false)
     , geometryMode(true)
 {
     Workspace.reset(new BlockWorkspace(x_size, y_size, z_size));
+
+    pCanvas = new SimpleGUI::Canvas;
+    pSkinner = new SimpleGUI::Skinner;
+    pSkinner->Initialize();
 }
 
-WorkState::WorkState(const std::string & loadFile, SimpleGUI::Canvas * _pCanvas, SimpleGUI::Skinner * _pSkinner)
-    : pCanvas(_pCanvas)
-    , pSkinner(_pSkinner)
-    , flag(false)
+WorkState::WorkState(const std::string & loadFile)
+    : flag(false)
     , geometryMode(true)
 {
     Workspace.reset(new BlockWorkspace(1, 1, 1));
     Workspace->Load(loadFile);
+
+    pCanvas = new SimpleGUI::Canvas;
+    pSkinner = new SimpleGUI::Skinner;
+    pSkinner->Initialize();
+}
+
+WorkState::~WorkState()
+{
+    delete pCanvas;
+    delete pSkinner;
 }
 
 bool WorkState::initState()
 {
-    pCanvas->RemoveAllChildrens();
+    SimpleGUI::SetCanvas(pCanvas);
+    SimpleGUI::SetSkinner(pSkinner);
     Workspace->Initialize();
     CreateGUI();
     int maxsize = Workspace->GetMaxSize();
@@ -117,16 +128,28 @@ bool WorkState::render(double dt)
     for (int i = 0; i < infoSize; i++)
         pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i * 18);
 
-    pCanvas->Render(pSkinner);
+    SimpleGUI::DrawUI();
     pContextManager->GetFontManager()->SetFont(font);
     pContextManager->EndScene();
 
     return true; //return false if something wrong
 }
 
-void WorkState::onKill() {}
-void WorkState::onSuspend() {}
-void WorkState::onResume() {}
+void WorkState::onKill()
+{
+    SimpleGUI::SetCanvas(nullptr);
+    SimpleGUI::SetSkinner(nullptr);
+}
+
+void WorkState::onSuspend()
+{
+}
+
+void WorkState::onResume()
+{
+    SimpleGUI::SetCanvas(pCanvas);
+    SimpleGUI::SetSkinner(pSkinner);
+}
 
 void WorkState::CreateGUI()
 {

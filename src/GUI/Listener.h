@@ -5,15 +5,15 @@
 
 namespace SimpleGUI
 {
-	class Listener
-	{
-	public:
-		Listener(Canvas * _pCanvas);
+    class Listener
+    {
+    public:
+        Listener(Canvas * _pCanvas);
 
-		InputHandler * GetInputHandler();
-		virtual void Update() = 0;
+        InputHandler * GetInputHandler();
+        virtual void Update() = 0;
 
-	protected:
-		InputHandler Handler;
-	};
+    protected:
+        InputHandler Handler;
+    };
 }

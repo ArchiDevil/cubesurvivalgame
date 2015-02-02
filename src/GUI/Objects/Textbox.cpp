@@ -61,3 +61,9 @@ void SimpleGUI::Textbox::OnTextChanged()
 	if(textChangedHandler)
 		textChangedHandler(this->currentText);
 }
+
+void SimpleGUI::Textbox::SetText(const std::wstring & text)
+{
+    currentText = text;
+    OnTextChanged();
+}

@@ -5,21 +5,14 @@
 
 #include <Utilities/ut.h>
 
-ShiftEngine::VertexSemantic MeshEditor::BlockWorkspace::semantic;
-
-MeshEditor::BlockWorkspace::BlockWorkspace(int _x, int _y, int _z)
-    : x_size(_x)
-    , y_size(_y)
-    , z_size(_z)
+MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z) 
+    : storage(x, y, z)
     , isBboxShown(false)
     , bbox(nullptr)
     , plane(nullptr)
     , mesh(nullptr)
     , tesselated(false)
 {
-    assert(x_size > 0 && y_size > 0 && z_size > 0);
-    Elements = new Block[x_size * y_size * z_size];
-
     GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
     GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
     ColorMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderColor.fx"));
@@ -34,7 +27,8 @@ MeshEditor::BlockWorkspace::BlockWorkspace(int _x, int _y, int _z)
 
 MeshEditor::BlockWorkspace::~BlockWorkspace()
 {
-    delete[] Elements;
+    if (light)
+        ShiftEngine::GetSceneGraph()->RemoveDirectionalLightNode(light);
 }
 
 void MeshEditor::BlockWorkspace::Initialize()
@@ -42,54 +36,8 @@ void MeshEditor::BlockWorkspace::Initialize()
     Tesselate();
     CreateBBox();
     CreatePlane();
-    ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
+    light = ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
     LOG_INFO("Workspace initialized");
-}
-
-void MeshEditor::BlockWorkspace::ResizeWithoutSaved(int new_x, int new_y, int new_z)
-{
-    x_size = new_x;
-    y_size = new_y;
-    z_size = new_z;
-
-    delete[] Elements;
-    Elements = new Block[new_x * new_y * new_z];
-}
-
-void MeshEditor::BlockWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown)
-{
-    int x_new = x_size + Xup + Xdown;
-    int y_new = y_size + Yup + Ydown;
-    int z_new = z_size + Zup + Zdown;
-
-    Block * ElementsNew = new Block[x_new * y_new * z_new];
-
-    for (int i = 0; i < x_size; i++)
-    {
-        for (int j = 0; j < y_size; j++)
-        {
-            for (int k = 0; k < z_size; k++)
-            {
-                int indexnew = GetIndexNew(i + Xdown, j + Ydown, k + Zdown, x_new, y_new, z_new);
-                if (GetBlock(i, j, k).exist)
-                    ElementsNew[indexnew] = GetBlock(i, j, k);
-            }
-        }
-    }
-
-    delete[] Elements;
-    this->Elements = ElementsNew;
-
-    x_size = x_new;
-    y_size = y_new;
-    z_size = z_new;
-
-    CreateBBox();
-}
-
-int MeshEditor::BlockWorkspace::GetIndexNew(int x, int y, int z, int /*xSize*/, int ySize, int zSize)
-{
-    return x * zSize * ySize + y * zSize + z;
 }
 
 void MeshEditor::BlockWorkspace::Update()
@@ -97,8 +45,8 @@ void MeshEditor::BlockWorkspace::Update()
     if (!tesselated)
         Tesselate();
 
-    plane->SetScale(Vector3F(x_size * 2.0f, y_size * 2.0f, 1.0f));
-    plane->SetPosition(Vector3F((float)x_size / 2 - (float)x_size, (float)y_size / 2 - (float)y_size, 0.0f));
+    plane->SetScale(Vector3F(storage.GetHalfSize().x * 4.0f, storage.GetHalfSize().y * 4.0f, 1.0f));
+    plane->SetPosition(Vector3F(storage.GetHalfSize().x - (float)storage.GetHalfSize().x * 2.0f, storage.GetHalfSize().y - (float)storage.GetHalfSize().y * 2.0f, 0.0f));
 
     //if(bboxShow)
     //	bbox->SetVisibility(true);
@@ -106,42 +54,9 @@ void MeshEditor::BlockWorkspace::Update()
     //	bbox->SetVisibility(false);
 }
 
-MeshEditor::Block & MeshEditor::BlockWorkspace::GetBlock(int x, int y, int z)
+MeshEditor::Block MeshEditor::BlockWorkspace::GetBlock(size_t x, size_t y, int z) const
 {
-    if (x < x_size && x >= 0 && y < y_size && y >= 0 && z < z_size && z >= 0)
-    {
-        tesselated = false;
-        return Elements[x * z_size * y_size + y * z_size + z];
-    }
-    else if (z < 0)
-    {
-        static Block hack;
-        hack.exist = true;
-        return hack;
-    }
-    else
-    {
-        static Block local;
-        return local;
-    }
-}
-
-MeshEditor::Block MeshEditor::BlockWorkspace::GetBlock(int x, int y, int z) const
-{
-    if (x < x_size && x >= 0 && y < y_size && y >= 0 && z < z_size && z >= 0)
-    {
-        return Elements[x * z_size * y_size + y * z_size + z];
-    }
-    else if (z < 0)
-    {
-        Block hack;
-        hack.exist = true;
-        return hack;
-    }
-    else
-    {
-        return Block();
-    }
+    return storage.GetBlock(x, y, z);
 }
 
 #define maxShadowFactor2 23.1364880
@@ -206,11 +121,13 @@ void MeshEditor::BlockWorkspace::Tesselate()
     const Vector3F DOWN = Vector3F(0.0f, 0.0f, -1.0f);
     const Vector3F UP = Vector3F(0.0f, 0.0f, 1.0f);
 
-    for (float x = 0.0f; x < (float)x_size; x++)
+    const Vector3F sizes = storage.GetHalfSize() * 2.0f;
+
+    for (float x = 0.0f; x < sizes.x; x++)
     {
-        for (float y = 0.0f; y < (float)y_size; y++)
+        for (float y = 0.0f; y < sizes.y; y++)
         {
-            for (float z = 0.0f; z < (float)z_size; z++)
+            for (float z = 0.0f; z < sizes.z; z++)
             {
                 auto block = GetBlock((int)floor(x), (int)floor(y), (int)floor(z));
                 if (block.exist)
@@ -378,7 +295,7 @@ void MeshEditor::BlockWorkspace::Tesselate()
     cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(semantic);
 
     if (!mesh)
-        mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB({}, { (float)x_size, (float)y_size, (float)z_size }), &GeometryMaterial);
+        mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB({}, storage.GetHalfSize() * 2.0f), &GeometryMaterial);
     else
         mesh->SetDataPtr(meshData);
 
@@ -394,50 +311,56 @@ void MeshEditor::BlockWorkspace::Save(const std::string & filename)
 {
     struct Header
     {
-        unsigned int size[3];
+        uint32_t size[3];
     };
 
+    const MathLib::Vector3I sizes = storage.GetHalfSize() * 2.0f;
     Header h;
-    h.size[0] = x_size;
-    h.size[1] = y_size;
-    h.size[2] = z_size;
+    h.size[0] = sizes.x;
+    h.size[1] = sizes.y;
+    h.size[2] = sizes.z;
 
-    auto buff = filename;
-    std::ofstream stream(buff);
+    std::ofstream stream(filename);
 
-    if (!stream || stream.fail())
-        LOG_ERROR("Unable to save ", buff);
+    if (!stream || stream.fail() || !stream.is_open())
+    {
+        LOG_ERROR("Unable to save ", filename);
+        return;
+    }
+
+    std::vector<uint8_t> buffer;
+    storage.Serialize(buffer);
 
     stream.write((char*)&h, sizeof(Header));
-    stream.write((char*)Elements, sizeof(Block) * x_size * y_size * z_size);
+    stream.write((char*)buffer.data(), buffer.size());
+    stream.close();
 }
 
 void MeshEditor::BlockWorkspace::Load(const std::string & filename)
 {
     struct Header
     {
-        unsigned int size[3];
+        uint32_t size[3];
     };
 
     Header h;
 
-    auto buff = filename;
-    std::ifstream stream(buff);
+    std::ifstream stream(filename);
 
     if (!stream || stream.fail())
     {
-        LOG_ERROR("Unable to load ", buff);
+        LOG_ERROR("Unable to load ", filename);
         return;
     }
 
-    stream.read(reinterpret_cast<char*>(&h), sizeof(Header));
-    ResizeWithoutSaved(h.size[0], h.size[1], h.size[2]);
-    stream.read((char *)Elements, sizeof(Block) * x_size * y_size * z_size);
-}
+    std::vector<uint8_t> buffer;
+    buffer.resize(sizeof(Block) * h.size[0] * h.size[1] * h.size[2]);
 
-int MeshEditor::BlockWorkspace::GetIndex(int x, int y, int z) const
-{
-    return x * z_size * y_size + y * z_size + z;
+    stream.read(reinterpret_cast<char*>(&h), sizeof(Header));
+    stream.read((char *)buffer.data(), buffer.size());
+    stream.close();
+    storage.Resize(h.size[0], h.size[1], h.size[2]);
+    storage.Deserialize(buffer);
 }
 
 void MeshEditor::BlockWorkspace::Undo()
@@ -446,14 +369,14 @@ void MeshEditor::BlockWorkspace::Undo()
         return;
 
     auto &action = actions.top();
-    action->Undo(this);
+    action->Undo(&storage);
     actions.pop();
     Tesselate();
 }
 
 MathLib::Vector3F MeshEditor::BlockWorkspace::GetHalfSize() const
 {
-    return Vector3F((float)x_size / 2, (float)y_size / 2, (float)z_size / 2);
+    return storage.GetHalfSize();
 }
 
 void MeshEditor::BlockWorkspace::CreatePlane()
@@ -527,7 +450,7 @@ bool MeshEditor::BlockWorkspace::IsBBoxShowed() const
 
 int MeshEditor::BlockWorkspace::GetMaxSize() const
 {
-    return max(x_size, max(y_size, z_size));
+    return storage.GetMaxSize();
 }
 
 void MeshEditor::BlockWorkspace::VanishColor(bool flag)
@@ -538,20 +461,31 @@ void MeshEditor::BlockWorkspace::VanishColor(bool flag)
         mesh->SetMaterial(&ColorMaterial);
 }
 
-void MeshEditor::BlockWorkspace::AddBlock(int x, int y, int z)
+void MeshEditor::BlockWorkspace::AddBlock(size_t x, size_t y, size_t z)
 {
     actions.push(std::make_unique<AddBlockAction>(MathLib::Vector3I(x, y, z)));
-    actions.top()->Execute(this);
+    actions.top()->Execute(&storage);
+    tesselated = false;
 }
 
-void MeshEditor::BlockWorkspace::RemoveBlock(int x, int y, int z)
+void MeshEditor::BlockWorkspace::RemoveBlock(size_t x, size_t y, size_t z)
 {
     actions.push(std::make_unique<RemoveBlockAction>(MathLib::Vector3I(x, y, z)));
-    actions.top()->Execute(this);
+    actions.top()->Execute(&storage);
+    tesselated = false;
 }
 
-void MeshEditor::BlockWorkspace::SetBlockColor(int x, int y, int z, const Vector3F & color)
+void MeshEditor::BlockWorkspace::SetBlockColor(size_t x, size_t y, size_t z, const Vector3F & color)
 {
     actions.push(std::make_unique<SetBlockColorAction>(MathLib::Vector3I(x, y, z), color));
-    actions.top()->Execute(this);
+    actions.top()->Execute(&storage);
+    tesselated = false;
+}
+
+void MeshEditor::BlockWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown)
+{
+    actions.push(std::make_unique<ResizeAction>(MathLib::Vector3I(Xup, Yup, Zup), MathLib::Vector3I(Xdown, Ydown, Zdown)));
+    actions.top()->Execute(&storage);
+    tesselated = false;
+    CreateBBox();
 }

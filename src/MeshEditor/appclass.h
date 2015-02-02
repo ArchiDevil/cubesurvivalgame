@@ -40,7 +40,5 @@ private:
     std::vector<wchar_t>			charQueue;
 
     SimpleGUI::MainListener *		GUIListener;
-    SimpleGUI::Canvas *				MainCanvas;
-    SimpleGUI::Skinner *			Skin;
 
 };

@@ -2,7 +2,14 @@
 
 namespace SimpleGUI
 {
-	Listener::Listener( Canvas * _pCanvas )
-		: Handler(_pCanvas)
-	{}
+    Listener::Listener(Canvas * _pCanvas)
+        : Handler(_pCanvas)
+    {
+    }
+
+    InputHandler * Listener::GetInputHandler()
+    {
+        return &Handler;
+    }
+
 }

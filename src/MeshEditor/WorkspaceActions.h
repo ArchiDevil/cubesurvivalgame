@@ -2,27 +2,25 @@
 
 #include <MathLib/math.h>
 
-#include "BlockWorkspace.h"
-
 namespace MeshEditor
 {
-    class BlockWorkspace;
+    class BlockStorage;
 
     class IAction
     {
     public:
         virtual ~IAction() = default;
 
-        virtual void Execute(BlockWorkspace * ws) = 0;
-        virtual void Undo(BlockWorkspace * ws) = 0;
+        virtual void Execute(BlockStorage * bs) = 0;
+        virtual void Undo(BlockStorage * bs) = 0;
     };
 
     class AddBlockAction final : public IAction
     {
     public:
         AddBlockAction(const MathLib::Vector3I & pos);
-        virtual void Execute(BlockWorkspace * ws) override;
-        virtual void Undo(BlockWorkspace * ws) override;
+        virtual void Execute(BlockStorage * bs) override;
+        virtual void Undo(BlockStorage * bs) override;
 
     private:
         bool exec = false;
@@ -33,8 +31,8 @@ namespace MeshEditor
     {
     public:
         RemoveBlockAction(const MathLib::Vector3I & pos);
-        virtual void Execute(BlockWorkspace * ws) override;
-        virtual void Undo(BlockWorkspace * ws) override;
+        virtual void Execute(BlockStorage * bs) override;
+        virtual void Undo(BlockStorage * bs) override;
 
     private:
         bool exec = false;
@@ -45,12 +43,24 @@ namespace MeshEditor
     {
     public:
         SetBlockColorAction(const MathLib::Vector3I & pos, const MathLib::Vector3F & newColor);
-        virtual void Execute(BlockWorkspace * ws) override;
-        virtual void Undo(BlockWorkspace * ws) override;
+        virtual void Execute(BlockStorage * bs) override;
+        virtual void Undo(BlockStorage * bs) override;
 
     private:
         MathLib::Vector3I pos;
         MathLib::Vector3F newColor;
         MathLib::Vector3F oldColor;
+    };
+
+    class ResizeAction final : public IAction
+    {
+    public:
+        ResizeAction(const MathLib::Vector3I& posDelta, const MathLib::Vector3I& negDelta);
+        virtual void Execute(BlockStorage * bs) override;
+        virtual void Undo(BlockStorage * bs) override;
+
+    private:
+        MathLib::Vector3I posDelta;
+        MathLib::Vector3I negDelta;
     };
 }
