@@ -1,13 +1,13 @@
 {
     "name": "stone_axe",
-    "product" :  "stone_axe",
+    "product" : "stone_axe",
     "items": [
         {
             "name": "stick",
             "count": 2
         },
         {
-            "name": "stone",
+            "name": "sharpened_stone",
             "count": 1
         }
     ]

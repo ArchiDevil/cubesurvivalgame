@@ -1,0 +1,14 @@
+{
+    "name": "campfire",
+    "product" : "campfire",
+    "items": [
+        {
+            "name": "log",
+            "count": 4
+        },
+        {
+            "name": "smooth_stone",
+            "count": 8
+        }
+    ]
+}

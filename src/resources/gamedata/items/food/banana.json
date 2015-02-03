@@ -1,0 +1,7 @@
+{
+	"id":			"banana",
+	"description": 	"",
+	"type": 		"food",
+	"hunger":		8,
+	"icon": 		"banana.png"
+}

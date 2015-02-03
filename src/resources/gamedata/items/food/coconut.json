@@ -1,0 +1,7 @@
+{
+	"id":			"coconut",
+	"description": 	"",
+	"type": 		"food",
+	"hunger":		10,
+	"icon": 		"coconut.png"
+}
