@@ -2,8 +2,6 @@
 
 #include <GraphicsEngine/Renderer.h>
 
-//implement geometry & color view
-
 float SensivityMultiplier = 0.2f;
 static float x_angle = -45.0f;
 static float y_angle = 45.0f;
@@ -49,7 +47,7 @@ bool WorkState::initState()
     Workspace->Initialize();
     CreateGUI();
     int maxsize = Workspace->GetMaxSize();
-    R = 3 * 1.4f * (0.5f * maxsize);
+    R = 3.0f * 1.4f * (0.5f * maxsize);
     return true;
 }
 
@@ -268,6 +266,9 @@ bool WorkState::ProcessInput(double ElapsedTime)
 
     InputEngine.GetKeys();
 
+    if (SimpleGUI::HoveredControl != pCanvas)
+        return true;
+
     auto mouseInfo = InputEngine.GetMouseInfo();
 
     Vector3F nearV, farV;
@@ -279,103 +280,104 @@ bool WorkState::ProcessInput(double ElapsedTime)
 
     if (geometryMode)
     {
-        if (InputEngine.IsMouseUp(LButton) && SimpleGUI::HoveredControl == pCanvas)
-        {
-            D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-            float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
-
-            for (float mult = 0.0f; mult < distance*2.0f; mult += 0.1f)
-            {
-                Vector3F temp = dir * mult + nearV;
-                if (Workspace->GetBlock((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
-                {
-                    Workspace->RemoveBlock((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z));
-                    break;
-                }
-            }
-        }
-
         if (InputEngine.IsMouseUp(RButton))
         {
             if (lenghtOfMove < threshold)
             {
                 D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
                 float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
-                //calculate new position
-                const float step = 0.1f;
-                for (float mult = 0.0f; mult < distance * 2.0f; mult += step)
+
+                for (float mult = 0.0f; mult < distance*2.0f; mult += 0.1f)
                 {
                     Vector3F temp = dir * mult + nearV;
                     Vector3I integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
-
-                    // this block only to check, block that would be modified must be got in other referenced variable!
-                    const Block & block = Workspace->GetBlock(integerPos.x, integerPos.y, integerPos.z);
-                    if (!block.exist)
-                        continue;
-
-                    mult -= step;
-                    temp = dir * mult + nearV;
-                    integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
-                    auto workspaceSize = Workspace->GetHalfSize();
-                    workspaceSize *= 2.0f;
-                    if (temp.x >= 0.0f && temp.x <= workspaceSize.x &&
-                        temp.y >= 0.0f && temp.y <= workspaceSize.y &&
-                        temp.z >= 0.0f && temp.z <= workspaceSize.z)
+                    if (Workspace->GetBlock(integerPos.x, integerPos.y, integerPos.z).exist)
                     {
-                        Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                        Workspace->RemoveBlock(integerPos.x, integerPos.y, integerPos.z);
+                        break;
                     }
-                    else
-                    {
-                        if ((int)floor(temp.z) == 0)
-                        {
-                            bool no = true;
-                            if (Workspace->GetBlock(integerPos.x + 1, integerPos.y, integerPos.z).exist) no = false;
-                            if (Workspace->GetBlock(integerPos.x - 1, integerPos.y, integerPos.z).exist) no = false;
-                            if (Workspace->GetBlock(integerPos.x, integerPos.y + 1, integerPos.z).exist) no = false;
-                            if (Workspace->GetBlock(integerPos.x, integerPos.y - 1, integerPos.z).exist) no = false;
-                            if (no) break;
-                        }
-
-                        if (temp.x <= 0.0f)
-                        {
-                            Workspace->Resize(0, 0, 0, 1, 0, 0);
-                            Workspace->AddBlock(integerPos.x + 1, integerPos.y, integerPos.z);
-                        }
-
-                        if (temp.y <= 0.0f)
-                        {
-                            Workspace->Resize(0, 0, 0, 0, 1, 0);
-                            Workspace->AddBlock(integerPos.x, integerPos.y + 1, integerPos.z);
-                        }
-
-                        if (temp.x >= workspaceSize.x)
-                        {
-                            Workspace->Resize(1, 0, 0, 0, 0, 0);
-                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
-                        }
-
-                        if (temp.y >= workspaceSize.y)
-                        {
-                            Workspace->Resize(0, 1, 0, 0, 0, 0);
-                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
-                        }
-
-                        if (temp.z >= workspaceSize.z)
-                        {
-                            Workspace->Resize(0, 0, 1, 0, 0, 0);
-                            Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
-                        }
-                    }
-                    break;
                 }
             }
             flag = false;
             lenghtOfMove = 0.0f;
         }
+
+        if (InputEngine.IsMouseUp(LButton))
+        {
+            D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+            float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
+            //calculate new position
+            const float step = 0.1f;
+            for (float mult = 0.0f; mult < distance * 2.0f; mult += step)
+            {
+                Vector3F temp = dir * mult + nearV;
+                Vector3I integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
+
+                // this block only to check, block that would be modified must be got in other referenced variable!
+                const Block & block = Workspace->GetBlock(integerPos.x, integerPos.y, integerPos.z);
+                if (!block.exist)
+                    continue;
+
+                mult -= step;
+                temp = dir * mult + nearV;
+                integerPos = { (int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z) };
+                auto workspaceSize = Workspace->GetHalfSize();
+                workspaceSize *= 2.0f;
+                if (temp.x >= 0.0f && temp.x <= workspaceSize.x &&
+                    temp.y >= 0.0f && temp.y <= workspaceSize.y &&
+                    temp.z >= 0.0f && temp.z <= workspaceSize.z)
+                {
+                    Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                }
+                else
+                {
+                    if ((int)floor(temp.z) == 0)
+                    {
+                        bool no = true;
+                        if (Workspace->GetBlock(integerPos.x + 1, integerPos.y, integerPos.z).exist) no = false;
+                        if (Workspace->GetBlock(integerPos.x - 1, integerPos.y, integerPos.z).exist) no = false;
+                        if (Workspace->GetBlock(integerPos.x, integerPos.y + 1, integerPos.z).exist) no = false;
+                        if (Workspace->GetBlock(integerPos.x, integerPos.y - 1, integerPos.z).exist) no = false;
+                        if (no) break;
+                    }
+
+                    if (temp.x <= 0.0f)
+                    {
+                        Workspace->Resize(0, 0, 0, 1, 0, 0);
+                        Workspace->AddBlock(integerPos.x + 1, integerPos.y, integerPos.z);
+                    }
+
+                    if (temp.y <= 0.0f)
+                    {
+                        Workspace->Resize(0, 0, 0, 0, 1, 0);
+                        Workspace->AddBlock(integerPos.x, integerPos.y + 1, integerPos.z);
+                    }
+
+                    if (temp.x >= workspaceSize.x)
+                    {
+                        Workspace->Resize(1, 0, 0, 0, 0, 0);
+                        Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                    }
+
+                    if (temp.y >= workspaceSize.y)
+                    {
+                        Workspace->Resize(0, 1, 0, 0, 0, 0);
+                        Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                    }
+
+                    if (temp.z >= workspaceSize.z)
+                    {
+                        Workspace->Resize(0, 0, 1, 0, 0, 0);
+                        Workspace->AddBlock(integerPos.x, integerPos.y, integerPos.z);
+                    }
+                }
+                break;
+            }
+        }
     }
     else
     {
-        if (InputEngine.IsMouseUp(LButton))
+        if (InputEngine.IsMouseDown(LButton))
         {
             D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
             float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
@@ -402,21 +404,21 @@ bool WorkState::ProcessInput(double ElapsedTime)
     if (InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
     {
         //flag = true;
-
-        x_angle -= mouseInfo.deltaX * SensivityMultiplier;
-        if (y_angle - mouseInfo.deltaY * SensivityMultiplier < 179.0f
-            && y_angle - mouseInfo.deltaY * SensivityMultiplier > 1.0f)
-            y_angle -= mouseInfo.deltaY * SensivityMultiplier;
+        if (lenghtOfMove > threshold)
+        {
+            x_angle -= mouseInfo.deltaX * SensivityMultiplier;
+            if (y_angle - mouseInfo.deltaY * SensivityMultiplier < 179.0f &&
+                y_angle - mouseInfo.deltaY * SensivityMultiplier > 1.0f)
+            {
+                y_angle -= mouseInfo.deltaY * SensivityMultiplier;
+            }
+        }
     }
 
     R += static_cast<float>(-mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
 
     if (InputEngine.IsKeyUp(DIK_ESCAPE))
-    {
-#if defined DEBUG || _DEBUG
         this->kill();
-#endif
-    }
 
     if (InputEngine.IsKeyUp(DIK_SPACE))
     {

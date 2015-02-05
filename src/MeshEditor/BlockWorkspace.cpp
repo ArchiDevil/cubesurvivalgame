@@ -5,7 +5,7 @@
 
 #include <Utilities/ut.h>
 
-MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z) 
+MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z)
     : storage(x, y, z)
     , isBboxShown(false)
     , bbox(nullptr)
