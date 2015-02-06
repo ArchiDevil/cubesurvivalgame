@@ -111,7 +111,8 @@ private:
 
     WorldStorage * ws;
     std::mutex * criticalSection;
-    ShiftEngine::D3D10VDPtr vd;
+    ShiftEngine::VertexSemantic nodeSemantic;
+    ShiftEngine::D3D10VDPtr nodeDeclaration;
     cNoise noiseGenerator;
 
     const Vector3F NormUP = { 0.0f, 0.0f, 1.0f };

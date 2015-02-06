@@ -2,37 +2,43 @@
 
 #include "WorldChunk.h"
 
-class cChunksStorage
+#include <Utilities/IManager.h>
+
+#include <memory>
+
+class cChunksStorage : public IManager
 {
 public:
-	cChunksStorage();
-	~cChunksStorage();
+    cChunksStorage();
+    ~cChunksStorage();
 
-	void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth);	
-	void Unload();
+    void Initialize(int ChunksPerSide, int CenterChunkX, int CenterChunkY, unsigned int chunkWidth);
+    void Unload();
 
-	int GetChunksPerSide() const;
-	int GetCentralX() const;
-	int GetCentralY() const;
+    int GetChunksPerSide() const;
+    int GetCentralX() const;
+    int GetCentralY() const;
 
-	int GetChunkNumPointer(int WorldX, int WorldY) const;
-	WorldChunk * GetChunkPtr(int WorldX, int WorldY);
-	const WorldChunk * GetChunkPtr(int WorldX, int WorldY) const;
-	WorldChunk * GetChunksArray();
-	const WorldChunk * GetChunksArray() const;
+    int GetChunkNumPointer(int WorldX, int WorldY) const;
+    WorldChunk * GetChunkPtr(int WorldX, int WorldY);
+    const WorldChunk * GetChunkPtr(int WorldX, int WorldY) const;
+    WorldChunk * GetChunksArray();
+    const WorldChunk * GetChunksArray() const;
 
-	void SetCenterX(int x);
-	void SetCenterY(int y);
+    void SetCenterX(int x);
+    void SetCenterY(int y);
 
-	bool IsBorder(int WorldX, int WorldY) const;
-	bool IsExist(int WorldX, int WorldY) const;
-	bool HaveRightNeighbors(int WorldX, int WorldY, ChunkStatus minimalStatus) const;
+    bool IsBorder(int WorldX, int WorldY) const;
+    bool IsExist(int WorldX, int WorldY) const;
+    bool HaveRightNeighbors(int WorldX, int WorldY, ChunkStatus minimalStatus) const;
 
 private:
-	WorldChunk * Chunks;
-	ShiftEngine::TexturePtr TextureArray;
+    std::unique_ptr<WorldChunk[]> Chunks;
 
-	int CenterChunkX, CenterChunkY;
-	int ChunksPerSide;
-	
+    ShiftEngine::VertexSemantic landSemantics;
+    ShiftEngine::VertexSemantic waterSemantics;
+
+    int CenterChunkX, CenterChunkY;
+    int ChunksPerSide;
+
 };

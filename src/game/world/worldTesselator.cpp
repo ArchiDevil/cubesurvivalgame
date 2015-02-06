@@ -7,13 +7,11 @@ WorldTesselator::WorldTesselator(WorldStorage * _ws)
     , criticalSection(nullptr)
 {
     auto pCtxMgr = ShiftEngine::GetContextManager();
-    ShiftEngine::VertexSemantic semantic;
-    semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
-    semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
-    semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-    pCtxMgr->RegisterVertexSemantic(semantic);
-    vd = pCtxMgr->GetVertexDeclaration(semantic);
-
+    nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
+    nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
+    nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
+    pCtxMgr->RegisterVertexSemantic(nodeSemantic);
+    nodeDeclaration = pCtxMgr->GetVertexDeclaration(nodeSemantic);
     noiseGenerator.SetFrequency(0.01);
 }
 
@@ -25,16 +23,15 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
 {
     static const Vector3F colors[] =
     {
-        Vector3F(1.0f, 1.0f, 1.0f),									//EMPTY COLOR
+        Vector3F(0.0f, 2.0f, 2.0f),									//EMPTY COLOR
         Vector3F(231.0f / 255.0f, 208.0f / 255.0f, 82.0f / 255.0f),	//SAND COLOR
         Vector3F(107.0f / 255.0f, 95.0f / 255.0f, 28.0f / 255.0f),	//DIRT COLOR
         Vector3F(40.0f / 255.0f, 161.0f / 255.0f, 40.0f / 255.0f),	//GRASS COLOR
         Vector3F(99.0f / 255.0f, 99.0f / 255.0f, 99.0f / 255.0f),	//STONE COLOR
-        Vector3F(118.0f / 255.0f, 212.0f / 255.0f, 247.0f / 255.0f) //WATER COLOR
     };
 
     const int chunkWidth = ws->GetChunkWidth();
-    ShiftEngine::MeshDataPtr data = ShiftEngine::MeshDataPtr(new ShiftEngine::MeshData());
+    ShiftEngine::MeshDataPtr landData = ShiftEngine::MeshDataPtr(new ShiftEngine::MeshData());
     int blockXstart = ChunkX * chunkWidth;
     int blockYstart = ChunkY * chunkWidth;
 
@@ -70,6 +67,11 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             //UP
 
             auto blockType = ws->GetBlockType(blockXstart + i, blockYstart + j, (unsigned int)height - 1);
+            while (blockType == BT_Water)
+            {
+                height--;
+                blockType = ws->GetBlockType(blockXstart + i, blockYstart + j, (unsigned int)height - 1);
+            }
             Vector3F color = colors[blockType];
             unsigned int targetedHeight = (unsigned int)height;
             BlockTypes blocks[3][3];
@@ -114,7 +116,13 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             //noiseGenerator.SetFrequency(0.01);
 
             //LEFT
-            int neighboorHeight = ws->GetFullHeight(blockXstart + i - 1, blockYstart + j);
+            //int neighboorHeight = ws->GetFullHeight(blockXstart + i - 1, blockYstart + j);
+            int neighboorHeight = height;
+            BlockTypes bt = ws->GetBlockType(blockXstart + i - 1, blockYstart + j, neighboorHeight);
+            while (bt == BT_Water || bt == BT_Empty)
+                bt = ws->GetBlockType(blockXstart + i - 1, blockYstart + j, --neighboorHeight);
+            neighboorHeight++;
+
             if (neighboorHeight < height)
             {
                 for (int k = neighboorHeight; k < height; k++)
@@ -125,7 +133,12 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             }
 
             //RIGHT
-            neighboorHeight = ws->GetFullHeight(blockXstart + i + 1, blockYstart + j);
+            neighboorHeight = height;
+            bt = ws->GetBlockType(blockXstart + i + 1, blockYstart + j, neighboorHeight);
+            while (bt == BT_Water || bt == BT_Empty)
+                bt = ws->GetBlockType(blockXstart + i + 1, blockYstart + j, --neighboorHeight);
+            neighboorHeight++;
+
             if (neighboorHeight < height)
             {
                 for (int k = neighboorHeight; k < height; k++)
@@ -136,7 +149,12 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             }
 
             //FRONT
-            neighboorHeight = ws->GetFullHeight(blockXstart + i, blockYstart + j - 1);
+            neighboorHeight = height;
+            bt = ws->GetBlockType(blockXstart + i, blockYstart + j - 1, neighboorHeight);
+            while (bt == BT_Water || bt == BT_Empty)
+                bt = ws->GetBlockType(blockXstart + i, blockYstart + j - 1, --neighboorHeight);
+            neighboorHeight++;
+
             if (neighboorHeight < height)
             {
                 for (int k = neighboorHeight; k < height; k++)
@@ -147,7 +165,12 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             }
 
             //BACK
-            neighboorHeight = ws->GetFullHeight(blockXstart + i, blockYstart + j + 1);
+            neighboorHeight = height;
+            bt = ws->GetBlockType(blockXstart + i, blockYstart + j + 1, neighboorHeight);
+            while (bt == BT_Water || bt == BT_Empty)
+                bt = ws->GetBlockType(blockXstart + i, blockYstart + j + 1, --neighboorHeight);
+            neighboorHeight++;
+
             if (neighboorHeight < height)
             {
                 for (int k = neighboorHeight; k < height; k++)
@@ -159,18 +182,80 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
         }
     }
 
-    if (!data->CreateBuffers(false, vertices.data(), sizeof(PNC) * vertices.size(), indices.data(), sizeof(unsigned long) * indices.size(), ShiftEngine::GetContextManager()->GetDevicePointer()))
+    if (!landData->CreateBuffers(false, vertices.data(), sizeof(PNC) * vertices.size(), indices.data(), sizeof(unsigned long) * indices.size(), ShiftEngine::GetContextManager()->GetDevicePointer()))
     {
         return false;
     }
 
-    data->indicesCount = indices.size();
-    data->verticesCount = vertices.size();
-    data->vertexSize = sizeof(PNC);
-    data->vertexDeclaration = vd;
+    landData->indicesCount = indices.size();
+    landData->verticesCount = vertices.size();
+    landData->vertexSize = sizeof(PNC);
+    landData->vertexSemantic = &nodeSemantic;
+    landData->vertexDeclaration = nodeDeclaration;
 
-    landNode->SetDataPtr(data);
+    landNode->SetDataPtr(landData);
     landNode->SetBBox(bbox);
+
+    vertices.clear();
+    indices.clear();
+
+    ShiftEngine::MeshDataPtr waterData = ShiftEngine::MeshDataPtr(new ShiftEngine::MeshData());
+    bbox.bMin.x = 0.0f;
+    bbox.bMin.y = 0.0f;
+    bbox.bMin.z = 1000.0f;
+
+    bbox.bMax.x = (float)chunkWidth;
+    bbox.bMax.y = (float)chunkWidth;
+
+    const Vector3F waterColor = { 0.3f, 0.3f, 1.0f };
+
+    for (int i = 0; i < chunkWidth; i++)
+    {
+        for (int j = 0; j < chunkWidth; j++)
+        {
+            unsigned long curIndex = vertices.size();
+
+            int height = ws->GetFullHeight(blockXstart + i, blockYstart + j);
+            if ((float)height > bbox.bMax.z)
+                bbox.bMax.z = (float)height;
+            if ((float)height < bbox.bMin.z)
+                bbox.bMin.z = (float)height;
+
+            //UP
+
+            auto blockType = ws->GetBlockType(blockXstart + i, blockYstart + j, (unsigned int)height - 1);
+            if (blockType != BT_Water)
+                continue;
+
+            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 1.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 1.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 0.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 0.0f, (float)height), NormUP, waterColor));
+
+            indices.push_back(curIndex + 0);
+            indices.push_back(curIndex + 1);
+            indices.push_back(curIndex + 2);
+
+            indices.push_back(curIndex + 0);
+            indices.push_back(curIndex + 2);
+            indices.push_back(curIndex + 3);
+        }
+    }
+
+    if (!waterData->CreateBuffers(false, vertices.data(), sizeof(PNC) * vertices.size(), indices.data(), sizeof(unsigned long) * indices.size(), ShiftEngine::GetContextManager()->GetDevicePointer()))
+    {
+        LOG_ERROR("Unable to create vertex buffer");
+        return false;
+    }
+
+    waterData->indicesCount = indices.size();
+    waterData->verticesCount = vertices.size();
+    waterData->vertexSize = sizeof(PNC);
+    waterData->vertexSemantic = &nodeSemantic;
+    waterData->vertexDeclaration = nodeDeclaration;
+
+    waterNode->SetDataPtr(waterData);
+    waterNode->SetBBox(bbox);
 
     return true;
 }
