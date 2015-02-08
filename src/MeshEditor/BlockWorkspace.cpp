@@ -347,16 +347,16 @@ void MeshEditor::BlockWorkspace::Load(const std::string & filename)
 
     std::ifstream stream(filename);
 
-    if (!stream || stream.fail())
+    if (!stream || stream.fail() || !stream.is_open())
     {
         LOG_ERROR("Unable to load ", filename);
         return;
     }
 
-    std::vector<uint8_t> buffer;
-    buffer.resize(sizeof(Block) * h.size[0] * h.size[1] * h.size[2]);
-
     stream.read(reinterpret_cast<char*>(&h), sizeof(Header));
+
+    std::vector<uint8_t> buffer(sizeof(Block) * h.size[0] * h.size[1] * h.size[2]);
+
     stream.read((char *)buffer.data(), buffer.size());
     stream.close();
     storage.Resize(h.size[0], h.size[1], h.size[2]);
