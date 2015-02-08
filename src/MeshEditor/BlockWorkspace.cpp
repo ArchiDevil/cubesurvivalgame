@@ -463,14 +463,26 @@ void MeshEditor::BlockWorkspace::VanishColor(bool flag)
 
 void MeshEditor::BlockWorkspace::AddBlock(size_t x, size_t y, size_t z)
 {
-    actions.push(std::make_unique<AddBlockAction>(MathLib::Vector3I(x, y, z)));
+    Brush b;
+    b.startPos = Vector3F(x, y, z);
+    b.type = Brush::BrushType::BT_BlockArray;
+    b.size = { 1, 1, 1 };
+    b.color = { 0.9f, 0.9f, 0.9f };
+
+    actions.push(std::make_unique<AddBrushAction>(b));
     actions.top()->Execute(&storage);
     tesselated = false;
 }
 
 void MeshEditor::BlockWorkspace::RemoveBlock(size_t x, size_t y, size_t z)
 {
-    actions.push(std::make_unique<RemoveBlockAction>(MathLib::Vector3I(x, y, z)));
+    Brush b;
+    b.startPos = Vector3F(x, y, z);
+    b.type = Brush::BrushType::BT_BlockArray;
+    b.size = { 1, 1, 1 };
+    b.color = { 0.9f, 0.9f, 0.9f };
+
+    actions.push(std::make_unique<RemoveBrushAction>(b));
     actions.top()->Execute(&storage);
     tesselated = false;
 }
@@ -488,4 +500,15 @@ void MeshEditor::BlockWorkspace::Resize(int Xup, int Yup, int Zup, int Xdown, in
     actions.top()->Execute(&storage);
     tesselated = false;
     CreateBBox();
+}
+
+void MeshEditor::BlockWorkspace::ApplyBrushBlock(const Brush &b, bool remove)
+{
+    if (remove)
+        actions.push(std::make_unique<AddBrushAction>(b));
+    else
+        actions.push(std::make_unique<RemoveBrushAction>(b));
+
+    actions.top()->Execute(&storage);
+    tesselated = false;
 }

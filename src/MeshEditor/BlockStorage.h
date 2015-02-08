@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common.h"
+
 #include <Utilities/IManager.h>
 #include <MathLib/math.h>
 
@@ -9,17 +11,6 @@
 
 namespace MeshEditor
 {
-    struct Block
-    {
-        Block()
-            : exist(false)
-        {
-        }
-
-        MathLib::Vector3F color;
-        bool exist;
-    };
-
     class BlockStorage final : public IManager
     {
     public:

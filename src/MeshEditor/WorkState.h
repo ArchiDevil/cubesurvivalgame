@@ -2,20 +2,9 @@
 
 #include <GUI/GUI.h>
 
+#include "Common.h"
 #include "cAppStateBase.h"
 #include "BlockWorkspace.h"
-#include "appclass.h"
-
-class Application;
-
-struct Brush
-{
-    Brush(Vector3F _Color = Vector3F(1.0f, 1.0f, 1.0f)) 
-        : Color(_Color) 
-    {}
-
-    Vector3F Color;
-};
 
 class WorkState : public appState
 {
@@ -36,14 +25,14 @@ private:
     void MoveToColorMode();
 
     void CreateGUI();
-    bool ProcessInput(double ElapsedTime);
+    bool ProcessInput(double dt);
     void ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val);
 
     std::unique_ptr<MeshEditor::BlockWorkspace> Workspace;
     SimpleGUI::Canvas * pCanvas;
     SimpleGUI::Skinner * pSkinner;
 
-    Brush curBrush;
+    MeshEditor::Brush curBrush;
 
     Vector2I oldCoordinates;
     Vector2I newCoordinates;

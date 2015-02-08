@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.h"
 #include "WorkspaceActions.h"
 #include "BlockStorage.h"
 
@@ -23,6 +24,7 @@ namespace MeshEditor
         void Initialize();
         void Update();
 
+        void ApplyBrushBlock(const Brush &b, bool remove);
         void AddBlock(size_t x, size_t y, size_t z);
         void RemoveBlock(size_t x, size_t y, size_t z);
         void SetBlockColor(size_t x, size_t y, size_t z, const Vector3F & color);

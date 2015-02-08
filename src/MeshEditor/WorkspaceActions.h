@@ -1,10 +1,15 @@
 #pragma once
 
+#include "BlockWorkspace.h"
+
 #include <MathLib/math.h>
+
+#include <memory>
 
 namespace MeshEditor
 {
     class BlockStorage;
+    struct Brush;
 
     class IAction
     {
@@ -15,28 +20,28 @@ namespace MeshEditor
         virtual void Undo(BlockStorage * bs) = 0;
     };
 
-    class AddBlockAction final : public IAction
+    class AddBrushAction final : public IAction
     {
     public:
-        AddBlockAction(const MathLib::Vector3I & pos);
+        AddBrushAction(const Brush & brush);
         virtual void Execute(BlockStorage * bs) override;
         virtual void Undo(BlockStorage * bs) override;
 
     private:
-        bool exec = false;
-        MathLib::Vector3I pos;
+        std::unique_ptr<Block[]> affectedBlocks = nullptr;
+        const Brush brush;
     };
 
-    class RemoveBlockAction final : public IAction
+    class RemoveBrushAction final : public IAction
     {
     public:
-        RemoveBlockAction(const MathLib::Vector3I & pos);
+        RemoveBrushAction(const Brush & brush);
         virtual void Execute(BlockStorage * bs) override;
         virtual void Undo(BlockStorage * bs) override;
 
     private:
-        bool exec = false;
-        MathLib::Vector3I pos;
+        std::unique_ptr<Block[]> affectedBlocks = nullptr;
+        const Brush brush;
     };
 
     class SetBlockColorAction final : public IAction

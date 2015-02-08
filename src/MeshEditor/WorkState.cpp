@@ -94,7 +94,7 @@ bool WorkState::render(double dt)
 {
     auto t = cInputEngine::GetInstance().GetMouseInfo();
 
-    const int infoSize = 7;
+    const int infoSize = 5;
     auto pContextManager = ShiftEngine::GetContextManager();
     auto pRenderer = ShiftEngine::GetRenderer();
     auto pSceneGraph = ShiftEngine::GetSceneGraph();
@@ -108,10 +108,8 @@ bool WorkState::render(double dt)
     di[1] << " mode";
 #if defined (DEBUG) || (_DEBUG)
     di[2] << "FPS: " << pRenderer->GetFPS();
-    di[3] << "Mouse pos: " << t.clientX << "/" << t.clientY;
-    di[4] << "Brush colors: " << curBrush.Color.x << "/" << curBrush.Color.y << "/" << curBrush.Color.z;
-    di[5] << "Mouse distance: " << lenghtOfMove;
-    di[6] << "Polygons rendered: " << pRenderer->GetDrawnPolygonsCount();
+    di[3] << "Brush colors: " << curBrush.color.x << "/" << curBrush.color.y << "/" << curBrush.color.z;
+    di[4] << "Polygons rendered: " << pRenderer->GetDrawnPolygonsCount();
 #endif // DEBUG
 
     ////////////
@@ -218,7 +216,7 @@ void WorkState::CreateGUI()
     boxR->SetOnValueChangedHandler([texR, boxR, this](int)
     {
         ColorsCallBack(texR, boxR);
-        curBrush.Color.x = boxR->GetValue() / 255.0f;
+        curBrush.color.x = boxR->GetValue() / 255.0f;
     });
 
     SimpleGUI::ValueBox * boxG = new SimpleGUI::ValueBox(pCanvas);
@@ -237,7 +235,7 @@ void WorkState::CreateGUI()
     boxG->SetOnValueChangedHandler([texG, boxG, this](int)
     {
         ColorsCallBack(texG, boxG);
-        curBrush.Color.y = boxG->GetValue() / 255.0f;
+        curBrush.color.y = boxG->GetValue() / 255.0f;
     });
 
     SimpleGUI::ValueBox * boxB = new SimpleGUI::ValueBox(pCanvas);
@@ -256,11 +254,11 @@ void WorkState::CreateGUI()
     boxB->SetOnValueChangedHandler([texB, boxB, this](int)
     {
         ColorsCallBack(texB, boxB);
-        curBrush.Color.z = boxB->GetValue() / 255.0f;
+        curBrush.color.z = boxB->GetValue() / 255.0f;
     });
 }
 
-bool WorkState::ProcessInput(double ElapsedTime)
+bool WorkState::ProcessInput(double dt)
 {
     auto &InputEngine = cInputEngine::GetInstance();
 
@@ -387,7 +385,7 @@ bool WorkState::ProcessInput(double ElapsedTime)
                 Vector3F temp = dir * mult + nearV;
                 if (Workspace->GetBlock((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z)).exist == true)
                 {
-                    Workspace->SetBlockColor((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z), curBrush.Color);
+                    Workspace->SetBlockColor((int)floor(temp.x), (int)floor(temp.y), (int)floor(temp.z), curBrush.color);
                     break;
                 }
             }
@@ -415,7 +413,7 @@ bool WorkState::ProcessInput(double ElapsedTime)
         }
     }
 
-    R += static_cast<float>(-mouseInfo.deltaZ * ElapsedTime * SensivityMultiplier * 5);
+    R += static_cast<float>(-mouseInfo.deltaZ * dt * SensivityMultiplier * 5);
 
     if (InputEngine.IsKeyUp(DIK_ESCAPE))
         this->kill();

@@ -1,61 +1,155 @@
 #include "WorkspaceActions.h"
 
+#include "Common.h"
 #include "BlockStorage.h"
 
-MeshEditor::AddBlockAction::AddBlockAction(const MathLib::Vector3I & pos)
-    : pos(pos)
+#include <cassert>
+
+MeshEditor::AddBrushAction::AddBrushAction(const Brush & brush)
+    : brush(brush)
 {
 }
 
-void MeshEditor::AddBlockAction::Execute(BlockStorage * bs)
+void MeshEditor::AddBrushAction::Execute(BlockStorage * bs)
 {
-    if (exec)
+    if (affectedBlocks)
         return;
 
-    auto &block = bs->GetBlock(pos.x, pos.y, pos.z);
-    if (block.exist)
-        exec = false;
+    affectedBlocks.reset(new Block[brush.size.x * brush.size.y * brush.size.z]);
 
-    block.exist = true;
-    block.color = { 0.9f, 0.9f, 0.9f };
-    exec = true;
+    switch (brush.type)
+    {
+    case Brush::BrushType::BT_BlockArray:
+        for (size_t x = 0; x < brush.size.x; ++x)
+            for (size_t y = 0; y < brush.size.y; ++y)
+                for (size_t z = 0; z < brush.size.z; ++z)
+                    affectedBlocks[x * brush.size.y * brush.size.z + y * brush.size.z + z] = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+
+        for (size_t x = 0; x < brush.size.x; ++x)
+        {
+            for (size_t y = 0; y < brush.size.y; ++y)
+            {
+                for (size_t z = 0; z < brush.size.z; ++z)
+                {
+                    Block& b = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+                    if (!b.exist)
+                    {
+                        b.exist = true;
+                        b.color = { 0.9f, 0.9f, 0.9f };
+                    }
+                }
+            }
+        }
+        break;
+    case Brush::BrushType::BT_Sphere:
+        assert(false);
+        break;
+    default:
+        assert(false);
+        break;
+    }
 }
 
-void MeshEditor::AddBlockAction::Undo(BlockStorage * bs)
+void MeshEditor::AddBrushAction::Undo(BlockStorage * bs)
 {
-    if (!exec)
+    if (!affectedBlocks)
         return;
 
-    bs->GetBlock(pos.x, pos.y, pos.z).exist = false;
+    switch (brush.type)
+    {
+    case Brush::BrushType::BT_BlockArray:
+        for (size_t x = 0; x < brush.size.x; ++x)
+        {
+            for (size_t y = 0; y < brush.size.y; ++y)
+            {
+                for (size_t z = 0; z < brush.size.z; ++z)
+                {
+                    Block& b = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+                    b = affectedBlocks[x * brush.size.y * brush.size.z + y * brush.size.z + z];
+                }
+            }
+        }
+        break;
+    case Brush::BrushType::BT_Sphere:
+        assert(false);
+        break;
+    default:
+        assert(false);
+        break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-MeshEditor::RemoveBlockAction::RemoveBlockAction(const MathLib::Vector3I & pos)
-    : pos(pos)
+MeshEditor::RemoveBrushAction::RemoveBrushAction(const Brush & brush)
+    : brush(brush)
 {
 }
 
-void MeshEditor::RemoveBlockAction::Execute(BlockStorage * bs)
+void MeshEditor::RemoveBrushAction::Execute(BlockStorage * bs)
 {
-    if (exec)
+    if (affectedBlocks)
         return;
 
-    auto &block = bs->GetBlock(pos.x, pos.y, pos.z);
-    if (!block.exist)
-        exec = false;
+    affectedBlocks.reset(new Block[brush.size.x * brush.size.y * brush.size.z]);
 
-    block.exist = false;
-    block.color = { 0.9f, 0.9f, 0.9f };
-    exec = true;
+    switch (brush.type)
+    {
+    case Brush::BrushType::BT_BlockArray:
+        for (size_t x = 0; x < brush.size.x; ++x)
+            for (size_t y = 0; y < brush.size.y; ++y)
+                for (size_t z = 0; z < brush.size.z; ++z)
+                    affectedBlocks[x * brush.size.y * brush.size.z + y * brush.size.z + z] = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+
+        for (size_t x = 0; x < brush.size.x; ++x)
+        {
+            for (size_t y = 0; y < brush.size.y; ++y)
+            {
+                for (size_t z = 0; z < brush.size.z; ++z)
+                {
+                    Block& b = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+                    if (b.exist)
+                        b.exist = false;
+                }
+            }
+        }
+        break;
+    case Brush::BrushType::BT_Sphere:
+        assert(false);
+        break;
+    default:
+        assert(false);
+        break;
+    }
 }
 
-void MeshEditor::RemoveBlockAction::Undo(BlockStorage * bs)
+void MeshEditor::RemoveBrushAction::Undo(BlockStorage * bs)
 {
-    if (!exec)
+    if (!affectedBlocks)
         return;
 
-    bs->GetBlock(pos.x, pos.y, pos.z).exist = true;
+    switch (brush.type)
+    {
+    case Brush::BrushType::BT_BlockArray:
+        for (size_t x = 0; x < brush.size.x; ++x)
+        {
+            for (size_t y = 0; y < brush.size.y; ++y)
+            {
+                for (size_t z = 0; z < brush.size.z; ++z)
+                {
+                    Block& b = bs->GetBlock(brush.startPos.x + x, brush.startPos.y + y, (int)brush.startPos.z + z);
+                    b = affectedBlocks[x * brush.size.y * brush.size.z + y * brush.size.z + z];
+                }
+            }
+        }
+        break;
+    case Brush::BrushType::BT_Sphere:
+        assert(false);
+        break;
+    default:
+        assert(false);
+        break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
