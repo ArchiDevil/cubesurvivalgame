@@ -111,19 +111,21 @@ int cChunksStorage::GetChunkNumPointer(int WorldX, int WorldY) const
 
 WorldChunk * cChunksStorage::GetChunkPtr(int WorldX, int WorldY)
 {
+#ifdef DEBUG
     int ss2 = (ChunksPerSide + 1) / 2;
     assert(abs(WorldX - CenterChunkX) <= ss2);
     assert(abs(WorldY - CenterChunkY) <= ss2);
-
+#endif
     return &Chunks[GetChunkNumPointer(WorldX, WorldY)];
 }
 
 const WorldChunk * cChunksStorage::GetChunkPtr(int WorldX, int WorldY) const
 {
+#ifdef DEBUG
     int ss2 = (ChunksPerSide + 1) / 2;
     assert(abs(WorldX - CenterChunkX) <= ss2);
     assert(abs(WorldY - CenterChunkY) <= ss2);
-
+#endif
     return &Chunks[GetChunkNumPointer(WorldX, WorldY)];
 }
 

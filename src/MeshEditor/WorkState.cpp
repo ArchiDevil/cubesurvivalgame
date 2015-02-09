@@ -96,7 +96,6 @@ bool WorkState::render(double dt)
 
     const int infoSize = 5;
     auto pContextManager = ShiftEngine::GetContextManager();
-    auto pRenderer = ShiftEngine::GetRenderer();
     auto pSceneGraph = ShiftEngine::GetSceneGraph();
 
     std::ostringstream di[infoSize];
@@ -107,6 +106,7 @@ bool WorkState::render(double dt)
         di[1] << "Color";
     di[1] << " mode";
 #if defined (DEBUG) || (_DEBUG)
+    auto pRenderer = ShiftEngine::GetRenderer();
     di[2] << "FPS: " << pRenderer->GetFPS();
     di[3] << "Brush colors: " << curBrush.color.x << "/" << curBrush.color.y << "/" << curBrush.color.z;
     di[4] << "Polygons rendered: " << pRenderer->GetDrawnPolygonsCount();
@@ -269,11 +269,14 @@ bool WorkState::ProcessInput(double dt)
 
     auto mouseInfo = InputEngine.GetMouseInfo();
 
+    ShiftEngine::GraphicEngineSettings settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+    vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
+
     Vector3F nearV, farV;
     mat4f viewMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetViewMatrix();
     mat4f projMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetProjectionMatrix();
-    nearV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat);
-    farV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat);
+    nearV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat, sizes);
+    farV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat, sizes);
     Vector3F dir = MathLib::Normalize(farV - nearV);
 
     if (geometryMode)

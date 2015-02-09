@@ -127,23 +127,22 @@ namespace MathLib
 	}
 
 	template<typename T>
-	vec3<T> getUnprojectedVector(const vec3<T> & v, const matrix<T, 4> & projMat, const matrix<T, 4> & viewMat)
+	vec3<T> getUnprojectedVector(const vec3<T> & v, const matrix<T, 4> & projMat, const matrix<T, 4> & viewMat, const vec2<unsigned int> & screenSize)
 	{
 		matrix<T, 4> rm = viewMat * projMat;
 		matrix<T, 4> resultMatrix = matrixInverse(rm);
 		Vector3F result;
 
-		D3D10_VIEWPORT vp;
-		vp.TopLeftX = 0;
-		vp.TopLeftY = 0;
-		vp.Width = 1366;
-		vp.Height = 768;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
+		int TopLeftX = 0;
+		int TopLeftY = 0;
+        unsigned int Width = screenSize.x;
+        unsigned int Height = screenSize.y;
+		float MinDepth = 0.0f;
+		float MaxDepth = 1.0f;
 
-		result.x = (v.x - vp.TopLeftX) / vp.Width * 2.0f - 1.0f;
-		result.y = -(2.0f * (v.y - vp.TopLeftY) / vp.Height - 1.0f);
-		result.z = (v.z - vp.MinDepth) / (vp.MaxDepth - vp.MinDepth);
+		result.x = (v.x - TopLeftX) / Width * 2.0f - 1.0f;
+		result.y = -(2.0f * (v.y - TopLeftY) / Height - 1.0f);
+		result.z = (v.z - MinDepth) / (MaxDepth - MinDepth);
 		result = vec3Transform(result, resultMatrix);
 		return result;
 	}

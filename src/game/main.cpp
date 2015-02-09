@@ -6,7 +6,7 @@
 #if defined(DEBUG) || defined(_DEBUG) 
 	int main()
 #elif defined(NDEBUG) || defined(_NDEBUG)
-	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nShowCmd)
+	int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nShowCmd*/)
 #endif
 {
 	srand(GetTickCount());

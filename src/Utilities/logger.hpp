@@ -30,7 +30,9 @@ public:
         log << "INFO: ";
         std::cout << "INFO: ";
         log_message(args...);
-#endif // DEBUG
+#else
+        empty(args...);
+#endif
     }
     
     template<typename ... Args>
@@ -58,6 +60,15 @@ public:
     }
 
 private:
+    template<typename T>
+    void empty(const T&) {}
+
+    template<typename T, typename ... Args>
+    void empty(const T&, const Args & ... args)
+    {
+        empty(args...);
+    }
+
     template<typename T>
     void log_message(const T & arg)
     {

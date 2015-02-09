@@ -464,7 +464,7 @@ void MeshEditor::BlockWorkspace::VanishColor(bool flag)
 void MeshEditor::BlockWorkspace::AddBlock(size_t x, size_t y, size_t z)
 {
     Brush b;
-    b.startPos = Vector3F(x, y, z);
+    b.startPos = Vector3I(x, y, z);
     b.type = Brush::BrushType::BT_BlockArray;
     b.size = { 1, 1, 1 };
     b.color = { 0.9f, 0.9f, 0.9f };
@@ -477,7 +477,7 @@ void MeshEditor::BlockWorkspace::AddBlock(size_t x, size_t y, size_t z)
 void MeshEditor::BlockWorkspace::RemoveBlock(size_t x, size_t y, size_t z)
 {
     Brush b;
-    b.startPos = Vector3F(x, y, z);
+    b.startPos = Vector3I(x, y, z);
     b.type = Brush::BrushType::BT_BlockArray;
     b.size = { 1, 1, 1 };
     b.color = { 0.9f, 0.9f, 0.9f };

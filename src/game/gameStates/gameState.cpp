@@ -203,11 +203,14 @@ void gameState::ProcessInput(double dt)
 			theta = -5.0f;
 	}
 
+    ShiftEngine::GraphicEngineSettings settings = pCtxMgr->GetEngineSettings();
+    vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
+
 	// do the raycasting
 	mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
 	mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-	Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMatrix, viewMatrix);
-	Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix);
+    Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMatrix, viewMatrix, sizes);
+    Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix, sizes);
 	Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
 
 	pGame->EntityMgr->HighlightEntity(unprojectedRay);
