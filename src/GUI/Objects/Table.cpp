@@ -75,6 +75,7 @@ void SimpleGUI::Table::Clear()
 SimpleGUI::TableRow * SimpleGUI::Table::GetRow( int /*num*/ )
 {
 	LOG_FATAL_ERROR("Fatal error");
+    return nullptr;
 }
 
 SimpleGUI::TableRow * SimpleGUI::Table::GetSelectedRow()

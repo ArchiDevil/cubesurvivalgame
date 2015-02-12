@@ -33,6 +33,7 @@ private:
     SimpleGUI::Skinner * pSkinner;
 
     MeshEditor::Brush curBrush;
+    ShiftEngine::Sprite colorBox;
 
     Vector2I oldCoordinates;
     Vector2I newCoordinates;

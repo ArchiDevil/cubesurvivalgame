@@ -14,6 +14,8 @@ using namespace MeshEditor;
 WorkState::WorkState(int x_size, int y_size, int z_size)
     : flag(false)
     , geometryMode(true)
+    , colorBox(L"gui/box.png")
+    , curBrush({ 100.0f / 255.0f, 100.0f / 255.0f, 100.0f / 255.0f })
 {
     Workspace.reset(new BlockWorkspace(x_size, y_size, z_size));
 
@@ -23,15 +25,9 @@ WorkState::WorkState(int x_size, int y_size, int z_size)
 }
 
 WorkState::WorkState(const std::string & loadFile)
-    : flag(false)
-    , geometryMode(true)
+    : WorkState(1, 1, 1)
 {
-    Workspace.reset(new BlockWorkspace(1, 1, 1));
     Workspace->Load(loadFile);
-
-    pCanvas = new SimpleGUI::Canvas;
-    pSkinner = new SimpleGUI::Skinner;
-    pSkinner->Initialize();
 }
 
 WorkState::~WorkState()
@@ -86,6 +82,7 @@ bool WorkState::update(double dt)
     }
 
     Workspace->Update();
+    colorBox.SetMaskColor({ curBrush.color.x, curBrush.color.y, curBrush.color.z, 1.0f });
 
     return true; //return false if something wrong
 }
@@ -125,6 +122,10 @@ bool WorkState::render(double dt)
         pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i * 18);
 
     SimpleGUI::DrawUI();
+
+    if (!geometryMode)
+        colorBox.Draw();
+
     pContextManager->GetFontManager()->SetFont(font);
     pContextManager->EndScene();
 
@@ -199,6 +200,9 @@ void WorkState::CreateGUI()
 
     float panelWidth = 150;
     float panelHeight = 3 * 20 + 3 * 5; //(75)
+
+    colorBox.SetPosition(Vector2F((float)screenWidth - 5.0f - panelWidth - 35.0f - panelHeight / 2 - 5, (float)screenHeight - panelHeight - 5.0f + 20 + 5 + 10));
+    colorBox.SetSizeInPixels((int)panelHeight, (int)panelHeight);
 
     SimpleGUI::ValueBox * boxR = new SimpleGUI::ValueBox(pCanvas);
     boxR->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5);
