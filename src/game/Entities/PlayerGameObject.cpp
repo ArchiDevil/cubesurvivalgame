@@ -4,6 +4,7 @@
 #include "../Items/WeaponItem.h"
 #include "../world/world.h"
 #include "../world/worldStorage.h"
+#include "../Environment/EnvironmentManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
@@ -21,10 +22,6 @@ PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManage
 	targetMarker->SetScale(0.3f);
 
 	SetHealth(20);
-}
-
-PlayerGameObject::~PlayerGameObject() 
-{
 }
 
 PlayerInventory * PlayerGameObject::GetInventoryPtr()
@@ -54,6 +51,8 @@ void PlayerGameObject::SetWarmth(unsigned int in_temperature)
 
 void PlayerGameObject::Update(double dt)
 {
+    auto pGame = LostIsland::GetGamePtr();
+
 	ControllableGameObject::Update(dt);
 
 	if (GetCurrentStateType() != EntityState::Moving &&
@@ -84,7 +83,14 @@ void PlayerGameObject::Update(double dt)
 	{
 		if (warmth < 10)
 			SetHealth(GetHealth() - 1);
+
+        if (pGame->environmentMgr->GetEnvironmentTemperature() < 21.0f)
+            warmth--;
+        else
+            warmth++;
 	}
+
+    warmth = MathLib::clamp(warmth, 0u, 100u);
 }
 
 bool PlayerGameObject::Go(const MathLib::Vector2F & target)
@@ -127,4 +133,15 @@ void PlayerGameObject::Attack(LiveGameObject * target) const
 InteractionType PlayerGameObject::GetInteraction() const
 {
 	return InteractionType::Nothing;
+}
+
+void PlayerGameObject::DispatchEvent(const IGameEvent *ev)
+{
+    if (!ev || ev->GetType() != GE_Heat)
+        return;
+
+    HeatEvent* heat = (HeatEvent*)ev;
+    int hv = heat->heatValue;
+    hv *= MathLib::distance(heat->heatSource, this->GetPosition()) / 3.0f;
+    SetWarmth(GetWarmth() + hv);
 }

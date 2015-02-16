@@ -3,11 +3,15 @@
 #include <vector>
 #include <algorithm>
 
+#include <SimplePhysicsEngine/PhysicsEngine.h>
+
 #include <GraphicsEngine/ShiftEngine.h>
 #include <GraphicsEngine/D3D10ContextManager.h>
 #include <GraphicsEngine/SceneGraph/SceneGraph.h>
 
 #include <Utilities/ut.h>
+
+#include <json/json.h>
 
 #include "../game.h"
 
@@ -290,4 +294,12 @@ void GameObjectsManager::LoadInventories()
 
 		Inventories.emplace(std::make_pair(utils::WStrToStr(file_name.substr(0, file_name.find(L"."))), std::move(inventory)));
 	}
+}
+
+void GameObjectsManager::DispatchEvent(std::unique_ptr<IGameEvent> ev)
+{
+    for (auto & el : GameObjects)
+    {
+        el->DispatchEvent(ev.get());
+    }
 }

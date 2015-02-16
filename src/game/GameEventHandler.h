@@ -1,36 +1,23 @@
 #pragma once
 
-#include <cstdint>
+#include <memory>
 
-#include "Items/ItemManager.h"
+#include "GameEvents.h"
 
 class GameObjectInventory;
 class LiveGameObject;
 
-enum GameEventType
-{
-	GE_PlayerMoves,
-	GE_PlayerAttacks,
-	GE_PlayerPicksItem,
-	GE_PlayerDropsItem,
-	GE_PlayerUsesItem,
-	GE_LivingDies,
-};
-
-struct GameEvent
-{
-	virtual GameEventType GetType() const = 0;
-};
-
 class GameEventHandler
 {
 public:
-	void DispatchEvent(GameEvent * ev);
+	void DispatchEvent(std::unique_ptr<IGameEvent> ev);
 
-	//player events
-	void onPlayerMoves(double dt);
-	bool onPlayerPicksItem(uint64_t itemId, size_t count);
-	void onPlayerDropsItem(unsigned slot, uint64_t itemId, size_t count);
-	void onLivingObjectDies(LiveGameObject * object);
-	void onPlayerUsesItem(bool self, item_id_t itemId);
+private:
+    void Process(IGameEvent* ev);
+    void Process(PlayerUsesItem* ev);
+    void Process(PlayerMoves* ev);
+    void Process(PlayerAttacks* ev);
+    void Process(PlayerPicksItem* ev);
+    void Process(PlayerDropsItem* ev);
+    void Process(LivingDies* ev);
 };

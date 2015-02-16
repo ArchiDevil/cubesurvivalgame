@@ -27,7 +27,7 @@ void ItemGameObject::Update(double dt)
 	auto ppos = pGame->Player->GetPosition();
 	if (MathLib::distance((Vector3F)ppos, GetPosition()) < 1.0f)
 	{
-		pGame->GlobalEventHandler->onPlayerPicksItem(itemId, count);
+        LostIsland::GetGamePtr()->GlobalEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(itemId, count));
 		Delete();
 	}
 }

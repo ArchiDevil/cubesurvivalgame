@@ -127,7 +127,7 @@ void CollectingAction::onStart(ControllableGameObject * gameObject)
 
 void CollectingAction::onEnd(ControllableGameObject * /*gameObject*/)
 {
-	LostIsland::GetGamePtr()->GlobalEventHandler->onPlayerPicksItem(collectable->GetItemId(), collectable->GetCount());
+    LostIsland::GetGamePtr()->GlobalEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(collectable->GetItemId(), collectable->GetCount()));
 	collectable->Delete();
 }
 

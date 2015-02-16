@@ -53,7 +53,7 @@ void Console::HandleCommand()
 		std::string name = tokens[1];
         unsigned int count = std::stoul(tokens[2]);
 
-		pGame->GlobalEventHandler->onPlayerPicksItem(pGame->ItemMgr->GetItemId(name), count);
+        pGame->GlobalEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(pGame->ItemMgr->GetItemId(name), count));
 	}
 	else
 	{

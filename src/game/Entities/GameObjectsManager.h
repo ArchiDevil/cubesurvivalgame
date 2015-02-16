@@ -6,14 +6,13 @@
 #include <unordered_map>
 
 #include <Utilities/IManager.h>
-#include <SimplePhysicsEngine/PhysicsEngine.h>
-#include <json/json.h>
 
 #include "GameObject.h"
 #include "PhysicsGameObject.h"
 #include "ItemGameObject.h"
 #include "PlayerGameObject.h"
 #include "EntityBreeds.h"
+#include "../GameEvents.h"
 
 class cSimplePhysicsEngine;
 using MathLib::Vector3F;
@@ -32,6 +31,7 @@ public:
 	void					Update(double dt);
 	void					HighlightEntity(const Ray &unprojectedRay);
 	GameObjectPtr			GetNearestEntity(const Ray &unprojectedRay);
+    void                    DispatchEvent(std::unique_ptr<IGameEvent> ev);
 
 private:
 	void					LoadInventories();

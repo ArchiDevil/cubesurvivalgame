@@ -1,6 +1,7 @@
 #include "gameState.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
+#include <SimplePhysicsEngine/PhysicsEngine.h>
 
 #include "../world/world.h"
 #include "../Items/ItemManager.h"

@@ -1,15 +1,15 @@
 #pragma once
 
 #include "ControllableGameObject.h"
-#include "../Entities/GameObjectInventory.h"
+#include "GameObjectInventory.h"
 
 #include <MathLib/math.h>
 
-class PlayerGameObject : public ControllableGameObject
+class PlayerGameObject final : public ControllableGameObject
 {
 public:
 	PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr);
-	~PlayerGameObject();
+	~PlayerGameObject() = default;
 
 	//Getters
 	unsigned int GetHunger() const;
@@ -20,11 +20,11 @@ public:
 
 	PlayerInventory * GetInventoryPtr();
 
-
 	void Update(double dt) override;
 	bool Go(const MathLib::Vector2F & target) override;
 	void Attack(LiveGameObject * target) const override;
 	InteractionType GetInteraction() const override;
+    void DispatchEvent(const IGameEvent *ev) override;
 
 private:
 	PlayerInventory Inventory;
