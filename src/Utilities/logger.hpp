@@ -3,7 +3,6 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <tuple>
 #include <sstream>
 
 #if defined (WIN32) || (_WIN32)
@@ -31,7 +30,7 @@ public:
         std::cout << "INFO: ";
         log_message(args...);
 #else
-        empty(args...);
+        std::forward<Args...>(args...);
 #endif
     }
     
@@ -60,15 +59,6 @@ public:
     }
 
 private:
-    template<typename T>
-    void empty(const T&) {}
-
-    template<typename T, typename ... Args>
-    void empty(const T&, const Args & ... args)
-    {
-        empty(args...);
-    }
-
     template<typename T>
     void log_message(const T & arg)
     {
