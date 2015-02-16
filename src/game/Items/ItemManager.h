@@ -6,8 +6,9 @@
 #include <fstream>
 #include <cstdint>
 
+#include "../Common.h"
+
 class Item;
-typedef uint64_t item_id_t;
 
 class ItemManager
 {

@@ -6,6 +6,7 @@
 #include "EntityState.h"
 #include "EntityActions.h"
 #include "GameObjectInventory.h"
+#include "../GameEvents.h"
 
 #include <stack>
 #include <memory>
@@ -34,6 +35,8 @@ public:
 	// service methods
 	bool MustBeDeleted() const;
 	void Delete();
+
+    virtual void DispatchEvent(const IGameEvent *) {}
 
 protected:
 	ShiftEngine::MeshNode * SceneNode;

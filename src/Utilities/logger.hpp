@@ -11,6 +11,7 @@
 
 class Log
 {
+    struct sink { template<typename ...Args> sink(Args const & ...) {} };
 public:
     Log( const std::string & FileName )
     {
@@ -30,7 +31,7 @@ public:
         std::cout << "INFO: ";
         log_message(args...);
 #else
-        std::forward<Args...>(args...);
+        sink{args...};
 #endif
     }
     
