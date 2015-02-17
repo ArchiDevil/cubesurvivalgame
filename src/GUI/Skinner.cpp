@@ -7,12 +7,13 @@
 #include "Objects/Table.h"
 #include "Objects/Text.h"
 #include "Objects/ValueBox.h"
+#include "Objects/Window.h"
 
 SimpleGUI::Skinner::Skinner()
     : ButtonCache(nullptr)
     , TextboxCache(nullptr)
     , ListCache(nullptr)
-    , ValueBoxCache(nullptr)
+    , boxCache(nullptr)
 {
 }
 
@@ -27,10 +28,10 @@ void SimpleGUI::Skinner::Initialize()
 
 void SimpleGUI::Skinner::LoadResources()
 {
-    ButtonCache = new ShiftEngine::Sprite(std::wstring(L"gui/background.png"));
-    TextboxCache = new ShiftEngine::Sprite(std::wstring(L"gui/textbox.png"));
-    ListCache = new ShiftEngine::Sprite(std::wstring(L"gui/list.png"));
-    ValueBoxCache = new ShiftEngine::Sprite(std::wstring(L"gui/box.png"));
+    ButtonCache = new ShiftEngine::Sprite(L"gui/background.png");
+    TextboxCache = new ShiftEngine::Sprite(L"gui/textbox.png");
+    ListCache = new ShiftEngine::Sprite(L"gui/list.png");
+    boxCache = new ShiftEngine::Sprite(L"gui/box.png");
 }
 
 void SimpleGUI::Skinner::DrawButton(Button * but)
@@ -44,7 +45,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
 
     auto pos = but->GetPosition();
     auto size = but->GetSize();
-    SetControlParameters(ButtonCache, but, pos, size);
+    SetControlParameters(ButtonCache, pos, size);
 
     ButtonCache->Draw();
 
@@ -81,7 +82,7 @@ void SimpleGUI::Skinner::DrawTextbox(Textbox * textbox, const std::string & stri
 
     auto pos = textbox->GetPosition();
     auto size = textbox->GetSize();
-    SetControlParameters(TextboxCache, textbox, pos, size);
+    SetControlParameters(TextboxCache, pos, size);
 
     TextboxCache->Draw();
 
@@ -118,7 +119,7 @@ void SimpleGUI::Skinner::DrawImage(Image * image, const ShiftEngine::Sprite & sp
 
     auto pos = image->GetPosition();
     auto size = image->GetSize();
-    SetControlParameters(&imageCache, image, pos, size);
+    SetControlParameters(&imageCache, pos, size);
 
     imageCache.Draw();
 }
@@ -127,7 +128,7 @@ void SimpleGUI::Skinner::DrawList(List * list)
 {
     auto pos = list->GetPosition();
     auto size = list->GetSize();
-    SetControlParameters(ListCache, list, pos, size);
+    SetControlParameters(ListCache, pos, size);
 
     ListCache->Draw();
 }
@@ -152,7 +153,7 @@ void SimpleGUI::Skinner::DrawListRow(TableRow * row)
     pFntMgr->SetFont(prevFont);
 }
 
-void SimpleGUI::Skinner::SetControlParameters(ShiftEngine::Sprite * spr, Base * /*control*/, const Point & pos, const Point & size)
+void SimpleGUI::Skinner::SetControlParameters(ShiftEngine::Sprite * spr, const Point & pos, const Point & size)
 {
     spr->SetPosition(Vector2F((float)pos.x + size.x / 2, (float)pos.y + size.y / 2));
     FloatSize scale = CalculateScaling(size.x, size.y, (int)spr->GetTextureDimensions().x, (int)spr->GetTextureDimensions().y);
@@ -180,14 +181,14 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     const float marginSize = 0.2f;
 
     //draw outer border first
-    ValueBoxCache->SetMaskColor(Vector4F(0.25f, 0.25f, 0.25f, 1.0f));
+    boxCache->SetMaskColor(Vector4F(0.25f, 0.25f, 0.25f, 1.0f));
     const auto outerPos = valueBox->GetPosition();
     const auto outerSize = valueBox->GetSize();
-    SetControlParameters(ValueBoxCache, valueBox, outerPos, outerSize);
-    ValueBoxCache->Draw();
+    SetControlParameters(boxCache, outerPos, outerSize);
+    boxCache->Draw();
 
     //draw inner border
-    ValueBoxCache->SetMaskColor(Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
+    boxCache->SetMaskColor(Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
     auto innerPos = outerPos;
     auto innerSize = outerSize;
     int minSize = (int)((float)min(innerSize.x, innerSize.y) * marginSize);
@@ -195,8 +196,8 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     innerSize.y -= minSize;
     innerPos.x += minSize / 2;
     innerPos.y += minSize / 2;
-    SetControlParameters(ValueBoxCache, valueBox, innerPos, innerSize);
-    ValueBoxCache->Draw();
+    SetControlParameters(boxCache, innerPos, innerSize);
+    boxCache->Draw();
 
     const int delimWidth = (int)((float)outerSize.x * 0.08f);
 
@@ -208,12 +209,12 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     float percent = (float)(valueBox->GetValue() - valueBox->GetMinValue()) / (valueBox->GetMaxValue() - valueBox->GetMinValue());
     delimPos.x = (int)MathLib::LinearInterpolation((float)outerPos.x, (float)outerPos.x + (float)outerSize.x, percent) - delimWidth / 2;
     delimPos.y = outerPos.y;
-    SetControlParameters(ValueBoxCache, valueBox, delimPos, delimSize);
-    ValueBoxCache->SetMaskColor(Vector4F(0.5f, 0.5f, 0.5f, 1.0f));
-    ValueBoxCache->Draw();
+    SetControlParameters(boxCache, delimPos, delimSize);
+    boxCache->SetMaskColor(Vector4F(0.5f, 0.5f, 0.5f, 1.0f));
+    boxCache->Draw();
 
     //drawing border of delimiter
-    ValueBoxCache->SetMaskColor(Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
+    boxCache->SetMaskColor(Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
     auto innerDelimPos = delimPos;
     auto innerDelimSize = delimSize;
     minSize = (int)((float)min(innerDelimSize.x, innerDelimSize.y) * marginSize);
@@ -221,6 +222,23 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     innerDelimSize.y -= minSize;
     innerDelimPos.x += minSize / 2;
     innerDelimPos.y += minSize / 2;
-    SetControlParameters(ValueBoxCache, valueBox, innerDelimPos, innerDelimSize);
-    ValueBoxCache->Draw();
+    SetControlParameters(boxCache, innerDelimPos, innerDelimSize);
+    boxCache->Draw();
+}
+
+void SimpleGUI::Skinner::DrawWindow(Window * window)
+{
+    auto pos = window->GetPosition();
+    auto size = window->GetSize();
+    SetControlParameters(boxCache, pos, size);
+    boxCache->SetMaskColor(MathLib::Vector4F(1.0f, 0.0f, 0.0f, 1.0f));
+    boxCache->Draw();
+
+    
+    size.x *= 0.95f;
+    size.y *= 0.95f;
+    boxCache->SetSizeInPixels(size.x, size.y);
+    //SetControlParameters(boxCache, pos, size);
+    boxCache->SetMaskColor(MathLib::Vector4F(0.0f, 1.0f, 0.0f, 1.0f));
+    boxCache->Draw();
 }
