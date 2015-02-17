@@ -4,13 +4,13 @@
 
 namespace SimpleGUI
 {
-	class Canvas : public Base
-	{
-	public:
-		Canvas();
-		~Canvas();
-	
-	private:
-	
-	};
+    class Canvas : public Base
+    {
+    public:
+        Canvas() : Base(nullptr) {}
+        ~Canvas() {}
+
+    private:
+
+    };
 }

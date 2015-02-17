@@ -1,117 +1,125 @@
 #include "Table.h"
 
-SimpleGUI::TableRow::TableRow( Base * parent, AnsiString _text )
-	: Base(parent), text(_text), Selected(false)
-{}
-
-bool SimpleGUI::TableRow::OnMouseUp( int mb, int /*innerX*/, int /*innerY*/ )
+SimpleGUI::TableRow::TableRow(Base * parent, AnsiString _text)
+    : Base(parent)
+    , text(_text)
+    , Selected(false)
 {
-	if(mb != 0) //left
-		return false;
+}
 
-	Selected = true;
-	Table * par = dynamic_cast<Table*>(Parent);
-	par->onRowSelected(this);
-	return true;
+bool SimpleGUI::TableRow::OnMouseUp(MouseKeys mb, int /*innerX*/, int /*innerY*/)
+{
+    if (mb != 0) //left
+        return false;
+
+    Selected = true;
+    Table * par = dynamic_cast<Table*>(Parent);
+    par->onRowSelected(this);
+    return true;
 }
 
 bool SimpleGUI::TableRow::IsSelected() const
 {
-	return Selected;
+    return Selected;
 }
 
 void SimpleGUI::TableRow::Deselect()
 {
-	Selected = false;
+    Selected = false;
 }
 
-void SimpleGUI::TableRow::Draw( Skinner * skin )
+void SimpleGUI::TableRow::Draw(Skinner * skin)
 {
-	skin->DrawListRow(this);
+    skin->DrawListRow(this);
 }
 
 SimpleGUI::AnsiString SimpleGUI::TableRow::GetString() const
 {
-	return text;
+    return text;
 }
 
 void SimpleGUI::TableRow::Select()
 {
-	Selected = true;
+    Selected = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-SimpleGUI::Table::Table( Base * parent )
-	: Base(parent), rows(0) {}
-
-SimpleGUI::Table::~Table() {}
-
-void SimpleGUI::Table::Draw( Skinner * skin )
+SimpleGUI::Table::Table(Base * parent)
+    : Base(parent)
+    , rows(0) 
 {
-	Base::RecursiveDrawing(skin);
 }
 
-void SimpleGUI::Table::AddRow( AnsiString str )
+SimpleGUI::Table::~Table()
 {
-	TableRow * pRow = new TableRow(this, str);
-
-	pRow->SetSize(this->Size.x - 6, 16);
-	pRow->SetPosition(3, rows * 17 + 2);
-
-	rows++;
 }
 
-void SimpleGUI::Table::RemoveRow( AnsiString str )
+void SimpleGUI::Table::Draw(Skinner * skin)
 {
-	LOG_FATAL_ERROR("Fatal error");
+    Base::RecursiveDrawing(skin);
+}
+
+void SimpleGUI::Table::AddRow(AnsiString str)
+{
+    TableRow * pRow = new TableRow(this, str);
+
+    pRow->SetSize(this->Size.x - 6, 16);
+    pRow->SetPosition(3, rows * 17 + 2);
+
+    rows++;
+}
+
+void SimpleGUI::Table::RemoveRow(AnsiString str)
+{
+    LOG_FATAL_ERROR("Fatal error");
 }
 
 void SimpleGUI::Table::Clear()
 {
-	Base::RemoveAllChildrens();
+    Base::RemoveAllChildrens();
 }
 
-SimpleGUI::TableRow * SimpleGUI::Table::GetRow( int /*num*/ )
+SimpleGUI::TableRow * SimpleGUI::Table::GetRow(int /*num*/)
 {
-	LOG_FATAL_ERROR("Fatal error");
+    LOG_FATAL_ERROR("Fatal error");
     return nullptr;
 }
 
 SimpleGUI::TableRow * SimpleGUI::Table::GetSelectedRow()
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
-	{
-		Base * elem = (*iter).get();
-		TableRow * ptr = dynamic_cast<TableRow*>(elem);
+    for (auto iter = Children.begin(); iter != Children.end(); iter++)
+    {
+        Base * elem = (*iter).get();
+        TableRow * ptr = dynamic_cast<TableRow*>(elem);
 
-		if(!ptr)
-			continue;
+        if (!ptr)
+            continue;
 
-		if(ptr->IsSelected())
-			return ptr;
-	}
+        if (ptr->IsSelected())
+            return ptr;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 void SimpleGUI::Table::UnselectAll()
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
-	{
-		Base * elem = (*iter).get();
-		TableRow * ptr = dynamic_cast<TableRow*>(elem);
+    for (auto iter = Children.begin(); iter != Children.end(); iter++)
+    {
+        Base * elem = (*iter).get();
+        TableRow * ptr = dynamic_cast<TableRow*>(elem);
 
-		if(!ptr)
-			continue;
+        if (!ptr)
+            continue;
 
-		if(ptr->IsSelected())
-			ptr->Deselect();
-	}
+        if (ptr->IsSelected())
+            ptr->Deselect();
+    }
 }
 
-void SimpleGUI::Table::onRowSelected( TableRow * row )
+void SimpleGUI::Table::onRowSelected(TableRow * row)
 {
-	UnselectAll();
-	row->Select();
+    UnselectAll();
+    row->Select();
 }

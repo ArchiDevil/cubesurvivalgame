@@ -5,18 +5,18 @@
 
 namespace SimpleGUI
 {
-	class List : public Base
-	{
-	public:
-		List(Base * parent);
+    class List : public Base
+    {
+    public:
+        List(Base * parent);
 
-		virtual void Draw( Skinner * skin ) override;
-		Table * GetTable();
+        virtual void Draw(Skinner * skin) override;
+        Table * GetTable();
 
-		virtual void SetSize( int x, int y ) override;
+        virtual void SetSize(int x, int y) override;
 
-	private:
-		Table * pTable;
+    private:
+        Table * pTable;
 
-	};
+    };
 }

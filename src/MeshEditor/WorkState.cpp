@@ -174,7 +174,7 @@ void WorkState::CreateGUI()
     butSave->SetText("Save");
 
     butSave->SetClickHandler(
-        [=](int, int, int)
+        [=](MouseKeys, int, int)
     {
         f->Show();
         fname->Show();
@@ -183,7 +183,7 @@ void WorkState::CreateGUI()
     );
 
     butSaveOk->SetClickHandler(
-        [=](int, int, int)
+        [=](MouseKeys, int, int)
     {
         const std::string rr = ".block";
         Workspace->Save("saves/" + utils::WStrToStr(fname->GetText()) + rr);

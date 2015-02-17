@@ -2,7 +2,7 @@
 
 // to add ctrl or shift holding
 // set holding from environment (listener or something)
-// i've not added it because i don't want to do much work =\
+// I've not added it because I don't want to do much work =\
 
 // какие события нужно покрыть?
 // мышка:
@@ -30,6 +30,8 @@ namespace SimpleGUI
 
     InputHandler::~InputHandler()
     {
+        HoveredControl = nullptr;
+        FocusedControl = nullptr;
     }
 
     void InputHandler::UpdateHoveredControl(int mouseX, int mouseY)
@@ -37,9 +39,9 @@ namespace SimpleGUI
         if (!pCanvas)
             return;
 
-        auto HC = pCanvas->GetControlAt(mouseX, mouseY);
+        Base * hovered = pCanvas->GetControlAt(mouseX, mouseY);
 
-        if (HC == HoveredControl && HC)
+        if (hovered == HoveredControl && hovered)
         {
             HoveredControl->OnMouseMove();
         }
@@ -48,7 +50,7 @@ namespace SimpleGUI
             if (HoveredControl)
                 HoveredControl->OnMouseLeave();
 
-            HoveredControl = HC;
+            HoveredControl = hovered;
 
             if (HoveredControl)
                 HoveredControl->OnMouseEnter();
@@ -57,7 +59,6 @@ namespace SimpleGUI
 
     void InputHandler::ProcessMouseMoving(Point /*oldPos*/, Point newPos)
     {
-        //much more?
         UpdateHoveredControl(newPos.x, newPos.y);
     }
 
@@ -80,7 +81,8 @@ namespace SimpleGUI
         if (HoveredControl->CanHaveFocus())
             FocusedControl = HoveredControl;
 
-        HoveredControl->OnMouseUp(event.button, event.x, event.y);
+        Point pos = HoveredControl->GetPosition();
+        HoveredControl->OnMouseUp(event.key, event.x - pos.x, event.y - pos.y);
     }
 
     void InputHandler::ProcessMouseDown(const MouseEventInfo & event)
@@ -91,7 +93,8 @@ namespace SimpleGUI
         if (HoveredControl->CanHaveFocus())
             FocusedControl = HoveredControl;
 
-        HoveredControl->OnMouseDown(event.button, event.x, event.y);
+        Point pos = HoveredControl->GetPosition();
+        HoveredControl->OnMouseDown(event.key, event.x - pos.x, event.y - pos.y);
     }
 
     const Canvas * InputHandler::GetCanvas() const

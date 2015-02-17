@@ -120,7 +120,7 @@ void MenuState::CreateGUI()
     butNext->SetSize(120, 20);
     butNext->SetText("Next");
     butNext->SetClickHandler(
-        [=](int /*mb*/, int /*innerX*/, int /*innerY*/)
+        [=](MouseKeys /*mb*/, int /*innerX*/, int /*innerY*/)
     {
         if (utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
             utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
@@ -144,12 +144,16 @@ void MenuState::CreateGUI()
     butLoad->SetSize(160, 20);
     butLoad->SetText("Load");
     butLoad->SetClickHandler(
-        [=](int /*mb*/, int /*innerX*/, int /*innerY*/)
+        [=](MouseKeys /*mb*/, int /*innerX*/, int /*innerY*/)
     {
         if (loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
             pApp->PushState(new WorkState("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()));
     }
     );
+
+    // SimpleGUI::Window * w = new SimpleGUI::Window(pCanvas);
+    // w->SetPosition(100, 100);
+    // w->SetSize(200, 100);
 }
 
 bool MenuState::ProcessInput()

@@ -6,34 +6,34 @@
 
 namespace SimpleGUI
 {
-	class Text : public Base	//means LABEL
-	{
-	public:
-		Text(Base * parent, const std::string & str)
-			: Base(parent), text(str)
-		{}
+    class Text : public Base	//means LABEL
+    {
+    public:
+        Text(Base * parent, const std::string & str)
+            : Base(parent), text(str)
+        {}
 
-		~Text() {}
+        ~Text() {}
 
-		virtual void Draw(Skinner * skin) override
-		{
-			skin->DrawLabel(this);
+        virtual void Draw(Skinner * skin) override
+        {
+            skin->DrawLabel(this);
 
-			RecursiveDrawing(skin);
-		}
+            RecursiveDrawing(skin);
+        }
 
-		void SetText(const std::string & str)
-		{
-			text = str;
-		}
+        void SetText(const std::string & str)
+        {
+            text = str;
+        }
 
-		std::string GetText()
-		{
-			return text;
-		}
+        std::string GetText()
+        {
+            return text;
+        }
 
-	private:
-		std::string text;
+    private:
+        std::string text;
 
-	};
+    };
 }

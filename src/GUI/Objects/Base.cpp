@@ -2,173 +2,218 @@
 
 namespace SimpleGUI
 {
-	Base::Base( Base * parent, std::string name /*= ""*/ ) 
-		: Position(0, 0), visible(true), 
-		Parent(parent), Size(1, 1),	Name(name)
-	{
-		if(Parent)
-			Parent->AddChildren((pBase)this);
-	}
+    Base::Base(Base * parent, std::string name /*= ""*/)
+        : Position(0, 0)
+        , visible(true)
+        , Parent(parent)
+        , Size(1, 1)
+        , Name(name)
+    {
+        if (Parent)
+            Parent->AddChildren((pBase)this);
+    }
 
-	Base::~Base()
-	{
-		if(SimpleGUI::HoveredControl == this)
-			SimpleGUI::HoveredControl = nullptr;
-		if(SimpleGUI::FocusedControl == this)
-			SimpleGUI::FocusedControl = nullptr;
-	}
+    Base::~Base()
+    {
+        if (SimpleGUI::HoveredControl == this)
+            SimpleGUI::HoveredControl = nullptr;
+        if (SimpleGUI::FocusedControl == this)
+            SimpleGUI::FocusedControl = nullptr;
+    }
 
-	Point Base::GetPosition() const
-	{
-		if(Parent)
-			return (Parent->GetPosition() + Position);
-		else
-			return Position;
-	}
+    Point Base::GetPosition() const
+    {
+        if (Parent)
+            return (Parent->GetPosition() + Position);
+        else
+            return Position;
+    }
 
-	void Base::SetPosition( Point Pos )	{Position = Pos;}
-	void Base::SetPosition( int x, int y ) {Position = Point(x, y);}
+    void Base::SetPosition(Point Pos)
+    {
+        Position = Pos;
+    }
 
-	bool Base::IsVisible() const {return visible;}
+    void Base::SetPosition(int x, int y)
+    {
+        Position = Point(x, y);
+    }
 
-	bool Base::IsHit( const Point & point )
-	{
-		//			   TOP
-		//			---------
-		//			|		|
-		//	LEFT	|		|	RIGHT
-		//			|		|
-		//			---------
-		//			  BOTTOM
-		Point realPos = Position;
+    bool Base::IsVisible() const
+    {
+        return visible;
+    }
 
-		if(Parent)
-			realPos += Parent->GetPosition();
+    bool Base::IsHit(const Point & point)
+    {
+        Point realPos = Position;
 
-		if(point.x < realPos.x)
-			return false;
+        if (Parent)
+            realPos += Parent->GetPosition();
 
-		if(point.y < realPos.y)
-			return false;
+        if (point.x < realPos.x)
+            return false;
 
-		if(point.x > realPos.x + Size.x)
-			return false;
+        if (point.y < realPos.y)
+            return false;
 
-		if(point.y > realPos.y + Size.y)
-			return false;
+        if (point.x > realPos.x + Size.x)
+            return false;
 
-		return true;
-	}
+        if (point.y > realPos.y + Size.y)
+            return false;
 
-	bool Base::OnMouseMove(){return false;}
-	bool Base::OnMouseEnter(){return false;}
-	bool Base::OnMouseLeave(){return false;}
-	bool Base::OnMouseDown( int /*mb*/, int /*x*/, int /*y*/ ){return false;}
-	bool Base::OnMouseUp( int /*mb*/, int /*x*/, int /*y*/ ){return false;}
+        return true;
+    }
 
-	bool Base::OnKeyChar( wchar_t /*Key*/ ){return false;}
-	bool Base::OnKeyUp( wchar_t /*Key*/ ){return false;}
-	bool Base::OnKeyDown( wchar_t /*Key*/ ){return false;}
+    bool Base::OnMouseMove()
+    {
+        return false;
+    }
 
-	bool Base::CanHaveFocus() const {return false;}
+    bool Base::OnMouseEnter()
+    {
+        return false;
+    }
 
-	void Base::Show()
-	{
-		visible = true;
-	}
+    bool Base::OnMouseLeave()
+    {
+        return false;
+    }
 
-	void Base::Hide()
-	{
-		visible = false;
-	}
+    bool Base::OnMouseDown(MouseKeys, int, int)
+    {
+        return false;
+    }
 
-	void Base::AddChildren( pBase Child )
-	{
-		if(!Child)
-			return;
+    bool Base::OnMouseUp(MouseKeys, int, int)
+    {
+        return false;
+    }
 
-		Children.push_back(Child);
+    bool Base::OnKeyChar(wchar_t)
+    {
+        return false;
+    }
 
-		if(Child->Parent && Child->Parent != this)
-			Child->Parent->RemoveChildren(Child);
+    bool Base::OnKeyUp(wchar_t)
+    {
+        return false;
+    }
 
-		Child->Parent = this;
-	}
+    bool Base::OnKeyDown(wchar_t)
+    {
+        return false;
+    }
 
-	void Base::RemoveChildren( pBase Child )
-	{
-		if(!Child)
-			return;
+    bool Base::CanHaveFocus() const
+    {
+        return false;
+    }
 
-		Children.erase( std::find(Children.begin(), Children.end(), Child) );
-	}
+    void Base::Show()
+    {
+        visible = true;
+    }
 
-	void Base::RemoveAllChildrens()
-	{
-		SimpleGUI::HoveredControl = nullptr;	//remove hovered
-		Children.clear();
-	}
+    void Base::Hide()
+    {
+        visible = false;
+    }
 
-	SimpleGUI::Point Base::GetSize() const {return Size;}
-	void Base::SetSize( int x, int y ){Size = Point(x, y);}
+    void Base::AddChildren(pBase Child)
+    {
+        if (!Child)
+            return;
 
-	Base * Base::GetControlAt( int mouseX, int mouseY )
-	{
-		for (auto iter = Children.begin(); iter != Children.end(); iter++)
-		{
-			Base * elem = &*(*iter);
-			if( elem->IsHit(Point(mouseX, mouseY)) )
-			{
-				return elem->GetControlAt(mouseX, mouseY);
-			}
-		}
-		return this;
-	}
+        Children.push_back(Child);
 
-	void Base::Draw( Skinner * skin )
-	{
-		if(!skin)
-			return;
+        if (Child->Parent && Child->Parent != this)
+            Child->Parent->RemoveChildren(Child);
 
-		RecursiveDrawing(skin);
-	}
+        Child->Parent = this;
+    }
 
-	void Base::RecursiveDrawing( Skinner * skin )
-	{
-		if(!skin)
-			return;		//unreachable code for now, but what if i'll change code later?
+    void Base::RemoveChildren(pBase Child)
+    {
+        if (!Child)
+            return;
 
-		for (auto iter = Children.begin(); iter != Children.end(); iter++)
-			(*iter)->Render(skin);
-	}
+        Children.erase(std::find(Children.begin(), Children.end(), Child));
+    }
 
-	void Base::Render(Skinner * skin)
-	{
-		if(this->IsVisible())
-		{
-			this->Draw(skin);
-			RecursiveDrawing(skin);
-		}
-	}
+    void Base::RemoveAllChildrens()
+    {
+        SimpleGUI::HoveredControl = nullptr;	//remove hovered
+        Children.clear();
+    }
 
-	Base * Base::GetParent() const
-	{
-		return Parent;
-	}
+    SimpleGUI::Point Base::GetSize() const
+    {
+        return Size;
+    }
 
-	std::string Base::GetName() const
-	{
-		return Name;
-	}
+    void Base::SetSize(int x, int y)
+    {
+        Size = Point(x, y);
+    }
 
-	void Base::SetName( const std::string & val )
-	{
-		Name = val;
-	}
+    Base * Base::GetControlAt(int mouseX, int mouseY)
+    {
+        for (auto iter = Children.begin(); iter != Children.end(); iter++)
+        {
+            Base * elem = &*(*iter);
+            if (elem->IsHit(Point(mouseX, mouseY)))
+            {
+                return elem->GetControlAt(mouseX, mouseY);
+            }
+        }
+        return this;
+    }
 
-	const std::list<pBase> Base::GetChildrenList() const
-	{
-		return Children;
-	}
+    void Base::Draw(Skinner * skin)
+    {
+        if (!skin)
+            return;
 
+        RecursiveDrawing(skin);
+    }
+
+    void Base::RecursiveDrawing(Skinner * skin)
+    {
+        if (!skin)
+            return;
+
+        for (auto iter = Children.begin(); iter != Children.end(); iter++)
+            (*iter)->Render(skin);
+    }
+
+    void Base::Render(Skinner * skin)
+    {
+        if (this->IsVisible())
+        {
+            this->Draw(skin);
+            RecursiveDrawing(skin);
+        }
+    }
+
+    Base * Base::GetParent() const
+    {
+        return Parent;
+    }
+
+    std::string Base::GetName() const
+    {
+        return Name;
+    }
+
+    void Base::SetName(const std::string & val)
+    {
+        Name = val;
+    }
+
+    const std::list<pBase> Base::GetChildrenList() const
+    {
+        return Children;
+    }
 }

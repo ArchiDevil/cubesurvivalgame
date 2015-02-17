@@ -1,7 +1,11 @@
 #include "ValueBox.h"
 
-SimpleGUI::ValueBox::ValueBox( SimpleGUI::Base * parent ) 
-	: Base(parent), isMoving(false), minValue(0), maxValue(100), value(0)
+SimpleGUI::ValueBox::ValueBox(SimpleGUI::Base * parent)
+    : Base(parent)
+    , isMoving(false)
+    , minValue(0)
+    , maxValue(100)
+    , value(0)
 {
 }
 
@@ -9,48 +13,43 @@ SimpleGUI::ValueBox::~ValueBox()
 {
 }
 
-bool SimpleGUI::ValueBox::OnMouseDown( int /*mb*/, int x, int /*y*/ )
+bool SimpleGUI::ValueBox::OnMouseDown(MouseKeys /*mb*/, int x, int /*y*/)
 {
-	isMoving = true;
-	//first we need to recalculate coords into inner space
-	int innerX = x - this->Position.x;
-	float percent = (float)innerX/this->Size.x;
-	//and calculate new value
-	value = (int)MathLib::LinearInterpolation((float)minValue, (float)maxValue, percent);
-	if(value < minValue)
-		value = minValue;
-	if(value > maxValue)
-		value = maxValue;
-	OnValueChanged();
-	return true;
+    isMoving = true;
+    float percent = (float)x / this->Size.x;
+    //and calculate new value
+    value = (int)MathLib::LinearInterpolation((float)minValue, (float)maxValue, percent);
+    value = MathLib::clamp(value, minValue, maxValue);
+    OnValueChanged();
+    return true;
 }
 
-bool SimpleGUI::ValueBox::OnMouseUp( int /*mb*/, int /*x*/, int /*y*/ )
+bool SimpleGUI::ValueBox::OnMouseUp(MouseKeys /*mb*/, int /*x*/, int /*y*/)
 {
-	isMoving = false;
-	OnValueChanged();
-	return true;
+    isMoving = false;
+    OnValueChanged();
+    return true;
 }
 
 bool SimpleGUI::ValueBox::OnMouseLeave()
 {
-	isMoving = false;
-	OnValueChanged();
-	return true;
+    isMoving = false;
+    OnValueChanged();
+    return true;
 }
 
-void SimpleGUI::ValueBox::Draw( Skinner * skin )
+void SimpleGUI::ValueBox::Draw(Skinner * skin)
 {
-	if(!skin)
-		return;
+    if (!skin)
+        return;
 
-	skin->DrawValueBox(this);
+    skin->DrawValueBox(this);
 }
 
 void SimpleGUI::ValueBox::OnValueChanged()
 {
-	if((bool)onValueChangedHandler == true)
-		onValueChangedHandler(this->value);
+    if (onValueChangedHandler)
+        onValueChangedHandler(this->value);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,36 +58,35 @@ void SimpleGUI::ValueBox::OnValueChanged()
 
 int SimpleGUI::ValueBox::GetMinValue() const
 {
-	return minValue;
+    return minValue;
 }
 
-void SimpleGUI::ValueBox::SetMinValue( int val )
+void SimpleGUI::ValueBox::SetMinValue(int val)
 {
-	minValue = val;
+    minValue = val;
 }
 
 int SimpleGUI::ValueBox::GetValue() const
 {
-	return value;
+    return value;
 }
 
-void SimpleGUI::ValueBox::SetValue( int val )
+void SimpleGUI::ValueBox::SetValue(int val)
 {
-	value = val;
+    value = val;
 }
 
 int SimpleGUI::ValueBox::GetMaxValue() const
 {
-	return maxValue;
+    return maxValue;
 }
 
-void SimpleGUI::ValueBox::SetMaxValue( int val )
+void SimpleGUI::ValueBox::SetMaxValue(int val)
 {
-	maxValue = val;
+    maxValue = val;
 }
 
-void SimpleGUI::ValueBox::SetOnValueChangedHandler( std::function<void(int)> handler )
+void SimpleGUI::ValueBox::SetOnValueChangedHandler(std::function<void(int)> handler)
 {
-	this->onValueChangedHandler = handler;
+    this->onValueChangedHandler = handler;
 }
-
