@@ -5,8 +5,8 @@
 #include <fstream>
 
 bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
-												 SerializedLIM & vertices,
-												 std::vector<unsigned long> & indices)
+                                                SerializedLIM & vertices,
+                                                std::vector<unsigned long> & indices)
 {
     std::ifstream in(filename.c_str(), std::ios::binary);
 
@@ -20,28 +20,28 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
 
     unsigned int size = head.verticesCount;
 
-	vertices.position.resize(size);
-	in.read(reinterpret_cast<char*>(vertices.position.data()), sizeof(float) * 3 * size);
+    vertices.position.resize(size);
+    in.read(reinterpret_cast<char*>(vertices.position.data()), sizeof(float) * 3 * size);
 
-	if (head.hasNormals)
-	{
-		vertices.normal.resize(size);
-		in.read(reinterpret_cast<char*>(vertices.normal.data()), sizeof(float) * 3 * size);
-	}
-	if (head.hasTexCoords)
-	{
-		vertices.texcoord.resize(size);
-		in.read(reinterpret_cast<char*>(vertices.texcoord.data()), sizeof(float) * 2 * size);
-	}
-	if (head.hasColors)
-	{
-		vertices.colors.resize(size);
-		in.read(reinterpret_cast<char*>(vertices.colors.data()), sizeof(float) * 3 * size);
-	}
+    if (head.hasNormals)
+    {
+        vertices.normal.resize(size);
+        in.read(reinterpret_cast<char*>(vertices.normal.data()), sizeof(float) * 3 * size);
+    }
+    if (head.hasTexCoords)
+    {
+        vertices.texcoord.resize(size);
+        in.read(reinterpret_cast<char*>(vertices.texcoord.data()), sizeof(float) * 2 * size);
+    }
+    if (head.hasColors)
+    {
+        vertices.colors.resize(size);
+        in.read(reinterpret_cast<char*>(vertices.colors.data()), sizeof(float) * 3 * size);
+    }
 
 
     int sizeInd = head.indicesCount;
-	indices.resize(sizeInd);
+    indices.resize(sizeInd);
 
     in.read(reinterpret_cast<char*>(indices.data()), sizeof(long) * sizeInd);
     in.close();
@@ -50,193 +50,287 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
 
 ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createCube()
 {
-	//TODO: creating mesh WITHOUT ANY INFO ABOUT API
+    //TODO: creating mesh WITHOUT ANY INFO ABOUT API
 
-	ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
+    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
 
-	static MeshDataPtr pDefaultMesh = nullptr;
-	if(pDefaultMesh != nullptr)
-		return pDefaultMesh;
-	//some actions
-	DefaultVertex ver[] = 
-	{
-		//up
-		{0.5f, 0.5f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f},
-		{0.5f, -0.5f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f},
-		{-0.5f, 0.5f, 1.0f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f},
-		{-0.5f, -0.5f, 1.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f},
-		//down
-		{0.5f, 0.5f, 0.0f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f},
-		{0.5f, -0.5f, 0.0f,		0.0f, 0.0f, -1.0f,	0.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f},
-		{-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, -1.0f,	1.0f, 1.0f},
-		//left
-		{-0.5f, -0.5f, 1.0f,	0.0f, -1.0f, 0.0f,	0.0f, 0.0f},
-		{0.5f, -0.5f, 1.0f,		0.0f, -1.0f, 0.0f,	1.0f, 0.0f},
-		{0.5f, -0.5f, 0.0f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f},
-		{-0.5f, -0.5f, 0.0f,	0.0f, -1.0f, 0.0f,	0.0f, 1.0f},
-		//right
-		{-0.5f, 0.5f, 1.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f},
-		{0.5f, 0.5f, 1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f},
-		{0.5f, 0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f},
-		//front
-		{-0.5f, 0.5f, 1.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 0.0f},
-		{-0.5f, -0.5f, 1.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 0.0f},
-		{-0.5f, -0.5f, 0.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f,		-1.0f, 0.0f, 0.0f,	0.0f, 1.0f},
-		//back
-		{0.5f, 0.5f, 1.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f},
-		{0.5f, -0.5f, 1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f},
-		{0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f},
-		{0.5f, 0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f},
-	};
+    static MeshDataPtr pDefaultMesh = nullptr;
+    if (pDefaultMesh != nullptr)
+        return pDefaultMesh;
+    //some actions
+    DefaultVertex ver[] =
+    {
+        //up
+        { 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
+        { 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
+        //down
+        { 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f },
+        { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f },
+        //left
+        { -0.5f, -0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f },
+        { 0.5f, -0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f },
+        { 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f },
+        { -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f },
+        //right
+        { -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+        { 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+        { 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f },
+        //front
+        { -0.5f, 0.5f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+        { -0.5f, -0.5f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+        //back
+        { 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+        { 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+        { 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+        { 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+    };
 
-	long ind[] = 
-	{
-		//up
-		0,1,2,
-		2,1,3,
-		//down	+4
-		5,4,7,
-		7,4,6,
-		//left	+8
-		8,9,10,
-		8,10,11,
-		//right	+12
-		14,13,12,
-		15,14,12,
-		//front	+16
-		16,17,19,
-		17,18,19,
-		//back	+20
-		23,21,20,
-		23,22,21
-	};
+    long ind[] =
+    {
+        //up
+        0, 1, 2,
+        2, 1, 3,
+        //down	+4
+        5, 4, 7,
+        7, 4, 6,
+        //left	+8
+        8, 9, 10,
+        8, 10, 11,
+        //right	+12
+        14, 13, 12,
+        15, 14, 12,
+        //front	+16
+        16, 17, 19,
+        17, 18, 19,
+        //back	+20
+        23, 21, 20,
+        23, 22, 21
+    };
 
-	MeshData * md = new MeshData();
+    MeshData * md = new MeshData();
 
-	md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 24, ind, sizeof(long) * 36, pDevice);
+    md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 24, ind, sizeof(long) * 36, pDevice);
 
-	pDefaultMesh = MeshDataPtr(md);
-	pDefaultMesh->indicesCount = 36;
-	pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-	pDefaultMesh->verticesCount = 24;
-	pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-	pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
-	return pDefaultMesh;
+    pDefaultMesh = MeshDataPtr(md);
+    pDefaultMesh->indicesCount = 36;
+    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
+    pDefaultMesh->verticesCount = 24;
+    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
+    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    return pDefaultMesh;
 }
 
 ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createPlane()
 {
-	ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
+    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
 
-	static MeshDataPtr pDefaultMesh = nullptr;
-	if(pDefaultMesh != nullptr)
-		return pDefaultMesh;
-	
-	DefaultVertex ver[] = 
-	{
-		//up
-		{0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f},
-		{0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f},
-		{-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f},
-	};
+    static MeshDataPtr pDefaultMesh = nullptr;
+    if (pDefaultMesh != nullptr)
+        return pDefaultMesh;
 
-	long ind[] = 
-	{
-		//up
-		0,1,2,
-		2,1,3,
-	};
+    DefaultVertex ver[] =
+    {
+        //up
+        { 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
+        { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
+    };
 
-	MeshData * md = new MeshData();
+    long ind[] =
+    {
+        //up
+        0, 1, 2,
+        2, 1, 3,
+    };
 
-	md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 4, ind, sizeof(long) * 6, pDevice);
+    MeshData * md = new MeshData();
 
-	pDefaultMesh = MeshDataPtr(md);
-	pDefaultMesh->indicesCount = 6;
-	pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-	pDefaultMesh->verticesCount = 4;
-	pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-	pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
-	return pDefaultMesh;
+    md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 4, ind, sizeof(long) * 6, pDevice);
+
+    pDefaultMesh = MeshDataPtr(md);
+    pDefaultMesh->indicesCount = 6;
+    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
+    pDefaultMesh->verticesCount = 4;
+    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
+    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    return pDefaultMesh;
 }
 
 ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createSphere()
 {
-	ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
+    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
 
-	static MeshDataPtr pDefaultMesh = nullptr;
-	if(pDefaultMesh != nullptr)
-		return pDefaultMesh;
+    static MeshDataPtr pDefaultMesh = nullptr;
+    if (pDefaultMesh != nullptr)
+        return pDefaultMesh;
 
-	const int subdivisions = 36;
-	//const float radius = 1.0f;
+    const int subdivisions = 36;
+    //const float radius = 1.0f;
 
-	DefaultVertex * vertices = new DefaultVertex[subdivisions * subdivisions * 6];
-	memset(vertices, 0, sizeof(DefaultVertex) * subdivisions * subdivisions * 6);
+    DefaultVertex * vertices = new DefaultVertex[subdivisions * subdivisions * 6];
+    memset(vertices, 0, sizeof(DefaultVertex) * subdivisions * subdivisions * 6);
 
-	const float step = (float)M_PI / subdivisions;
+    const float step = (float)M_PI / subdivisions;
 
-	for(int i = 0; i < subdivisions; i++) //horizontal step (phi)
-	{
-		for(int j = 0; j < subdivisions; j++) //vertical step (theta)
-		{
-			float sinPhi[] =	{sin(2.0f * step * i), sin(2.0f * step * (i+1))};
-			float cosPhi[] =	{cos(2.0f * step * i), cos(2.0f * step * (i+1))};
-			float sinTheta[] =	{sin(step * j), sin(step * (j+1))};
-			float cosTheta[] =	{cos(step * j), cos(step * (j+1))};
+    for (int i = 0; i < subdivisions; i++) //horizontal step (phi)
+    {
+        for (int j = 0; j < subdivisions; j++) //vertical step (theta)
+        {
+            float sinPhi[] = { sin(2.0f * step * i), sin(2.0f * step * (i + 1)) };
+            float cosPhi[] = { cos(2.0f * step * i), cos(2.0f * step * (i + 1)) };
+            float sinTheta[] = { sin(step * j), sin(step * (j + 1)) };
+            float cosTheta[] = { cos(step * j), cos(step * (j + 1)) };
 
-			//create 4 vertices patch
-			Vector3F patch[4];
-			patch[0] = Vector3F(sinTheta[1] * cosPhi[0], sinTheta[1] * sinPhi[0], cosTheta[1]);
-			patch[1] = Vector3F(sinTheta[1] * cosPhi[1], sinTheta[1] * sinPhi[1], cosTheta[1]);
-			patch[2] = Vector3F(sinTheta[0] * cosPhi[1], sinTheta[0] * sinPhi[1], cosTheta[0]);
-			patch[3] = Vector3F(sinTheta[0] * cosPhi[0], sinTheta[0] * sinPhi[0], cosTheta[0]);
+            //create 4 vertices patch
+            Vector3F patch[4];
+            patch[0] = Vector3F(sinTheta[1] * cosPhi[0], sinTheta[1] * sinPhi[0], cosTheta[1]);
+            patch[1] = Vector3F(sinTheta[1] * cosPhi[1], sinTheta[1] * sinPhi[1], cosTheta[1]);
+            patch[2] = Vector3F(sinTheta[0] * cosPhi[1], sinTheta[0] * sinPhi[1], cosTheta[0]);
+            patch[3] = Vector3F(sinTheta[0] * cosPhi[0], sinTheta[0] * sinPhi[0], cosTheta[0]);
 
-			Vector2F texcoords[4];
-			texcoords[0] = Vector2F((float)i / subdivisions,		(float)(j+1) / subdivisions);
-			texcoords[1] = Vector2F((float)(i+1) / subdivisions,	(float)(j+1) / subdivisions);
-			texcoords[2] = Vector2F((float)(i+1) / subdivisions,	(float)j / subdivisions);
-			texcoords[3] = Vector2F((float)i / subdivisions,		(float)j / subdivisions);
+            Vector2F texcoords[4];
+            texcoords[0] = Vector2F((float)i / subdivisions, (float)(j + 1) / subdivisions);
+            texcoords[1] = Vector2F((float)(i + 1) / subdivisions, (float)(j + 1) / subdivisions);
+            texcoords[2] = Vector2F((float)(i + 1) / subdivisions, (float)j / subdivisions);
+            texcoords[3] = Vector2F((float)i / subdivisions, (float)j / subdivisions);
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6].Pos, patch[0].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6].Normal, patch[0].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6].Texcoord, texcoords[0].ptr(), sizeof(Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Pos, patch[0].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Normal, patch[0].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Texcoord, texcoords[0].ptr(), sizeof(Vector2F));
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Pos, patch[1].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Normal, patch[1].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Texcoord, texcoords[1].ptr(), sizeof(Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Pos, patch[1].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Normal, patch[1].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Texcoord, texcoords[1].ptr(), sizeof(Vector2F));
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Pos, patch[2].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Normal, patch[2].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Texcoord, texcoords[2].ptr(), sizeof(Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Pos, patch[2].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Normal, patch[2].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Texcoord, texcoords[2].ptr(), sizeof(Vector2F));
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Pos, patch[0].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Normal, patch[0].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Texcoord, texcoords[0].ptr(), sizeof(Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Pos, patch[0].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Normal, patch[0].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Texcoord, texcoords[0].ptr(), sizeof(Vector2F));
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Pos, patch[2].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Normal, patch[2].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Texcoord, texcoords[2].ptr(), sizeof(Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Pos, patch[2].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Normal, patch[2].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Texcoord, texcoords[2].ptr(), sizeof(Vector2F));
 
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Pos, patch[3].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Normal, patch[3].ptr(), sizeof(Vector3F));
-			memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Texcoord, texcoords[3].ptr(), sizeof(Vector2F));
-		}
-	}
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Pos, patch[3].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Normal, patch[3].ptr(), sizeof(Vector3F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Texcoord, texcoords[3].ptr(), sizeof(Vector2F));
+        }
+    }
 
-	MeshData * md = new MeshData();
+    MeshData * md = new MeshData();
 
-	md->CreateBuffers(false, vertices, sizeof(DefaultVertex) * subdivisions * subdivisions * 6, nullptr, 0, pDevice);
+    md->CreateBuffers(false, vertices, sizeof(DefaultVertex) * subdivisions * subdivisions * 6, nullptr, 0, pDevice);
 
-	pDefaultMesh = MeshDataPtr(md);
-	pDefaultMesh->indicesCount = 0;
-	pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-	pDefaultMesh->verticesCount = subdivisions * subdivisions * 6;
-	pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-	pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
-	return pDefaultMesh;
+    pDefaultMesh = MeshDataPtr(md);
+    pDefaultMesh->indicesCount = 0;
+    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
+    pDefaultMesh->verticesCount = subdivisions * subdivisions * 6;
+    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
+    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    return pDefaultMesh;
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ExtendedVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+        output[i].Texcoord[0] = input[i].Texcoord[0];
+        output[i].Texcoord[1] = input[i].Texcoord[1];
+    }
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ColorVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+    }
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<DefaultVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+        output[i].Texcoord[0] = input[i].Texcoord[0];
+        output[i].Texcoord[1] = input[i].Texcoord[1];
+    }
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<ColorVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+        output[i].Color[0] = input[i].Color[0];
+        output[i].Color[1] = input[i].Color[1];
+        output[i].Color[2] = input[i].Color[2];
+    }
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<DefaultVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+    }
+}
+
+void ShiftEngine::Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<ExtendedVertex> & output)
+{
+    output.resize(input.size());
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        output[i].Pos[0] = input[i].Pos[0];
+        output[i].Pos[1] = input[i].Pos[1];
+        output[i].Pos[2] = input[i].Pos[2];
+        output[i].Normal[0] = input[i].Normal[0];
+        output[i].Normal[1] = input[i].Normal[1];
+        output[i].Normal[2] = input[i].Normal[2];
+        output[i].Color[0] = input[i].Color[0];
+        output[i].Color[1] = input[i].Color[1];
+        output[i].Color[2] = input[i].Color[2];
+    }
 }
