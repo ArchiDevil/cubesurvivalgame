@@ -34,16 +34,17 @@ namespace SimpleGUI
         FocusedControl = nullptr;
     }
 
-    void InputHandler::UpdateHoveredControl(int mouseX, int mouseY)
+    void InputHandler::ProcessMouseMoving(Point oldPos, Point newPos)
     {
         if (!pCanvas)
             return;
 
-        Base * hovered = pCanvas->GetControlAt(mouseX, mouseY);
+        Base * hovered = pCanvas->GetControlAt(newPos.x, newPos.y);
 
         if (hovered == HoveredControl && hovered)
         {
-            HoveredControl->OnMouseMove();
+            Point pos = HoveredControl->GetPosition();
+            HoveredControl->OnMouseMove(oldPos - pos, newPos - pos);
         }
         else
         {
@@ -55,11 +56,6 @@ namespace SimpleGUI
             if (HoveredControl)
                 HoveredControl->OnMouseEnter();
         }
-    }
-
-    void InputHandler::ProcessMouseMoving(Point /*oldPos*/, Point newPos)
-    {
-        UpdateHoveredControl(newPos.x, newPos.y);
     }
 
     void InputHandler::ProcessKeyChar(wchar_t character)

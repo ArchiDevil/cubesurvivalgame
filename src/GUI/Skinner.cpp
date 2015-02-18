@@ -28,10 +28,10 @@ void SimpleGUI::Skinner::Initialize()
 
 void SimpleGUI::Skinner::LoadResources()
 {
-    ButtonCache = new ShiftEngine::Sprite(L"gui/background.png");
-    TextboxCache = new ShiftEngine::Sprite(L"gui/textbox.png");
-    ListCache = new ShiftEngine::Sprite(L"gui/list.png");
-    boxCache = new ShiftEngine::Sprite(L"gui/box.png");
+    ButtonCache.reset(new ShiftEngine::Sprite(L"gui/background.png"));
+    TextboxCache.reset(new ShiftEngine::Sprite(L"gui/textbox.png"));
+    ListCache.reset(new ShiftEngine::Sprite(L"gui/list.png"));
+    boxCache.reset(new ShiftEngine::Sprite(L"gui/box.png"));
 }
 
 void SimpleGUI::Skinner::DrawButton(Button * but)
@@ -45,7 +45,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
 
     auto pos = but->GetPosition();
     auto size = but->GetSize();
-    SetControlParameters(ButtonCache, pos, size);
+    SetControlParameters(ButtonCache.get(), pos, size);
 
     ButtonCache->Draw();
 
@@ -71,7 +71,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
     }
 }
 
-void SimpleGUI::Skinner::DrawTextbox(Textbox * textbox, const std::string & string, bool Focused)
+void SimpleGUI::Skinner::DrawTextbox(Textbox * textbox, bool Focused)
 {
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
@@ -82,9 +82,11 @@ void SimpleGUI::Skinner::DrawTextbox(Textbox * textbox, const std::string & stri
 
     auto pos = textbox->GetPosition();
     auto size = textbox->GetSize();
-    SetControlParameters(TextboxCache, pos, size);
+    SetControlParameters(TextboxCache.get(), pos, size);
 
     TextboxCache->Draw();
+
+    std::string string = utils::WStrToStr(textbox->GetText());
 
     if (string.empty())
         return;
@@ -128,7 +130,7 @@ void SimpleGUI::Skinner::DrawList(List * list)
 {
     auto pos = list->GetPosition();
     auto size = list->GetSize();
-    SetControlParameters(ListCache, pos, size);
+    SetControlParameters(ListCache.get(), pos, size);
 
     ListCache->Draw();
 }
@@ -184,7 +186,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     boxCache->SetMaskColor(Vector4F(0.25f, 0.25f, 0.25f, 1.0f));
     const auto outerPos = valueBox->GetPosition();
     const auto outerSize = valueBox->GetSize();
-    SetControlParameters(boxCache, outerPos, outerSize);
+    SetControlParameters(boxCache.get(), outerPos, outerSize);
     boxCache->Draw();
 
     //draw inner border
@@ -196,7 +198,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     innerSize.y -= minSize;
     innerPos.x += minSize / 2;
     innerPos.y += minSize / 2;
-    SetControlParameters(boxCache, innerPos, innerSize);
+    SetControlParameters(boxCache.get(), innerPos, innerSize);
     boxCache->Draw();
 
     const int delimWidth = (int)((float)outerSize.x * 0.08f);
@@ -209,7 +211,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     float percent = (float)(valueBox->GetValue() - valueBox->GetMinValue()) / (valueBox->GetMaxValue() - valueBox->GetMinValue());
     delimPos.x = (int)MathLib::LinearInterpolation((float)outerPos.x, (float)outerPos.x + (float)outerSize.x, percent) - delimWidth / 2;
     delimPos.y = outerPos.y;
-    SetControlParameters(boxCache, delimPos, delimSize);
+    SetControlParameters(boxCache.get(), delimPos, delimSize);
     boxCache->SetMaskColor(Vector4F(0.5f, 0.5f, 0.5f, 1.0f));
     boxCache->Draw();
 
@@ -222,7 +224,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     innerDelimSize.y -= minSize;
     innerDelimPos.x += minSize / 2;
     innerDelimPos.y += minSize / 2;
-    SetControlParameters(boxCache, innerDelimPos, innerDelimSize);
+    SetControlParameters(boxCache.get(), innerDelimPos, innerDelimSize);
     boxCache->Draw();
 }
 
@@ -230,15 +232,13 @@ void SimpleGUI::Skinner::DrawWindow(Window * window)
 {
     auto pos = window->GetPosition();
     auto size = window->GetSize();
-    SetControlParameters(boxCache, pos, size);
-    boxCache->SetMaskColor(MathLib::Vector4F(1.0f, 0.0f, 0.0f, 1.0f));
+    SetControlParameters(boxCache.get(), pos, size);
+    boxCache->SetMaskColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
     boxCache->Draw();
 
-    
-    size.x *= 0.95f;
-    size.y *= 0.95f;
+    size.x -= 4;
+    size.y -= 4;
     boxCache->SetSizeInPixels(size.x, size.y);
-    //SetControlParameters(boxCache, pos, size);
-    boxCache->SetMaskColor(MathLib::Vector4F(0.0f, 1.0f, 0.0f, 1.0f));
+    boxCache->SetMaskColor(MathLib::Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
     boxCache->Draw();
 }

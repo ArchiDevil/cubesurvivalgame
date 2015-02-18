@@ -5,14 +5,12 @@ SimpleGUI::List::List(Base * parent)
 {
     SimpleGUI::Table * pt = new SimpleGUI::Table(this);
     pTable = pt;
-    pt->SetSize(this->Size.x, this->Size.y);
+    pt->SetSize(GetSize());
 }
 
 void SimpleGUI::List::Draw(Skinner * skin)
 {
     skin->DrawList(this);
-
-    pTable->Draw(skin);
 }
 
 SimpleGUI::Table * SimpleGUI::List::GetTable()
@@ -22,7 +20,6 @@ SimpleGUI::Table * SimpleGUI::List::GetTable()
 
 void SimpleGUI::List::SetSize(int x, int y)
 {
-    this->Size.x = x;
-    this->Size.y = y;
+    Base::SetSize(x, y);
     pTable->SetSize(x, y);
 }

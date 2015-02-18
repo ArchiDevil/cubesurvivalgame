@@ -9,7 +9,7 @@ namespace SimpleGUI
     {
     public:
         MainListener(Canvas * _pCanvas, cInputEngine * _eng, std::vector<wchar_t> & _charQueue);
-        virtual void Update();
+        virtual void Update() override;
 
     private:
         cInputEngine * Engine;

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "GUIMisc.h"
-
-#include "..\Skinner.h"
+#include "../GUIMisc.h"
+#include "../Skinner.h"
 
 #include <list>
 #include <memory>
@@ -13,9 +12,11 @@ namespace SimpleGUI
     class GUIEventHandler;
     class Skinner;
 
+    class Base;
+    typedef std::shared_ptr<Base> pBase;
+
     class Base
     {
-        typedef std::shared_ptr<Base> pBase;
     public:
         Base(Base * parent, std::string name = "");
         virtual ~Base();
@@ -37,6 +38,7 @@ namespace SimpleGUI
 
         Point GetSize() const;
         virtual void SetSize(int x, int y);
+        virtual void SetSize(const Point & size);
 
         bool IsVisible() const;
 
@@ -50,7 +52,7 @@ namespace SimpleGUI
 
         virtual bool OnMouseDown(MouseKeys mb, int x, int y);
         virtual bool OnMouseUp(MouseKeys mb, int x, int y);
-        virtual bool OnMouseMove();
+        virtual bool OnMouseMove(Point oldPos, Point newPos);
         virtual bool OnMouseEnter();
         virtual bool OnMouseLeave();
 

@@ -33,8 +33,6 @@ namespace SimpleGUI
         void SetCanvas(Canvas * pCanvas);
 
     private:
-        void UpdateHoveredControl(int mouseX, int mouseY);
-
         Canvas * pCanvas;
     };
 }

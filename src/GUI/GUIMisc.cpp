@@ -1,9 +1,9 @@
 #include "GUIMisc.h"
 
-#include "Base.h"
-#include "Canvas.h"
-#include "../Skinner.h"
-#include "../MainListener.h"
+#include "Objects/Base.h"
+#include "Objects/Canvas.h"
+#include "Skinner.h"
+#include "MainListener.h"
 
 namespace SimpleGUI
 {

@@ -6,14 +6,18 @@
 
 namespace SimpleGUI
 {
-    class Text : public Base	//means LABEL
+    class Text : public Base    //means LABEL
     {
     public:
         Text(Base * parent, const std::string & str)
-            : Base(parent), text(str)
-        {}
+            : Base(parent)
+            , text(str)
+        {
+        }
 
-        ~Text() {}
+        ~Text() 
+        {
+        }
 
         virtual void Draw(Skinner * skin) override
         {

@@ -11,9 +11,9 @@ namespace SimpleGUI
         List(Base * parent);
 
         virtual void Draw(Skinner * skin) override;
-        Table * GetTable();
-
         virtual void SetSize(int x, int y) override;
+
+        Table * GetTable();
 
     private:
         Table * pTable;

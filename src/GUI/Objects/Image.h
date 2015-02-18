@@ -14,7 +14,7 @@ namespace SimpleGUI
         virtual ~Image();
 
         virtual void Draw(Skinner * skin) override;
-        void SetImage(const std::wstring & image);
+        void SetImage(const std::wstring & imageName);
 
     private:
         ShiftEngine::Sprite image;

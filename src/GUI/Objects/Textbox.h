@@ -24,7 +24,6 @@ namespace SimpleGUI
 
     private:
         std::function<void(const std::wstring & newText)> textChangedHandler;
-
         std::wstring currentText;
     };
 }

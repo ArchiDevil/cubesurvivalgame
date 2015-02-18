@@ -1,17 +1,21 @@
 #include "Textbox.h"
 
 SimpleGUI::Textbox::Textbox(Base * _parent)
-    : Base(_parent), currentText(L"")
-{}
+    : Base(_parent)
+    , currentText(L"")
+{
+}
 
-SimpleGUI::Textbox::~Textbox() {}
+SimpleGUI::Textbox::~Textbox() 
+{
+}
 
 void SimpleGUI::Textbox::Draw(Skinner * skin)
 {
     if (!skin)
         return;
 
-    skin->DrawTextbox(this, utils::WStrToStr(currentText), SimpleGUI::FocusedControl == this);
+    skin->DrawTextbox(this, SimpleGUI::FocusedControl == this);
 }
 
 bool SimpleGUI::Textbox::CanHaveFocus() const

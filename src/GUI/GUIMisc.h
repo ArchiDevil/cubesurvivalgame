@@ -11,7 +11,6 @@ using MathLib::Vector2F;
 namespace SimpleGUI
 {
     class Base;
-    typedef std::shared_ptr<Base> pBase;
 
     class Canvas;
     class Skinner;
@@ -53,7 +52,7 @@ namespace SimpleGUI
         m_MOUSEBEGIN,
         EventClick,
         EventMove,
-        m_MOUSEEND, //пока хватит
+        m_MOUSEEND,
         EventChar,
     };
 

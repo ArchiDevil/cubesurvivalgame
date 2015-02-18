@@ -39,7 +39,7 @@ namespace UnitTests
             Assert::AreEqual(pTest->IsHit(Point(0, 0)), true, L"Hit testing");
             if (pTest->OnKeyChar('0') || pTest->OnKeyDown('0') || pTest->OnKeyUp('0') ||
                 pTest->OnMouseDown(LButton, 0, 0) || pTest->OnMouseEnter() || pTest->OnMouseLeave() ||
-                pTest->OnMouseMove() || pTest->OnMouseUp(LButton, 0, 0))
+                pTest->OnMouseMove({}, {}) || pTest->OnMouseUp(LButton, 0, 0))
                 Assert::Fail(L"Something wrong with On** handlers");
             pTest->RemoveAllChildrens();
             Assert::AreEqual(pTest->GetChildrenList().empty(), true, L"RemoveAllChildren() test");

@@ -2,7 +2,7 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 
-#include "Objects/GUIMisc.h"
+#include "GUIMisc.h"
 
 namespace SimpleGUI
 {
@@ -28,7 +28,7 @@ namespace SimpleGUI
         void Draw(T * item);
 
         void DrawButton(Button * but);
-        void DrawTextbox(Textbox * textbox, const std::string & string, bool Focused);
+        void DrawTextbox(Textbox * textbox, bool Focused);
         void DrawImage(Image * image, const ShiftEngine::Sprite & spr);
         void DrawList(List * list);
         void DrawListRow(TableRow * row);
@@ -40,11 +40,11 @@ namespace SimpleGUI
         void SetControlParameters(ShiftEngine::Sprite * spr, const Point & pos, const Point & size);
         void LoadResources();
 
-        ShiftEngine::Sprite * ButtonCache;
-        ShiftEngine::Sprite * TextboxCache;
-        ShiftEngine::Sprite * ListCache;
+        std::unique_ptr<ShiftEngine::Sprite> ButtonCache;
+        std::unique_ptr<ShiftEngine::Sprite> TextboxCache;
+        std::unique_ptr<ShiftEngine::Sprite> ListCache;
 
         // just a simple 1x1 box
-        ShiftEngine::Sprite * boxCache;
+        std::unique_ptr<ShiftEngine::Sprite> boxCache;
     };
 }
