@@ -1,4 +1,12 @@
-file(GLOB SRC *.cpp *.h Objects/*.cpp Objects/*.h)
+file(GLOB SRC *.cpp *.h)
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Objects/*.cpp)
+source_group("Source Files\\Objects" FILES ${LS})
+list(APPEND SRC ${LS})
+
+file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Objects/*.h ${CMAKE_CURRENT_SOURCE_DIR}/Objects/*.hpp)
+source_group("Header Files\\Objects" FILES ${LS})
+list(APPEND SRC ${LS})
 
 include_directories($ENV{DXSDK_DIR}/include)
 add_library(GUI STATIC ${SRC})

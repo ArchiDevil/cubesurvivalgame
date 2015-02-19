@@ -17,9 +17,15 @@ namespace SimpleGUI
         void SetDraggable(bool draggable);
         bool IsDraggable() const;
 
+        virtual void SetSize(int x, int y) override;
+        virtual void SetSize(const Point & size) override;
+
     private:
+        void SetCloseButtonPosition();
+
         bool dragged = false;
         bool draggable = false;
         Point oldInner = {};
+        Button * closeButton = nullptr;
     };
 }

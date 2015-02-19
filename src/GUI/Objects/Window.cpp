@@ -7,18 +7,17 @@ SimpleGUI::Window::Window(Base * parent)
 {
 }
 
-SimpleGUI::Window::Window(Base * parent, const Point & _position, const Point & _size)
+SimpleGUI::Window::Window(Base * parent, const Point & position, const Point & size)
     : Base(parent)
-    , dragged(false)
 {
-    Base::SetPosition(_position);
-    Base::SetSize(_size.x, _size.y);
+    SetPosition(position);
+    SetSize(size.x, size.y);
 
-    Button * closeButton = new Button(this);
+    closeButton = new Button(this);
     closeButton->SetSize(16, 16);
     closeButton->SetText("X");
-    closeButton->SetPosition(2, 2);
     closeButton->SetClickHandler([this](MouseKeys, int, int){ Hide(); });
+    SetCloseButtonPosition();
 }
 
 SimpleGUI::Window::~Window()
@@ -76,4 +75,26 @@ void SimpleGUI::Window::SetDraggable(bool draggable)
 bool SimpleGUI::Window::IsDraggable() const
 {
     return draggable;
+}
+
+void SimpleGUI::Window::SetSize(int x, int y)
+{
+    Base::SetSize(x, y);
+    SetCloseButtonPosition();
+}
+
+void SimpleGUI::Window::SetSize(const Point & size)
+{
+    Base::SetSize(size);
+    SetCloseButtonPosition();
+}
+
+void SimpleGUI::Window::SetCloseButtonPosition()
+{
+    if (!closeButton)
+        return;
+
+    const int buttonMargin = 2;
+    Point newPosition = { GetSize().x - closeButton->GetSize().x - buttonMargin, buttonMargin };
+    closeButton->SetPosition(newPosition);
 }
