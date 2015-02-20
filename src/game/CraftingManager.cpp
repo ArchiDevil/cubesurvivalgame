@@ -1,6 +1,7 @@
 #include "CraftingManager.h"
 
 #include "game.h"
+#include "Items/ItemManager.h"
 
 #include <Utilities/ut.h>
 #include <Utilities/logger.hpp>

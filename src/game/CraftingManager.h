@@ -2,15 +2,12 @@
 
 #include <Utilities/IManager.h>
 
-#include "Items/ItemManager.h"
+#include "Common.h"
 
 #include <unordered_map>
 #include <map>
 #include <cstdint>
-#include <memory>
 #include <array>
-
-typedef uint64_t recipe_id_t;
 
 struct Recipe
 {
