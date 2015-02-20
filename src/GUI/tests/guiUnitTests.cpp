@@ -8,7 +8,7 @@ using namespace SimpleGUI;
 template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<SimpleGUI::Point>(const SimpleGUI::Point& t)
 {
     std::wostringstream s;
-    s << t.x << " " << t.y << " " << "\n";
+    s << t.x << " " << t.y << "\n";
     return s.str();
 }
 
@@ -24,25 +24,37 @@ namespace UnitTests
         TEST_METHOD(BaseTest)
         {
             //this is a fake test needed only for base testing purposes!
-            Base * pTest = new Base(nullptr, "");
+            Base * pTest = new Base(nullptr, "NAME");
+
             pTest->AddChildren(pBase(new Base(nullptr)));
             auto childs = pTest->GetChildrenList();
             if (childs.cbegin() == childs.cend())
                 Assert::Fail(L"Add children doesn't work");
-            Assert::AreEqual(pTest->CanHaveFocus(), false, L"CanHaveFocus() test");
-            Assert::AreEqual(pTest->GetName().c_str(), "", L"GetName() test");
-            Assert::AreEqual((void*)pTest->GetParent(), (void*)nullptr, L"GetParent() test");
-            Assert::AreEqual(pTest->GetPosition(), Point(0, 0), L"GetPosition() default test");
-            Assert::AreEqual(pTest->GetSize(), Point(1, 1), L"GetSize() default test");
+
+            Assert::IsFalse(pTest->CanHaveFocus(), L"CanHaveFocus() test failed");
+            Assert::AreEqual(pTest->GetName().c_str(), "NAME", L"GetName() test failed");
+            Assert::AreEqual((void*)pTest->GetParent(), (void*)nullptr, L"GetParent() test failed");
+
+            pTest->SetPosition(100, 100);
+            Assert::AreEqual(pTest->GetPosition(), Point(100, 100), L"GetPosition() test failed");
+
+            pTest->SetSize(100, 100);
+            Assert::AreEqual(pTest->GetSize(), Point(100, 100), L"GetSize() test failed");
+
             pTest->Hide();
-            Assert::AreEqual(pTest->IsVisible(), false, L"Visibility test");
-            Assert::AreEqual(pTest->IsHit(Point(0, 0)), true, L"Hit testing");
+            Assert::IsFalse(pTest->IsVisible(), L"Hide test failed");
+            pTest->Show();
+            Assert::IsTrue(pTest->IsVisible(), L"Show test failed");
+
+            Assert::IsTrue(pTest->IsHit(Point(120, 120)), L"Hit item failed");
+
             if (pTest->OnKeyChar('0') || pTest->OnKeyDown('0') || pTest->OnKeyUp('0') ||
                 pTest->OnMouseDown(LButton, 0, 0) || pTest->OnMouseEnter() || pTest->OnMouseLeave() ||
                 pTest->OnMouseMove({}, {}) || pTest->OnMouseUp(LButton, 0, 0))
-                Assert::Fail(L"Something wrong with On** handlers");
+                Assert::Fail(L"Something is wrong with On** handlers");
+
             pTest->RemoveAllChildrens();
-            Assert::AreEqual(pTest->GetChildrenList().empty(), true, L"RemoveAllChildren() test");
+            Assert::IsTrue(pTest->GetChildrenList().empty(), L"RemoveAllChildren() test failed");
             delete pTest;
         }
 
@@ -66,10 +78,10 @@ namespace UnitTests
         TEST_METHOD(TextTest)
         {
             Canvas * pCanvas = new Canvas();
-            Text * ptext = new Text(pCanvas, "Some string");
-            Assert::AreEqual(ptext->GetText().c_str(), "Some string", "GetText() test");
-            ptext->SetText("Lala");
-            Assert::AreEqual(ptext->GetText().c_str(), "Lala", "SetText() test");
+            Text * pText = new Text(pCanvas, "Some string");
+            Assert::AreEqual(pText->GetText().c_str(), "Some string", "GetText() test");
+            pText->SetText("Lala");
+            Assert::AreEqual(pText->GetText().c_str(), "Lala", "SetText() test");
             delete pCanvas;
         }
 
@@ -77,7 +89,31 @@ namespace UnitTests
         {
         }
 
-        TEST_METHOD(ButtonTest_NOT_IMPLEMENTED)
+        TEST_METHOD(ButtonTest)
+        {
+            Canvas * pCanvas = new Canvas();
+            Button * pButton = new Button(pCanvas);
+            pButton->OnMouseEnter();
+            Assert::IsTrue(pButton->IsSelected(), L"Failed selection test");
+            pButton->OnMouseLeave();
+            Assert::IsFalse(pButton->IsSelected(), L"Failed selection test");
+
+            pButton->SetText("test");
+            Assert::AreEqual(pButton->GetText(), std::string("test"), L"Failed SetText test");
+
+            if (!pButton->OnMouseEnter() || !pButton->OnMouseLeave() || !pButton->OnMouseUp(LButton, 0, 0))
+                Assert::Fail(L"One of the mouse events returns false");
+
+            // implement test for SetPicture
+
+            bool clicked = false;
+            pButton->SetClickHandler([&](MouseKeys, int, int){ clicked = true; });
+            pButton->OnMouseUp(LButton, 0, 0);
+            Assert::IsTrue(clicked, L"Click handler doesn't work");
+            delete pCanvas;
+        }
+
+        TEST_METHOD(WindowTest_NOT_IMPLEMENTED)
         {
         }
     };
