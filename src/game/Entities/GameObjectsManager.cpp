@@ -33,6 +33,11 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);
+    if (!item)
+    {
+        LOG_ERROR("Unable to create item entity with ", itemId, " itemId");
+        return nullptr;
+    }
 
 	float scale = 0.4f;
 	MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
