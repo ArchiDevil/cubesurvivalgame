@@ -19,10 +19,11 @@ namespace SimpleGUI
         std::wstring GetText() const;
         void SetText(const std::wstring & text);
 
-        void OnTextChanged();
         void SetOnTextChangedCallback(std::function<void(const std::wstring & newText)> textChanged);
 
-    private:
+    protected:
+        void OnTextChanged();
+
         std::function<void(const std::wstring & newText)> textChangedHandler;
         std::wstring currentText;
     };

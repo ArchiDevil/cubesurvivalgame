@@ -85,8 +85,23 @@ namespace UnitTests
             delete pCanvas;
         }
 
-        TEST_METHOD(TextboxTest_NOT_IMPLEMENTED)
+        TEST_METHOD(TextboxTest)
         {
+            Canvas * pCanvas = new Canvas();
+            Textbox * pTextbox = new Textbox(pCanvas);
+            Assert::IsTrue(pTextbox->CanHaveFocus(), L"Textbox cannot have focus");
+            pTextbox->OnKeyChar(L't');
+            pTextbox->OnKeyChar(L'e');
+            pTextbox->OnKeyChar(L's');
+            pTextbox->OnKeyChar(L't');
+            Assert::AreEqual(pTextbox->GetText(), std::wstring(L"test"), L"Failed key char event test");
+            pTextbox->SetText(L"my_test");
+            Assert::AreEqual(pTextbox->GetText(), std::wstring(L"my_test"), L"Failed SetText test");
+            std::wstring buffText;
+            pTextbox->SetOnTextChangedCallback([&](const std::wstring & newText) { buffText = newText; });
+            pTextbox->OnKeyChar(L's');
+            Assert::AreEqual(pTextbox->GetText(), std::wstring(L"my_tests"), L"Failed test on text changed callback");
+            delete pCanvas;
         }
 
         TEST_METHOD(ButtonTest)
