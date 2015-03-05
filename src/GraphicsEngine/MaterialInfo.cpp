@@ -1,10 +1,12 @@
 #include "MaterialInfo.h"
 
 ShiftEngine::materialFlags::materialFlags() 
-	: useVertexColors(false), isCustom(false), 
-	isReflective(false), isTransparent(false), 
-	twoFace(false),	
-	lightingModel(MaterialLightingModel::Phong)
+    : useVertexColors(false)
+    , isCustom(false)
+    , isReflective(false)
+    , isTransparent(false)
+    , twoFace(false)
+    , lightingModel(MaterialLightingModel::Phong)
 {
 }
 
@@ -34,15 +36,21 @@ uint32_t ShiftEngine::materialFlags::GetHash() const
 //////////////////////////////////////////////////////////////////////////
 
 ShiftEngine::MaterialInfo::MaterialInfo() 
-	: diffuseColor(1.0f, 1.0f, 1.0f, 1.0f), specularColor(1.0f, 1.0f, 1.0f, 1.0f), 
-	emissionColor(0.0f, 0.0f, 0.0f, 0.0f), opacity(1.0f), shininess(25.0f)
+	: diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
+    , specularColor(1.0f, 1.0f, 1.0f, 1.0f)
+    , emissionColor(0.0f, 0.0f, 0.0f, 0.0f)
+    , opacity(1.0f)
+    , shininess(25.0f)
 {
 }
 
 ShiftEngine::MaterialInfo::MaterialInfo( const materialFlags & _flags ) 
-	: diffuseColor(1.0f, 1.0f, 1.0f, 1.0f), specularColor(1.0f, 1.0f, 1.0f, 1.0f),
-	emissionColor(0.0f, 0.0f, 0.0f, 0.0f), opacity(1.0f),
-	shininess(25.0f), flags(_flags)
+	: diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
+    , specularColor(1.0f, 1.0f, 1.0f, 1.0f)
+    , emissionColor(0.0f, 0.0f, 0.0f, 0.0f)
+    , opacity(1.0f)
+    , shininess(25.0f)
+    , flags(_flags)
 {
 
 }

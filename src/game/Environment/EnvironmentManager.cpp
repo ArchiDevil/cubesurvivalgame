@@ -1,7 +1,5 @@
 #include "EnvironmentManager.h"
 
-#include <Utilities/logger.hpp>
-
 #include <string>
 #include <cmath>
 
@@ -60,6 +58,5 @@ MathLib::Vector3F EnvironmentManager::GetSunPosition(const MathLib::Vector3F & p
 float EnvironmentManager::GetEnvironmentTemperature() const
 {
 	float currentTemp = minimalTemperature + (maximalTemperature - minimalTemperature) * sinf((float)time.getRawTime() / (24.0f * 60.0f) * M_PIF);
-	LOG_INFO("Current temperature is ", currentTemp);
 	return currentTemp;
 }
