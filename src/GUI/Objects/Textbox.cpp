@@ -1,16 +1,16 @@
-#include "Textbox.h"
+#include "TextBox.h"
 
-SimpleGUI::Textbox::Textbox(Base * _parent)
+SimpleGUI::TextBox::TextBox(Base * _parent)
     : Base(_parent)
     , currentText(L"")
 {
 }
 
-SimpleGUI::Textbox::~Textbox() 
+SimpleGUI::TextBox::~TextBox() 
 {
 }
 
-void SimpleGUI::Textbox::Draw(Skinner * skin)
+void SimpleGUI::TextBox::Draw(Skinner * skin)
 {
     if (!skin)
         return;
@@ -18,12 +18,12 @@ void SimpleGUI::Textbox::Draw(Skinner * skin)
     skin->DrawTextbox(this, SimpleGUI::FocusedControl == this);
 }
 
-bool SimpleGUI::Textbox::CanHaveFocus() const
+bool SimpleGUI::TextBox::CanHaveFocus() const
 {
     return true;
 }
 
-bool SimpleGUI::Textbox::OnKeyChar(wchar_t Key)
+bool SimpleGUI::TextBox::OnKeyChar(wchar_t Key)
 {
     if (Key == '\b')
     {
@@ -50,23 +50,23 @@ bool SimpleGUI::Textbox::OnKeyChar(wchar_t Key)
     }
 }
 
-std::wstring SimpleGUI::Textbox::GetText() const
+std::wstring SimpleGUI::TextBox::GetText() const
 {
     return currentText;
 }
 
-void SimpleGUI::Textbox::SetOnTextChangedCallback(std::function<void(const std::wstring & newText)> textChanged)
+void SimpleGUI::TextBox::SetOnTextChangedCallback(std::function<void(const std::wstring & newText)> textChanged)
 {
     textChangedHandler = textChanged;
 }
 
-void SimpleGUI::Textbox::OnTextChanged()
+void SimpleGUI::TextBox::OnTextChanged()
 {
     if (textChangedHandler)
         textChangedHandler(this->currentText);
 }
 
-void SimpleGUI::Textbox::SetText(const std::wstring & text)
+void SimpleGUI::TextBox::SetText(const std::wstring & text)
 {
     currentText = text;
     OnTextChanged();

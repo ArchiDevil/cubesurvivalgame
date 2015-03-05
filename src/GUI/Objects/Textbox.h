@@ -6,11 +6,11 @@
 
 namespace SimpleGUI
 {
-    class Textbox : public Base
+    class TextBox : public Base
     {
     public:
-        Textbox(Base * _parent);
-        ~Textbox();
+        TextBox(Base * _parent);
+        ~TextBox();
 
         virtual void Draw(Skinner * skin) override;
         virtual bool CanHaveFocus() const override;

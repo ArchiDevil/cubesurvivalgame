@@ -6,6 +6,7 @@
 #include "Objects/List.h"
 #include "Objects/Table.h"
 #include "Objects/Text.h"
+#include "Objects/ProgressBar.h"
 #include "Objects/ValueBox.h"
 #include "Objects/Window.h"
 
@@ -71,7 +72,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
     }
 }
 
-void SimpleGUI::Skinner::DrawTextbox(Textbox * textbox, bool Focused)
+void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
 {
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
@@ -241,4 +242,9 @@ void SimpleGUI::Skinner::DrawWindow(Window * window)
     boxCache->SetSizeInPixels(size.x, size.y);
     boxCache->SetMaskColor(MathLib::Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
     boxCache->Draw();
+}
+
+void SimpleGUI::Skinner::DrawProgressBar(ProgressBar* pBar)
+{
+    throw std::exception("The method or operation is not implemented.");
 }

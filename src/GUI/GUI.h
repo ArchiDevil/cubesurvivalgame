@@ -17,6 +17,7 @@
 #include "Objects/Image.h"
 #include "Objects/Text.h"
 #include "Objects/Textbox.h"
-#include "Objects/Window.h"
 #include "Objects/List.h"
+#include "Objects/ProgressBar.h"
 #include "Objects/ValueBox.h"
+#include "Objects/Window.h"
