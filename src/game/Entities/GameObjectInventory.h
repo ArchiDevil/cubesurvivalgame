@@ -29,10 +29,13 @@ public:
 
 	bool IsExist(std::string & Name) const;
 	bool IsExist(ItemTypes Type) const;
-	bool IsExist(uint64_t itemId) const;
+    bool IsExist(item_id_t itemId) const;
 
 	SlotUnit GetItemInSlot(unsigned slot) const;
 	const std::vector<SlotUnit> & GetItems() const;
+
+    SlotUnit & FindSlotWithItem(item_id_t itemId);
+    const SlotUnit & FindSlotWithItem(item_id_t itemId) const;
 
 protected:
 	int GetFirstFreeSlotIndex() const;

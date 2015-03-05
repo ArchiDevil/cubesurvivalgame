@@ -91,6 +91,28 @@ const std::vector<SlotUnit> & GameObjectInventory::GetItems() const
 	return items;
 }
 
+SlotUnit & GameObjectInventory::FindSlotWithItem(item_id_t itemId)
+{
+    static SlotUnit nullItem = SlotUnit();
+
+    for (auto &item : items)
+        if (item.itemId == itemId)
+            return item;
+
+    return nullItem;
+}
+
+const SlotUnit & GameObjectInventory::FindSlotWithItem(item_id_t itemId) const
+{
+    static SlotUnit nullItem = SlotUnit();
+
+    for (auto &item : items)
+        if (item.itemId == itemId)
+            return item;
+
+    return nullItem;
+}
+
 //////////////////////////////////////////////////////////
 
 PlayerInventory::PlayerInventory(ItemManager * pItemMgr, size_t inventorySize)

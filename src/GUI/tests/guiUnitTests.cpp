@@ -12,6 +12,13 @@ template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::To
     return s.str();
 }
 
+template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::Vector3F>(const MathLib::Vector3F& t)
+{
+    std::wostringstream s;
+    s << t.x << " " << t.y << " " << t.z << "\n";
+    return s.str();
+}
+
 namespace UnitTests
 {
     TEST_CLASS(SimpleGUIUnitTests)
@@ -69,6 +76,9 @@ namespace UnitTests
 
         TEST_METHOD(ListTest_NOT_IMPLEMENTED)
         {
+            Canvas * pCanvas = new Canvas();
+            List * pList = new List(pCanvas);
+            
         }
 
         TEST_METHOD(TableTest_NOT_IMPLEMENTED)
@@ -85,10 +95,10 @@ namespace UnitTests
             delete pCanvas;
         }
 
-        TEST_METHOD(TextboxTest)
+        TEST_METHOD(TextBoxTest)
         {
             Canvas * pCanvas = new Canvas();
-            Textbox * pTextbox = new Textbox(pCanvas);
+            TextBox * pTextbox = new TextBox(pCanvas);
             Assert::IsTrue(pTextbox->CanHaveFocus(), L"Textbox cannot have focus");
             pTextbox->OnKeyChar(L't');
             pTextbox->OnKeyChar(L'e');
@@ -126,6 +136,75 @@ namespace UnitTests
             pButton->OnMouseUp(LButton, 0, 0);
             Assert::IsTrue(clicked, L"Click handler doesn't work");
             delete pCanvas;
+        }
+
+        TEST_METHOD(ProgressBarTest)
+        {
+            Canvas * pCanvas = new Canvas();
+            ProgressBar * pBar = new ProgressBar(pCanvas);
+
+            pBar->SetMinValue(0);
+            Assert::AreEqual(0, pBar->GetMinValue(), L"SetMinValue() or GetMinValue() don't work");
+
+            pBar->SetMaxValue(100);
+            Assert::AreEqual(100, pBar->GetMaxValue(), L"SetMaxValue() or GetMaxValue() don't work");
+
+            pBar->SetMinValue(100500);
+            Assert::AreEqual(0, pBar->GetMinValue(), L"SetMinValue must not change min value if it is more than max value");
+
+            pBar->SetMaxValue(-100500);
+            Assert::AreEqual(100, pBar->GetMaxValue(), L"SetMaxValue must not change max value if it is less than min value");
+
+            pBar->SetValue(60);
+            Assert::AreEqual(60, pBar->GetValue(), L"GetValue() doesn't work");
+
+            pBar->SetValue(-100);
+            Assert::AreEqual(pBar->GetMinValue(), pBar->GetValue(), L"SetValue() set value under limits");
+
+            pBar->SetValue(500);
+            Assert::AreEqual(pBar->GetMaxValue(), pBar->GetValue(), L"SetValue() set value above limits");
+
+            pBar->SetMinValue(0);
+            pBar->SetMaxValue(100);
+            pBar->SetValue(0);
+            pBar->SetMinValue(50);
+            Assert::AreEqual(pBar->GetMinValue(), pBar->GetValue(), L"SetMinValue() must update current value");
+
+            pBar->SetMinValue(0);
+            pBar->SetValue(100);
+            pBar->SetMaxValue(50);
+            Assert::AreEqual(pBar->GetMaxValue(), pBar->GetValue(), L"SetMaxValue() must update current value");
+
+            pBar->SetMaxValue(200);
+            pBar->SetPercentValue(50.0f);
+            Assert::AreEqual(100, pBar->GetValue(), L"GetValue() doesn't work with percentage");
+            Assert::AreEqual(50.0f, pBar->GetPercentValue(), L"GetPercentValue() doesn't work");
+
+            pBar->SetPercentValue(150.0f);
+            Assert::AreEqual(pBar->GetMaxValue(), pBar->GetValue(), L"GetValue() doesn't work with percentage");
+            Assert::AreEqual(100.0f, pBar->GetPercentValue(), L"GetPercentValue() doesn't work");
+
+            pBar->SetMinValue(0);
+            pBar->SetMaxValue(100);
+            pBar->SetValue(0);
+            pBar->Step();
+            Assert::AreEqual(1, pBar->GetValue(), L"Step() doesn't work with default value");
+            pBar->Step();
+            Assert::AreEqual(2, pBar->GetValue(), L"Step() doesn't work with default value twice");
+
+            pBar->SetStepValue(10);
+            Assert::AreEqual(10, pBar->GetStepValue(), L"GetStepValue() doesn't work");
+            pBar->Step();
+            Assert::AreEqual(12, pBar->GetValue(), L"Step() doesn't work with custom value");
+
+            pBar->SetValue(0);
+            for (int i = 0; i < 11; ++i)
+                pBar->Step();
+            Assert::AreEqual(100, pBar->GetValue(), L"Step() set value over limits");
+
+            Assert::AreEqual(MathLib::Vector3F(1.0f, 1.0f, 1.0f), pBar->GetColor(), L"GetColor() doesn't work");
+            pBar->SetColor({ 1.0f, 0.0f, 0.0f });
+            Assert::AreEqual(MathLib::Vector3F(1.0f, 0.0f, 0.0f), pBar->GetColor(), L"SetColor() or GetColor() don't work");
         }
 
         TEST_METHOD(WindowTest_NOT_IMPLEMENTED)
