@@ -23,6 +23,7 @@ namespace SimpleGUI
 
         void AddChildren(pBase Child);
         void RemoveChildren(pBase Child);
+        void RemoveChildren(Base * Child);
         void RemoveAllChildrens();
 
         Base * GetParent() const;

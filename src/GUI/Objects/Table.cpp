@@ -14,6 +14,8 @@ bool SimpleGUI::TableRow::OnMouseUp(MouseKeys mb, int /*innerX*/, int /*innerY*/
 
     Selected = true;
     Table * par = dynamic_cast<Table*>(Parent);
+    if (!par) 
+        throw std::exception();
     par->onRowSelected(this);
     return true;
 }
@@ -47,7 +49,7 @@ void SimpleGUI::TableRow::Select()
 
 SimpleGUI::Table::Table(Base * parent)
     : Base(parent)
-    , rows(0) 
+    , selectedRow(nullptr)
 {
 }
 
@@ -65,61 +67,64 @@ void SimpleGUI::Table::AddRow(AnsiString str)
     TableRow * pRow = new TableRow(this, str);
 
     pRow->SetSize(this->Size.x - 6, 16);
-    pRow->SetPosition(3, rows * 17 + 2);
+    pRow->SetPosition(3, rows.size() * 17 + 2);
+    rows.push_back(pRow);
+}
 
-    rows++;
+void SimpleGUI::Table::AddRow(AnsiString str, size_t pos)
+{
+    LOG_FATAL_ERROR("Fatal error");
 }
 
 void SimpleGUI::Table::RemoveRow(AnsiString str)
 {
-    LOG_FATAL_ERROR("Fatal error");
+    auto iter = std::find_if(rows.begin(), rows.end(), [&](TableRow * row) 
+    { 
+        if (row->GetString() == str) 
+            return true; 
+        return false; 
+    });
+
+    RemoveChildren(*iter);
+
+    if (iter != rows.end())
+        rows.erase(iter);
+}
+
+void SimpleGUI::Table::RemoveRow(size_t row)
+{
+    RemoveChildren(rows[row]);
 }
 
 void SimpleGUI::Table::Clear()
 {
     Base::RemoveAllChildrens();
+    rows.clear();
 }
 
-SimpleGUI::TableRow * SimpleGUI::Table::GetRow(int /*num*/)
+SimpleGUI::TableRow * SimpleGUI::Table::GetRow(size_t row)
 {
-    LOG_FATAL_ERROR("Fatal error");
+    if (row < rows.size())
+        return rows[row];
+
     return nullptr;
 }
 
 SimpleGUI::TableRow * SimpleGUI::Table::GetSelectedRow()
 {
-    for (auto iter = Children.begin(); iter != Children.end(); iter++)
-    {
-        Base * elem = (*iter).get();
-        TableRow * ptr = dynamic_cast<TableRow*>(elem);
-
-        if (!ptr)
-            continue;
-
-        if (ptr->IsSelected())
-            return ptr;
-    }
-
-    return nullptr;
+    return selectedRow;
 }
 
 void SimpleGUI::Table::UnselectAll()
 {
-    for (auto iter = Children.begin(); iter != Children.end(); iter++)
-    {
-        Base * elem = (*iter).get();
-        TableRow * ptr = dynamic_cast<TableRow*>(elem);
-
-        if (!ptr)
-            continue;
-
-        if (ptr->IsSelected())
-            ptr->Deselect();
-    }
+    for (TableRow * row : rows)
+        if (row->IsSelected())
+            row->Deselect();
 }
 
 void SimpleGUI::Table::onRowSelected(TableRow * row)
 {
+    selectedRow = row;
     UnselectAll();
     row->Select();
 }

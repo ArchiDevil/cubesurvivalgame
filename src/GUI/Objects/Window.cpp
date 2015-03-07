@@ -9,6 +9,8 @@ SimpleGUI::Window::Window(Base * parent)
 
 SimpleGUI::Window::Window(Base * parent, const Point & position, const Point & size)
     : Base(parent)
+    , dragged(false)
+    , draggable(true)
 {
     SetPosition(position);
     SetSize(size.x, size.y);
@@ -34,7 +36,7 @@ void SimpleGUI::Window::Draw(SimpleGUI::Skinner * skin)
 
 bool SimpleGUI::Window::OnMouseDown(MouseKeys mb, int x, int y)
 {
-    if (mb != LButton)
+    if (mb != LButton || !draggable)
         return false;
 
     dragged = true;
@@ -44,7 +46,7 @@ bool SimpleGUI::Window::OnMouseDown(MouseKeys mb, int x, int y)
 
 bool SimpleGUI::Window::OnMouseUp(MouseKeys mb, int /*x*/, int /*y*/)
 {
-    if (mb != LButton)
+    if (mb != LButton || !draggable)
         return false;
 
     dragged = false;

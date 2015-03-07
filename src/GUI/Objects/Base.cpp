@@ -100,6 +100,13 @@ void SimpleGUI::Base::RemoveChildren(pBase Child)
     Children.erase(std::find(Children.begin(), Children.end(), Child));
 }
 
+void SimpleGUI::Base::RemoveChildren(Base * Child)
+{
+    auto iter = std::find_if(Children.begin(), Children.end(), [=](pBase child) { return child.get() == Child; });
+    if (iter != Children.end())
+        Children.erase(iter);
+}
+
 void SimpleGUI::Base::RemoveAllChildrens()
 {
     for (auto &child : Children)

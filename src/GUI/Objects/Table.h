@@ -21,8 +21,6 @@ namespace SimpleGUI
         bool Selected;
     };
 
-    typedef std::shared_ptr<TableRow> pTableRow;
-
     class Table : public Base
     {
     public:
@@ -32,15 +30,18 @@ namespace SimpleGUI
         virtual void Draw(Skinner * skin) override;
 
         void AddRow(AnsiString str);
+        void AddRow(AnsiString str, size_t pos);
         void RemoveRow(AnsiString str);
+        void RemoveRow(size_t row);
         void Clear();
-        TableRow * GetRow(int num);
+        TableRow * GetRow(size_t row);
         TableRow * GetSelectedRow();
         void UnselectAll();
         void onRowSelected(TableRow * row);
 
     private:
-        int rows;
+        TableRow * selectedRow;
+        std::vector<TableRow*> rows;
 
     };
 }
