@@ -157,7 +157,7 @@ void WorkState::CreateGUI()
     f->SetPosition(50, screenHeight - 45);
     f->Hide();
 
-    SimpleGUI::Textbox * fname = new SimpleGUI::Textbox(pCanvas);
+    SimpleGUI::TextBox * fname = new SimpleGUI::TextBox(pCanvas);
     fname->SetSize(100, 20);
     fname->SetPosition(50, screenHeight - 25);
     fname->Hide();

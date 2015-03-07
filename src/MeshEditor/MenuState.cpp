@@ -85,7 +85,7 @@ void MenuState::CreateGUI()
 
     //////////////////////////////////////////////////////////////////////////
 
-    SimpleGUI::Textbox * tbX = new SimpleGUI::Textbox(back);
+    SimpleGUI::TextBox * tbX = new SimpleGUI::TextBox(back);
     tbX->SetSize(100, 20);
     tbX->SetPosition(40, 50);
     tbX->SetText(L"8");
@@ -95,7 +95,7 @@ void MenuState::CreateGUI()
 
     //////////////////////////////////////////////////////////////////////////
 
-    SimpleGUI::Textbox * tbY = new SimpleGUI::Textbox(back);
+    SimpleGUI::TextBox * tbY = new SimpleGUI::TextBox(back);
     tbY->SetSize(100, 20);
     tbY->SetPosition(40, 110);
     tbY->SetText(L"8");
@@ -105,7 +105,7 @@ void MenuState::CreateGUI()
 
     //////////////////////////////////////////////////////////////////////////
 
-    SimpleGUI::Textbox * tbZ = new SimpleGUI::Textbox(back);
+    SimpleGUI::TextBox * tbZ = new SimpleGUI::TextBox(back);
     tbZ->SetSize(100, 20);
     tbZ->SetPosition(40, 170);
     tbZ->SetText(L"8");
