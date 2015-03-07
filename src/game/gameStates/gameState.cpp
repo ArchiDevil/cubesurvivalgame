@@ -19,17 +19,27 @@ ShiftEngine::LightNode * pSun = nullptr;
 
 gameState::gameState(IniWorker * iw)
 	: pIniLoader(iw)
-	, console(800, 600)
+    , pSkinner(nullptr)
+    , pCanvas(nullptr)
+	, console()
 {
+    pCanvas = new SimpleGUI::Canvas;
+    pSkinner = new SimpleGUI::Skinner;
+    pSkinner->Initialize();
 }
 
 gameState::~gameState()
 {
+    delete pCanvas;
+    delete pSkinner;
 }
 
 bool gameState::initState()
 {
 	LostIsland::CreateGame();
+
+    SimpleGUI::SetCanvas(pCanvas);
+    SimpleGUI::SetSkinner(pSkinner);
 
 	ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 	cGame * pGame = LostIsland::GetGamePtr();
@@ -50,11 +60,11 @@ bool gameState::initState()
 	pGame->ItemMgr->Initialize("resources/gamedata/Items/");
 	LOG_INFO("Items have been loaded");
 
-	pGame->gameHud->Initialize();
-	LOG_INFO("HUD has been created");
-
     pGame->CratingMgr->Initialize("resources/gamedata/crafting/");
     LOG_INFO("Crafting manager has been initialized");
+
+	pGame->gameHud->Initialize(pCanvas);
+	LOG_INFO("HUD has been created");
 
 	pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
 
@@ -69,7 +79,7 @@ bool gameState::initState()
 
 	pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
 	pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
-	pGame->EntityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("smooth_stone"), 2);
+	pGame->EntityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("smooth_stone"), 10);
 
 	LOG_INFO("End of game state initializing");
 
@@ -142,6 +152,8 @@ bool gameState::render(double dt)
 
 	console.Draw();
 
+    SimpleGUI::DrawUI();
+
 	pCtxMgr->EndScene();
 
 	return true; //return false if something wrong
@@ -149,6 +161,8 @@ bool gameState::render(double dt)
 
 void gameState::onKill()
 {
+    SimpleGUI::SetCanvas(nullptr);
+    SimpleGUI::SetSkinner(nullptr);
 }
 
 void gameState::onSuspend()
@@ -157,6 +171,8 @@ void gameState::onSuspend()
 
 void gameState::onResume()
 {
+    SimpleGUI::SetCanvas(pCanvas);
+    SimpleGUI::SetSkinner(pSkinner);
 }
 
 void gameState::ProcessInput(double dt)
@@ -261,4 +277,10 @@ void gameState::ProcessInput(double dt)
 	if (InputEngine->IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
 	if (InputEngine->IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
 	if (InputEngine->IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
+
+    if (InputEngine->IsKeyUp(DIK_C))
+        pGame->gameHud->OpenCraftingWindow();
+
+    if (InputEngine->IsKeyUp(DIK_I))
+        pGame->gameHud->OpenInventoryWindow();
 }

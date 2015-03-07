@@ -13,23 +13,16 @@ Log PerformanceLog("Performance.log");
 
 Application::Application( int Width, int Height, LPCWSTR AppName )
 	: cApplication(Width, Height, AppName)
-	, MainCanvas(nullptr)
 	, GUIListener(nullptr)
 {
-	//	MainCanvas			= new Canvas;
 }
 
 Application::~Application()
 {
-	//	delete MainCanvas;
 }
 
 bool Application::Initialize()
 {
-	////////////////////////////
-	/// TECH STRUCTURES INIT ///
-	////////////////////////////
-
 	//инициализируем наш загрузчик .ini файлов
 	SettingsLoader.Initialize("settings.ini");
 
@@ -65,7 +58,8 @@ bool Application::Initialize()
 
 	cInputEngine::GetInstance().subscribe(&System);
 
-	//	MainCanvas->SetSize(settings.screenWidth, settings.screenHeight);
+    GUIListener.reset(new SimpleGUI::MainListener(nullptr, &(cInputEngine::GetInstance()), charQueue));
+    SimpleGUI::ActiveListener = GUIListener.get();
 
 	////////////////////////////
 	/// GAME STRUCTURES INIT ///
@@ -110,6 +104,8 @@ bool Application::Frame()
 		maxFPS = curFPS;
 	if(curFPS < minFPS)
 		minFPS = curFPS;
+
+    GUIListener->Update();
 
 	if(!statesStack.empty())
 	{

@@ -1,6 +1,8 @@
 #include "CraftingManager.h"
 
 #include "game.h"
+#include "Entities/PlayerGameObject.h"
+#include "Entities/GameObjectInventory.h"
 #include "Items/ItemManager.h"
 
 #include <Utilities/ut.h>
@@ -17,7 +19,7 @@ CraftingManager::~CraftingManager()
 {
 }
 
-void CraftingManager::Initialize( const std::string & path )
+void CraftingManager::Initialize(const std::string & path)
 {
     LoadRecipes(path);
 }
@@ -34,7 +36,7 @@ const Recipe& CraftingManager::GetRecipeById(recipe_id_t id) const
 
 std::vector<std::pair<std::string, Recipe>> CraftingManager::GetAllRecipes() const
 {
-    std::vector<std::pair<std::string, Recipe>> out(HashRecipe.size());
+    std::vector<std::pair<std::string, Recipe>> out;
     for (const auto &key : NameHash)
         out.push_back(std::make_pair(key.first, HashRecipe.at(key.second)));
 
@@ -83,6 +85,7 @@ void CraftingManager::LoadRecipes(const std::string & path)
             LOG_ERROR("Unknown product: ", producedItemName, " in file: ", file);
             continue;
         }
+        r.producedItem = productId;
 
         unsigned int count = root.get("count", null).asUInt();
         r.producedCount = count ? count : 1;
@@ -159,4 +162,29 @@ void CraftingManager::LoadRecipes(const std::string & path)
         NameHash[name] = hash;
         LOG_INFO("Successfully loaded ", file);
     }
+}
+
+void CraftingManager::Craft(const Recipe& recipe)
+{
+    auto * pInventory = LostIsland::GetGamePtr()->Player->GetInventoryPtr();
+    for (auto item : recipe.itemsToCraft)
+    {
+        if (!pInventory->IsExist(item.first))
+            return;
+
+        SlotUnit & slot = pInventory->FindSlotWithItem(item.first);
+        if (slot.count < item.second)
+            return; // not enough items to craft it
+    }
+
+    // after all checks we need to remove items from inventory and add new crafted item to the player
+    for (auto item : recipe.itemsToCraft)
+    {
+        SlotUnit & slot = pInventory->FindSlotWithItem(item.first);
+        slot.count -= item.second;
+        if (slot.count == 0)
+            slot.itemId = 0;
+    }
+
+    pInventory->AddItem(recipe.producedItem, recipe.producedCount);
 }
