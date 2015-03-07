@@ -41,7 +41,6 @@ namespace SimpleGUI
     protected:
         void SetControlParameters(ShiftEngine::Sprite * spr, const Point & pos, const Point & size);
         void LoadResources();
-        std::unique_ptr<ShiftEngine::Sprite> ButtonCache;
         std::unique_ptr<ShiftEngine::Sprite> TextboxCache;
         std::unique_ptr<ShiftEngine::Sprite> ListCache;
 

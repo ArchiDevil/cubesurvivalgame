@@ -11,8 +11,7 @@
 #include "Objects/Window.h"
 
 SimpleGUI::Skinner::Skinner()
-    : ButtonCache(nullptr)
-    , TextboxCache(nullptr)
+    : TextboxCache(nullptr)
     , ListCache(nullptr)
     , boxCache(nullptr)
 {
@@ -29,7 +28,6 @@ void SimpleGUI::Skinner::Initialize()
 
 void SimpleGUI::Skinner::LoadResources()
 {
-    ButtonCache.reset(new ShiftEngine::Sprite(L"gui/background.png"));
     TextboxCache.reset(new ShiftEngine::Sprite(L"gui/textbox.png"));
     ListCache.reset(new ShiftEngine::Sprite(L"gui/list.png"));
     boxCache.reset(new ShiftEngine::Sprite(L"gui/box.png"));
@@ -39,16 +37,23 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
 {
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
+    Vector4F maskColor = {};
     if (but->IsSelected())
-        ButtonCache->SetMaskColor(Vector4F(1.0f, 0.8f, 0.8f, 1.0f));
+        maskColor = { 1.0f, 0.8f, 0.8f, 1.0f };
     else
-        ButtonCache->SetMaskColor(Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
+        maskColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
     auto pos = but->GetPosition();
     auto size = but->GetSize();
-    SetControlParameters(ButtonCache.get(), pos, size);
+    SetControlParameters(boxCache.get(), pos, size);
+    boxCache->SetMaskColor(Vector4F(1.0f * maskColor.x, 1.0f * maskColor.y, 1.0f * maskColor.z, 1.0f * maskColor.w));
+    boxCache->Draw();
 
-    ButtonCache->Draw();
+    pos = pos + Point(2, 2);
+    size = size - Point(4, 4);
+    SetControlParameters(boxCache.get(), pos, size);
+    boxCache->SetMaskColor(Vector4F(0.7f * maskColor.x, 0.7f * maskColor.y, 0.7f * maskColor.z, 1.0f * maskColor.w));
+    boxCache->Draw();
 
     const std::string text = but->GetText();
     if (!text.empty())
