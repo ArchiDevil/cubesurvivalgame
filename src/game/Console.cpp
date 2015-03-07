@@ -1,4 +1,5 @@
 #include "Console.h"
+
 #include "Entities/GameObjectInventory.h"
 #include "Entities/GameObjectsManager.h"
 #include "GameEventHandler.h"
@@ -7,10 +8,8 @@
 
 #include <sstream>
 
-Console::Console(size_t screenWidth, size_t screenHeight)
-	: screenWidth(screenWidth)
-	, screenHeight(screenHeight)
-	, visibility(false)
+Console::Console()
+	: visibility(false)
 {
 }
 
@@ -70,7 +69,7 @@ void Console::Draw()
 	auto * pFontManager = ShiftEngine::GetContextManager()->GetFontManager();
 	auto currentFont = pFontManager->GetCurrentFontName();
 	pFontManager->SetFont(L"2");
-	pFontManager->DrawTextTL(">> " + inputBuffer, 10, screenHeight - 20);
+	pFontManager->DrawTextTL(">> " + inputBuffer, 10, ShiftEngine::GetContextManager()->GetEngineSettings().screenHeight - 20);
 	pFontManager->SetFont(currentFont);
 }
 
@@ -137,12 +136,3 @@ bool Console::IsVisible() const
 	return visibility;
 }
 
-void Console::SetScreenWidth(size_t width)
-{
-	screenWidth = width;
-}
-
-void Console::SetScreenHeight(size_t height)
-{
-	screenHeight = height;
-}
