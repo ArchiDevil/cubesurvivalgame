@@ -3,6 +3,6 @@
     "type": "collectable",
     "item": "stone",
     "count": 1,
-    "mesh": "flower.lim",
+    "mesh": "stone.lim",
     "material": "collectablestone.mtl"
 }

@@ -1,8 +1,7 @@
 {
     "id": "campfire",
-    "type": "crafter",
-    "produced_item": "cooked_fish",
-    "crafting_time": 1000,
+    "type": "heater",
+    "heat_count": 10,
     "mesh": "cube",
     "material": "campfire.mtl"
 }
