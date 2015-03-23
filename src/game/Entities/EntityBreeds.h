@@ -4,6 +4,8 @@
 #include "../Items/Item.h"
 #include "../Items/ItemManager.h"
 
+class InventoryBreed;
+
 class EntityBreed
 {
 public:
@@ -22,6 +24,55 @@ protected:
 };
 
 typedef std::shared_ptr<EntityBreed> BreedPtr;
+
+class LiveBreed : public EntityBreed
+{
+public:
+	LiveBreed(const InventoryBreed & inventory, const std::string & meshName, const std::string & materialFile)
+		: EntityBreed(meshName, materialFile)
+		, inventoryBreedPtr(inventory)
+	{
+	}
+
+	GameObjectPtr Clone() const override;
+
+private:
+	const InventoryBreed & inventoryBreedPtr;
+};
+
+class CollectableBreed : public EntityBreed
+{
+public:
+	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId, size_t count)
+		: EntityBreed(meshName, materialFile)
+		, itemId(itemId)
+		, count(count)
+	{
+    }
+
+	GameObjectPtr Clone() const override;
+
+protected:
+	item_id_t itemId;
+	size_t count;
+};
+
+class HeaterBreed : public EntityBreed
+{
+public:
+	HeaterBreed(const std::string & meshName, const std::string & materialFile, int heatCount)
+		: EntityBreed(meshName, materialFile)
+		, heatCount(heatCount)
+	{
+	}
+
+	virtual GameObjectPtr Clone() const override;
+
+	int heatCount;
+
+};
+
+// inventories
 
 class InventoryBreed
 {
@@ -56,35 +107,4 @@ public:
 
 private:
 	std::vector<ExtendedSlotUnit> items;
-};
-
-class LiveBreed : public EntityBreed
-{
-public:
-	LiveBreed(const InventoryBreed & inventory, const std::string & meshName, const std::string & materialFile)
-		: EntityBreed(meshName, materialFile)
-		, inventoryBreedPtr(inventory)
-	{
-	}
-
-	GameObjectPtr Clone() const override;
-
-private:
-	const InventoryBreed & inventoryBreedPtr;
-};
-
-class CollectableBreed : public EntityBreed
-{
-public:
-	CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId, size_t count)
-		: EntityBreed(meshName, materialFile)
-		, itemId(itemId)
-		, count(count)
-	{}
-
-	GameObjectPtr Clone() const override;
-
-protected:
-	item_id_t itemId;
-	size_t count;
 };

@@ -33,11 +33,11 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
 {
 	auto pGame = LostIsland::GetGamePtr();
 	auto * item = pGame->ItemMgr->GetItemById(itemId);
-    if (!item)
-    {
-        LOG_ERROR("Unable to create item entity with ", itemId, " itemId");
-        return nullptr;
-    }
+	if (!item)
+	{
+		LOG_ERROR("Unable to create item entity with ", itemId, " itemId");
+		return nullptr;
+	}
 
 	float scale = 0.4f;
 	MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
@@ -51,7 +51,7 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
 	return out;
 }
 
-void GameObjectsManager::Update( double dt )
+void GameObjectsManager::Update(double dt)
 {
 	auto iter = GameObjects.begin();
 	while (iter != GameObjects.end())
@@ -109,7 +109,7 @@ void GameObjectsManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
 		if (entity->CanBeHighlighted(unprojectedRay))
 		{
 			entity->Highlight();
-			if (selectedEntity) 
+			if (selectedEntity)
 				selectedEntity->UnHightlight();
 			selectedEntity = entity.get();
 			selected = true;
@@ -211,6 +211,12 @@ void GameObjectsManager::LoadEntities()
 			unsigned count = buff.asUInt();
 			Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count);
 		}
+		else if (type == "heater")
+		{
+            buff = root.get("heat_count", buff);
+            int heatCount = buff.asInt();
+            Breeds[id] = std::make_shared<HeaterBreed>(meshName, materialName, heatCount);
+		}
 		else
 		{
 			LOG_ERROR("Unable to parse ", filename, ": unknown entity type");
@@ -303,8 +309,8 @@ void GameObjectsManager::LoadInventories()
 
 void GameObjectsManager::DispatchEvent(std::unique_ptr<IGameEvent> ev)
 {
-    for (auto & el : GameObjects)
-    {
-        el->DispatchEvent(ev.get());
-    }
+	for (auto & el : GameObjects)
+	{
+		el->DispatchEvent(ev.get());
+	}
 }

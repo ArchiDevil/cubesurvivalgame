@@ -6,6 +6,7 @@
 #include "LiveGameObject.h"
 #include "ItemGameObject.h"
 #include "CollectableGameObject.h"
+#include "HeaterGameObject.h"
 // #include "AnimalGameObject.h"
 
 // Please, only clone and service methods here
@@ -36,4 +37,9 @@ GameObjectPtr LiveBreed::Clone() const
 GameObjectPtr CollectableBreed::Clone() const
 {
 	return std::make_shared<CollectableGameObject>(CreateMeshNode(meshName, materialFile), itemId, count);
+}
+
+GameObjectPtr HeaterBreed::Clone() const
+{
+	return std::make_shared<HeaterGameObject>(CreateMeshNode(meshName, materialFile), heatCount);
 }
