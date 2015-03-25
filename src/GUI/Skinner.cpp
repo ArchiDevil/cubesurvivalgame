@@ -12,7 +12,6 @@
 
 SimpleGUI::Skinner::Skinner()
     : TextboxCache(nullptr)
-    , ListCache(nullptr)
     , boxCache(nullptr)
 {
 }
@@ -29,12 +28,14 @@ void SimpleGUI::Skinner::Initialize()
 void SimpleGUI::Skinner::LoadResources()
 {
     TextboxCache.reset(new ShiftEngine::Sprite(L"gui/textbox.png"));
-    ListCache.reset(new ShiftEngine::Sprite(L"gui/list.png"));
     boxCache.reset(new ShiftEngine::Sprite(L"gui/box.png"));
 }
 
 void SimpleGUI::Skinner::DrawButton(Button * but)
 {
+    if (!but)
+        return;
+
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
     Vector4F maskColor = {};
@@ -79,6 +80,9 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
 
 void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
 {
+    if (!textbox)
+        return;
+
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
     if (Focused)
@@ -121,33 +125,50 @@ void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
     pFntMgr->SetFont(prevFont);
 }
 
-void SimpleGUI::Skinner::DrawImage(Image * image, const ShiftEngine::Sprite & spr)
+void SimpleGUI::Skinner::DrawImage(Image * image)
 {
-    ShiftEngine::Sprite imageCache = spr;
+    if (!image)
+        return;
 
+    ShiftEngine::Sprite imageCache = image->GetImage();
     auto pos = image->GetPosition();
     auto size = image->GetSize();
     SetControlParameters(&imageCache, pos, size);
-
     imageCache.Draw();
 }
 
 void SimpleGUI::Skinner::DrawList(List * list)
 {
+    if (!list)
+        return;
+
     auto pos = list->GetPosition();
     auto size = list->GetSize();
-    SetControlParameters(ListCache.get(), pos, size);
+    SetControlParameters(boxCache.get(), pos, size);
+    boxCache->SetMaskColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    boxCache->Draw();
 
-    ListCache->Draw();
+    pos = pos + Point(2, 2);
+    size = size - Point(4, 4);
+    SetControlParameters(boxCache.get(), pos, size);
+    boxCache->SetMaskColor({ 0.7f, 0.7f, 0.7f, 1.0f });
+    boxCache->Draw();
 }
 
 void SimpleGUI::Skinner::DrawListRow(TableRow * row)
 {
+    if (!row)
+        return;
+
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
     std::string str = row->GetString();
     if (row->IsSelected())
-        str = "-> " + str;
+    {
+        boxCache->SetMaskColor({ 1.0f, 0.0f, 0.0f, 0.3f });
+        SetControlParameters(boxCache.get(), row->GetPosition(), row->GetSize());
+        boxCache->Draw();
+    }
 
     ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
     auto prevFont = pFntMgr->GetCurrentFontName();
@@ -163,6 +184,9 @@ void SimpleGUI::Skinner::DrawListRow(TableRow * row)
 
 void SimpleGUI::Skinner::SetControlParameters(ShiftEngine::Sprite * spr, const Point & pos, const Point & size)
 {
+    if (!spr)
+        return;
+
     spr->SetPosition(Vector2F((float)pos.x + size.x / 2, (float)pos.y + size.y / 2));
     FloatSize scale = CalculateScaling(size.x, size.y, (int)spr->GetTextureDimensions().x, (int)spr->GetTextureDimensions().y);
     spr->SetScale(Vector2F(scale.x, scale.y));
@@ -170,6 +194,9 @@ void SimpleGUI::Skinner::SetControlParameters(ShiftEngine::Sprite * spr, const P
 
 void SimpleGUI::Skinner::DrawLabel(Text * label)
 {
+    if (!label)
+        return;
+
     ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
 
     if (label->GetText().empty())
@@ -186,6 +213,9 @@ void SimpleGUI::Skinner::DrawLabel(Text * label)
 
 void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
 {
+    if (!valueBox)
+        return;
+
     const float marginSize = 0.2f;
 
     //draw outer border first
@@ -236,6 +266,9 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
 
 void SimpleGUI::Skinner::DrawWindow(Window * window)
 {
+    if (!window)
+        return;
+
     auto pos = window->GetPosition();
     auto size = window->GetSize();
     SetControlParameters(boxCache.get(), pos, size);
@@ -251,5 +284,8 @@ void SimpleGUI::Skinner::DrawWindow(Window * window)
 
 void SimpleGUI::Skinner::DrawProgressBar(ProgressBar* pBar)
 {
+    if (!pBar)
+        return;
+
     throw std::exception("The method or operation is not implemented.");
 }

@@ -30,7 +30,7 @@ namespace SimpleGUI
 
         void DrawButton(Button * but);
         void DrawTextbox(TextBox * textbox, bool Focused);
-        void DrawImage(Image * image, const ShiftEngine::Sprite & spr);
+        void DrawImage(Image * image);
         void DrawList(List * list);
         void DrawListRow(TableRow * row);
         void DrawLabel(Text * label);
@@ -42,7 +42,6 @@ namespace SimpleGUI
         void SetControlParameters(ShiftEngine::Sprite * spr, const Point & pos, const Point & size);
         void LoadResources();
         std::unique_ptr<ShiftEngine::Sprite> TextboxCache;
-        std::unique_ptr<ShiftEngine::Sprite> ListCache;
 
         // just a simple 1x1 box
         std::unique_ptr<ShiftEngine::Sprite> boxCache;
