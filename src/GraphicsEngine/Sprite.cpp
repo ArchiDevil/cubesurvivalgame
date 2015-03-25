@@ -82,6 +82,8 @@ void ShiftEngine::Sprite::SetScale(const Vector2F & sc)
 
 Vector2F ShiftEngine::Sprite::GetTextureDimensions() const
 {
+    if (!texture)
+        return{ 0.0f, 0.0f };
     return Vector2F((float)texture->GetWidth(), (float)texture->GetHeight());
 }
 
@@ -117,11 +119,13 @@ void ShiftEngine::Sprite::CreateBuffers(const Vector2F & LT, const Vector2F & RB
 void ShiftEngine::Sprite::SetSizeInPixels(int x, int y)
 {
     if (texture)
-        SetScale(Vector2F((float)x / texture->GetWidth(), (float)y / texture->GetHeight()));
+        return;
+
+    SetScale(Vector2F((float)x / texture->GetWidth(), (float)y / texture->GetHeight()));
 }
 
 void ShiftEngine::Sprite::LoadShader()
 {
-    if (SpriteShader == nullptr)
+    if (!SpriteShader)
         SpriteShader = ShiftEngine::GetContextManager()->LoadShader(L"SpriteShader.fx");
 }
