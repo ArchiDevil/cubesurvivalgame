@@ -7,15 +7,17 @@
 
 namespace ShiftEngine
 {
-	enum API_TYPE
-	{
-		AT_DX10,
-	};
+    enum API_TYPE
+    {
+        AT_DX10,
+        AT_DX11,
+        AT_OGL33
+    };
 
-	bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd);
-	void ShutdownEngine();
+    bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd);
+    void ShutdownEngine();
 
-	D3D10ContextManager * GetContextManager();
-	SceneGraph * GetSceneGraph();
-	Renderer * GetRenderer();
+    D3D10ContextManager * GetContextManager();
+    SceneGraph * GetSceneGraph();
+    Renderer * GetRenderer();
 }

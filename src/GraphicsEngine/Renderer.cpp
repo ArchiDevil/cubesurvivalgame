@@ -11,7 +11,7 @@
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
 
-ShiftEngine::Renderer::Renderer(D3D10ShaderManager * _pShaderManager, D3D10ShaderGenerator * _pShaderGenerator)
+ShiftEngine::Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator)
     : FPS(0)
     , FPSCounter(0)
     , elapsedTime(0)

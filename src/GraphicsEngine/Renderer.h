@@ -4,8 +4,8 @@
 
 #include "VertexTypes.h"
 #include "RenderQueue.h"
-#include "ShaderManager.h"
-#include "ShaderGenerator.h"
+#include "IShaderManager.h"
+#include "IShaderGenerator.h"
 
 #ifdef D3D10_RENDER
 #include "D3D10ContextManager.h"
@@ -64,7 +64,7 @@ namespace ShiftEngine
         };
 
     public:
-        Renderer(D3D10ShaderManager * _pShaderManager, D3D10ShaderGenerator * _pShaderGenerator);
+        Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator);
 
         void DrawAll(RenderQueue & rq, double dt);
 
@@ -98,7 +98,7 @@ namespace ShiftEngine
         int	FPS;
         double millisecondsPerFrame;
 
-        D3D10ShaderManager * pShaderManager;
-        D3D10ShaderGenerator * pShaderGenerator;
+        IShaderManager * pShaderManager;
+        IShaderGenerator * pShaderGenerator;
     };
 }

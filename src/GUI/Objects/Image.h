@@ -3,8 +3,6 @@
 #include "Base.h"
 #include <GraphicsEngine\Sprite.h>
 
-//Image contains some picture sprite and draw it at the screen, so =)
-
 namespace SimpleGUI
 {
     class Image : public Base
@@ -14,7 +12,11 @@ namespace SimpleGUI
         virtual ~Image();
 
         virtual void Draw(Skinner * skin) override;
+
         void SetImage(const std::wstring & imageName);
+
+        ShiftEngine::Sprite & GetImage();
+        const ShiftEngine::Sprite & GetImage() const;
 
     private:
         ShiftEngine::Sprite image;

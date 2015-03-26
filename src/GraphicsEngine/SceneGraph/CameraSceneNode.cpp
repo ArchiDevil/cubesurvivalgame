@@ -2,9 +2,7 @@
 
 #include "../RenderQueue.h"
 
-ShiftEngine::CameraSceneNode::CameraSceneNode(D3DXVECTOR3 _pos,
-    D3DXVECTOR3 _up,
-    D3DXVECTOR3 _right)
+ShiftEngine::CameraSceneNode::CameraSceneNode(D3DXVECTOR3 _pos, D3DXVECTOR3 _up, D3DXVECTOR3 _right)
     : UP(_up)
     , POS(_pos)
     , RIGHT(_right)

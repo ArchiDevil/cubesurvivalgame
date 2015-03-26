@@ -6,20 +6,19 @@ typedef void * MaterialPtr;
 
 namespace ShiftEngine
 {
-	class IContextManager
-	{
-	public:
-		IContextManager();
-		~IContextManager();
+    class IContextManager
+    {
+    public:
+        virtual ~IContextManager() {}
 
-		virtual bool Initialize() = 0;
-		virtual bool BindShader(ShaderPtr shader) = 0;
-		virtual bool BindRenderTargers(RenderTargetPtr * rt, int numOfRT = 1) = 0;
-		virtual bool BindMaterial(MaterialPtr material) = 0;
+        virtual bool Initialize() = 0;
+        virtual bool BindShader(ShaderPtr shader) = 0;
+        virtual bool BindRenderTargers(RenderTargetPtr * rt, int numOfRT = 1) = 0;
+        virtual bool BindMaterial(MaterialPtr material) = 0;
 
-		//some more like setting blending and something
-	private:
+        //some more like setting blending and something
+    private:
 
-	};
+    };
 
-}	//end of ShiftEngine namespace
+}   //end of ShiftEngine namespace

@@ -1,158 +1,158 @@
 #include "cMesh.h"
 
-ShiftEngine::MeshData::MeshData( D3D10VDPtr _vertexDeclaration, ID3D10Buffer * _VB /*= nullptr*/, ID3D10Buffer * _IB /*= nullptr*/ )
-	: VertexBuffer(_VB)
+ShiftEngine::MeshData::MeshData(D3D10VDPtr _vertexDeclaration, ID3D10Buffer * _VB /*= nullptr*/, ID3D10Buffer * _IB /*= nullptr*/)
+    : VertexBuffer(_VB)
     , IndexBuffer(_IB)
-    , verticesCount(0)
-    , indicesCount(0)
-    , vertexSize(0)
     , vertexDeclaration(_vertexDeclaration)
     , vertexSemantic(nullptr)
 {
 }
 
-ShiftEngine::MeshData::MeshData( const MeshData & ref )
-	: indicesCount(ref.indicesCount)
-	, vertexSize(ref.vertexSize)
-	, verticesCount(ref.verticesCount)
-	, vertexDeclaration(ref.vertexDeclaration)
-	, vertexSemantic(ref.vertexSemantic)
-{	
-	IndexBuffer = ref.IndexBuffer;
-	if(IndexBuffer)
-		IndexBuffer->AddRef();
+ShiftEngine::MeshData::MeshData(const MeshData & ref)
+    : indicesCount(ref.indicesCount)
+    , vertexSize(ref.vertexSize)
+    , verticesCount(ref.verticesCount)
+    , vertexDeclaration(ref.vertexDeclaration)
+    , vertexSemantic(ref.vertexSemantic)
+{
+    IndexBuffer = ref.IndexBuffer;
+    if (IndexBuffer)
+        IndexBuffer->AddRef();
 
-	VertexBuffer = ref.VertexBuffer;
-	if(VertexBuffer)
-		VertexBuffer->AddRef();
+    VertexBuffer = ref.VertexBuffer;
+    if (VertexBuffer)
+        VertexBuffer->AddRef();
 }
 
 ShiftEngine::MeshData& ShiftEngine::MeshData::operator = (const MeshData & ref)
 {
-	indicesCount = ref.indicesCount;
-	vertexSize = ref.vertexSize;
-	verticesCount = ref.verticesCount;
+    indicesCount = ref.indicesCount;
+    vertexSize = ref.vertexSize;
+    verticesCount = ref.verticesCount;
 
-	IndexBuffer = ref.IndexBuffer;
-	if (IndexBuffer)
-		IndexBuffer->AddRef();
+    IndexBuffer = ref.IndexBuffer;
+    if (IndexBuffer)
+        IndexBuffer->AddRef();
 
-	VertexBuffer = ref.VertexBuffer;
-	if (VertexBuffer)
-		VertexBuffer->AddRef();
+    VertexBuffer = ref.VertexBuffer;
+    if (VertexBuffer)
+        VertexBuffer->AddRef();
 
-	vertexDeclaration = ref.vertexDeclaration;
-	vertexSemantic = ref.vertexSemantic;
+    vertexDeclaration = ref.vertexDeclaration;
+    vertexSemantic = ref.vertexSemantic;
 
-	return *this;
+    return *this;
 }
 
 ShiftEngine::MeshData::~MeshData()
 {
-	Clear();
+    Clear();
 }
 
-bool ShiftEngine::MeshData::CreateBuffers( bool dynamic, 
-							const void * vData, size_t vSize, 
-							const void * iData, size_t iSize, 
-							ID3D10Device * device )
+bool ShiftEngine::MeshData::CreateBuffers(bool dynamic,
+                                          const void * vData, size_t vSize,
+                                          const void * iData, size_t iSize,
+                                          ID3D10Device * device)
 {
-	if(vSize > 0 && !vData)	return false;
-	if(iSize > 0 && !iData)	return false;
+    if (vSize > 0 && !vData)
+        return false;
 
-	D3D10_BUFFER_DESC vBuffDesc;
-	ZeroMemory(&vBuffDesc, sizeof(D3D10_BUFFER_DESC));
-	D3D10_BUFFER_DESC iBuffDesc;
-	ZeroMemory(&iBuffDesc, sizeof(D3D10_BUFFER_DESC));
+    if (iSize > 0 && !iData)
+        return false;
 
-	vBuffDesc.BindFlags			= D3D10_BIND_VERTEX_BUFFER;
-	vBuffDesc.ByteWidth			= vSize;
-	vBuffDesc.MiscFlags			= NULL;
+    D3D10_BUFFER_DESC vBuffDesc;
+    ZeroMemory(&vBuffDesc, sizeof(D3D10_BUFFER_DESC));
+    D3D10_BUFFER_DESC iBuffDesc;
+    ZeroMemory(&iBuffDesc, sizeof(D3D10_BUFFER_DESC));
 
-	if(dynamic)
-	{
-		vBuffDesc.CPUAccessFlags	= D3D10_CPU_ACCESS_WRITE;
-		vBuffDesc.Usage				= D3D10_USAGE_DYNAMIC;
-	}
-	else
-	{
-		vBuffDesc.CPUAccessFlags	= NULL;
-		vBuffDesc.Usage				= D3D10_USAGE_DEFAULT;
-	}
+    vBuffDesc.BindFlags = D3D10_BIND_VERTEX_BUFFER;
+    vBuffDesc.ByteWidth = vSize;
+    vBuffDesc.MiscFlags = NULL;
 
-	if(vSize > 0)
-	{
-		D3D10_SUBRESOURCE_DATA data;
-		ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
-		data.pSysMem = vData;
+    if (dynamic)
+    {
+        vBuffDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+        vBuffDesc.Usage = D3D10_USAGE_DYNAMIC;
+    }
+    else
+    {
+        vBuffDesc.CPUAccessFlags = NULL;
+        vBuffDesc.Usage = D3D10_USAGE_DEFAULT;
+    }
 
-		if(FAILED(device->CreateBuffer(&vBuffDesc, &data, &VertexBuffer)))
-			return false;
-	}
+    if (vSize > 0)
+    {
+        D3D10_SUBRESOURCE_DATA data;
+        ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
+        data.pSysMem = vData;
 
-	iBuffDesc.BindFlags			= D3D10_BIND_INDEX_BUFFER;
-	iBuffDesc.ByteWidth			= iSize;
-	iBuffDesc.MiscFlags			= NULL;
+        if (FAILED(device->CreateBuffer(&vBuffDesc, &data, &VertexBuffer)))
+            return false;
+    }
 
-	if(dynamic)
-	{
-		iBuffDesc.CPUAccessFlags	= D3D10_CPU_ACCESS_WRITE;
-		iBuffDesc.Usage				= D3D10_USAGE_DYNAMIC;
-	}
-	else
-	{
-		iBuffDesc.CPUAccessFlags	= NULL;
-		iBuffDesc.Usage				= D3D10_USAGE_DEFAULT;
-	}
+    iBuffDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
+    iBuffDesc.ByteWidth = iSize;
+    iBuffDesc.MiscFlags = NULL;
 
-	if(iSize > 0)
-	{
-		D3D10_SUBRESOURCE_DATA data;
-		ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
-		data.pSysMem = iData;
+    if (dynamic)
+    {
+        iBuffDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+        iBuffDesc.Usage = D3D10_USAGE_DYNAMIC;
+    }
+    else
+    {
+        iBuffDesc.CPUAccessFlags = NULL;
+        iBuffDesc.Usage = D3D10_USAGE_DEFAULT;
+    }
 
-		if(FAILED(device->CreateBuffer(&iBuffDesc, &data, &IndexBuffer)))
-			return false;
-	}
+    if (iSize > 0)
+    {
+        D3D10_SUBRESOURCE_DATA data;
+        ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
+        data.pSysMem = iData;
 
-	return true;
+        if (FAILED(device->CreateBuffer(&iBuffDesc, &data, &IndexBuffer)))
+            return false;
+    }
+
+    return true;
 }
 
 void ShiftEngine::MeshData::Clear()
 {
-    if (VertexBuffer) 
+    if (VertexBuffer)
     {
-        VertexBuffer->Release(); 
-        VertexBuffer = nullptr; 
+        VertexBuffer->Release();
+        VertexBuffer = nullptr;
     }
 
-    if (IndexBuffer) 
-    { 
-        IndexBuffer->Release(); 
+    if (IndexBuffer)
+    {
+        IndexBuffer->Release();
         IndexBuffer = nullptr;
     }
 }
 
-int ShiftEngine::MeshData::Draw( ID3D10Device * device )
+int ShiftEngine::MeshData::Draw(ID3D10Device * device)
 {
-	if(!device)
-		return 0;
+    if (!device)
+        return 0;
 
-	if(!vertexSize || !verticesCount)
-		return 0;
+    if (!vertexSize || !verticesCount)
+        return 0;
 
-	unsigned int stride = vertexSize;
-	unsigned int offset = 0;
-	device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
-	if (indicesCount > 0)
-	{
-		device->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		device->DrawIndexed(indicesCount, 0, 0);
-	}
-	else
-	{
-		device->Draw(verticesCount, 0);
-	}
+    unsigned int stride = vertexSize;
+    unsigned int offset = 0;
+    device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+    if (indicesCount > 0)
+    {
+        device->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        device->DrawIndexed(indicesCount, 0, 0);
+    }
+    else
+    {
+        device->Draw(verticesCount, 0);
+    }
 
-	return indicesCount / 3;
+    return indicesCount / 3;
 }
