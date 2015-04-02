@@ -100,7 +100,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
     return names;
 #else
     LOG_ERROR("Not implemented yet.");
-    return std::vector<std::wstring> ();
+    return std::vector<std::wstring>();
 #endif
 }
 

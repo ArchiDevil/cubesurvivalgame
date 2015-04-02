@@ -7,49 +7,49 @@
 
 enum AppState
 {
-	AS_Running,
-	AS_Inactive
+    AS_Running,
+    AS_Inactive
 };
 
 enum SystemKey
 {
-	SK_BACKSPACE,
-	SK_ENTER,
-	SK_ESC,
-	SK_TAB,
-	SK_CHAR
+    SK_BACKSPACE,
+    SK_ENTER,
+    SK_ESC,
+    SK_TAB,
+    SK_CHAR
 };
 
 struct SystemKeyMessage
 {
-	SystemKeyMessage(SystemKey system_key = SK_CHAR, unsigned long character = 0) 
-		: system_key(system_key)
-		, character(character)
-	{
-	}
+    SystemKeyMessage(SystemKey system_key = SK_CHAR, unsigned long character = 0)
+        : system_key(system_key)
+        , character(character)
+    {
+    }
 
-	SystemKey system_key;
-	unsigned long character;
+    SystemKey system_key;
+    unsigned long character;
 };
 
 class cSystem : public notifier<SystemKeyMessage>
 {
 public:
-	cSystem();
-	~cSystem();
+    cSystem();
+    ~cSystem();
 
-	bool InitializeWindow(int Width, int Height, LPCWSTR AppName);
-	HWND GetHWND() const;
-	HINSTANCE GetHINSTANCE() const;
-	AppState GetState() const;
+    bool InitializeWindow(int Width, int Height, LPCWSTR AppName);
+    HWND GetHWND() const;
+    HINSTANCE GetHINSTANCE() const;
+    AppState GetState() const;
 
-	LRESULT CALLBACK MessageHandler(HWND windowHandle, UINT msg, WPARAM wParam, LPARAM lParam);
+    LRESULT CALLBACK MessageHandler(HWND windowHandle, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
-	AppState State;
+    AppState State;
 
-	HWND WindowHandler;
-	HINSTANCE WindowInstance;
+    HWND WindowHandler;
+    HINSTANCE WindowInstance;
 };
 
 static cSystem * System;

@@ -3,80 +3,72 @@
 #include "ut.h"
 #include "logger.hpp"
 
-IniWorker::IniWorker()
+bool IniWorker::Initialize(const std::string & FileName)
 {
+    std::ifstream File;
+    File.open(FileName.c_str());
+    if (File.fail())
+    {
+        LOG_FATAL_ERROR("Unable to open settings file");
+        return false;
+    }
+    CollectKeys(File);
+    return true;
 }
 
-IniWorker::~IniWorker()
+std::string IniWorker::GetKey(const std::string & Key)
 {
+    if (data.find(Key) != data.end())
+        return data[Key];
+
+    LOG_ERROR("Unable to get key for: ", Key);
+    return "";
 }
 
-bool IniWorker::Initialize( const std::string & FileName )
+int IniWorker::GetInteger(const std::string & Parameter)
 {
-	std::ifstream File;
-	File.open(FileName.c_str());
-	if(File.fail())
-	{
-		LOG_FATAL_ERROR("Unable to open settings file");
-		return false;
-	}
-	CollectKeys(File);
-	return true;
+    return std::stoi(GetKey(Parameter));
 }
 
-std::string IniWorker::GetKey( const std::string & Key )
+float IniWorker::GetFloat(const std::string & Parameter)
 {
-	if(data.find(Key) != data.end())
-		return data[Key];
-
-	LOG_ERROR("Unable to get key for: ", Key);
-	return "";
+    return std::stof(GetKey(Parameter));
 }
 
-int IniWorker::GetInteger( const std::string & Parameter )
+bool IniWorker::GetBoolean(const std::string & Parameter)
 {
-	return std::stoi(GetKey(Parameter));
+    std::string buffer = GetKey(Parameter);
+    if (buffer == "true")
+        return true;
+    else if (buffer == "false")
+        return false;
+    else
+    {
+        LOG_ERROR(buffer, " is a wrong boolean value");
+        return false;
+    }
 }
 
-float IniWorker::GetFloat( const std::string & Parameter )
+std::string IniWorker::GetString(const std::string & Parameter)
 {
-	return std::stof(GetKey(Parameter));
+    return GetKey(Parameter);
 }
 
-bool IniWorker::GetBoolean( const std::string & Parameter )
+std::wstring IniWorker::GetWString(const std::string & Parameter)
 {
-	std::string buffer = GetKey(Parameter);
-	if(buffer == "true")
-		return true;
-	else if(buffer == "false")
-		return false;
-	else
-	{
-		LOG_ERROR(buffer, " is a wrong boolean value");
-		return false;
-	}
+    return utils::StrToWStr(GetKey(Parameter));
 }
 
-std::string IniWorker::GetString( const std::string & Parameter )
+void IniWorker::CollectKeys(std::ifstream & stream)
 {
-	return GetKey(Parameter);
-}
-
-std::wstring IniWorker::GetWString( const std::string & Parameter )
-{
-	return utils::StrToWStr(GetKey(Parameter));
-}
-
-void IniWorker::CollectKeys( std::ifstream & stream )
-{
-	std::string buffer = "";
-	while (std::getline(stream, buffer))
-	{
-		std::string::size_type it = buffer.find('=');
-		if(it != std::string::npos)
-		{
-			std::string key = std::string(buffer.begin(), buffer.begin() + it);
-			data[key] = std::string(buffer.begin() + it + 1, buffer.end());
-		}
-	}
+    std::string buffer = "";
+    while (std::getline(stream, buffer))
+    {
+        std::string::size_type it = buffer.find('=');
+        if (it != std::string::npos)
+        {
+            std::string key = std::string(buffer.begin(), buffer.begin() + it);
+            data[key] = std::string(buffer.begin() + it + 1, buffer.end());
+        }
+    }
 }
