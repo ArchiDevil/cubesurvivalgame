@@ -1,5 +1,6 @@
 {
 	"id":			"smooth_stone",
+    "name":         "Smooth stone",
 	"description": 	"",
 	"type": 		"misc",
 	"icon": 		"stone.png"	

@@ -1,5 +1,6 @@
 {
 	"id": 			"stone_axe",
+    "name":         "Stone axe",
 	"description": 	"",
 	"type": 		"weapon",
 	"damage": 		20,

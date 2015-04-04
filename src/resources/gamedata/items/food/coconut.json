@@ -1,5 +1,6 @@
 {
 	"id":			"coconut",
+    "name":         "Coconut",
 	"description": 	"",
 	"type": 		"food",
 	"hunger":		10,

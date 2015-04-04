@@ -1,5 +1,6 @@
 {
 	"id":			"stick",
+    "name":         "Stick",
 	"description": 	"",
 	"type": 		"misc",
 	"icon": 		"stick.png"	

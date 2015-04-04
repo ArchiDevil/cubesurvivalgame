@@ -1,5 +1,6 @@
 {
 	"id":			"raw_fish",
+    "name":         "Raw fish",
 	"description": 	"",
 	"type": 		"food",
 	"hunger":		5,

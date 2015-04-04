@@ -1,7 +1,7 @@
 {
-	"id": "fishnet",
+	"id":           "fishnet",
 	"description": 	"",
-	"type": "entity",
-	"entity": "fishnet",
-	"icon": "fishnet.png"
+	"type":         "entity",
+	"entity":       "fishnet",
+	"icon":         "fishnet.png"
 }

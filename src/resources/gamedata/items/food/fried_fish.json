@@ -1,5 +1,6 @@
 {
 	"id":			"fried_fish",
+    "name":         "Fried fish",
 	"description": 	"",
 	"type": 		"food",
 	"hunger":		25,
