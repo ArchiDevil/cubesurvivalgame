@@ -4,22 +4,24 @@
 
 enum class InteractionType
 {
-	Nothing,
-	Collecting,
-	Attacking
-	// etc, like crafting, activating and anything you want
+    Nothing,
+    Collecting,
+    Attacking
+    // etc, like crafting, activating and anything you want
 };
 
 class InteractableGameObject : public GameObject
 {
 public:
-	InteractableGameObject(ShiftEngine::MeshNode * sceneNode) 
-		: GameObject(sceneNode) 
-	{}
+    InteractableGameObject(ShiftEngine::MeshNode * sceneNode)
+        : GameObject(sceneNode)
+    {
+    }
 
-    virtual ~InteractableGameObject() 
-	{}
+    virtual ~InteractableGameObject()
+    {
+    }
 
     virtual InteractionType GetInteraction() const = 0;
-    
+
 };
