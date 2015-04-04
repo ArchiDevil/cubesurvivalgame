@@ -1,4 +1,4 @@
-#include "ShaderGenerator.h"
+#include "D3D10ShaderGenerator.h"
 
 #include <cassert>
 #include <sstream>
@@ -18,22 +18,14 @@ using std::string;
 using std::ostringstream;
 using std::endl;
 
-ShiftEngine::D3D10ShaderGenerator::D3D10ShaderGenerator()
-{
-}
-
-ShiftEngine::D3D10ShaderGenerator::~D3D10ShaderGenerator()
-{
-}
-
 std::string ShiftEngine::D3D10ShaderGenerator::CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ostringstream stream;
     ADD_LINE("//generated with D3D10 shader generator");
     CreateUniforms(stream, info);
 
-	if (verticesInfo.isTexcoordsHere())
-	    CreateSamplers(stream, info);
+    if (verticesInfo.isTexcoordsHere())
+        CreateSamplers(stream, info);
 
     CreateInput(stream, verticesInfo);
     CreateOutput(stream, verticesInfo, info);
@@ -138,7 +130,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateOutput(ostringstream & stream, con
 
     if ((info.diffuseMap.GetType() != TextureType::Unknown ||
         info.alphaMap.GetType() != TextureType::Unknown) &&
-		verticesInfo.isTexcoordsHere())
+        verticesInfo.isTexcoordsHere())
     {
         if (info.diffuseMap.GetType() == TextureType::Texture2DArray)
         {
@@ -179,7 +171,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreateVS(ostringstream & stream, const V
 
     if ((info.diffuseMap.GetType() != TextureType::Unknown ||
         info.alphaMap.GetType() != TextureType::Unknown) &&
-		verticesInfo.isTexcoordsHere())
+        verticesInfo.isTexcoordsHere())
     {
         ADD_LINE("Output.Texcoord = Input.Texcoord;");
     }
@@ -210,12 +202,12 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
             ADD_LINE("float4 sampledColor = float4(1.0f, 1.0f, 1.0f, 1.0f);");
         }
 
-		if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
-		{
-			ADD_LINE("sampledColor.x *= Input.Color.x;");
-			ADD_LINE("sampledColor.y *= Input.Color.y;");
-			ADD_LINE("sampledColor.z *= Input.Color.z;");
-		}
+        if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
+        {
+            ADD_LINE("sampledColor.x *= Input.Color.x;");
+            ADD_LINE("sampledColor.y *= Input.Color.y;");
+            ADD_LINE("sampledColor.z *= Input.Color.z;");
+        }
 
         ADD_LINE("resultColor *= sampledColor;");
         ADD_LINE("resultColor.xyz += ambientColor;");
@@ -245,17 +237,17 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
     else
     {
         ADD_LINE("float4 resultColor = float4(1.0f, 1.0f, 1.0f, 1.0f);");
-		if (verticesInfo.isTexcoordsHere() && info.diffuseMap.GetType() != TextureType::Unknown)
+        if (verticesInfo.isTexcoordsHere() && info.diffuseMap.GetType() != TextureType::Unknown)
         {
             ADD_LINE("resultColor *= diffuseMap.Sample(SS, Input.Texcoord);");
         }
 
-		if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
-		{
-			ADD_LINE("resultColor.x *= Input.Color.x;");
-			ADD_LINE("resultColor.y *= Input.Color.y;");
-			ADD_LINE("resultColor.z *= Input.Color.z;");
-		}
+        if (info.GetFlags()->useVertexColors || verticesInfo.isVertexColorsHere())
+        {
+            ADD_LINE("resultColor.x *= Input.Color.x;");
+            ADD_LINE("resultColor.y *= Input.Color.y;");
+            ADD_LINE("resultColor.z *= Input.Color.z;");
+        }
     }
 
     if (info.GetFlags()->isTransparent)
@@ -265,7 +257,7 @@ void ShiftEngine::D3D10ShaderGenerator::CreatePS(ostringstream & stream, const V
 
     ADD_LINE("resultColor.xyz += emissionColor.xyz;");
 
-	if (verticesInfo.isTexcoordsHere() && info.alphaMap.GetType() != TextureType::Unknown)
+    if (verticesInfo.isTexcoordsHere() && info.alphaMap.GetType() != TextureType::Unknown)
     {
         ADD_LINE("float4 alphaColor = alphaMap.Sample(SS, Input.Texcoord);");
         ADD_LINE("resultColor.a *= alphaColor.r;");

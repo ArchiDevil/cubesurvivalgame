@@ -3,19 +3,19 @@
 #include <exception>
 #include <vector>
 
-#include "cD3D10.h"
-#include "Program.h"
+#include "D3D10Context.h"
+#include "D3D10Program.h"
 #include "cMesh.h"
 #include "MiscTypes.h"
-#include "ShaderManager.h"
-#include "ShaderGenerator.h"
+#include "D3D10ShaderManager.h"
+#include "D3D10ShaderGenerator.h"
 #include "D3D10TextureManager.h"
-#include "cMeshManager.h"
+#include "D3D10MeshManager.h"
 #include "MaterialManager.h"
 #include "Sprite.h"
-#include "cRenderTarget.h"
+#include "D3D10RenderTarget.h"
 #include "TextLib/cText.h"
-#include "cMaterial.h"
+#include "Material.h"
 #include "D3D10VertexDeclaration.h"
 #include "FontManager.h"
 
@@ -25,94 +25,84 @@ using MathLib::vec4;
 
 namespace ShiftEngine
 {
-	enum BlendingState
-	{
-		BS_None,
-		BS_AlphaEnabled,
-		BS_Additive,
-	};
-	
-	enum RasterizerState
-	{
-		RS_Wireframe,
-		RS_Normal,
-		RS_NoCulling,
-	};
+    enum BlendingState
+    {
+        BS_None,
+        BS_AlphaEnabled,
+        BS_Additive,
+    };
 
-	class D3D10ContextManager
-	{
-		friend class Renderer;
-	public:
-		D3D10ContextManager(HWND hwnd);
-		~D3D10ContextManager();
+    enum RasterizerState
+    {
+        RS_Wireframe,
+        RS_Normal,
+        RS_NoCulling,
+    };
 
-		virtual bool						Initialize( GraphicEngineSettings _Settings, PathSettings _Paths );
+    class D3D10ContextManager
+    {
+        friend class Renderer;
+    public:
+        D3D10ContextManager(HWND hwnd);
+        ~D3D10ContextManager();
 
-		std::wstring						GetVideocardDesc();
+        virtual bool                        Initialize(GraphicEngineSettings _Settings, PathSettings _Paths);
 
-		void								Shutdown();
-		void								BeginScene();
-		void								EndScene();
-		void								ResetPipeline();
+        std::wstring                        GetGPUDescription();
 
+        void                                Shutdown();
+        void                                BeginScene();
+        void                                EndScene();
+        void                                ResetPipeline();
 
-		TexturePtr							LoadTexture(const std::wstring & FileName);
-		MaterialPtr							LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName);
-		IProgramPtr							LoadShader(const std::wstring & FileName);
-		MeshDataPtr							LoadMesh(const std::wstring & FileName);
+        TexturePtr                          LoadTexture(const std::wstring & FileName);
+        MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName);
+        IProgramPtr                         LoadShader(const std::wstring & FileName);
+        MeshDataPtr                         LoadMesh(const std::wstring & FileName);
 
-		D3D10ShaderManager *				GetShaderManager();
-		D3D10ShaderGenerator *				GetShaderGenerator();
+        D3D10ShaderManager *                GetShaderManager();
+        D3D10ShaderGenerator *              GetShaderGenerator();
+        D3D10TextureManager *               GetTextureManager();
+        FontManager*                        GetFontManager();
 
-		void								SetZState(bool enabled);
-		void								SetBlendingState(BlendingState bs);
-		BlendingState						GetBlendingState() const;
-		void								SetRasterizerState(RasterizerState rs);
-		RasterizerState						GetRasterizerState() const;
+        void                                SetZState(bool enabled);
+        void                                SetBlendingState(BlendingState bs);
+        BlendingState                       GetBlendingState() const;
+        void                                SetRasterizerState(RasterizerState rs);
+        RasterizerState                     GetRasterizerState() const;
 
-		ID3D10Device *						GetDevicePointer();
-		D3D10TextureManager *				GetTextureManager();
+        ID3D10Device *                      GetDevicePointer();
+        GraphicEngineSettings               GetEngineSettings() const;
+        PathSettings                        GetPaths() const;
+        int                                 DrawMesh(MeshDataPtr & mesh);
+        D3D10VDPtr                          GetVertexDeclaration(const VertexSemantic & semantic);
+        D3DMATRIX                           GetOrthoMatrix() const;
 
-		GraphicEngineSettings				GetEngineSettings() const;
-		PathSettings						GetPaths() const;
+    private:
+        void                                RegisterVertexSemantic(const VertexSemantic & semantic);
+        ShiftEngine::D3D10VertexDeclaration CreateVDFromDescription(const VertexSemantic & semantic);
 
-		int									DrawMesh(MeshDataPtr & mesh);
+        HWND                                windowHandle;
+        PathSettings                        enginePaths;
+        GraphicEngineSettings               engineSettings;
 
-		FontManager*						GetFontManager();
+        std::map<VertexSemantic, D3D10VDPtr> declarations;
 
-		void RegisterVertexSemantic(const VertexSemantic & semantic);
-		D3D10VDPtr							GetVertexDeclaration(const VertexSemantic & semantic);
+        D3D10Context                        graphicsContext;
+        FontManager*                        fontManager;
+        D3D10TextureManager *               textureManager;
+        D3D10MeshManager *                  meshManager;
+        D3D10ShaderManager *                shaderManager;
+        D3D10ShaderGenerator *              shaderGenerator;
+        MaterialManager *                   materialManager;
 
-		D3DMATRIX							GetOrthoMatrix() const;
+        IProgramPtr                         currentProgram;
+        RasterizerState                     currentRasterizerState = RS_Normal;
+        BlendingState                       currentBlendingState = BS_None;
+        D3D10VertexDeclaration *            currentVertexDeclaration;
 
-	private:
-		ShiftEngine::D3D10VertexDeclaration CreateVDFromDescription( const VertexSemantic & semantic );
-
-		HWND								m_HWND;
-		cD3D10								Context;
-		PathSettings						Paths;
-		GraphicEngineSettings				Settings;
-		D3D10VDPtr							CurrentVD;
-		IProgramPtr							currentProgram;
-		FontManager*						pFntMng;
-		//default render target
-		//current shader
-		//something more
-
-		std::map<VertexSemantic, D3D10VDPtr>	Declarations;
-
-		D3D10TextureManager	*				TextureManager;
-		cMeshManager *						MeshManager;
-		D3D10ShaderManager *				ShaderManager;
-		D3D10ShaderGenerator *				ShaderGenerator;
-		MaterialManager *					pMaterialManager;
-
-		RasterizerState						CurrentRasterizerState;
-		bool								ZBufferState;
-		BlendingState						CurrentBlendingState;
-		bool								Culling;
-
-		D3D10VertexDeclaration *			currentVertexDeclaration;
-	};
+        bool                                zBufferState = true;
+        bool                                cullingEnabled = true;
+    };
 
 }	//end of ShiftEngine namespace

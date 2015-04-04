@@ -14,7 +14,7 @@ using namespace tinyxml2;
         std::string buf = buffer;                                                   \
         LOG_ERROR(buf);                                                             \
         LOG_ERROR(##x);                                                             \
-        LOG_ERROR("Unable to load material ", utils::WStrToStr(filename));          \
+        LOG_ERROR("Unable to load material ", utils::Narrow(filename));             \
         return nullptr;                                                             \
     }                                                                               \
 
@@ -53,7 +53,7 @@ using namespace tinyxml2;
         }                                                            \
     }                                                                \
 
-ShiftEngine::MaterialManager::MaterialManager(D3D10TextureManager * _manager, D3D10ShaderManager * _shaderManager)
+ShiftEngine::MaterialManager::MaterialManager(D3D10TextureManager * _manager, IShaderManager * _shaderManager)
     : pTextureManager(_manager)
     , pShaderManager(_shaderManager)
 {
@@ -68,7 +68,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     std::map<std::string, XMLElement*> keyVal;	//name/node map
 
     tinyxml2::XMLDocument materialDoc;
-    auto result = materialDoc.LoadFile(utils::WStrToStr(filename).c_str());
+    auto result = materialDoc.LoadFile(utils::Narrow(filename).c_str());
 
     if (result != XML_NO_ERROR)
     {
@@ -111,7 +111,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
         }
         else
         {
-            if (utils::WStrToStr(mtlName) == std::string(name))
+            if (utils::Narrow(mtlName) == std::string(name))
             {
                 break;
             }
@@ -181,7 +181,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     }
 
     if (!shaderName.empty())
-        pMaterial = std::make_shared<Material>(ShiftEngine::GetContextManager()->LoadShader(utils::StrToWStr(shaderName)), mtlInfo);
+        pMaterial = std::make_shared<Material>(ShiftEngine::GetContextManager()->LoadShader(utils::Widen(shaderName)), mtlInfo);
     else
         pMaterial = std::make_shared<Material>(mtlInfo);
 
@@ -227,7 +227,7 @@ bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr
     if (info.diffuseMap.GetType() != TextureType::Unknown)
     {
         //TODO: form map here, but now it works only for 2d textures!
-        std::wstring wstr = utils::StrToWStr(info.diffuseMap.GetMaps()[0]);
+        std::wstring wstr = utils::Widen(info.diffuseMap.GetMaps()[0]);
         auto tex = pTextureManager->CreateTexture2D(wstr);
         if (!tex)
             tex = pTextureManager->GetErrorTexture();
@@ -237,7 +237,7 @@ bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr
     if (info.alphaMap.GetType() != TextureType::Unknown)
     {
         //TODO: form map here, but now it works only for 2d textures!
-        std::wstring wstr = utils::StrToWStr(info.alphaMap.GetMaps()[0]);
+        std::wstring wstr = utils::Widen(info.alphaMap.GetMaps()[0]);
         auto tex = pTextureManager->CreateTexture2D(wstr);
         if (!tex)
             tex = pTextureManager->GetErrorTexture();

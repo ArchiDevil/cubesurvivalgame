@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../cMaterial.h"
+#include "../Material.h"
 #include "../cMesh.h"
 #include "../RenderQueue.h"
 

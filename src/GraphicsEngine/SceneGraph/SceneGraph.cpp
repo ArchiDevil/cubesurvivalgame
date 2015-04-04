@@ -11,9 +11,7 @@ ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
     , type(graphType)
 {
     skySemantic.addSemantic(ET_FLOAT, 3, ES_Position);
-    GetContextManager()->RegisterVertexSemantic(skySemantic);
-    //register IL type for skynode
-    //here)
+    GetContextManager()->GetVertexDeclaration(skySemantic);
 
     switch (graphType)
     {

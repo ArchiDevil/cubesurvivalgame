@@ -9,59 +9,59 @@
 
 namespace ShiftEngine
 {
-	enum SceneGraphType
-	{
-		SGT_Plain,
-		SGT_QuadTree,
-		//SGT_OctTree
-	};
+    enum SceneGraphType
+    {
+        SGT_Plain,
+        SGT_QuadTree,
+        //SGT_OctTree
+    };
 
-	class ISceneNode;
-	class PlainTreeNode;
-	class QuadTreeNode;
-	class MeshNode;
-	class CameraSceneNode;
-	class SkySceneNode;
-	class LightNode;
+    class ISceneNode;
+    class PlainTreeNode;
+    class QuadTreeNode;
+    class MeshNode;
+    class CameraSceneNode;
+    class SkySceneNode;
+    class LightNode;
 
-	class SceneGraph
-	{
-	public:
-		SceneGraph(SceneGraphType graphType = SGT_Plain);
-		~SceneGraph();
+    class SceneGraph
+    {
+    public:
+        SceneGraph(SceneGraphType graphType = SGT_Plain);
+        ~SceneGraph();
 
-		void DrawAll(double dt) const;
+        void DrawAll(double dt) const;
 
-		MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);	//tries to load mesh with meshLoader
-		MeshNode * AddMeshNode(MeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
-		CameraSceneNode * AddCameraSceneNode();
+        MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);	//tries to load mesh with meshLoader
+        MeshNode * AddMeshNode(MeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
+        CameraSceneNode * AddCameraSceneNode();
 
-		LightNode * AddDirectionalLightNode(const Vector3F & direction, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
-		void RemoveDirectionalLightNode(LightNode * node);
+        LightNode * AddDirectionalLightNode(const Vector3F & direction, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
+        void RemoveDirectionalLightNode(LightNode * node);
 
-		LightNode * AddPointLightNode(const Vector3F & pos, float radius, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
-		SkySceneNode * AddSkySceneNode();
-		
-		SkySceneNode * GetActiveSkyNode() const;
+        LightNode * AddPointLightNode(const Vector3F & pos, float radius, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
+        SkySceneNode * AddSkySceneNode();
 
-		void SetActiveCamera(CameraSceneNode * camera);
-		CameraSceneNode * GetActiveCamera() const;
+        SkySceneNode * GetActiveSkyNode() const;
 
-		void SetAmbientColor(const MathLib::Vector3F & color);
-		MathLib::Vector3F GetAmbientColor() const;
+        void SetActiveCamera(CameraSceneNode * camera);
+        CameraSceneNode * GetActiveCamera() const;
 
-		void MoveNodeCallback(ISceneNode * node);
+        void SetAmbientColor(const MathLib::Vector3F & color);
+        MathLib::Vector3F GetAmbientColor() const;
 
-	protected:
-		ISceneNode * rootNode;
-		CameraSceneNode * activeCamera;
-		SkySceneNode * activeSky;
-		VertexSemantic skySemantic;
-		std::vector<LightNode*> directionalLights;
+        void MoveNodeCallback(ISceneNode * node);
 
-		SceneGraphType type;
+    protected:
+        ISceneNode * rootNode;
+        CameraSceneNode * activeCamera;
+        SkySceneNode * activeSky;
+        VertexSemantic skySemantic;
+        std::vector<LightNode*> directionalLights;
 
-		MathLib::Vector3F ambientColor;
+        SceneGraphType type;
 
-	};
+        MathLib::Vector3F ambientColor;
+
+    };
 }

@@ -17,7 +17,7 @@ ShiftEngine::MeshNode::~MeshNode()
 
 void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
 {
-    if (this->IsVisible())
+    if (this->IsVisible())// && this->CheckVisibility(rq.GetActiveCamera()))
         rq.AddRenderableNode(this);
 }
 
