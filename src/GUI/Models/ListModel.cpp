@@ -7,6 +7,44 @@ SimpleGUI::IModelSubscriber::IModelSubscriber(ListModel * model)
 
 //////////////////////////////////////////////////////////////////////////
 
+SimpleGUI::ListModelElement::ListModelElement()
+    : name()
+{
+}
+
+SimpleGUI::ListModelElement::ListModelElement(const std::string & name)
+    : name(name)
+{
+}
+
+const std::string & SimpleGUI::ListModelElement::GetName() const
+{
+    return name;
+}
+
+void SimpleGUI::ListModelElement::SetName(const std::string & val)
+{
+    name = val;
+}
+
+const std::string & SimpleGUI::ListModelElement::GetValue(const std::string & name) const
+{
+    static std::string emptyVal = "";
+
+    auto iter = values.find(name);
+    if (iter != values.end())
+        return iter->second;
+
+    return emptyVal;
+}
+
+void SimpleGUI::ListModelElement::SetValue(const std::string & name, const std::string & value)
+{
+    values[name] = value;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 SimpleGUI::ListModel::ListModel(IModelSubscriber * parent)
     : parent(parent)
 {
@@ -29,27 +67,27 @@ void SimpleGUI::ListModel::Add(const std::string &element, size_t pos /*= ListMo
         parent->OnModelChanged();
 }
 
-const std::string & SimpleGUI::ListModel::Get(size_t index) const
+const SimpleGUI::ListModelElement & SimpleGUI::ListModel::Get(size_t index) const
 {
     if (index < elements.size())
         return elements[index];
 
-    static std::string s = "";
-    return s;
+    static ListModelElement empty{};
+    return empty;
 }
 
-size_t SimpleGUI::ListModel::Get(const std::string &element) const
+size_t SimpleGUI::ListModel::Get(const std::string &name) const
 {
-    auto iter = std::find(elements.cbegin(), elements.cend(), element);
+    auto iter = std::find_if(elements.cbegin(), elements.cend(), [=](const ListModelElement &el) {return el.GetName() == name;});
     if (iter != elements.end())
         return std::distance(iter, elements.cbegin());
 
     return npos;
 }
 
-void SimpleGUI::ListModel::Remove(const std::string &element)
+void SimpleGUI::ListModel::Remove(const std::string &name)
 {
-    auto iter = std::find(elements.cbegin(), elements.cend(), element);
+    auto iter = std::find_if(elements.cbegin(), elements.cend(), [=](const ListModelElement &el) {return el.GetName() == name;});
     if (iter != elements.end())
         elements.erase(iter);
 }

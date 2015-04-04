@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
     std::unique_ptr<IConverter> converter = nullptr;
 
-    auto ext = utils::ExtractExtension(utils::StrToWStr(open));
+    auto ext = utils::ExtractExtension(utils::Widen(open));
     if (ext == L"x")
     {
         converter.reset(new cXConverter());

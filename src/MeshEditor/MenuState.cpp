@@ -125,7 +125,7 @@ void MenuState::CreateGUI()
         if (utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
             utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
             utils::IsNumber(tbZ->GetText()) && tbZ->GetText() != L"")
-            pApp->PushState(new WorkState(std::stoi(utils::WStrToStr(tbX->GetText())), std::stoi(utils::WStrToStr(tbY->GetText())), std::stoi(utils::WStrToStr(tbZ->GetText()))));
+            pApp->PushState(new WorkState(std::stoi(utils::Narrow(tbX->GetText())), std::stoi(utils::Narrow(tbY->GetText())), std::stoi(utils::Narrow(tbZ->GetText()))));
     }
     );
 
@@ -136,7 +136,7 @@ void MenuState::CreateGUI()
     auto files = utils::filesystem::CollectFileNames(L"saves", L"block");
     for (size_t i = 0; i < files.size(); i++)
     {
-        loadingList->GetTable()->AddRow(utils::WStrToStr(files[i]));
+        loadingList->GetTable()->GetModel()->Add(utils::Narrow(files[i]));
     }
 
     SimpleGUI::Button * butLoad = new SimpleGUI::Button(pCanvas);
@@ -146,8 +146,16 @@ void MenuState::CreateGUI()
     butLoad->SetClickHandler(
         [=](MouseKeys /*mb*/, int /*innerX*/, int /*innerY*/)
     {
-        if (loadingList->GetTable()->GetSelectedRow() != nullptr && loadingList->GetTable()->GetSelectedRow()->GetString() != "")
-            pApp->PushState(new WorkState("saves/" + loadingList->GetTable()->GetSelectedRow()->GetString()));
+        size_t selectedRow = loadingList->GetTable()->GetSelectedRow();
+        if (selectedRow == (size_t)-1)
+            return;
+
+        std::string filename = loadingList->GetTable()->GetModel()->Get(selectedRow).GetName();
+        if (!filename.empty())
+        {
+            std::string fullPath = "saves/" + filename;
+            pApp->PushState(new WorkState(filename));
+        }
     }
     );
 

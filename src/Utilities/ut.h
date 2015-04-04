@@ -5,8 +5,8 @@
 
 namespace utils
 {
-    std::string WStrToStr(const std::wstring & str);
-    std::wstring StrToWStr(const std::string & str);
+    std::string Narrow(const std::wstring & str);
+    std::wstring Widen(const std::string & str);
 
     std::string ExtractExtension(const std::string & filename);
     std::wstring ExtractExtension(const std::wstring & filename);

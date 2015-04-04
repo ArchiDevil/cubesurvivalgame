@@ -12,12 +12,12 @@
 
 extern Log MainLog("Application.log");
 
-std::string utils::WStrToStr(const std::wstring & str)
+std::string utils::Narrow(const std::wstring & str)
 {
     return std::string(str.begin(), str.end());
 }
 
-std::wstring utils::StrToWStr(const std::string & str)
+std::wstring utils::Widen(const std::string & str)
 {
     return std::wstring(str.begin(), str.end());
 }
@@ -78,7 +78,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
     file = FindFirstFileW(fName.c_str(), &data);
     if (file == INVALID_HANDLE_VALUE)
     {
-        LOG_ERROR("Unable to get filenames from ", utils::WStrToStr(bufferPath), ", may be directory is not exist or it's empty.");
+        LOG_ERROR("Unable to get filenames from ", utils::Narrow(bufferPath), ", may be directory is not exist or it's empty.");
         return std::vector<std::wstring>();
     }
 

@@ -22,7 +22,7 @@ MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z)
     semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
     semantic.addSemantic(ShiftEngine::ET_FLOAT, 2, ShiftEngine::ES_Texcoord);
     semantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-    ShiftEngine::GetContextManager()->RegisterVertexSemantic(semantic);
+    ShiftEngine::GetContextManager()->GetVertexDeclaration(semantic);
 }
 
 MeshEditor::BlockWorkspace::~BlockWorkspace()

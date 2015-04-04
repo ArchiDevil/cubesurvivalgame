@@ -186,7 +186,7 @@ void WorkState::CreateGUI()
         [=](MouseKeys, int, int)
     {
         const std::string rr = ".block";
-        Workspace->Save("saves/" + utils::WStrToStr(fname->GetText()) + rr);
+        Workspace->Save("saves/" + utils::Narrow(fname->GetText()) + rr);
         f->Hide();
         fname->Hide();
         butSaveOk->Hide();

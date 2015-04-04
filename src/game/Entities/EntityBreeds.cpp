@@ -13,33 +13,33 @@
 
 ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::string & materialFile)
 {
-	std::wstring wmaterialFile = utils::StrToWStr(materialFile);
-	auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(wmaterialFile, L"generic");
+    std::wstring wmaterialFile = utils::Widen(materialFile);
+    auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(wmaterialFile, L"generic");
 
-	std::wstring wmeshName = utils::StrToWStr(meshName);
-	MeshNode * meshNode = nullptr;
-	if (wmeshName == L"cube")
-		meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), mtl.get());
-	else
-		meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(wmeshName, mtl.get());
+    std::wstring wmeshName = utils::Widen(meshName);
+    MeshNode * meshNode = nullptr;
+    if (wmeshName == L"cube")
+        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), mtl.get());
+    else
+        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(wmeshName, mtl.get());
 
-	return meshNode;
+    return meshNode;
 }
 
 GameObjectPtr LiveBreed::Clone() const
 {
-	auto out = std::make_shared<LiveGameObject>(CreateMeshNode(meshName, materialFile));
-	for (const auto &item : inventoryBreedPtr.GetItems())
-		out->GetInventory()->AddItem(item.itemId, item.count ? item.count : item.minimumCount + (rand() % (item.maximumCount - item.minimumCount)));
-	return out;
+    auto out = std::make_shared<LiveGameObject>(CreateMeshNode(meshName, materialFile));
+    for (const auto &item : inventoryBreedPtr.GetItems())
+        out->GetInventory()->AddItem(item.itemId, item.count ? item.count : item.minimumCount + (rand() % (item.maximumCount - item.minimumCount)));
+    return out;
 }
 
 GameObjectPtr CollectableBreed::Clone() const
 {
-	return std::make_shared<CollectableGameObject>(CreateMeshNode(meshName, materialFile), itemId, count);
+    return std::make_shared<CollectableGameObject>(CreateMeshNode(meshName, materialFile), itemId, count);
 }
 
 GameObjectPtr HeaterBreed::Clone() const
 {
-	return std::make_shared<HeaterGameObject>(CreateMeshNode(meshName, materialFile), heatCount);
+    return std::make_shared<HeaterGameObject>(CreateMeshNode(meshName, materialFile), heatCount);
 }

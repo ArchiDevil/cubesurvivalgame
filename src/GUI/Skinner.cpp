@@ -96,7 +96,7 @@ void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
 
     TextboxCache->Draw();
 
-    std::string string = utils::WStrToStr(textbox->GetText());
+    std::string string = utils::Narrow(textbox->GetText());
 
     if (string.empty())
         return;

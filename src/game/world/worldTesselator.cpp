@@ -10,7 +10,6 @@ WorldTesselator::WorldTesselator(WorldStorage * _ws)
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-    pCtxMgr->RegisterVertexSemantic(nodeSemantic);
     nodeDeclaration = pCtxMgr->GetVertexDeclaration(nodeSemantic);
     noiseGenerator.SetFrequency(0.01);
 }

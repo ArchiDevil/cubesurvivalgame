@@ -19,6 +19,22 @@ namespace SimpleGUI
         ListModel * model;
     };
 
+    class ListModelElement
+    {
+    public:
+        ListModelElement();
+        ListModelElement(const std::string & name);
+
+        const std::string & GetName() const;
+        void SetName(const std::string & name);
+
+        const std::string & GetValue(const std::string & name) const;
+        void SetValue(const std::string & name, const std::string & value);
+
+    private:
+        std::string name;
+        std::unordered_map<std::string, std::string> values;
+    };
 
     class ListModel
     {
@@ -28,8 +44,8 @@ namespace SimpleGUI
         ListModel(IModelSubscriber * parent);
         void Add(const std::string &element, size_t pos = ListModel::npos);
 
-        const std::string & Get(size_t index) const;
-        size_t Get(const std::string &element) const;
+        const ListModelElement & Get(size_t index) const;
+        size_t Get(const std::string &name) const;
         size_t Count() const;
 
         void Remove(const std::string &element);
@@ -38,8 +54,7 @@ namespace SimpleGUI
 
     private:
         IModelSubscriber * parent;
-        std::vector<std::string> elements;
+        std::vector<ListModelElement> elements;
 
     };
-
 }

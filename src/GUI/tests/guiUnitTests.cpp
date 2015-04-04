@@ -78,7 +78,7 @@ namespace UnitTests
         {
             Canvas * pCanvas = new Canvas();
             List * pList = new List(pCanvas);
-            
+            pList;
         }
 
         TEST_METHOD(TableTest_NOT_IMPLEMENTED)
