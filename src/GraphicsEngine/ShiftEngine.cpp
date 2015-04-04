@@ -16,12 +16,12 @@ namespace ShiftEngine
         return true;
     }
 
-    bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
+    bool InitDX11Api(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
     {
         return false;
     }
 
-    bool InitGL33Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
+    bool InitGL33Api(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
     {
         return false;
     }

@@ -4,7 +4,7 @@
 
 #include "D3D10Texture.h"
 #include "cMesh.h"
-#include "Program.h"
+#include "IProgram.h"
 #include "VertexTypes.h"
 
 #include <MathLib/math.h>
