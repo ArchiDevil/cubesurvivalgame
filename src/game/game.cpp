@@ -9,7 +9,7 @@
 #include "gameHud.h"
 #include "CraftingManager.h"
 
-cGame::cGame()
+Game::Game()
 	: Player(nullptr)
 {
 	World.reset(new cWorld);
@@ -21,19 +21,19 @@ cGame::cGame()
     CratingMgr.reset(new CraftingManager);
 }
 
-cGame::~cGame()
+Game::~Game()
 {
 }
 
-static cGame * GamePtr = nullptr;
+static Game * GamePtr = nullptr;
 
 void LostIsland::CreateGame()
 {
 	delete GamePtr;
-	GamePtr = new cGame();
+	GamePtr = new Game();
 }
 
-cGame * LostIsland::GetGamePtr()
+Game * LostIsland::GetGamePtr()
 {
 	return GamePtr;
 }

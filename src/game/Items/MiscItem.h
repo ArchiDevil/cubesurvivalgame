@@ -7,26 +7,27 @@ class Item;
 class MiscItem : public Item
 {
 public:
-	MiscItem(const std::string & _Name,
-			 const std::string & _Desc,
-			 ShiftEngine::MeshDataPtr data,
-			 ShiftEngine::TexturePtr ptr)
-			 : Item(ptr, data, _Name, _Desc)
-	{
-	}
+    MiscItem(const std::string & name,
+        const std::string & desc,
+        ShiftEngine::MeshDataPtr data,
+        ShiftEngine::TexturePtr ptr,
+        const std::string & imageName)
+        : Item(ptr, data, name, desc, imageName)
+    {
+    }
 
-	bool UseOnPlayer() override
-	{
-		return false;
-	}
+    bool UseOnPlayer() override
+    {
+        return false;
+    }
 
-	bool UseInWorld() override
-	{
-		return false;
-	}
+    bool UseInWorld() override
+    {
+        return false;
+    }
 
-	ItemType GetType() const override
-	{
-		return IT_Misc;
-	}
+    ItemType GetType() const override
+    {
+        return IT_Misc;
+    }
 };
