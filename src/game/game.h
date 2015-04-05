@@ -9,7 +9,7 @@ class GameEventHandler;
 class ItemManager;
 class CraftingManager;
 class EnvironmentManager;
-class gameHUD;
+class GameHUD;
 
 struct Game
 {
@@ -28,7 +28,7 @@ struct Game
     std::unique_ptr<ItemManager> ItemMgr;
     std::unique_ptr<CraftingManager> CratingMgr;
     std::unique_ptr<EnvironmentManager> environmentMgr;
-    std::unique_ptr<gameHUD> gameHud;
+    std::unique_ptr<GameHUD> gameHud;
 
 };
 

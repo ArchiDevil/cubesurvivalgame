@@ -104,9 +104,9 @@ void CraftingManager::LoadRecipes(const std::string & path)
             if (error)
                 break;
 
-            if (i > 9)
+            if (i > 3)
             {
-                LOG_ERROR("Only 10 items are supported for now. Error in: ", file);
+                LOG_ERROR("Only 4 items are supported for now. Error in: ", file);
                 error = true;
                 break;
             }

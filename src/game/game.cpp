@@ -16,7 +16,7 @@ Game::Game()
     environmentMgr.reset(new EnvironmentManager);
     EntityMgr.reset(new GameObjectsManager);
     GlobalEventHandler.reset(new GameEventHandler);
-    gameHud.reset(new gameHUD);
+    gameHud.reset(new GameHUD);
     ItemMgr.reset(new ItemManager());
     CratingMgr.reset(new CraftingManager);
 }

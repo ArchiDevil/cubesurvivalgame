@@ -13,7 +13,7 @@ struct Recipe
 {
     item_id_t producedItem;
     uint32_t producedCount;
-    std::array<std::pair<item_id_t, uint32_t>, 10> itemsToCraft;
+    std::array<std::pair<item_id_t, uint32_t>, 4> itemsToCraft;
 };
 
 class CraftingManager : public IManager

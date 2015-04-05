@@ -10,11 +10,14 @@
 
 using ShiftEngine::Sprite;
 
-gameHUD::gameHUD()
+GameHUD::GameHUD()
 {
+    pIngredientIcons.fill(nullptr);
+    pIngredientNames.fill(nullptr);
+    pIngredientCounts.fill(nullptr);
 }
 
-void gameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
+void GameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
 {
     auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
     int screenWidth = settings.screenWidth;
@@ -81,11 +84,32 @@ void gameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
     pItemName->SetSize(100, 32);
 
     pItemDescription = new SimpleGUI::Text(pCrafting, "EMPTY DESCRIPTION");
-    pItemDescription->SetPosition(224, 24 + 64);
+    pItemDescription->SetPosition(288 + 16, 24 + 20);
     pItemDescription->SetSize(100, 32);
+
+    for (int i = 0; i < 2; ++i)
+    {
+        for (int j = 0; j < 2; ++j)
+        {
+            SimpleGUI::Image * pImage = new SimpleGUI::Image(pCrafting, L"");
+            pImage->SetPosition(224 + j * 124, 94 + i * 70);
+            pImage->SetSize(64, 64);
+            pIngredientIcons[i * 2 + j] = pImage;
+
+            SimpleGUI::Text * pName = new SimpleGUI::Text(pCrafting, "EMPTY");
+            pName->SetPosition(224 + j * 124 + 64, 94 + i * 70);
+            pName->SetSize(60, 32);
+            pIngredientNames[i * 2 + j] = pName;
+
+            SimpleGUI::Text * pCount = new SimpleGUI::Text(pCrafting, "0");
+            pCount->SetPosition(224 + j * 124 + 64, 94 + i * 70 + 32);
+            pCount->SetSize(60, 32);
+            pIngredientCounts[i * 2 + j] = pCount;
+        }
+    }
 }
 
-void gameHUD::Draw()
+void GameHUD::Draw()
 {
     ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     auto settings = pCtxMgr->GetEngineSettings();
@@ -142,7 +166,7 @@ void gameHUD::Draw()
     }
 }
 
-void gameHUD::OnUserInventoryChange()
+void GameHUD::OnUserInventoryChange()
 {
     auto pGame = LostIsland::GetGamePtr();
     auto & pItemMgr = pGame->ItemMgr;
@@ -168,39 +192,39 @@ void gameHUD::OnUserInventoryChange()
     }
 }
 
-void gameHUD::SelectSlot(uint32_t slot)
+void GameHUD::SelectSlot(uint32_t slot)
 {
     selectedSlot = slot;
     auto pGame = LostIsland::GetGamePtr();
     pGame->Player->GetInventoryPtr()->RemoveItemFromRightHand();
 }
 
-uint32_t gameHUD::GetSelectedSlot() const
+uint32_t GameHUD::GetSelectedSlot() const
 {
     return selectedSlot;
 }
 
-void gameHUD::OpenCraftingWindow()
+void GameHUD::OpenCraftingWindow()
 {
     pCrafting->Show();
 }
 
-void gameHUD::CloseCraftingWindow()
+void GameHUD::CloseCraftingWindow()
 {
     pCrafting->Hide();
 }
 
-void gameHUD::OpenInventoryWindow()
+void GameHUD::OpenInventoryWindow()
 {
     pInventory->Show();
 }
 
-void gameHUD::CloseInventoryWindow()
+void GameHUD::CloseInventoryWindow()
 {
     pInventory->Hide();
 }
 
-void gameHUD::OnCraftingProgress()
+void GameHUD::OnCraftingProgress()
 {
     SimpleGUI::Table * pTable = pRecipesList->GetTable();
     CraftingManager * pCraftingMgr = LostIsland::GetGamePtr()->CratingMgr.get();
@@ -209,11 +233,22 @@ void gameHUD::OnCraftingProgress()
     if (!pModel)
         return;
 
+    auto & pItemMgr = LostIsland::GetGamePtr()->ItemMgr;
+
     pModel->Clear();
-    std::for_each(recipesVec.cbegin(), recipesVec.cend(), [=](const std::pair<std::string, Recipe> & p) {pModel->Add(p.first); });
+    for (auto& recipe : recipesVec)
+    {
+        Item * pItem = pItemMgr->GetItemById(recipe.second.producedItem);
+        if (!pItem)
+            continue;
+
+        SimpleGUI::ListModelElement elementToInsert(pItem->GetName());
+        elementToInsert.SetValue("id", recipe.first);
+        pModel->Add(elementToInsert);
+    }
 }
 
-void gameHUD::onCraftRequest()
+void GameHUD::onCraftRequest()
 {
     SimpleGUI::Table * pTable = pRecipesList->GetTable();
     auto * pGame = LostIsland::GetGamePtr();
@@ -226,25 +261,53 @@ void gameHUD::onCraftRequest()
     if (!pModel)
         return;
 
-    const std::string & name = pModel->Get(selectedRecipe).GetName();
+    const std::string & name = pModel->Get(selectedRecipe).GetValue("id");
     const Recipe & recipe = pGame->CratingMgr->GetRecipeByName(name);
     pGame->CratingMgr->Craft(recipe);
     OnUserInventoryChange();
 }
 
-void gameHUD::onSelectRecipe(size_t row)
+void GameHUD::onSelectRecipe(size_t row)
 {
     // update icon, name and description
     SimpleGUI::ListModel * pModel = pRecipesList->GetTable()->GetModel();
-    const std::string & recipeName = pModel->Get(row).GetName();
+    const std::string & recipeName = pModel->Get(row).GetValue("id");
+
+    auto &pCraftingMgr = LostIsland::GetGamePtr()->CratingMgr;
+    const Recipe &recipe = pCraftingMgr->GetRecipeByName(recipeName);
 
     auto &pItemMgr = LostIsland::GetGamePtr()->ItemMgr;
-    item_id_t itemId = pItemMgr->GetItemId(recipeName);
-    Item * pItem = pItemMgr->GetItemById(itemId);
+    Item * pItem = pItemMgr->GetItemById(recipe.producedItem);
     if (!pItem)
-        LOG_ERROR("Unable to find item: ", recipeName);
+        LOG_ERROR("Unable to find item: ", recipe.producedItem);
 
     pItemImage->SetImage(utils::Widen(pItem->GetImageFile()));
     pItemName->SetText(pItem->GetName());
     pItemDescription->SetText(pItem->GetDescription());
+
+    for (size_t i = 0; i < recipe.itemsToCraft.size(); ++i)
+    {
+        pIngredientIcons[i]->SetImage(L"");
+        pIngredientNames[i]->SetText("");
+        pIngredientCounts[i]->SetText("");
+    }
+
+    for (size_t i = 0; i < recipe.itemsToCraft.size(); ++i)
+    {
+        auto &pair = recipe.itemsToCraft[i];
+        if (!pair.first || !pair.second)
+        {
+            continue;
+        }
+
+        pItem = pItemMgr->GetItemById(pair.first);
+        if (!pItem)
+        {
+            continue;
+        }
+
+        pIngredientIcons[i]->SetImage(utils::Widen(pItem->GetImageFile()));
+        pIngredientNames[i]->SetText(pItem->GetName());
+        pIngredientCounts[i]->SetText(std::to_string(pair.second));
+    }
 }

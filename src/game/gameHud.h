@@ -5,10 +5,10 @@
 #include <memory>
 #include <array>
 
-class gameHUD
+class GameHUD
 {
 public:
-    gameHUD();
+    GameHUD();
 
     void Initialize(SimpleGUI::Canvas * pCanvas);
     void Draw();
@@ -46,6 +46,10 @@ private:
     SimpleGUI::Image  * pItemImage = nullptr;
     SimpleGUI::Text   * pItemName = nullptr;
     SimpleGUI::Text   * pItemDescription = nullptr;
+
+    std::array<SimpleGUI::Image *, 4> pIngredientIcons;
+    std::array<SimpleGUI::Text *, 4>  pIngredientNames;
+    std::array<SimpleGUI::Text *, 4>  pIngredientCounts;
 
     SimpleGUI::Canvas * pCanvas = nullptr;
 };
