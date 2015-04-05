@@ -10,16 +10,16 @@ CollisionListener::~CollisionListener()
 
 const std::vector<CollisionInfo> & CollisionListener::GetCollisionsInfo() const
 {
-	return CurrentCollisions;
+    return CurrentCollisions;
 }
 
 void CollisionListener::ClearCollisions()
 {
-	CurrentCollisions.clear();
+    CurrentCollisions.clear();
 }
 
-void CollisionListener::AddCollision( const CollisionInfo & col )
+void CollisionListener::AddCollision(const CollisionInfo & col)
 {
-	CollisionInfo ci = col;
-	CurrentCollisions.push_back(ci);
+    CollisionInfo ci = col;
+    CurrentCollisions.push_back(ci);
 }

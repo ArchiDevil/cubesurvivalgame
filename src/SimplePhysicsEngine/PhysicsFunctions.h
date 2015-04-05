@@ -7,6 +7,6 @@ using MathLib::Vector3F;
 
 namespace Physics
 {
-	bool IsPointCollidesWithWorld(const Vector3F & Position, WorldStorage * world);
-	bool IsAABBCollidesWithWorld(const MathLib::AABB & bbox, WorldStorage * storage);
+    bool IsPointCollidesWithWorld(const Vector3F & Position, WorldStorage * world);
+    bool IsAABBCollidesWithWorld(const MathLib::AABB & bbox, WorldStorage * storage);
 }

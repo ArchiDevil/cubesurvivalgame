@@ -5,24 +5,24 @@
 
 struct CollisionInfo
 {
-	CollisionInfo(PhysObjectPtr obj)
-		: obj(obj)
-	{
-	}
+    CollisionInfo(PhysObjectPtr obj)
+        : obj(obj)
+    {
+    }
 
-	PhysObjectPtr obj;
+    PhysObjectPtr obj;
 };
 
 class CollisionListener
 {
 public:
-	CollisionListener();
-	~CollisionListener();
+    CollisionListener();
+    ~CollisionListener();
 
-	const std::vector<CollisionInfo> & GetCollisionsInfo() const;
-	void ClearCollisions();
-	void AddCollision(const CollisionInfo & col);
+    const std::vector<CollisionInfo> & GetCollisionsInfo() const;
+    void ClearCollisions();
+    void AddCollision(const CollisionInfo & col);
 
 private:
-	std::vector<CollisionInfo> CurrentCollisions;
+    std::vector<CollisionInfo> CurrentCollisions;
 };
