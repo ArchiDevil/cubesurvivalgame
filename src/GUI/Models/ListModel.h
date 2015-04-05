@@ -43,6 +43,7 @@ namespace SimpleGUI
 
         ListModel(IModelSubscriber * parent);
         void Add(const std::string &element, size_t pos = ListModel::npos);
+        void Add(const ListModelElement &element, size_t pos = ListModel::npos);
 
         const ListModelElement & Get(size_t index) const;
         size_t Get(const std::string &name) const;

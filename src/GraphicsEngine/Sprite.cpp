@@ -55,7 +55,10 @@ void ShiftEngine::Sprite::SetTexture(ShiftEngine::TexturePtr ptr)
 
 void ShiftEngine::Sprite::SetTexture(const std::wstring & filename)
 {
-    texture = ShiftEngine::GetContextManager()->LoadTexture(filename);
+    if (filename.empty())
+        texture = nullptr;
+    else
+        texture = ShiftEngine::GetContextManager()->LoadTexture(filename);
     SetScale(Vector2F(1.0f, 1.0f));
 }
 

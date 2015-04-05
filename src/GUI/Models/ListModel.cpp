@@ -52,6 +52,11 @@ SimpleGUI::ListModel::ListModel(IModelSubscriber * parent)
 
 void SimpleGUI::ListModel::Add(const std::string &element, size_t pos /*= ListModel::npos*/)
 {
+    Add(ListModelElement(element), pos);
+}
+
+void SimpleGUI::ListModel::Add(const ListModelElement &element, size_t pos /*= ListModel::npos*/)
+{
     if (pos >= elements.size()) // also npos
     {
         elements.push_back(element);
