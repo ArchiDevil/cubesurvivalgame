@@ -1,4 +1,4 @@
-#include "D3D10ShaderManager.h"
+#include "D3D11ShaderManager.h"
 
 #include <D3Dcompiler.h>
 #include <sstream>
@@ -13,23 +13,23 @@
     uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #endif
 
-ShiftEngine::D3D10ShaderManager::D3D10ShaderManager(ID3D10Device * _pDevice)
+    ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
     : pDevice(_pDevice)
-    , shaderGenerator(new D3D10ShaderGenerator())
+    , shaderGenerator(new D3D11ShaderGenerator())
 {
 }
 
-ShiftEngine::D3D10ShaderManager::~D3D10ShaderManager()
+ShiftEngine::D3D11ShaderManager::~D3D11ShaderManager()
 {
 }
 
-ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompileVSFromSource(const std::string & source)
+ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource(const std::string & source)
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
     HRESULT hr = S_OK;
 
-    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_4_0", flags, 0, &compiledShader, &errors);
+    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_5_0", flags, 0, &compiledShader, &errors);
     if (hr != S_OK && errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");
@@ -50,13 +50,13 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompileVSFromSource
     return out;
 }
 
-ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompilePSFromSource(const std::string & source)
+ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource(const std::string & source)
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
     HRESULT hr = S_OK;
 
-    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_4_0", flags, 0, &compiledShader, &errors);
+    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_5_0", flags, 0, &compiledShader, &errors);
     if (hr != S_OK && errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");
@@ -76,7 +76,7 @@ ShiftEngine::D3D10ShaderPtr ShiftEngine::D3D10ShaderManager::CompilePSFromSource
     return out;
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromFile(const std::wstring & fileName)
+ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(const std::wstring & fileName)
 {
     auto program = filePrograms.find(fileName);
     if (program != filePrograms.end())
@@ -105,7 +105,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromFile(
     }
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromSource(const std::string & source)
+ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromSource(const std::string & source)
 {
     auto program = sourcePrograms.find(source);
     if (program != sourcePrograms.end())
@@ -124,7 +124,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromSourc
     }
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D10ShaderManager::CreateProgramFromMaterialFlags(const MaterialInfo & mtlInfo, const VertexSemantic & verticesInfo)
+ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromMaterialFlags(const MaterialInfo & mtlInfo, const VertexSemantic & verticesInfo)
 {
     auto program = materialPrograms.find(std::make_pair(mtlInfo, verticesInfo));
     if (program != materialPrograms.end())

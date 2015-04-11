@@ -64,7 +64,7 @@ namespace MeshEditor
 
         ShiftEngine::Material ColorMaterial;
         ShiftEngine::Material GeometryMaterial;
-        ShiftEngine::TexturePtr GridTexture;
+        ShiftEngine::ITexturePtr GridTexture;
 
         ShiftEngine::VertexSemantic semantic;
         std::stack<std::unique_ptr<IAction>> actions;

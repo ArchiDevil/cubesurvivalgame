@@ -80,7 +80,7 @@ void ShiftEngine::Material::LinkMaterial()
 // 		elem = UINT_MAX;
 // }
 
-void ShiftEngine::Material::SetDiffuseTexture(const TexturePtr & texture)
+void ShiftEngine::Material::SetDiffuseTexture(const ITexturePtr & texture)
 {
     if (builtinTextures[ST_Diffuse].first != UINT_MAX)
     {
@@ -94,7 +94,7 @@ void ShiftEngine::Material::SetDiffuseTexture(const TexturePtr & texture)
     }
 }
 
-void ShiftEngine::Material::SetAlphaTexture(const TexturePtr & texture)
+void ShiftEngine::Material::SetAlphaTexture(const ITexturePtr & texture)
 {
     if (builtinTextures[ST_Alpha].first != UINT_MAX)
     {

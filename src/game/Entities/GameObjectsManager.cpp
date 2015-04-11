@@ -6,7 +6,7 @@
 #include <SimplePhysicsEngine/PhysicsEngine.h>
 
 #include <GraphicsEngine/ShiftEngine.h>
-#include <GraphicsEngine/D3D10ContextManager.h>
+#include <GraphicsEngine/APIs/D3D10/D3D10ContextManager.h>
 #include <GraphicsEngine/SceneGraph/SceneGraph.h>
 
 #include <Utilities/ut.h>

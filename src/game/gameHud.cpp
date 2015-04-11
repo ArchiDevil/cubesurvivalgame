@@ -173,7 +173,7 @@ void GameHUD::OnUserInventoryChange()
 
     for (int i = 0; i < 10; ++i)
     {
-        itemsSprites[i]->SetTexture(ShiftEngine::TexturePtr(nullptr));
+        itemsSprites[i]->SetTexture(ShiftEngine::ITexturePtr(nullptr));
     }
 
     const std::vector<SlotUnit> &items = pGame->Player->GetInventoryPtr()->GetItems();

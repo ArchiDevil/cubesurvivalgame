@@ -1,12 +1,12 @@
 #pragma once
 
-#include <unordered_map>
 #include <string>
 #include <memory>
 #include <vector>
+#include <map>
 
 #include "SceneGraph/LightNode.h"
-#include "D3D10Program.h"
+#include "IProgram.h"
 #include "MaterialInfo.h"
 #include "MiscTypes.h"
 
@@ -80,8 +80,8 @@ namespace ShiftEngine
         void SetSpecularColor(const MathLib::Vector4F & specularColor);
         void SetEmissionColor(const MathLib::Vector4F & emissionColor);
 
-        void SetDiffuseTexture(const TexturePtr & texture);
-        void SetAlphaTexture(const TexturePtr & texture);
+        void SetDiffuseTexture(const ITexturePtr & texture);
+        void SetAlphaTexture(const ITexturePtr & texture);
         //void SetNormalTexture(const cTexturePtr & texture);
         //void SetSpecularTexture(const cTexturePtr & texture);
         //void SetEmissionTexture(const cTexturePtr & texture);
@@ -111,7 +111,7 @@ namespace ShiftEngine
         bool                                            ZState = true;
         std::vector<engineUniforms>                     knownUniforms;
         unsigned int                                    builtinVarIndices[SV_Elems];
-        std::pair<unsigned int, TexturePtr>             builtinTextures[ST_Elems];
+        std::pair<unsigned int, ITexturePtr>            builtinTextures[ST_Elems];
         MaterialInfo                                    info;
     };
 

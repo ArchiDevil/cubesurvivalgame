@@ -2,7 +2,7 @@
 
 #include "../ShiftEngine.h"
 
-ShiftEngine::MeshNode::MeshNode(const MeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox)
+ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox)
     : ISceneNode()
     , bbox(_bbox)
     , isVisible(true)
@@ -17,7 +17,12 @@ ShiftEngine::MeshNode::~MeshNode()
 
 void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
 {
-    if (this->IsVisible())// && this->CheckVisibility(rq.GetActiveCamera()))
+    int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
+    //LOG_INFO(visibility);
+    //auto bbox = GetBBox();
+    //LOG_INFO(bbox.bMin.x, " ", bbox.bMin.y, " ", bbox.bMin.z, " ");
+    //LOG_INFO(bbox.bMax.x, " ", bbox.bMax.y, " ", bbox.bMax.z, " ");
+    if (IsVisible() && visibility)
         rq.AddRenderableNode(this);
 }
 
@@ -41,12 +46,12 @@ void ShiftEngine::MeshNode::SetMaterial(const ShiftEngine::Material * val)
     material = Material(*val);
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::MeshNode::GetDataPtr() const
+ShiftEngine::IMeshDataPtr ShiftEngine::MeshNode::GetDataPtr() const
 {
     return Data;
 }
 
-void ShiftEngine::MeshNode::SetDataPtr(MeshDataPtr data)
+void ShiftEngine::MeshNode::SetDataPtr(IMeshDataPtr data)
 {
     Data = data;
 }

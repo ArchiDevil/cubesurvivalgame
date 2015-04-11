@@ -9,8 +9,8 @@ class EntityItem : public Item
 public:
     EntityItem(const std::string & name, 
         const std::string & desc, 
-        ShiftEngine::MeshDataPtr data, 
-        ShiftEngine::TexturePtr ptr, 
+        ShiftEngine::IMeshDataPtr data,
+        ShiftEngine::ITexturePtr ptr, 
         const std::string & entityId,
         const std::string & imageName)
         : Item(ptr, data, name, desc, imageName)

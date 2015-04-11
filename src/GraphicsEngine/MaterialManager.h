@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Material.h"
-#include "D3D10TextureManager.h"
+#include "ITextureManager.h"
 #include "IShaderManager.h"
 
 namespace tinyxml2
@@ -14,7 +14,7 @@ namespace ShiftEngine
     class MaterialManager
     {
     public:
-        MaterialManager(D3D10TextureManager * _manager, IShaderManager * _shaderManager);
+        MaterialManager(ITextureManager * _manager, IShaderManager * _shaderManager);
         ~MaterialManager();
 
         MaterialPtr LoadMaterial(const std::wstring & filename, const std::wstring & mtlName = L"default");
@@ -30,7 +30,7 @@ namespace ShiftEngine
 
         std::vector<MaterialPtr> materials;
 
-        D3D10TextureManager * pTextureManager;
+        ITextureManager * pTextureManager;
         IShaderManager * pShaderManager;
 
     };

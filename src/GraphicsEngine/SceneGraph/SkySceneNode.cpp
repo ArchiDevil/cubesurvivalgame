@@ -3,7 +3,7 @@
 #include "SkySceneNode.h"
 #include "MeshNode.h"
 
-ShiftEngine::SkySceneNode::SkySceneNode(const Material * material, const MeshDataPtr & meshData)
+ShiftEngine::SkySceneNode::SkySceneNode(const Material * material, const IMeshDataPtr & meshData)
     : MeshNode(meshData, material, MathLib::AABB())
 {
 }

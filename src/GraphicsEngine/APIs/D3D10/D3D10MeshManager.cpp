@@ -3,16 +3,15 @@
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
 
-#include "ShiftEngine.h"
-#include "Utils.h"
+#include "../../ShiftEngine.h"
+#include "../../Utils.h"
 
 ShiftEngine::D3D10MeshManager::D3D10MeshManager(ID3D10Device * _device)
     : device(_device)
 {
-    CreateErrorMesh();
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::D3D10MeshManager::LoadMesh(const std::wstring & fileName)
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::LoadMesh(const std::wstring & fileName)
 {
     auto iter = meshesData.find(fileName);
     if (iter != meshesData.end())
@@ -21,52 +20,50 @@ ShiftEngine::MeshDataPtr ShiftEngine::D3D10MeshManager::LoadMesh(const std::wstr
     }
     else
     {
-        MeshData * ptr = new MeshData;
-        if (!Load(fileName, ptr))
+        D3D10MeshDataPtr ptr = std::make_shared<D3D10MeshData>(device);
+        if (!Load(fileName, ptr.get()))
         {
-            delete ptr;
             LOG_ERROR("Unable to load mesh", utils::Narrow(fileName));
             return nullptr;
         }
         else
         {
-            meshesData[fileName] = MeshDataPtr(ptr);
-            return MeshDataPtr(ptr);
+            meshesData[fileName] = ptr;
+            return ptr;
         }
     }
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::D3D10MeshManager::CreateMeshFromVertices(const void * data, 
-                                                                            size_t count,
-                                                                            const void * indexData, 
-                                                                            size_t indicesCount,
-                                                                            const ShiftEngine::VertexSemantic * semantic,
-                                                                            const D3D10VDPtr & declaration)
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::CreateMeshFromVertices(const uint8_t * verticesData,
+    size_t verticesDataSize,
+    const std::vector<uint32_t> & indicesData,
+    const ShiftEngine::VertexSemantic * semantic)
 {
-    MeshDataPtr out = std::make_shared<MeshData>(declaration);
-    if (!out->CreateBuffers(false, data, count, indexData, indicesCount, device))
+    if (!semantic)
+        return LoadErrorMesh();
+
+    auto vd = GetContextManager()->GetVertexDeclaration(*semantic);
+
+    D3D10MeshDataPtr out = std::make_shared<D3D10MeshData>(device);
+    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd))
     {
         LOG_ERROR("Unable to create mesh from vertices");
         return nullptr;
     }
-    out->vertexSemantic = semantic;
     return out;
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::D3D10MeshManager::LoadErrorMesh()
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::LoadErrorMesh()
 {
+    if (!errorMesh)
+        errorMesh = Utilities::createCube();
     return errorMesh;
 }
 
-void ShiftEngine::D3D10MeshManager::CreateErrorMesh()
-{
-    errorMesh = Utilities::createCube();
-}
-
-bool ShiftEngine::D3D10MeshManager::Load(const std::wstring & filename, MeshData * mesh)
+bool ShiftEngine::D3D10MeshManager::Load(const std::wstring & filename, D3D10MeshData * mesh)
 {
     SerializedLIM vertices;
-    std::vector<unsigned long> indices;
+    std::vector<uint32_t> indices;
 
     if (!ShiftEngine::Utilities::getVerticesFromFile(filename, vertices, indices))
         return false;
@@ -113,23 +110,18 @@ bool ShiftEngine::D3D10MeshManager::Load(const std::wstring & filename, MeshData
         }
     }
 
-    mesh->verticesCount = vertices.position.size();
-    mesh->indicesCount = indices.size();
-    mesh->vertexSize = vertexSize;
-    mesh->vertexSemantic = CreateSemantic(vertices);
-    auto declaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(*mesh->vertexSemantic);
+    auto sem = CreateSemantic(vertices);
+    auto declaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(*sem);
     if (!declaration)
-        declaration = GetContextManager()->GetVertexDeclaration(*mesh->vertexSemantic);
+        declaration = GetContextManager()->GetVertexDeclaration(*sem);
 
-    mesh->vertexDeclaration = declaration;
-
-    if (!mesh->CreateBuffers(true, vertexData.data(), vertices.position.size() * vertexSize, indices.data(), indices.size() * sizeof(unsigned long), device))
+    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size(), sem, declaration))
         return false;
 
     return true;
 }
 
-void ShiftEngine::D3D10MeshManager::UpdateVertices(SerializedLIM & vertices, std::vector<unsigned long>& indices) const
+void ShiftEngine::D3D10MeshManager::UpdateVertices(SerializedLIM & vertices, std::vector<uint32_t>& indices) const
 {
     for (size_t i = 0; i < vertices.position.size(); i++)
     {

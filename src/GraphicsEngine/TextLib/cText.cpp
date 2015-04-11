@@ -6,36 +6,34 @@
 
 cText::cText(const std::string & textString, cFont * fp, ID3D10Device * dev)
     : fontPtr(fp)
+    , mesh(dev)
 {
-    CreateAll(textString, dev);
+    CreateAll(textString);
 }
 
 cText::~cText()
 {
 }
 
-void cText::Draw(ID3D10Device * dev)
+void cText::Draw()
 {
-    mesh.vertexDeclaration->Bind();
-    mesh.Draw(dev);
+    mesh.GetVertexDeclaration()->Bind();
+    mesh.Draw();
 }
 
-void cText::CreateAll(const std::string & str, ID3D10Device * dev)
+void cText::CreateAll(const std::string & str)
 {
     if (str.size() == 0)
         return;
 
-    mesh.verticesCount = str.size() * 4;
-    mesh.indicesCount = str.size() * 6;
-
-    static std::vector<long> indicesPool(200);
+    static std::vector<uint32_t> indicesPool(200);
     static std::vector<TextPoint> verticesPool(100);
 
-    if (mesh.indicesCount > indicesPool.size())
-        indicesPool.resize(mesh.indicesCount);
+    if (str.size() * 6 > indicesPool.size())
+        indicesPool.resize(str.size() * 6);
 
-    if (mesh.verticesCount > verticesPool.size())
-        verticesPool.resize(mesh.verticesCount);
+    if (str.size() > verticesPool.size())
+        verticesPool.resize(str.size());
 
     int vertSh = 0;
     int indSh = 0;
@@ -55,10 +53,10 @@ void cText::CreateAll(const std::string & str, ID3D10Device * dev)
 
         indicesPool[indSh++] = vertSh;
         indicesPool[indSh++] = vertSh + 1;
-        indicesPool[indSh++] = vertSh + 2;	//first triangle
+        indicesPool[indSh++] = vertSh + 2; //first triangle
         indicesPool[indSh++] = vertSh;
         indicesPool[indSh++] = vertSh + 2;
-        indicesPool[indSh++] = vertSh + 3;	//second triangle
+        indicesPool[indSh++] = vertSh + 3; //second triangle
 
         /*
         0   1
@@ -97,9 +95,13 @@ void cText::CreateAll(const std::string & str, ID3D10Device * dev)
         CurX += cp->XAdvance;
     }
 
-    mesh.CreateBuffers(false, verticesPool.data(), vertSh * sizeof(TextPoint), indicesPool.data(), indSh * sizeof(long), dev);
-
-    mesh.vertexSize = sizeof(TextPoint);
-    mesh.vertexSemantic = &ShiftEngine::plainSpriteVertexSemantic;
-    mesh.vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::plainSpriteVertexSemantic);
+    mesh.CreateBuffers(
+        false, 
+        (uint8_t*)verticesPool.data(),
+        vertSh * sizeof(TextPoint),
+        indicesPool.data(),
+        indicesPool.size() * sizeof(uint32_t),
+        &ShiftEngine::plainSpriteVertexSemantic, 
+        ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::plainSpriteVertexSemantic)
+        );
 }

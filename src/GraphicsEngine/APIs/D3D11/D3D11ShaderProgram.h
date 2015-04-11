@@ -1,6 +1,7 @@
 #pragma once
 
-#include <D3D10.h>
+#include <D3D11.h>
+#include <D3Dcompiler.h>
 #include <memory>
 
 #include <Utilities/logger.hpp>
@@ -9,7 +10,7 @@ struct ID3D11ShaderReflection;
 
 namespace ShiftEngine
 {
-    enum class ShaderType
+    enum class D3D11ShaderType
     {
         ST_Vertex,
         ST_Pixel,
@@ -19,21 +20,19 @@ namespace ShiftEngine
         ST_Domain
     };
 
-    class D3D10Shader
+    class D3D11Shader
     {
-        friend class D3D10Program;
-        //now DX10 only
-        //extending to new functionality can be achieved with inheritance
-        //from interface which should be extracted from this class
+        friend class D3D11Program;
+
     public:
-        D3D10Shader(ID3D10DeviceChild * _shader, ShaderType _type, ID3D10ShaderReflection * _refl)
+        D3D11Shader(ID3D11DeviceChild * _shader, D3D11ShaderType _type, ID3D11ShaderReflection * _refl)
             : shader(_shader)
             , type(_type)
             , reflection(_refl)
         {
         }
 
-        ~D3D10Shader()
+        ~D3D11Shader()
         {
             if (shader) 
                 shader->Release();
@@ -41,16 +40,16 @@ namespace ShiftEngine
                 reflection->Release();
         }
 
-        void BindShader(ID3D10Device * dev)
+        void BindShader(ID3D11DeviceContext * dev)
         {
             switch (type)
             {
-            case ShiftEngine::ShaderType::ST_Vertex:
+            case ShiftEngine::D3D11ShaderType::ST_Vertex:
             {
-                ID3D10VertexShader * query = nullptr;
-                if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D10VertexShader), (void**)&query)))
+                ID3D11VertexShader * query = nullptr;
+                if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D11VertexShader), (void**)&query)))
                 {
-                    dev->VSSetShader(query);
+                    dev->VSSetShader(query, nullptr, 0);
                     query->Release();
                 }
                 else
@@ -60,12 +59,12 @@ namespace ShiftEngine
                 }
             }
             break;
-            case ShiftEngine::ShaderType::ST_Pixel:
+            case ShiftEngine::D3D11ShaderType::ST_Pixel:
             {
-                ID3D10PixelShader * query = nullptr;
-                if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D10PixelShader), (void**)&query)))
+                ID3D11PixelShader * query = nullptr;
+                if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D11PixelShader), (void**)&query)))
                 {
-                    dev->PSSetShader(query);
+                    dev->PSSetShader(query, nullptr, 0);
                     query->Release();
                 }
                 else
@@ -75,7 +74,7 @@ namespace ShiftEngine
                 }
             }
             break;
-            case ShiftEngine::ShaderType::ST_Geometry:
+            case ShiftEngine::D3D11ShaderType::ST_Geometry:
                 LOG_ERROR("Unable to bind geometry shader: operation is not implemented yet");
                 break;
             default:
@@ -84,11 +83,11 @@ namespace ShiftEngine
         }
 
     private:
-        ID3D10DeviceChild * shader;
-        ShaderType type;
-        ID3D10ShaderReflection * reflection; //reflection of this shader
+        ID3D11DeviceChild * shader;
+        D3D11ShaderType type;
+        ID3D11ShaderReflection * reflection; //reflection of this shader
     };
 
-    typedef std::shared_ptr<D3D10Shader> D3D10ShaderPtr;
+    typedef std::shared_ptr<D3D11Shader> D3D11ShaderPtr;
 
 }   //end of namespace ShiftEngine

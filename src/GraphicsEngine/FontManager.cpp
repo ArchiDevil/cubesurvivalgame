@@ -50,7 +50,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
     TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
     TextShader->Apply(true);
 
-    tex.Draw(pCntMng->GetDevicePointer());
+    tex.Draw();
 
     pCntMng->SetRasterizerState(crs);
     pCntMng->SetBlendingState(cbs);
@@ -87,7 +87,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y
     TextShader->SetVectorConstantByName("Rect", (float*)vec);
     TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
     TextShader->Apply(true);
-    tex.Draw(pCntMng->GetDevicePointer());
+    tex.Draw();
 
     pCntMng->SetRasterizerState(crs);
 

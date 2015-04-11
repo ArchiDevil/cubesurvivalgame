@@ -5,8 +5,8 @@
 #include <fstream>
 
 bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
-                                                SerializedLIM & vertices,
-                                                std::vector<unsigned long> & indices)
+                                                 SerializedLIM & vertices,
+                                                 std::vector<uint32_t> & indices)
 {
     std::ifstream in(filename.c_str(), std::ios::binary);
 
@@ -39,7 +39,6 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
         in.read(reinterpret_cast<char*>(vertices.colors.data()), sizeof(float) * 3 * size);
     }
 
-
     int sizeInd = head.indicesCount;
     indices.resize(sizeInd);
 
@@ -48,135 +47,105 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
     return true;
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createCube()
+ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createCube()
 {
-    //TODO: creating mesh WITHOUT ANY INFO ABOUT API
-
-    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
-
-    static MeshDataPtr pDefaultMesh = nullptr;
+    static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
         return pDefaultMesh;
     //some actions
-    DefaultVertex ver[] =
-    {
-        //up
-        { 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
-        { 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-        { -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
-        //down
-        { 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f },
-        { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f },
-        { -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f },
-        //left
-        { -0.5f, -0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f },
-        { 0.5f, -0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-        { 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f },
-        { -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f },
-        //right
-        { -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f },
-        { 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-        { 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-        { -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f },
-        //front
-        { -0.5f, 0.5f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-        { -0.5f, -0.5f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-        { -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
-        //back
-        { 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-        { 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-        { 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f },
-        { 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-    };
+    std::vector<DefaultVertex> vertices(24);
+    vertices[0] = { { 0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } };
+    vertices[1] = { { 0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } };
+    vertices[2] = { { -0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } };
+    vertices[3] = { { -0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } };
 
-    long ind[] =
+    vertices[4] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f } };
+    vertices[5] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f } };
+    vertices[6] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f } };
+    vertices[7] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f } };
+
+    vertices[8] = { { -0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } };
+    vertices[9] = { { 0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } };
+    vertices[10] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f } };
+    vertices[11] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } };
+
+    vertices[12] = { { -0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } };
+    vertices[13] = { { 0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } };
+    vertices[14] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } };
+    vertices[15] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } };
+
+    vertices[16] = { { -0.5f, 0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
+    vertices[17] = { { -0.5f, -0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
+    vertices[18] = { { -0.5f, -0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
+    vertices[19] = { { -0.5f, 0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
+
+    vertices[20] = { { 0.5f, 0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
+    vertices[21] = { { 0.5f, -0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
+    vertices[22] = { { 0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
+    vertices[23] = { { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
+
+    std::vector<uint32_t> indices =
     {
         //up
         0, 1, 2,
         2, 1, 3,
-        //down	+4
+        //down +4
         5, 4, 7,
         7, 4, 6,
-        //left	+8
+        //left +8
         8, 9, 10,
         8, 10, 11,
-        //right	+12
+        //right +12
         14, 13, 12,
         15, 14, 12,
-        //front	+16
+        //front +16
         16, 17, 19,
         17, 18, 19,
-        //back	+20
+        //back +20
         23, 21, 20,
         23, 22, 21
     };
 
-    MeshData * md = new MeshData();
-
-    md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 24, ind, sizeof(long) * 36, pDevice);
-
-    pDefaultMesh = MeshDataPtr(md);
-    pDefaultMesh->indicesCount = 36;
-    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-    pDefaultMesh->verticesCount = 24;
-    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), indices, &defaultVertexSemantic);
     return pDefaultMesh;
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createPlane()
+ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createPlane()
 {
-    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
-
-    static MeshDataPtr pDefaultMesh = nullptr;
+    static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
         return pDefaultMesh;
 
-    DefaultVertex ver[] =
-    {
-        //up
-        { 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
-        { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-        { -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
-    };
+    std::vector<DefaultVertex> vertices(4);
+    vertices[0] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } };
+    vertices[1] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } };
+    vertices[2] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } };
+    vertices[3] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } };
 
-    long ind[] =
+    std::vector<uint32_t> indices =
     {
         //up
         0, 1, 2,
         2, 1, 3,
     };
 
-    MeshData * md = new MeshData();
-
-    md->CreateBuffers(false, ver, sizeof(DefaultVertex) * 4, ind, sizeof(long) * 6, pDevice);
-
-    pDefaultMesh = MeshDataPtr(md);
-    pDefaultMesh->indicesCount = 6;
-    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-    pDefaultMesh->verticesCount = 4;
-    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), indices, &defaultVertexSemantic);
     return pDefaultMesh;
 }
 
-ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createSphere()
+ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
 {
-    ID3D10Device * pDevice = ShiftEngine::GetContextManager()->GetDevicePointer();
-
-    static MeshDataPtr pDefaultMesh = nullptr;
+    static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
         return pDefaultMesh;
 
     const int subdivisions = 36;
     //const float radius = 1.0f;
 
-    DefaultVertex * vertices = new DefaultVertex[subdivisions * subdivisions * 6];
-    memset(vertices, 0, sizeof(DefaultVertex) * subdivisions * subdivisions * 6);
+    std::vector<DefaultVertex> vertices(subdivisions * subdivisions * 6);
+    memset(vertices.data(), 0, sizeof(DefaultVertex) * vertices.size());
 
     const float step = (float)M_PI / subdivisions;
 
@@ -228,16 +197,8 @@ ShiftEngine::MeshDataPtr ShiftEngine::Utilities::createSphere()
         }
     }
 
-    MeshData * md = new MeshData();
-
-    md->CreateBuffers(false, vertices, sizeof(DefaultVertex) * subdivisions * subdivisions * 6, nullptr, 0, pDevice);
-
-    pDefaultMesh = MeshDataPtr(md);
-    pDefaultMesh->indicesCount = 0;
-    pDefaultMesh->vertexSize = sizeof(DefaultVertex);
-    pDefaultMesh->verticesCount = subdivisions * subdivisions * 6;
-    pDefaultMesh->vertexSemantic = &defaultVertexSemantic;
-    pDefaultMesh->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(defaultVertexSemantic);
+    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), {}, &defaultVertexSemantic);
     return pDefaultMesh;
 }
 

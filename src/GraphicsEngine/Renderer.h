@@ -8,9 +8,11 @@
 #include "IShaderGenerator.h"
 
 #ifdef D3D10_RENDER
-#include "D3D10ContextManager.h"
+#   include "APIs/D3D10/D3D10ContextManager.h"
+#elif D3D11_RENDER
+#   include "APIs/D3D11/D3D11ContextManager.h"
 #elif OPENGL_RENDER
-#include "OpenGLContextManager.h"
+#   include "APIs/OGL33/OpenGLContextManager.h"
 #endif
 
 #include <Utilities/timer.h>
@@ -21,19 +23,6 @@ namespace ShiftEngine
     {
         struct RendererState
         {
-            RendererState()
-                : DrawCalls(0)
-                , PolygonsCount(0)
-                , TextureBindings(0)
-                , UniformsBindings(0)
-                , MatricesBindings(0)
-                , ShaderChanges(0)
-                , currentProgram(nullptr)
-                , shaderChanged(true)
-                , materialChanged(false)
-            {
-            }
-
             void Reset()
             {
                 DrawCalls = 0;
@@ -45,22 +34,23 @@ namespace ShiftEngine
                 shaderChanged = true;
                 materialChanged = true;
                 currentProgram = nullptr;
+
                 texturesCache.clear();
             }
 
-            unsigned int DrawCalls;
-            unsigned int PolygonsCount;
-            unsigned int ShaderChanges;
-            unsigned int TextureBindings;
-            unsigned int UniformsBindings;
-            unsigned int MatricesBindings;
+            unsigned int DrawCalls = 0;
+            unsigned int PolygonsCount = 0;
+            unsigned int ShaderChanges = 0;
+            unsigned int TextureBindings = 0;
+            unsigned int UniformsBindings = 0;
+            unsigned int MatricesBindings = 0;
 
-            bool shaderChanged;
-            bool materialChanged;
+            bool shaderChanged = true;
+            bool materialChanged = true; // was false in default constructor
 
-            std::unordered_map<engineTextures, TexturePtr> texturesCache;
+            std::unordered_map<engineTextures, ITexturePtr> texturesCache;
 
-            IProgramPtr currentProgram;
+            IProgramPtr currentProgram = nullptr;
         };
 
     public:

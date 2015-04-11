@@ -65,6 +65,7 @@ namespace ShiftEngine
             const std::string & name = "");
 
         const std::vector<VertexInfo> & getInnerRepresentation() const;
+        size_t getVertexSize() const;
 
         bool isNormalsHere() const;
         bool isTexcoordsHere() const;

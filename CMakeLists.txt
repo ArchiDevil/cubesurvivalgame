@@ -11,6 +11,8 @@ if(NOT MSVC)
 endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
+set(RENDERER D3D10_RENDER)
+
 option(BUILD_TESTS "Generate projects for tests building" ON)
 
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)

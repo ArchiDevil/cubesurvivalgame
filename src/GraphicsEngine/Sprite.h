@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "D3D10Texture.h"
-#include "cMesh.h"
+#include "IMeshData.h"
+#include "ITexture.h"
 #include "IProgram.h"
 #include "VertexTypes.h"
 
@@ -26,7 +26,7 @@ namespace ShiftEngine
         void SetPosition(const Vector2F & pos);
         void SetRotation(float rot);
         void SetScale(const Vector2F & sc);
-        void SetTexture(ShiftEngine::TexturePtr ptr);
+        void SetTexture(ShiftEngine::ITexturePtr ptr);
         void SetTexture(const std::wstring & filename);
         void SetMaskColor(const Vector4F & color);
 
@@ -39,8 +39,8 @@ namespace ShiftEngine
         void CreateBuffers(const Vector2F & LT, const Vector2F & RB);
         void LoadShader();
 
-        ShiftEngine::TexturePtr texture = nullptr;
-        ShiftEngine::MeshDataPtr spriteMesh = nullptr;
+        ShiftEngine::ITexturePtr texture = nullptr;
+        ShiftEngine::IMeshDataPtr spriteMesh = nullptr;
 
         Vector4F MaskColor = { 1.0f, 1.0f, 1.0f, 1.0f };
         Vector2F Position = { 0.0f, 0.0f };

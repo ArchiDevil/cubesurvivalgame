@@ -1,6 +1,11 @@
 #pragma once
 
-#include "D3D10ContextManager.h"
+#ifdef D3D10_RENDER
+#include "APIs/D3D10/D3D10ContextManager.h"
+#elif D3D11_RENDER
+#include "APIs/D3D11/D3D11ContextManager.h"
+#endif // D3D10_RENDER
+
 #include "Renderer.h"
 #include "SceneGraph/SceneGraph.h"
 #include "Utils.h"

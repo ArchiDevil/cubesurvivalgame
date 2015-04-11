@@ -1,8 +1,6 @@
 #pragma once
 
-#if defined (WIN32) || (_WIN32)
 #include <d3d11.h>
-#endif //WIN32
 
 #include "D3D11RenderTarget.h"
 
@@ -66,8 +64,6 @@ struct D3D11Context
 
     bool CreateStates()
     {
-        throw;
-
         D3D11_BLEND_DESC bdDescNormal;
         ZeroMemory(&bdDescNormal, sizeof(D3D11_BLEND_DESC));
         bdDescNormal.AlphaToCoverageEnable = false;

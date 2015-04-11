@@ -3,7 +3,7 @@
 #include <d3d10.h>
 
 #include "cFont.h"
-#include "../cMesh.h"
+#include "../APIs/D3D10/D3D10Mesh.h"
 
 class cText   //non-unicode
 {
@@ -11,7 +11,7 @@ public:
     cText(const std::string & textString, cFont * fp, ID3D10Device * dev);
     ~cText();
 
-    void Draw(ID3D10Device * dev);
+    void Draw();
 
 private:
     struct TextPoint
@@ -19,9 +19,9 @@ private:
         float x, y, tu, tv;
     };
 
-    void CreateAll(const std::string & str, ID3D10Device * dev);
+    void CreateAll(const std::string & str);
 
-    ShiftEngine::MeshData mesh;
+    ShiftEngine::D3D10MeshData mesh;
     cFont * fontPtr;
 
 };

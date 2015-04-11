@@ -2,21 +2,21 @@
 
 #include "VertexTypes.h"
 #include "MiscTypes.h"
-#include "cMesh.h"
+#include "APIs/D3D10/D3D10Mesh.h"
 
 namespace ShiftEngine
 {
     namespace Utilities
     {
         bool getVerticesFromFile(const std::wstring & filename,
-            SerializedLIM & vertices,
-            std::vector<unsigned long> & indices);
+                                 SerializedLIM & vertices,
+                                 std::vector<uint32_t> & indices);
 
-        MathLib::AABB getBBoxFromMesh(MeshDataPtr meshData);
+        MathLib::AABB getBBoxFromMesh(D3D10MeshDataPtr meshData);
 
-        MeshDataPtr createCube();
-        MeshDataPtr createPlane();
-        MeshDataPtr createSphere();
+        IMeshDataPtr createCube();
+        IMeshDataPtr createPlane();
+        IMeshDataPtr createSphere();
 
         void convertVertices(const std::vector<DefaultVertex> & input, std::vector<ExtendedVertex> & output);
         void convertVertices(const std::vector<DefaultVertex> & input, std::vector<ColorVertex> & output);

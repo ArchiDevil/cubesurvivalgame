@@ -32,8 +32,8 @@ namespace ShiftEngine
 
         void DrawAll(double dt) const;
 
-        MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);	//tries to load mesh with meshLoader
-        MeshNode * AddMeshNode(MeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
+        MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);                        //tries to load mesh with meshLoader
+        MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
         CameraSceneNode * AddCameraSceneNode();
 
         LightNode * AddDirectionalLightNode(const Vector3F & direction, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));

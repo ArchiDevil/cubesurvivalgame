@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "IShaderGenerator.h"
-#include "VertexTypes.h"
+#include "../../IShaderGenerator.h"
+#include "../../VertexTypes.h"
 
 namespace ShiftEngine
 {
-    class D3D10ShaderGenerator : public IShaderGenerator
+    class D3D11ShaderGenerator : public IShaderGenerator
     {
     public:
         std::string CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & info) override;

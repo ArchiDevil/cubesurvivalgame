@@ -1,20 +1,28 @@
-#include "cMesh.h"
+#include "D3D10Mesh.h"
 
-ShiftEngine::MeshData::MeshData(D3D10VDPtr _vertexDeclaration, ID3D10Buffer * _VB /*= nullptr*/, ID3D10Buffer * _IB /*= nullptr*/)
-    : VertexBuffer(_VB)
-    , IndexBuffer(_IB)
-    , vertexDeclaration(_vertexDeclaration)
-    , vertexSemantic(nullptr)
+#include <cassert>
+
+ShiftEngine::D3D10MeshData::D3D10MeshData(ID3D10Device * pDevice)
+    : IMeshData()
+    , pDevice(pDevice)
 {
 }
 
-ShiftEngine::MeshData::MeshData(const MeshData & ref)
-    : indicesCount(ref.indicesCount)
-    , vertexSize(ref.vertexSize)
-    , verticesCount(ref.verticesCount)
-    , vertexDeclaration(ref.vertexDeclaration)
-    , vertexSemantic(ref.vertexSemantic)
+ShiftEngine::D3D10MeshData::D3D10MeshData(ID3D10Buffer * _VB /*= nullptr*/, ID3D10Buffer * _IB /*= nullptr*/, ID3D10Device * pDevice /*= nullptr*/)
+    : IMeshData()
+    , VertexBuffer(_VB)
+    , IndexBuffer(_IB)
+    , pDevice(pDevice)
 {
+}
+
+ShiftEngine::D3D10MeshData::D3D10MeshData(const D3D10MeshData & ref)
+    : pDevice(ref.pDevice)
+{
+    indicesCount = ref.indicesCount;
+    vertexSize = ref.vertexSize;
+    verticesCount = ref.verticesCount;
+
     IndexBuffer = ref.IndexBuffer;
     if (IndexBuffer)
         IndexBuffer->AddRef();
@@ -22,9 +30,12 @@ ShiftEngine::MeshData::MeshData(const MeshData & ref)
     VertexBuffer = ref.VertexBuffer;
     if (VertexBuffer)
         VertexBuffer->AddRef();
+
+    vertexDeclaration = ref.vertexDeclaration;
+    vertexSemantic = ref.vertexSemantic;
 }
 
-ShiftEngine::MeshData& ShiftEngine::MeshData::operator = (const MeshData & ref)
+ShiftEngine::D3D10MeshData& ShiftEngine::D3D10MeshData::operator = (const D3D10MeshData & ref)
 {
     indicesCount = ref.indicesCount;
     vertexSize = ref.vertexSize;
@@ -41,23 +52,27 @@ ShiftEngine::MeshData& ShiftEngine::MeshData::operator = (const MeshData & ref)
     vertexDeclaration = ref.vertexDeclaration;
     vertexSemantic = ref.vertexSemantic;
 
+    pDevice = ref.pDevice;
+
     return *this;
 }
 
-ShiftEngine::MeshData::~MeshData()
+ShiftEngine::D3D10MeshData::~D3D10MeshData()
 {
     Clear();
 }
 
-bool ShiftEngine::MeshData::CreateBuffers(bool dynamic,
-                                          const void * vData, size_t vSize,
-                                          const void * iData, size_t iSize,
-                                          ID3D10Device * device)
+bool ShiftEngine::D3D10MeshData::CreateBuffers(bool dynamic,
+    const uint8_t * vData,
+    size_t vDataSize,
+    const uint32_t * iData,
+    size_t iDataSize,
+    const VertexSemantic * semantic,
+    const D3D10VDPtr & declaration)
 {
-    if (vSize > 0 && !vData)
-        return false;
+    assert(pDevice);
 
-    if (iSize > 0 && !iData)
+    if (!vData || !vDataSize || !semantic)
         return false;
 
     D3D10_BUFFER_DESC vBuffDesc;
@@ -66,7 +81,7 @@ bool ShiftEngine::MeshData::CreateBuffers(bool dynamic,
     ZeroMemory(&iBuffDesc, sizeof(D3D10_BUFFER_DESC));
 
     vBuffDesc.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-    vBuffDesc.ByteWidth = vSize;
+    vBuffDesc.ByteWidth = vDataSize;
     vBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -80,18 +95,18 @@ bool ShiftEngine::MeshData::CreateBuffers(bool dynamic,
         vBuffDesc.Usage = D3D10_USAGE_DEFAULT;
     }
 
-    if (vSize > 0)
+    if (vData)
     {
         D3D10_SUBRESOURCE_DATA data;
         ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
         data.pSysMem = vData;
 
-        if (FAILED(device->CreateBuffer(&vBuffDesc, &data, &VertexBuffer)))
+        if (FAILED(pDevice->CreateBuffer(&vBuffDesc, &data, &VertexBuffer)))
             return false;
     }
 
     iBuffDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-    iBuffDesc.ByteWidth = iSize;
+    iBuffDesc.ByteWidth = iDataSize;
     iBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -105,20 +120,26 @@ bool ShiftEngine::MeshData::CreateBuffers(bool dynamic,
         iBuffDesc.Usage = D3D10_USAGE_DEFAULT;
     }
 
-    if (iSize > 0)
+    if (iData)
     {
         D3D10_SUBRESOURCE_DATA data;
         ZeroMemory(&data, sizeof(D3D10_SUBRESOURCE_DATA));
         data.pSysMem = iData;
 
-        if (FAILED(device->CreateBuffer(&iBuffDesc, &data, &IndexBuffer)))
+        if (FAILED(pDevice->CreateBuffer(&iBuffDesc, &data, &IndexBuffer)))
             return false;
     }
+
+    vertexSemantic = semantic;
+    vertexDeclaration = declaration;
+    vertexSize = vertexSemantic->getVertexSize();
+    verticesCount = vDataSize / vertexSize;
+    indicesCount = iDataSize / sizeof(uint32_t);
 
     return true;
 }
 
-void ShiftEngine::MeshData::Clear()
+void ShiftEngine::D3D10MeshData::Clear()
 {
     if (VertexBuffer)
     {
@@ -133,9 +154,9 @@ void ShiftEngine::MeshData::Clear()
     }
 }
 
-int ShiftEngine::MeshData::Draw(ID3D10Device * device)
+size_t ShiftEngine::D3D10MeshData::Draw()
 {
-    if (!device)
+    if (!pDevice)
         return 0;
 
     if (!vertexSize || !verticesCount)
@@ -143,15 +164,15 @@ int ShiftEngine::MeshData::Draw(ID3D10Device * device)
 
     unsigned int stride = vertexSize;
     unsigned int offset = 0;
-    device->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+    pDevice->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
     if (indicesCount > 0)
     {
-        device->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        device->DrawIndexed(indicesCount, 0, 0);
+        pDevice->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        pDevice->DrawIndexed(indicesCount, 0, 0);
     }
     else
     {
-        device->Draw(verticesCount, 0);
+        pDevice->Draw(verticesCount, 0);
     }
 
     return indicesCount / 3;

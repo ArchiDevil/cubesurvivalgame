@@ -89,6 +89,8 @@ void ShiftEngine::Renderer::Process(RenderQueue &rq)
     for (auto iter = renderVec.begin(); iter != renderVec.end(); ++iter)
     {
         MeshNode * currentNode = (*iter);
+        if (!currentNode->GetDataPtr())
+            continue;;
 
         //bind material
         Material * mat = currentNode->GetMaterialPtr();
@@ -96,7 +98,7 @@ void ShiftEngine::Renderer::Process(RenderQueue &rq)
         if (mat->program == nullptr)
         {
             //PANIC COMPILE SHADER!!!
-            mat->program = pShaderManager->CreateProgramFromMaterialFlags(mat->info, *currentNode->GetDataPtr()->vertexSemantic);
+            mat->program = pShaderManager->CreateProgramFromMaterialFlags(mat->info, *currentNode->GetDataPtr()->GetVertexSemantic());
             mat->LinkMaterial();
         }
 
@@ -150,7 +152,7 @@ void ShiftEngine::Renderer::bindEngineUniforms(MeshNode * currentNode, const Ren
 
     const auto & uniforms = currentNode->GetMaterialPtr()->GetUniforms();
     size_t uniformsNum = uniforms.size();
-    for (unsigned i = 0; i != uniformsNum; ++i)
+    for (size_t i = 0; i != uniformsNum; ++i)
     {
         auto uniformId = uniforms[i];
         auto uniformIndex = currentNode->GetMaterialPtr()->GetUniformIndex(uniformId);

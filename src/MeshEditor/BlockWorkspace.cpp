@@ -109,10 +109,9 @@ void MeshEditor::BlockWorkspace::Tesselate()
         Vector3F Color;
     };
 
-    ShiftEngine::MeshData * cd = new ShiftEngine::MeshData;
     std::vector<wVertex> vertices;
-    std::vector<long> indices;
-    int ind_index = 0;
+    std::vector<uint32_t> indices;
+    unsigned long ind_index = 0;
 
     const Vector3F FRONT = Vector3F(-1.0f, 0.0f, 0.0f);
     const Vector3F BACK = Vector3F(1.0f, 0.0f, 0.0f);
@@ -281,18 +280,8 @@ void MeshEditor::BlockWorkspace::Tesselate()
         }
     }
 
-    cd->indicesCount = indices.size();
-    cd->verticesCount = vertices.size();
-    cd->vertexSize = sizeof(wVertex);
-
-    cd->CreateBuffers(true, vertices.data(), sizeof(wVertex) * vertices.size(),
-                      indices.data(), sizeof(long) * indices.size(),
-                      ShiftEngine::GetContextManager()->GetDevicePointer());
-
-    ShiftEngine::MeshDataPtr meshData = ShiftEngine::MeshDataPtr(cd);
-
-    cd->vertexSemantic = &semantic;
-    cd->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(semantic);
+    ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    auto meshData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(wVertex), indices, &semantic);
 
     if (!mesh)
         mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, MathLib::AABB({}, storage.GetHalfSize() * 2.0f), &GeometryMaterial);
@@ -384,11 +373,6 @@ void MeshEditor::BlockWorkspace::CreatePlane()
     if (plane)
         return;
 
-    ShiftEngine::MeshData * temp = new ShiftEngine::MeshData;
-
-    temp->indicesCount = 6;
-    temp->verticesCount = 4;
-    temp->vertexSize = sizeof(ShiftEngine::DefaultVertex);
     ShiftEngine::DefaultVertex ver[] =
     {
         { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
@@ -398,20 +382,16 @@ void MeshEditor::BlockWorkspace::CreatePlane()
     };
     long ind[6] = { 0, 1, 2, 0, 2, 3 };
 
-    temp->CreateBuffers(false, ver, sizeof(ShiftEngine::DefaultVertex) * 4,
-                        ind, sizeof(long) * 6, ShiftEngine::GetContextManager()->GetDevicePointer());
-    temp->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::defaultVertexSemantic);
-    temp->vertexSemantic = &ShiftEngine::defaultVertexSemantic;
-
+    ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    auto pMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver, 4 * sizeof(ShiftEngine::DefaultVertex), { std::begin(ind), std::end(ind) }, &ShiftEngine::defaultVertexSemantic);
     ShiftEngine::MaterialPtr planeMtl = ShiftEngine::GetContextManager()->LoadMaterial(L"plane.mtl", L"editorPlane");
-    plane = ShiftEngine::GetSceneGraph()->AddMeshNode(std::shared_ptr<ShiftEngine::MeshData>(temp), MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), planeMtl.get());
+    plane = ShiftEngine::GetSceneGraph()->AddMeshNode(pMesh, MathLib::AABB(Vector3F(), Vector3F(1.0f, 1.0f, 0.0f)), planeMtl.get());
 }
 
 void MeshEditor::BlockWorkspace::CreateBBox()
 {
     //if(!bbox)
     //{
-    //	MeshDataPtr temp = ShiftEngine::utils::createCube(cGraphicsEngine::GetInstance().GetDevicePointer());
     //	std::vector<ShiftEngine::InputElement> i;
     //	i.push_back(ShiftEngine::InputElement("POSITION", 3));
     //	i.push_back(ShiftEngine::InputElement("NORMAL", 3));

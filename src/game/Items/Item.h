@@ -2,8 +2,8 @@
 
 #include "../Entities/GameObject.h"
 
-#include <GraphicsEngine/D3D10Texture.h>
-#include <GraphicsEngine/cMesh.h>
+#include <GraphicsEngine/ITexture.h>
+#include <GraphicsEngine/APIs/D3D10/D3D10Mesh.h>
 
 #include <string>
 
@@ -19,8 +19,8 @@ enum ItemType
 class Item
 {
 public:
-    Item(ShiftEngine::TexturePtr icon,
-        ShiftEngine::MeshDataPtr mesh,
+    Item(ShiftEngine::ITexturePtr icon,
+        ShiftEngine::IMeshDataPtr mesh,
         const std::string & name,
         const std::string & desc,
         const std::string & imageName);
@@ -30,8 +30,8 @@ public:
     const std::string & GetDescription() const;
     const std::string & GetName() const;
 
-    ShiftEngine::TexturePtr GetTexturePtr() const;
-    ShiftEngine::MeshDataPtr GetMesh() const;
+    ShiftEngine::ITexturePtr GetTexturePtr() const;
+    ShiftEngine::IMeshDataPtr GetMesh() const;
 
     const std::string & GetImageFile() const;
 
@@ -44,8 +44,8 @@ public:
 protected:
     const std::string name;
     const std::string description;
-    const ShiftEngine::TexturePtr icon;
-    ShiftEngine::MeshDataPtr mesh;
+    const ShiftEngine::ITexturePtr icon;
+    ShiftEngine::IMeshDataPtr mesh;
     const std::string itemImage;
 
 };

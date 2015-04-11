@@ -53,9 +53,9 @@ using namespace tinyxml2;
         }                                                            \
     }                                                                \
 
-ShiftEngine::MaterialManager::MaterialManager(D3D10TextureManager * _manager, IShaderManager * _shaderManager)
-    : pTextureManager(_manager)
-    , pShaderManager(_shaderManager)
+ShiftEngine::MaterialManager::MaterialManager(ITextureManager * pTextureManager, IShaderManager * pShaderManager)
+    : pTextureManager(pTextureManager)
+    , pShaderManager(pShaderManager)
 {
 }
 

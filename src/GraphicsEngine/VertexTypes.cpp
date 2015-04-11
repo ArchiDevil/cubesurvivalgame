@@ -1,5 +1,7 @@
 #include "VertexTypes.h"
 
+#include <cassert>
+
 namespace ShiftEngine
 {
     VertexSemantic defaultVertexSemantic;
@@ -104,4 +106,23 @@ bool ShiftEngine::VertexSemantic::isBinormalsHere() const
             return true;
 
     return false;
+}
+
+size_t ShiftEngine::VertexSemantic::getVertexSize() const
+{
+    size_t vertexSize = 0;
+    for (const auto & elem : vertexSemantics)
+    {
+        switch (elem.type)
+        {
+        case ET_FLOAT:
+            vertexSize += elem.count * sizeof(float);
+            break;
+        default:
+            assert(false);
+            break;
+        }
+    }
+
+    return vertexSize;
 }

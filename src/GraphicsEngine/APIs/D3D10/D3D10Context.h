@@ -1,8 +1,6 @@
 #pragma once
 
-#if defined (WIN32) || (_WIN32)
-    #include <d3d10.h>
-#endif //WIN32
+#include <d3d10.h>
 
 #include "D3D10RenderTarget.h"
 
@@ -10,7 +8,7 @@ struct D3D10Context
 {
     ID3D10Device *              Device = nullptr;
     IDXGISwapChain *            SwapChain = nullptr;
-    D3D10RenderTarget *             DefaultRT = nullptr;
+    D3D10RenderTarget *         DefaultRT = nullptr;
     ID3D10Texture2D *           DepthStencilBuffer = nullptr;
     ID3D10DepthStencilView *    DepthStencilView = nullptr;
 

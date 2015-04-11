@@ -6,11 +6,9 @@ WorldTesselator::WorldTesselator(WorldStorage * _ws)
     : ws(_ws)
     , criticalSection(nullptr)
 {
-    auto pCtxMgr = ShiftEngine::GetContextManager();
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Position);
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Normal);
     nodeSemantic.addSemantic(ShiftEngine::ET_FLOAT, 3, ShiftEngine::ES_Color);
-    nodeDeclaration = pCtxMgr->GetVertexDeclaration(nodeSemantic);
     noiseGenerator.SetFrequency(0.01);
 }
 
@@ -30,12 +28,11 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
     };
 
     const int chunkWidth = ws->GetChunkWidth();
-    ShiftEngine::MeshDataPtr landData = ShiftEngine::MeshDataPtr(new ShiftEngine::MeshData());
     int blockXstart = ChunkX * chunkWidth;
     int blockYstart = ChunkY * chunkWidth;
 
     std::vector<PNC> vertices;
-    std::vector<unsigned long> indices;
+    std::vector<uint32_t> indices;
 
     MathLib::AABB bbox;
     bbox.bMin.x = 0.0f;
@@ -181,16 +178,10 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
         }
     }
 
-    if (!landData->CreateBuffers(false, vertices.data(), sizeof(PNC) * vertices.size(), indices.data(), sizeof(unsigned long) * indices.size(), ShiftEngine::GetContextManager()->GetDevicePointer()))
-    {
+    ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    auto landData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic);
+    if (!landData)
         return false;
-    }
-
-    landData->indicesCount = indices.size();
-    landData->verticesCount = vertices.size();
-    landData->vertexSize = sizeof(PNC);
-    landData->vertexSemantic = &nodeSemantic;
-    landData->vertexDeclaration = nodeDeclaration;
 
     landNode->SetDataPtr(landData);
     landNode->SetBBox(bbox);
@@ -198,7 +189,6 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
     vertices.clear();
     indices.clear();
 
-    ShiftEngine::MeshDataPtr waterData = ShiftEngine::MeshDataPtr(new ShiftEngine::MeshData());
     bbox.bMin.x = 0.0f;
     bbox.bMin.y = 0.0f;
     bbox.bMin.z = 1000.0f;
@@ -241,17 +231,13 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
         }
     }
 
-    if (!waterData->CreateBuffers(false, vertices.data(), sizeof(PNC) * vertices.size(), indices.data(), sizeof(unsigned long) * indices.size(), ShiftEngine::GetContextManager()->GetDevicePointer()))
-    {
-        LOG_ERROR("Unable to create vertex buffer");
-        return false;
-    }
+    if (vertices.empty())
+        return true;
 
-    waterData->indicesCount = indices.size();
-    waterData->verticesCount = vertices.size();
-    waterData->vertexSize = sizeof(PNC);
-    waterData->vertexSemantic = &nodeSemantic;
-    waterData->vertexDeclaration = nodeDeclaration;
+    pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
+    auto waterData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic);
+    if (!waterData)
+        return false;
 
     waterNode->SetDataPtr(waterData);
     waterNode->SetBBox(bbox);
@@ -264,7 +250,7 @@ void WorldTesselator::SetCriticalSection(std::mutex * sect)
     criticalSection = sect;
 }
 
-void WorldTesselator::TesselateSubChunk(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &blockPos, const Vector3F &color, int chunkX, int chunkY)
+void WorldTesselator::TesselateSubChunk(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &blockPos, const Vector3F &color, int chunkX, int chunkY)
 {
     const float resolution = 4.0f;
     const int i_resolution = 4;

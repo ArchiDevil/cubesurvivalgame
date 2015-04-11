@@ -5,19 +5,20 @@
 
 #include "D3D10Context.h"
 #include "D3D10Program.h"
-#include "cMesh.h"
-#include "MiscTypes.h"
-#include "D3D10ShaderManager.h"
+#include "D3D10Mesh.h"
 #include "D3D10ShaderGenerator.h"
 #include "D3D10TextureManager.h"
 #include "D3D10MeshManager.h"
-#include "MaterialManager.h"
-#include "Sprite.h"
 #include "D3D10RenderTarget.h"
-#include "TextLib/cText.h"
-#include "Material.h"
+#include "D3D10ShaderManager.h"
 #include "D3D10VertexDeclaration.h"
-#include "FontManager.h"
+
+#include "../../MiscTypes.h"
+#include "../../MaterialManager.h"
+#include "../../Sprite.h"
+#include "../../TextLib/cText.h"
+#include "../../Material.h"
+#include "../../FontManager.h"
 
 using MathLib::Vector2F;
 using MathLib::vec3;
@@ -55,14 +56,15 @@ namespace ShiftEngine
         void                                EndScene();
         void                                ResetPipeline();
 
-        TexturePtr                          LoadTexture(const std::wstring & FileName);
+        ITexturePtr                         LoadTexture(const std::wstring & FileName);
         MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName);
         IProgramPtr                         LoadShader(const std::wstring & FileName);
-        MeshDataPtr                         LoadMesh(const std::wstring & FileName);
+        IMeshDataPtr                        LoadMesh(const std::wstring & FileName);
 
         D3D10ShaderManager *                GetShaderManager();
         D3D10ShaderGenerator *              GetShaderGenerator();
         D3D10TextureManager *               GetTextureManager();
+        IMeshManager *                      GetMeshManager();
         FontManager*                        GetFontManager();
 
         void                                SetZState(bool enabled);
@@ -74,7 +76,7 @@ namespace ShiftEngine
         ID3D10Device *                      GetDevicePointer();
         GraphicEngineSettings               GetEngineSettings() const;
         PathSettings                        GetPaths() const;
-        int                                 DrawMesh(MeshDataPtr & mesh);
+        int                                 DrawMesh(IMeshDataPtr & mesh);
         D3D10VDPtr                          GetVertexDeclaration(const VertexSemantic & semantic);
         D3DMATRIX                           GetOrthoMatrix() const;
 
@@ -105,4 +107,4 @@ namespace ShiftEngine
         bool                                cullingEnabled = true;
     };
 
-}	//end of ShiftEngine namespace
+}   //end of ShiftEngine namespace

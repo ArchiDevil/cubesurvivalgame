@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Material.h"
-#include "../cMesh.h"
+#include "../APIs/D3D10/D3D10Mesh.h"
 #include "../RenderQueue.h"
 
 #include "ISceneNode.h"
@@ -14,14 +14,14 @@ namespace ShiftEngine
     class MeshNode : public ISceneNode
     {
     public:
-        MeshNode(const MeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox);
+        MeshNode(const IMeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox);
         virtual ~MeshNode();
 
         virtual int Render();
         virtual void PushToRQ(RenderQueue & rq);
 
-        virtual MeshDataPtr GetDataPtr() const;
-        virtual void SetDataPtr(MeshDataPtr data);
+        virtual IMeshDataPtr GetDataPtr() const;
+        virtual void SetDataPtr(IMeshDataPtr data);
 
         bool IsVisible() const;
         void SetVisibility(bool vis);
@@ -35,7 +35,7 @@ namespace ShiftEngine
     private:
         MathLib::AABB bbox;
         Material material;
-        MeshDataPtr Data;
+        IMeshDataPtr Data;
         bool isVisible;
 
     };

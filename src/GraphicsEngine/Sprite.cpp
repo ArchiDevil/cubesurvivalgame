@@ -45,7 +45,7 @@ void ShiftEngine::Sprite::Draw()
     ShiftEngine::GetContextManager()->DrawMesh(spriteMesh);
 }
 
-void ShiftEngine::Sprite::SetTexture(ShiftEngine::TexturePtr ptr)
+void ShiftEngine::Sprite::SetTexture(ShiftEngine::ITexturePtr ptr)
 {
     texture = ptr;
 
@@ -97,26 +97,21 @@ void ShiftEngine::Sprite::SetMaskColor(const Vector4F & color)
 
 void ShiftEngine::Sprite::CreateBuffers(const Vector2F & LT, const Vector2F & RB)
 {
-    PlainSpriteVertex ver[] =
-    {
-        { -0.5f, -0.5f, LT.x, LT.y },
-        { 0.5f, -0.5f, RB.x, LT.y },
-        { -0.5f, 0.5f, LT.x, RB.y },
-        { 0.5f, 0.5f, RB.x, RB.y },
-    };
-    long ind[6] = { 0, 1, 2, 1, 3, 2 };
+    std::vector<PlainSpriteVertex> ver(4);
+    ver[0] = { { -0.5f, -0.5f }, { LT.x, LT.y } };
+    ver[1] = { { 0.5f, -0.5f }, { RB.x, LT.y } };
+    ver[2] = { { -0.5f, 0.5f }, { LT.x, RB.y } };
+    ver[3] = { { 0.5f, 0.5f }, { RB.x, RB.y } };
 
-    MeshData * data = new MeshData();
-    data->CreateBuffers(false, ver, sizeof(ver), ind, sizeof(ind), ShiftEngine::GetContextManager()->GetDevicePointer());
+    std::vector<uint32_t> ind = { 0, 1, 2, 1, 3, 2 };
 
-    data->indicesCount = 6;
-    data->verticesCount = 4;
-    data->vertexSize = sizeof(PlainSpriteVertex);
-
-    data->vertexDeclaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(ShiftEngine::plainSpriteVertexSemantic);
-    data->vertexSemantic = &ShiftEngine::plainSpriteVertexSemantic;
-
-    spriteMesh = MeshDataPtr(data);
+    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+    spriteMesh = pMeshManager->CreateMeshFromVertices(
+        (uint8_t*)ver.data(), 
+        ver.size() * sizeof(decltype(ver)::value_type), 
+        ind, 
+        &ShiftEngine::plainSpriteVertexSemantic
+        );
 }
 
 void ShiftEngine::Sprite::SetSizeInPixels(int x, int y)

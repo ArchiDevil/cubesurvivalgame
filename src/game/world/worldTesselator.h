@@ -35,9 +35,9 @@ public:
     void SetCriticalSection(std::mutex * sect);
 
 private:
-    void TesselateSubChunk(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &blockPos, const Vector3F &color, int chunkX, int chunkY);
+    void TesselateSubChunk(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &blockPos, const Vector3F &color, int chunkX, int chunkY);
 
-    void PushLeftSide(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
+    void PushLeftSide(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
     {
         unsigned long curIndex = (unsigned long)vertices.size();
 
@@ -55,7 +55,7 @@ private:
         indices.push_back(curIndex + 3);
     }
 
-    void PushRightSide(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
+    void PushRightSide(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
     {
         unsigned long curIndex = vertices.size();
 
@@ -73,7 +73,7 @@ private:
         indices.push_back(curIndex + 3);
     }
 
-    void PushFrontSide(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
+    void PushFrontSide(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
     {
         unsigned long curIndex = vertices.size();
 
@@ -91,7 +91,7 @@ private:
         indices.push_back(curIndex + 3);
     }
 
-    void PushBackSide(std::vector<PNC> &vertices, std::vector<unsigned long> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
+    void PushBackSide(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
     {
         unsigned long curIndex = vertices.size();
 
@@ -112,7 +112,6 @@ private:
     WorldStorage * ws;
     std::mutex * criticalSection;
     ShiftEngine::VertexSemantic nodeSemantic;
-    ShiftEngine::D3D10VDPtr nodeDeclaration;
     cNoise noiseGenerator;
 
     const Vector3F NormUP = { 0.0f, 0.0f, 1.0f };

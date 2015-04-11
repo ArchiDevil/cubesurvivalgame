@@ -56,14 +56,14 @@ void ShiftEngine::SceneGraph::DrawAll(double dt) const
 ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
 {
     auto pCtxMgr = GetContextManager();
-    MeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
+    IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
     MeshNode * out = new MeshNode(data, material, MathLib::AABB(Vector3F(-1.0f, -1.0f, -1.0f), Vector3F(1.0f, 1.0f, 1.0f)));
     out->SetSceneGraph(this);
     rootNode->AddChild(out);
     return out;
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(MeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat)
+ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat)
 {
     MeshNode * out = new MeshNode(dataPtr, mat, bbox);
     rootNode->AddChild(out);
@@ -103,7 +103,7 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::GetActiveCamera() const
 ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
 {
     ShiftEngine::Material material(GetContextManager()->LoadShader(L"sky.fx"));
-    ShiftEngine::MeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
+    ShiftEngine::IMeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
     SkySceneNode * out = new SkySceneNode(&material, mesh);
     activeSky = out;
     out->SetSceneGraph(this);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../cMesh.h"
+#include "../APIs/D3D10/D3D10Mesh.h"
 #include "../Material.h"
 
 #include <MathLib/math.h>
@@ -14,7 +14,7 @@ namespace ShiftEngine
     class SkySceneNode : public MeshNode
     {
     public:
-        SkySceneNode(const Material * material, const MeshDataPtr & meshData);
+        SkySceneNode(const Material * material, const IMeshDataPtr & meshData);
         ~SkySceneNode();
 
         virtual void PushToRQ(RenderQueue & rq);

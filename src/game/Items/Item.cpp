@@ -1,6 +1,6 @@
 #include "Item.h"
 
-Item::Item(ShiftEngine::TexturePtr icon, ShiftEngine::MeshDataPtr mesh,
+Item::Item(ShiftEngine::ITexturePtr icon, ShiftEngine::IMeshDataPtr mesh,
            const std::string & name, const std::string & desc, const std::string & imageFile)
     : name(name)
     , description(desc)
@@ -24,12 +24,12 @@ const std::string & Item::GetDescription() const
     return description;
 }
 
-ShiftEngine::TexturePtr Item::GetTexturePtr() const
+ShiftEngine::ITexturePtr Item::GetTexturePtr() const
 {
     return icon;
 }
 
-ShiftEngine::MeshDataPtr Item::GetMesh() const
+ShiftEngine::IMeshDataPtr Item::GetMesh() const
 {
     return mesh;
 }

@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "../D3D10Texture.h"
+#include "../ITexture.h"
 
 struct sChar
 {
@@ -46,7 +46,7 @@ public:
     {
     }
 
-    bool Initialize(const std::wstring & filename, ShiftEngine::TexturePtr _tp)
+    bool Initialize(const std::wstring & filename, ShiftEngine::ITexturePtr _tp)
     {
         tp = _tp;
         std::ifstream in;
@@ -62,7 +62,7 @@ public:
         return &data[code];
     }
 
-    ShiftEngine::TexturePtr GetTexturePtr()
+    ShiftEngine::ITexturePtr GetTexturePtr()
     {
         return tp;
     }
@@ -150,7 +150,7 @@ private:
     }
 
 
-    ShiftEngine::TexturePtr tp;
+    ShiftEngine::ITexturePtr tp;
     std::string filename;
 
     unsigned short Pages;
