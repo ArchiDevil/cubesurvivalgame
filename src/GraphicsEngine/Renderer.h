@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include "VertexTypes.h"
 #include "RenderQueue.h"

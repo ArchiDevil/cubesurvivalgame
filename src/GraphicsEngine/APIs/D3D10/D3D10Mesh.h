@@ -4,8 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "D3D10VertexDeclaration.h"
-
+#include "../../IVertexDeclaration.h"
 #include "../../IMeshData.h"
 #include "../../VertexTypes.h"
 #include "../../MiscTypes.h"
@@ -28,7 +27,7 @@ namespace ShiftEngine
             const uint32_t * iData,
             size_t iDataSize,
             const VertexSemantic * semantic,
-            const D3D10VDPtr & declaration) override;
+            const IVertexDeclarationPtr & declaration) override;
 
         size_t Draw() override;
         void Clear() override;

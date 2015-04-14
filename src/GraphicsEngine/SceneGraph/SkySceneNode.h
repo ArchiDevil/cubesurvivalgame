@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../APIs/D3D10/D3D10Mesh.h"
 #include "../Material.h"
 
 #include <MathLib/math.h>

@@ -10,6 +10,8 @@
 #include "Objects/ValueBox.h"
 #include "Objects/Window.h"
 
+#include <algorithm>
+
 SimpleGUI::Skinner::Skinner()
     : TextboxCache(nullptr)
     , boxCache(nullptr)
@@ -68,12 +70,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
         textPos.x = pos.x + (size.x / 2) - pFntMgr->GetStringWidth(text) / 2;
         textPos.y = pos.y + (size.y / 2) - (pFntMgr->GetFontHeight() / 2);
 
-        ShiftEngine::gRect rect;
-        rect.left = (float)pos.x + 1;
-        rect.right = (float)pos.x + size.x - 1;
-        rect.top = (float)pos.y + 1;
-        rect.bottom = (float)pos.y + size.y - 1;
-        pFntMgr->DrawTextTL(text, textPos.x, textPos.y, rect);
+        pFntMgr->DrawTextTL(text, textPos.x, textPos.y);
         pFntMgr->SetFont(prevFont);
     }
 }
@@ -116,12 +113,7 @@ void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
 
     textPosition.y = pos.y + (size.y / 2) - (pFntMgr->GetFontHeight() / 2);
 
-    ShiftEngine::gRect rect;
-    rect.left = (float)pos.x + 1;
-    rect.right = (float)pos.x + size.x - 1;
-    rect.top = (float)pos.y + 1;
-    rect.bottom = (float)pos.y + size.y - 1;
-    pFntMgr->DrawTextTL(string, textPosition.x, textPosition.y, rect);
+    pFntMgr->DrawTextTL(string, textPosition.x, textPosition.y);
     pFntMgr->SetFont(prevFont);
 }
 
@@ -173,12 +165,8 @@ void SimpleGUI::Skinner::DrawListRow(TableRow * row)
     ShiftEngine::FontManager * pFntMgr = cm->GetFontManager();
     auto prevFont = pFntMgr->GetCurrentFontName();
     pFntMgr->SetFont(L"guiDefault");
-    ShiftEngine::gRect rect;
-    rect.bottom = (float)row->GetPosition().y + (float)row->GetSize().y;
-    rect.left = (float)row->GetPosition().x;
-    rect.right = (float)row->GetPosition().x + (float)row->GetSize().x;
-    rect.top = (float)row->GetPosition().y;
-    pFntMgr->DrawTextTL(str, row->GetPosition().x + 1, row->GetPosition().y + 2, rect);
+
+    pFntMgr->DrawTextTL(str, row->GetPosition().x + 1, row->GetPosition().y + 2);
     pFntMgr->SetFont(prevFont);
 }
 
@@ -229,7 +217,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     boxCache->SetMaskColor(Vector4F(0.75f, 0.75f, 0.75f, 1.0f));
     auto innerPos = outerPos;
     auto innerSize = outerSize;
-    int minSize = (int)((float)min(innerSize.x, innerSize.y) * marginSize);
+    int minSize = (int)((float)std::min(innerSize.x, innerSize.y) * marginSize);
     innerSize.x -= minSize;
     innerSize.y -= minSize;
     innerPos.x += minSize / 2;
@@ -255,7 +243,7 @@ void SimpleGUI::Skinner::DrawValueBox(ValueBox * valueBox)
     boxCache->SetMaskColor(Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
     auto innerDelimPos = delimPos;
     auto innerDelimSize = delimSize;
-    minSize = (int)((float)min(innerDelimSize.x, innerDelimSize.y) * marginSize);
+    minSize = (int)((float)std::min(innerDelimSize.x, innerDelimSize.y) * marginSize);
     innerDelimSize.x -= minSize;
     innerDelimSize.y -= minSize;
     innerDelimPos.x += minSize / 2;

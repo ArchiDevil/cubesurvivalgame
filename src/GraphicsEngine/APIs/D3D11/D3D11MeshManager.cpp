@@ -36,20 +36,14 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadMesh(const std::wst
     }
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(const void * data,
-                                                                            size_t count,
-                                                                            const void * indexData, 
-                                                                            size_t indicesCount,
-                                                                            const ShiftEngine::VertexSemantic * semantic,
-                                                                            const D3D11VDPtr & declaration)
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesData, size_t verticesDataSize, const std::vector<uint32_t> & indicesData, const ShiftEngine::VertexSemantic * semantic)
 {
-    D3D11MeshDataPtr out = std::make_shared<D3D11MeshData>(declaration);
-    if (!out->CreateBuffers(false, data, count, indexData, indicesCount))
+    D3D11MeshDataPtr out = std::make_shared<D3D11MeshData>();
+    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size()))
     {
         LOG_ERROR("Unable to create mesh from vertices");
         return nullptr;
     }
-    out->vertexSemantic = semantic;
     return out;
 }
 
@@ -58,16 +52,10 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadErrorMesh()
     return errorMesh;
 }
 
-void ShiftEngine::D3D11MeshManager::CreateErrorMesh()
-{
-    //FIXME: fix
-//    errorMesh = Utilities::createCube();
-}
-
 bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11MeshData * mesh)
 {
     SerializedLIM vertices;
-    std::vector<unsigned long> indices;
+    std::vector<uint32_t> indices;
 
     if (!ShiftEngine::Utilities::getVerticesFromFile(filename, vertices, indices))
         return false;

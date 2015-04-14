@@ -1,10 +1,13 @@
 #pragma once
 
 #include <d3d11.h>
+#include <memory>
+
+#include "../../IVertexDeclaration.h"
 
 namespace ShiftEngine
 {
-    class D3D11VertexDeclaration
+    class D3D11VertexDeclaration : public IVertexDeclaration
     {
     public:
         D3D11VertexDeclaration(ID3D11InputLayout * IL = nullptr, ID3D11DeviceContext * pDeviceContext = nullptr)
@@ -28,7 +31,7 @@ namespace ShiftEngine
                 IL->Release();
         }
 
-        void Bind()
+        void Bind() override
         {
             if (IL)
                 pDeviceContext->IASetInputLayout(this->IL);
@@ -38,5 +41,5 @@ namespace ShiftEngine
         ID3D11DeviceContext * pDeviceContext = nullptr;
     };
 
-    typedef std::shared_ptr<D3D11VertexDeclaration> D3D11VDPtr;
+    typedef std::shared_ptr<D3D11VertexDeclaration> D3D11VertexDeclarationPtr;
 }

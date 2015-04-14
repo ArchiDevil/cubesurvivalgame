@@ -16,17 +16,11 @@ namespace ShiftEngine
     public:
         D3D11MeshManager(ID3D11Device * _device);
         IMeshDataPtr LoadMesh(const std::wstring & fileName) override;
-        IMeshDataPtr CreateMeshFromVertices(const void * verticesData,
-                                                       size_t verticesCount,
-                                                       const void * indexData,
-                                                       size_t indicesCount,
-                                                       const ShiftEngine::VertexSemantic * semantic,
-                                                       const D3D11VDPtr & declaration) override;
+        IMeshDataPtr CreateMeshFromVertices(const uint8_t * verticesData, size_t verticesDataSize, const std::vector<uint32_t> & indicesData, const ShiftEngine::VertexSemantic * semantic) override;
         IMeshDataPtr LoadErrorMesh() override;
     private:
-        void                    CreateErrorMesh();
         bool                    Load(const std::wstring &filename, D3D11MeshData * mesh);
-        void                    UpdateVertices(SerializedLIM & vertices, std::vector<unsigned long> & indices) const;
+        void                    UpdateVertices(SerializedLIM & vertices, std::vector<uint32_t> & indices) const;
         const VertexSemantic *  CreateSemantic(const SerializedLIM & vertices);
 
         D3D11MeshDataPtr errorMesh;

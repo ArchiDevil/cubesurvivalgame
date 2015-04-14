@@ -4,95 +4,25 @@
 
 #include <Utilities/ut.h>
 
+#include <cassert>
+
 ShiftEngine::FontManager::FontManager()
     : currentFont(L"")
-    , TextShader(nullptr)
+    , textShader(nullptr)
 {
-    D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
-    TextShader = pCntMng->LoadShader(L"text.fx");
+    D3D10ContextManager* pCntMng = GetContextManager();
+    textShader = pCntMng->LoadShader(L"text.fx");
     LoadFonts();
     if (!Fonts.empty())
         currentFont = Fonts.begin()->first;
 }
 
-void ShiftEngine::FontManager::Shutdown()
+void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, float x, float y)
 {
-}
-
-void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y)
-{
-    D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
-
     if (!pCurrentFont || !Text.size())
         return;
 
-    auto cbs = pCntMng->GetBlendingState();
-    pCntMng->SetBlendingState(BS_AlphaEnabled);
-    auto crs = pCntMng->GetRasterizerState();
-    pCntMng->SetRasterizerState(RS_Normal);
-
-    cText tex(Text, pCurrentFont, pCntMng->GetDevicePointer());
-
-    D3DXMATRIX mat, matOrtho, matT;
-    D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
-    GraphicEngineSettings pSettings = pCntMng->GetEngineSettings();
-    D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
-    mat = matT * matOrtho;
-    TextShader->SetMatrixConstantByName("matOrtho", (float*)mat);
-
-    D3DXVECTOR4 vec;
-    vec.x = 0.0f;
-    vec.y = 0.0f;
-    vec.z = 16000.0f;
-    vec.w = 16000.0f;
-
-    TextShader->SetVectorConstantByName("Rect", (float*)vec);
-    TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
-    TextShader->Apply(true);
-
-    tex.Draw();
-
-    pCntMng->SetRasterizerState(crs);
-    pCntMng->SetBlendingState(cbs);
-
-    //for fix a lot of DXDEBUG warnings
-    pCntMng->ResetPipeline();
-}
-
-void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, int x, int y, const ShiftEngine::gRect & rect)
-{
-    D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
-
-    if (!pCurrentFont || !Text.size())
-        return;
-
-    auto crs = pCntMng->GetRasterizerState();
-    pCntMng->SetRasterizerState(RS_Normal);
-
-    cText tex(Text, pCurrentFont, pCntMng->GetDevicePointer());
-
-    D3DXMATRIX mat, matOrtho, matT;
-    D3DXMatrixTranslation(&matT, (float)x, (float)y, 0.0f);
-    GraphicEngineSettings pSettings = pCntMng->GetEngineSettings();
-    D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
-    mat = matT * matOrtho;
-    TextShader->SetMatrixConstantByName("matOrtho", (float*)mat);
-
-    D3DXVECTOR4 vec;
-    vec.x = rect.left;
-    vec.y = rect.top;
-    vec.z = rect.right;
-    vec.w = rect.bottom;
-
-    TextShader->SetVectorConstantByName("Rect", (float*)vec);
-    TextShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
-    TextShader->Apply(true);
-    tex.Draw();
-
-    pCntMng->SetRasterizerState(crs);
-
-    //for fix a lot of DXDEBUG warnings
-    pCntMng->ResetPipeline();
+    BatchText(Text, x, y);
 }
 
 int ShiftEngine::FontManager::GetFontHeight()
@@ -124,7 +54,7 @@ int ShiftEngine::FontManager::GetStringWidth(const std::string & string)
 
 void ShiftEngine::FontManager::LoadFonts()
 {
-    D3D10ContextManager* pCntMng = ShiftEngine::GetContextManager();
+    D3D10ContextManager* pCntMng = GetContextManager();
     //TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
     PathSettings pPaths = pCntMng->GetPaths();
     auto fontsNames = utils::filesystem::CollectFileNames(pPaths.FontsPath, L"fnt2");
@@ -166,4 +96,119 @@ void ShiftEngine::FontManager::SetFont(const std::wstring & fontName)
 std::wstring ShiftEngine::FontManager::GetCurrentFontName() const
 {
     return currentFont;
+}
+
+void ShiftEngine::FontManager::BatchText(const std::string & text, float x, float y)
+{
+    if (text.size() == 0)
+        return;
+
+    size_t vertSh = batchedVertices.size();
+    size_t indSh = batchedIndices.size();
+
+    batchedIndices.resize(batchedIndices.size() + text.size() * 6);
+    batchedVertices.resize(batchedVertices.size() + text.size() * 4);
+
+    int CurX = 0;
+
+    for (char symbol : text)
+    {
+        sChar * cp = pCurrentFont->GetCharacterPtr(symbol);
+        assert(cp->Height != 0);
+        int CharX = cp->x;
+        int CharY = cp->y;
+        int Width = cp->Width;
+        int Height = cp->Height;
+        int OffsetX = cp->XOffset;
+        int OffsetY = cp->YOffset;
+
+        //first triangle
+        batchedIndices[indSh++] = vertSh;
+        batchedIndices[indSh++] = vertSh + 1;
+        batchedIndices[indSh++] = vertSh + 2;
+
+        //second triangle
+        batchedIndices[indSh++] = vertSh;
+        batchedIndices[indSh++] = vertSh + 2;
+        batchedIndices[indSh++] = vertSh + 3;
+
+        /*
+        0   1
+        -----
+        |\  |
+        | \ |
+        |  \|
+        -----
+        3   2
+        */
+
+        //upper left
+        batchedVertices[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
+        batchedVertices[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
+        batchedVertices[vertSh].x = (float)CurX + OffsetX + x;
+        batchedVertices[vertSh++].y = (float)OffsetY + y;
+
+        //upper right
+        batchedVertices[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
+        batchedVertices[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
+        batchedVertices[vertSh].x = (float)Width + CurX + OffsetX + x;
+        batchedVertices[vertSh++].y = (float)OffsetY + y;
+
+        //lower right
+        batchedVertices[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
+        batchedVertices[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
+        batchedVertices[vertSh].x = (float)Width + CurX + OffsetX + x;
+        batchedVertices[vertSh++].y = (float)Height + OffsetY + y;
+
+        //lower left
+        batchedVertices[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
+        batchedVertices[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
+        batchedVertices[vertSh].x = (float)CurX + OffsetX + x;
+        batchedVertices[vertSh++].y = (float)Height + OffsetY + y;
+
+        CurX += cp->XAdvance;
+    }
+}
+
+void ShiftEngine::FontManager::DrawBatchedText()
+{
+    if (batchedVertices.empty() || batchedIndices.empty())
+        return;
+
+    auto* pCtxMgr = GetContextManager();
+
+    batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)batchedVertices.data(), batchedVertices.size() * sizeof(TextPoint), batchedIndices, &plainSpriteVertexSemantic);
+
+    auto cbs = pCtxMgr->GetBlendingState();
+    pCtxMgr->SetBlendingState(BS_AlphaEnabled);
+    auto crs = pCtxMgr->GetRasterizerState();
+    pCtxMgr->SetRasterizerState(RS_Normal);
+
+    D3DXMATRIX matOrtho;
+    GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
+    D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
+    textShader->SetMatrixConstantByName("matOrtho", (float*)matOrtho);
+
+    D3DXVECTOR4 vec;
+    vec.x = 0.0f;
+    vec.y = 0.0f;
+    vec.z = 16000.0f;
+    vec.w = 16000.0f;
+
+    textShader->SetVectorConstantByName("Rect", (float*)vec);
+    textShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
+    textShader->Apply(true);
+
+    batchedMesh->GetVertexDeclaration()->Bind();
+    batchedMesh->Draw();
+
+    pCtxMgr->SetRasterizerState(crs);
+    pCtxMgr->SetBlendingState(cbs);
+
+    //for fix a lot of DXDEBUG warnings
+    pCtxMgr->ResetPipeline();
+
+    batchedVertices.clear();
+    batchedIndices.clear();
+    batchedMesh->Clear();
 }

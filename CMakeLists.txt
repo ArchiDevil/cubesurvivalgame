@@ -7,7 +7,7 @@ if(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR CMAKE_COMPILER_2005 OR MSVC90 OR MSVC
 endif()
 
 if(NOT MSVC)
-	message(FATAL_ERROR "Only Visual Studio supported for now")
+    message(FATAL_ERROR "Only Visual Studio supported for now")
 endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
@@ -18,6 +18,7 @@ option(BUILD_TESTS "Generate projects for tests building" ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# The NEW behavior for this policy is to ignore CMAKE_SHARED_LIBRARY_<Lang>_FLAGS whether it is modified or not and honor the POSITION_INDEPENDENT_CODE target property.
 cmake_policy(SET CMP0018 NEW)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -93,18 +94,18 @@ function(VSTestLinkLibraries TestName LinkLibraries)
 endfunction(VSTestLinkLibraries)
 
 if(MSVC)
-	add_definitions(-DUNICODE -D_UNICODE)
-	add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS /W4")
+    add_definitions(-DUNICODE -D_UNICODE)
+    add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS /W4")
 endif()
 
 include_directories(${RootDir})
 add_subdirectory(src)
 
 if(BUILD_TESTS)
-	#set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib.")
-	#add_definitions("-D_VARIADIC_MAX=10")
-	#add_subdirectory(3rdparty/gtest-1.7.0)
-	#set_property(TARGET gtest PROPERTY FOLDER "Tests")
-	#set_property(TARGET gtest_main PROPERTY FOLDER "Tests")
-	#set_property(TARGET runUnitTests PROPERTY FOLDER "Tests")
+    #set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib.")
+    #add_definitions("-D_VARIADIC_MAX=10")
+    #add_subdirectory(3rdparty/gtest-1.7.0)
+    #set_property(TARGET gtest PROPERTY FOLDER "Tests")
+    #set_property(TARGET gtest_main PROPERTY FOLDER "Tests")
+    #set_property(TARGET runUnitTests PROPERTY FOLDER "Tests")
 endif()

@@ -65,7 +65,6 @@ namespace ShiftEngine
     {
         delete SceneGraphInstance;
         delete RendererInstance;
-        ContextManagerInstance->Shutdown();
         delete ContextManagerInstance;
     }
 }

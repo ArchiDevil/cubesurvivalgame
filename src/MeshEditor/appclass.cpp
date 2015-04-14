@@ -63,7 +63,6 @@ bool Application::Initialize()
 
 void Application::Shutdown()
 {
-    ShiftEngine::GetContextManager()->Shutdown();
 }
 
 bool Application::Frame()

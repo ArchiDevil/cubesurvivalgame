@@ -6,34 +6,31 @@
 
 #include "D3D11VertexDeclaration.h"
 
+#include "../../IMeshData.h"
 #include "../../VertexTypes.h"
 #include "../../MiscTypes.h"
 
 namespace ShiftEngine
 {
     //mesh must contain AABB
-    struct D3D11MeshData
+    class D3D11MeshData : public IMeshData
     {
-        D3D11MeshData(D3D11VDPtr _vertexDeclaration = nullptr, ID3D11Buffer * _VB = nullptr, ID3D11Buffer * _IB = nullptr, 
+    public:
+        D3D11MeshData(ID3D11Buffer * _VB = nullptr, ID3D11Buffer * _IB = nullptr, 
                       ID3D11Device * pDevice = nullptr, ID3D11DeviceContext * pDeviceContext = nullptr);
         D3D11MeshData(const D3D11MeshData & ref);
         D3D11MeshData& operator = (const D3D11MeshData & ref);
         ~D3D11MeshData();
 
-        bool CreateBuffers(bool dynamic, const void * vData, size_t vSize,
-                           const void * iData, size_t iSize);
-        int Draw();
-        void Clear();
+        bool CreateBuffers(bool dynamic, const uint8_t * vData, size_t vDataSize, const uint32_t * iData, size_t iDataSize, const VertexSemantic * semantic, const IVertexDeclarationPtr & declaration) override;
+        size_t Draw() override;
+        void Clear() override;
 
-        const VertexSemantic * vertexSemantic;
-        D3D11VDPtr vertexDeclaration;
+    private:
         ID3D11Device * pDevice = nullptr;
         ID3D11DeviceContext * pDeviceContext = nullptr;
         ID3D11Buffer * VertexBuffer = nullptr;
         ID3D11Buffer * IndexBuffer = nullptr;
-        size_t verticesCount = 0;
-        size_t indicesCount = 0;
-        size_t vertexSize = 0;
     };
 
     typedef std::shared_ptr<D3D11MeshData> D3D11MeshDataPtr;

@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef D3D10_RENDER
 #include <D3DX10.h>
-#endif
 
 #include "vector3.h"
 #include "vector4.h"
@@ -29,14 +27,12 @@ namespace MathLib
                     arr[i][j] = ref.arr[i][j];
         }
 
-#ifdef D3D10_RENDER
         matrix(const D3DXMATRIX & ref)
         {
             for (int i = 0; i < E; i++)
                 for (int j = 0; j < E; j++)
                     arr[i][j] = ref(i, j);
         }
-#endif
 
         matrix operator + (const matrix & ref) const
         {

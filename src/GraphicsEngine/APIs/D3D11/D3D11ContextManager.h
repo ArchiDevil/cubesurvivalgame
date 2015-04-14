@@ -59,7 +59,7 @@ namespace ShiftEngine
         ITexturePtr                         LoadTexture(const std::wstring & FileName);
         MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName);
         IProgramPtr                         LoadShader(const std::wstring & FileName);
-        D3D11MeshDataPtr                    LoadMesh(const std::wstring & FileName);
+        IMeshDataPtr                        LoadMesh(const std::wstring & FileName);
 
         D3D11ShaderManager *                GetShaderManager();
         D3D11ShaderGenerator *              GetShaderGenerator();
@@ -75,19 +75,17 @@ namespace ShiftEngine
         ID3D11Device *                      GetDevicePointer();
         GraphicEngineSettings               GetEngineSettings() const;
         PathSettings                        GetPaths() const;
-        int                                 DrawMesh(D3D11MeshDataPtr & mesh);
-        D3D11VDPtr                          GetVertexDeclaration(const VertexSemantic & semantic);
-        D3DMATRIX                           GetOrthoMatrix() const;
+        int                                 DrawMesh(IMeshDataPtr & mesh);
+        IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic);
 
     private:
-        void                                RegisterVertexSemantic(const VertexSemantic & semantic);
-        ShiftEngine::D3D11VertexDeclaration CreateVDFromDescription(const VertexSemantic & semantic);
+        IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
 
         HWND                                windowHandle;
         PathSettings                        enginePaths;
         GraphicEngineSettings               engineSettings;
 
-        std::map<VertexSemantic, D3D11VDPtr> declarations;
+        std::map<VertexSemantic, IVertexDeclarationPtr> declarations;
 
         D3D11Context                        graphicsContext;
         FontManager*                        fontManager;
@@ -100,7 +98,7 @@ namespace ShiftEngine
         IProgramPtr                         currentProgram;
         RasterizerState                     currentRasterizerState = RS_Normal;
         BlendingState                       currentBlendingState = BS_None;
-        D3D11VertexDeclaration *            currentVertexDeclaration;
+        IVertexDeclaration *                currentVertexDeclaration;
 
         bool                                zBufferState = true;
         bool                                cullingEnabled = true;

@@ -2,9 +2,11 @@
 
 #include <d3d10.h>
 
+#include "../../IVertexDeclaration.h"
+
 namespace ShiftEngine
 {
-    class D3D10VertexDeclaration
+    class D3D10VertexDeclaration : public IVertexDeclaration
     {
     public:
         D3D10VertexDeclaration(ID3D10InputLayout * _IL = nullptr, ID3D10Device * _pDevice = nullptr)
@@ -35,5 +37,5 @@ namespace ShiftEngine
         ID3D10Device * pDevice = nullptr;
     };
 
-    typedef std::shared_ptr<D3D10VertexDeclaration> D3D10VDPtr;
+    typedef std::shared_ptr<D3D10VertexDeclaration> D3D10VertexDeclarationPtr;
 }

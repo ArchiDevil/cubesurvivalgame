@@ -162,10 +162,10 @@ bool ShiftEngine::D3D10ContextManager::Initialize(GraphicEngineSettings _Setting
 
     graphicsContext.Device->PSSetSamplers(0, 1, &sampler);
 
-    RegisterVertexSemantic(defaultVertexSemantic);
-    RegisterVertexSemantic(extendedVertexSemantic);
-    RegisterVertexSemantic(colorVertexSemantic);
-    RegisterVertexSemantic(plainSpriteVertexSemantic);
+    GetVertexDeclaration(defaultVertexSemantic);
+    GetVertexDeclaration(extendedVertexSemantic);
+    GetVertexDeclaration(colorVertexSemantic);
+    GetVertexDeclaration(plainSpriteVertexSemantic);
 
     return true;
 }
@@ -186,12 +186,6 @@ std::wstring ShiftEngine::D3D10ContextManager::GetGPUDescription()
     return buffer;
 }
 
-void ShiftEngine::D3D10ContextManager::Shutdown()
-{
-    fontManager->Shutdown();
-    //KILL EVERYTHING
-}
-
 void ShiftEngine::D3D10ContextManager::BeginScene()
 {
     graphicsContext.Device->ClearRenderTargetView(graphicsContext.DefaultRT->rt, D3DXCOLOR((float)208 / 255, (float)238 / 255, (float)248 / 255, 1.0f));
@@ -200,6 +194,8 @@ void ShiftEngine::D3D10ContextManager::BeginScene()
 
 void ShiftEngine::D3D10ContextManager::EndScene()
 {
+    fontManager->DrawBatchedText();
+
     if (engineSettings.screenRate > 0)
         graphicsContext.SwapChain->Present(1, 0);
     else
@@ -364,22 +360,15 @@ ShiftEngine::FontManager * ShiftEngine::D3D10ContextManager::GetFontManager()
     return fontManager;
 }
 
-void ShiftEngine::D3D10ContextManager::RegisterVertexSemantic(const VertexSemantic & semantic)
+ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D10ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
 {
     auto iter = declarations.find(semantic);
-    if (iter == declarations.end())
-    {
-        auto vd = CreateVDFromDescription(semantic);
-        declarations[semantic] = std::make_shared<D3D10VertexDeclaration>(vd);
-    }
-    else
+    if (iter != declarations.end())
     {
         LOG_INFO("Semantic is already registered");
+        return iter->second;
     }
-}
 
-ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
-{
     ID3D10Device * pDevice = graphicsContext.Device;
     ID3D10InputLayout * outIL = nullptr;
 
@@ -500,18 +489,17 @@ ShiftEngine::D3D10VertexDeclaration ShiftEngine::D3D10ContextManager::CreateVDFr
     delete[] ilDesc;
     compiledShader->Release();
 
-    D3D10VertexDeclaration vd(outIL, pDevice);
-
-    return vd;
+    //HACK: slow but I'm lazy to rework
+    declarations[semantic] = std::make_shared<D3D10VertexDeclaration>(outIL, pDevice);
+    return declarations[semantic];
 }
 
-ShiftEngine::D3D10VDPtr ShiftEngine::D3D10ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
+ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D10ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
 {
     auto iter = declarations.find(semantic);
     if (iter == declarations.end())
     {
-        RegisterVertexSemantic(semantic);
-        return GetVertexDeclaration(semantic);
+        return CreateVDFromDescription(semantic);
     }
     else
     {

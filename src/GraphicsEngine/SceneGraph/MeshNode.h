@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Material.h"
-#include "../APIs/D3D10/D3D10Mesh.h"
+#include "../IMeshData.h"
 #include "../RenderQueue.h"
 
 #include "ISceneNode.h"

@@ -180,10 +180,10 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
 
     graphicsContext.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
-    RegisterVertexSemantic(defaultVertexSemantic);
-    RegisterVertexSemantic(extendedVertexSemantic);
-    RegisterVertexSemantic(colorVertexSemantic);
-    RegisterVertexSemantic(plainSpriteVertexSemantic);
+    GetVertexDeclaration(defaultVertexSemantic);
+    GetVertexDeclaration(extendedVertexSemantic);
+    GetVertexDeclaration(colorVertexSemantic);
+    GetVertexDeclaration(plainSpriteVertexSemantic);
 
     return true;
 }
@@ -251,9 +251,9 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ContextManager::LoadShader(const std:
     return shaderManager->CreateProgramFromFile(enginePaths.ShaderPath + FileName);
 }
 
-ShiftEngine::D3D11MeshDataPtr ShiftEngine::D3D11ContextManager::LoadMesh(const std::wstring & FileName)
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D11ContextManager::LoadMesh(const std::wstring & FileName)
 {
-    D3D11MeshDataPtr out = meshManager->LoadMesh(enginePaths.MeshPath + FileName);
+    IMeshDataPtr out = meshManager->LoadMesh(enginePaths.MeshPath + FileName);
     if (out == nullptr)
     {
         LOG_ERROR("Unable to load: ", utils::Narrow(FileName), ", trying to use default cube mesh");
@@ -299,14 +299,14 @@ ShiftEngine::PathSettings ShiftEngine::D3D11ContextManager::GetPaths() const
     return enginePaths;
 }
 
-int ShiftEngine::D3D11ContextManager::DrawMesh(D3D11MeshDataPtr & mesh)
+int ShiftEngine::D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
 {
-    if (mesh && mesh->vertexDeclaration)
+    if (mesh && mesh->GetVertexDeclaration())
     {
-        if (mesh->vertexDeclaration.get() != currentVertexDeclaration)
+        if (mesh->GetVertexDeclaration().get() != currentVertexDeclaration)
         {
-            mesh->vertexDeclaration->Bind();
-            currentVertexDeclaration = mesh->vertexDeclaration.get();
+            mesh->GetVertexDeclaration()->Bind();
+            currentVertexDeclaration = mesh->GetVertexDeclaration().get();
         }
         return mesh->Draw();
     }
@@ -382,21 +382,7 @@ ShiftEngine::FontManager * ShiftEngine::D3D11ContextManager::GetFontManager()
     return fontManager;
 }
 
-void ShiftEngine::D3D11ContextManager::RegisterVertexSemantic(const VertexSemantic & semantic)
-{
-    auto iter = declarations.find(semantic);
-    if (iter == declarations.end())
-    {
-        auto vd = CreateVDFromDescription(semantic);
-        declarations[semantic] = std::make_shared<D3D11VertexDeclaration>(vd);
-    }
-    else
-    {
-        LOG_INFO("Semantic is already registered");
-    }
-}
-
-ShiftEngine::D3D11VertexDeclaration ShiftEngine::D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
+ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
 {
     ID3D11Device * pDevice = graphicsContext.Device;
     ID3D11InputLayout * outIL = nullptr;
@@ -518,22 +504,9 @@ ShiftEngine::D3D11VertexDeclaration ShiftEngine::D3D11ContextManager::CreateVDFr
     delete[] ilDesc;
     compiledShader->Release();
 
-    D3D11VertexDeclaration vd(outIL, graphicsContext.DeviceContext);
-    return vd;
-}
-
-ShiftEngine::D3D11VDPtr ShiftEngine::D3D11ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
-{
-    auto iter = declarations.find(semantic);
-    if (iter == declarations.end())
-    {
-        RegisterVertexSemantic(semantic);
-        return GetVertexDeclaration(semantic);
-    }
-    else
-    {
-        return iter->second;
-    }
+    //HACK: slow but I'm lazy to rework
+    declarations[semantic] = std::make_shared<D3D11VertexDeclaration>(outIL, pDevice);
+    return declarations[semantic];
 }
 
 ShiftEngine::D3D11TextureManager * ShiftEngine::D3D11ContextManager::GetTextureManager()

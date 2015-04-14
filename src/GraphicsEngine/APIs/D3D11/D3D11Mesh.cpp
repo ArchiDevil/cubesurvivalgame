@@ -2,26 +2,25 @@
 
 #include <cassert>
 
-ShiftEngine::D3D11MeshData::D3D11MeshData(D3D11VDPtr _vertexDeclaration, ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/, 
+ShiftEngine::D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/, 
                                           ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
-    , vertexDeclaration(_vertexDeclaration)
-    , vertexSemantic(nullptr)
     , pDevice(pDevice)
     , pDeviceContext(pDeviceContext)
 {
 }
 
 ShiftEngine::D3D11MeshData::D3D11MeshData(const D3D11MeshData & ref)
-    : indicesCount(ref.indicesCount)
-    , vertexSize(ref.vertexSize)
-    , verticesCount(ref.verticesCount)
-    , vertexDeclaration(ref.vertexDeclaration)
-    , vertexSemantic(ref.vertexSemantic)
-    , pDevice(ref.pDevice)
+    : pDevice(ref.pDevice)
     , pDeviceContext(ref.pDeviceContext)
 {
+    indicesCount = ref.indicesCount;
+    vertexSize = ref.vertexSize;
+    verticesCount = ref.verticesCount;
+    vertexDeclaration = ref.vertexDeclaration;
+    vertexSemantic = ref.vertexSemantic;
+
     IndexBuffer = ref.IndexBuffer;
     if (IndexBuffer)
         IndexBuffer->AddRef();
@@ -59,16 +58,12 @@ ShiftEngine::D3D11MeshData::~D3D11MeshData()
     Clear();
 }
 
-bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
-                                               const void * vData, size_t vSize,
-                                               const void * iData, size_t iSize)
+bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, const uint8_t * vData, size_t vDataSize, const uint32_t * iData, size_t iDataSize, const VertexSemantic * semantic, const IVertexDeclarationPtr & declaration)
 {
     assert(pDevice);
+    assert(pDeviceContext);
 
-    if (vSize > 0 && !vData)
-        return false;
-
-    if (iSize > 0 && !iData)
+    if (!vData || !vDataSize || !semantic)
         return false;
 
     D3D11_BUFFER_DESC vBuffDesc;
@@ -77,7 +72,7 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
     ZeroMemory(&iBuffDesc, sizeof(D3D11_BUFFER_DESC));
 
     vBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vBuffDesc.ByteWidth = vSize;
+    vBuffDesc.ByteWidth = vDataSize;
     vBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -91,7 +86,7 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
         vBuffDesc.Usage = D3D11_USAGE_DEFAULT;
     }
 
-    if (vSize > 0)
+    if (vData)
     {
         D3D11_SUBRESOURCE_DATA data;
         ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -102,12 +97,12 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
     }
 
     iBuffDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-    iBuffDesc.ByteWidth = iSize;
+    iBuffDesc.ByteWidth = iDataSize;
     iBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
     {
-        iBuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        iBuffDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
         iBuffDesc.Usage = D3D11_USAGE_DYNAMIC;
     }
     else
@@ -116,7 +111,7 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
         iBuffDesc.Usage = D3D11_USAGE_DEFAULT;
     }
 
-    if (iSize > 0)
+    if (iData)
     {
         D3D11_SUBRESOURCE_DATA data;
         ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -125,6 +120,12 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
         if (FAILED(pDevice->CreateBuffer(&iBuffDesc, &data, &IndexBuffer)))
             return false;
     }
+
+    vertexSemantic = semantic;
+    vertexDeclaration = declaration;
+    vertexSize = vertexSemantic->getVertexSize();
+    verticesCount = vDataSize / vertexSize;
+    indicesCount = iDataSize / sizeof(uint32_t);
 
     return true;
 }
@@ -144,7 +145,7 @@ void ShiftEngine::D3D11MeshData::Clear()
     }
 }
 
-int ShiftEngine::D3D11MeshData::Draw()
+size_t ShiftEngine::D3D11MeshData::Draw()
 {
     if (!pDevice)
         return 0;

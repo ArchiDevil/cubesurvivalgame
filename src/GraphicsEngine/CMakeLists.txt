@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 file(GLOB SRC *.cpp *.h)
 
-message(STATUS ${RENDERER})
-
 if(${RENDERER} STREQUAL D3D10_RENDER)
     add_definitions(-DD3D10_RENDER)
     set(DXSDK_LIBS  d3d10.lib
@@ -68,7 +66,7 @@ endif()
 add_library(GraphicsEngine STATIC ${SRC})
 
 if(NOT UNIX)
-	target_link_libraries(GraphicsEngine ${DXSDK_LIBS})
+    target_link_libraries(GraphicsEngine ${DXSDK_LIBS})
 endif()
 
 target_link_libraries(GraphicsEngine tinyxml2)

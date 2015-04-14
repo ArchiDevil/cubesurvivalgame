@@ -68,7 +68,7 @@ bool ShiftEngine::D3D10MeshData::CreateBuffers(bool dynamic,
     const uint32_t * iData,
     size_t iDataSize,
     const VertexSemantic * semantic,
-    const D3D10VDPtr & declaration)
+    const IVertexDeclarationPtr & declaration)
 {
     assert(pDevice);
 

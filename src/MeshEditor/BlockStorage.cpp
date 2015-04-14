@@ -1,6 +1,7 @@
 #include "BlockStorage.h"
 
 #include <cassert>
+#include <algorithm>
 
 MeshEditor::BlockStorage::BlockStorage(size_t x, size_t y, size_t z)
     : x_size(x)
@@ -125,7 +126,7 @@ MathLib::Vector3F MeshEditor::BlockStorage::GetHalfSize() const
 
 int MeshEditor::BlockStorage::GetMaxSize() const
 {
-    return max(x_size, max(y_size, z_size));
+    return std::max(x_size, std::max(y_size, z_size));
 }
 
 int MeshEditor::BlockStorage::GetIndex(size_t x, size_t y, size_t z) const

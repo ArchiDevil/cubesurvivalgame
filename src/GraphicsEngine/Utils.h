@@ -2,7 +2,7 @@
 
 #include "VertexTypes.h"
 #include "MiscTypes.h"
-#include "APIs/D3D10/D3D10Mesh.h"
+#include "IMeshData.h"
 
 namespace ShiftEngine
 {
@@ -12,7 +12,7 @@ namespace ShiftEngine
                                  SerializedLIM & vertices,
                                  std::vector<uint32_t> & indices);
 
-        MathLib::AABB getBBoxFromMesh(D3D10MeshDataPtr meshData);
+        // MathLib::AABB getBBoxFromMesh(D3D10MeshDataPtr meshData);
 
         IMeshDataPtr createCube();
         IMeshDataPtr createPlane();
