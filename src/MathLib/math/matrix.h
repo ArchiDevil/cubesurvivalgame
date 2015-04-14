@@ -1,6 +1,10 @@
 #pragma once
 
-#include <D3DX10.h>
+#if defined(D3D10_RENDER)
+#   include <D3DX10.h>
+#elif defined(D3D11_RENDER)
+#   include <D3DX11.h>
+#endif // D3D10_RENDER
 
 #include "vector3.h"
 #include "vector4.h"
@@ -11,6 +15,8 @@ namespace MathLib
     template<typename T, size_t E>
     struct matrix
     {
+        static_assert(E > 0, "E cannot be less than 1");
+
         T arr[E][E];
 
         matrix()
@@ -27,12 +33,14 @@ namespace MathLib
                     arr[i][j] = ref.arr[i][j];
         }
 
+#if defined(D3D10_RENDER) || defined(D3D11_RENDER)
         matrix(const D3DXMATRIX & ref)
         {
             for (int i = 0; i < E; i++)
                 for (int j = 0; j < E; j++)
                     arr[i][j] = ref(i, j);
         }
+#endif
 
         matrix operator + (const matrix & ref) const
         {

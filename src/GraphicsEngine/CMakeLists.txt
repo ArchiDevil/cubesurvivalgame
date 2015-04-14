@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 file(GLOB SRC *.cpp *.h)
 
 if(${RENDERER} STREQUAL D3D10_RENDER)
-    add_definitions(-DD3D10_RENDER)
     set(DXSDK_LIBS  d3d10.lib
                     d3dx10.lib
                     d3dcompiler.lib
@@ -18,10 +17,7 @@ if(${RENDERER} STREQUAL D3D10_RENDER)
     file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/APIs/D3D10/*.h)
     source_group("Header Files\\D3D10" FILES ${LS})
     list(APPEND SRC ${LS})
-endif()
-
-if(${RENDERER} STREQUAL D3D11_RENDER)
-    add_definitions(-DD3D11_RENDER)
+elseif(${RENDERER} STREQUAL D3D11_RENDER)
     set(DXSDK_LIBS  d3d11.lib
                     d3dx11.lib
                     d3dcompiler.lib
