@@ -185,6 +185,13 @@ void GameObjectsManager::LoadEntities()
         std::string id = root.get("id", buff).asString();
         std::string meshName = root.get("mesh", buff).asString();
         std::string materialName = root.get("material", buff).asString();
+        buff = { 1.0f };
+        buff = root.get("scale", buff);
+        float scale = 1.0f;
+        if (buff.empty())
+            scale = 1.0f;
+        else
+            scale = buff.asFloat();
 
         buff = root.get("type", buff);
         std::string type = buff.asString();
@@ -193,9 +200,9 @@ void GameObjectsManager::LoadEntities()
             std::string inventoryName = root.get("inventory", buff).asString();
             InventoryBreed emptyBreed;
             if (!inventoryName.empty())
-                Breeds[id] = std::make_shared<LiveBreed>(Inventories[inventoryName], meshName, materialName);
+                Breeds[id] = std::make_shared<LiveBreed>(Inventories[inventoryName], meshName, materialName, scale);
             else
-                Breeds[id] = std::make_shared<LiveBreed>(emptyBreed, meshName, materialName);
+                Breeds[id] = std::make_shared<LiveBreed>(emptyBreed, meshName, materialName, scale);
         }
         else if (type == "collectable")
         {
@@ -209,13 +216,13 @@ void GameObjectsManager::LoadEntities()
             item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
             buff = root.get("count", buff);
             unsigned count = buff.asUInt();
-            Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count);
+            Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count, scale);
         }
         else if (type == "heater")
         {
             buff = root.get("heat_count", buff);
             int heatCount = buff.asInt();
-            Breeds[id] = std::make_shared<HeaterBreed>(meshName, materialName, heatCount);
+            Breeds[id] = std::make_shared<HeaterBreed>(meshName, materialName, heatCount, scale);
         }
         else
         {
