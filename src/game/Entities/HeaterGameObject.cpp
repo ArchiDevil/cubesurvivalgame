@@ -17,8 +17,11 @@ void HeaterGameObject::Update(double dt)
 {
     static double accumulatedTime = 0.0;
     accumulatedTime += dt;
-    if ((int)accumulatedTime == 1)
+    if (accumulatedTime > 1.0)
+    {
         LostIsland::GetGamePtr()->GlobalEventHandler->DispatchEvent(std::make_unique<HeatEvent>(GetPosition(), heatValue));
+        accumulatedTime = 0.0;
+    }
 }
 
 int HeaterGameObject::GetHeatValue() const

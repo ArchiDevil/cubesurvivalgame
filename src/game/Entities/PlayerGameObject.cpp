@@ -142,6 +142,8 @@ void PlayerGameObject::DispatchEvent(const IGameEvent *ev)
 
     HeatEvent* heat = (HeatEvent*)ev;
     int hv = heat->heatValue;
-    hv *= MathLib::distance(heat->heatSource, this->GetPosition()) / 3.0f;
+
+    // assume that campfire heats only 3 blocks around for now
+    hv *= (int)(MathLib::distance(heat->heatSource, GetPosition()) / 3.0f);
     SetWarmth(GetWarmth() + hv);
 }
