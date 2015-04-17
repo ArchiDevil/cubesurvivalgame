@@ -16,7 +16,6 @@
 #include "../../MiscTypes.h"
 #include "../../MaterialManager.h"
 #include "../../Sprite.h"
-#include "../../TextLib/cText.h"
 #include "../../Material.h"
 #include "../../FontManager.h"
 
@@ -51,7 +50,6 @@ namespace ShiftEngine
 
         std::wstring                        GetGPUDescription();
 
-        void                                Shutdown();
         void                                BeginScene();
         void                                EndScene();
         void                                ResetPipeline();

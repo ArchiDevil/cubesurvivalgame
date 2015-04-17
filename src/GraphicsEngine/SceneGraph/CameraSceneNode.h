@@ -5,6 +5,8 @@
 
 #include <MathLib/math/quaternion.h>
 
+#include <memory>
+
 //REMOVE D3DX LIB !!!
 
 namespace ShiftEngine
@@ -14,16 +16,12 @@ namespace ShiftEngine
     class CameraSceneNode : public ISceneNode
     {
     public:
-        CameraSceneNode(
-            D3DXVECTOR3 _pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-            D3DXVECTOR3 _up = D3DXVECTOR3(0.0f, 0.0f, 1.0f),
-            D3DXVECTOR3 _right = D3DXVECTOR3(1.0f, 0.0f, 0.0f));
-        ~CameraSceneNode();
+        CameraSceneNode();
+        CameraSceneNode(D3DXVECTOR3 _pos, D3DXVECTOR3 _up, D3DXVECTOR3 _right);
 
         void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
 
         void SetPosition(float x, float y, float z);
-        void SetPosition(const D3DXVECTOR3 & pos);
         void SetPosition(const Vector3F & pos);
 
         void Update();
@@ -47,13 +45,15 @@ namespace ShiftEngine
         const D3DXMATRIX & GetProjectionMatrix() const;
         const D3DXMATRIX & GetViewMatrix() const;
 
+        void SetZNear(float val);
         float GetZNear() const;
+
+        void SetZFar(float val);
         float GetZFar() const;
+
+        void SetFOV(float val);
         float GetFOV() const;
 
-        void SetZNear(float val);
-        void SetZFar(float val);
-        void SetFOV(float val);
         void SetScreenWidth(float val);
         void SetScreenHeight(float val);
 
@@ -65,20 +65,20 @@ namespace ShiftEngine
         D3DXMATRIX matView;
         D3DXMATRIX matProj;
 
-        float zNear;
-        float zFar;
-        float FOV;
-        float screenWidth;
-        float screenHeight;
-        CameraFrustum * Frustum;
+        float zNear = 0.1f;
+        float zFar = 100.0f;
+        float FOV = 60.0f;
+        float screenWidth = 800.0f;
+        float screenHeight = 600.0f;
+        std::unique_ptr<CameraFrustum> Frustum = nullptr;
 
-        float ViewAngle;
-        D3DXVECTOR3 Angles;
+        float ViewAngle = 0.0f;
+        D3DXVECTOR3 Angles = { 0.0f, 0.0f, 0.0f };
 
-        D3DXVECTOR3 UP;
-        D3DXVECTOR3 LOOK;
-        D3DXVECTOR3 POS;
-        D3DXVECTOR3 RIGHT;
+        D3DXVECTOR3 UP = { 0.0f, 0.0f, 1.0f };
+        D3DXVECTOR3 LOOK = { 0.0f, 1.0f, 0.0f };
+        D3DXVECTOR3 POS = { 0.0f, 0.0f, 0.0f };
+        D3DXVECTOR3 RIGHT = { 1.0f, 0.0f, 0.0f };
 
     };
 }

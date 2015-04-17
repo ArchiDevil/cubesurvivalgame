@@ -91,7 +91,7 @@ bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
 bool MathLib::LineTriangleIntersectionPoint(const Vector3F &t1, const Vector3F &t2, const Vector3F &t3,
     const Vector3F &l1, const Vector3F &l2, Vector3F &p)
 {
-    Vector3F n = Normalize(vec(t2 - t1, t3 - t2));
+    Vector3F n = normalize(vec(t2 - t1, t3 - t2));
     float d1 = dot((l1 - t1), n) / n.length();
     float d2 = dot((l2 - t1), n) / n.length();
     if ((d1 > 0 && d2 > 0) || (d1 < 0 && d2 < 0))

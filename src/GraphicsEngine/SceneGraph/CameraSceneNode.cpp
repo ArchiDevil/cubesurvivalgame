@@ -2,21 +2,16 @@
 
 #include "../RenderQueue.h"
 
-ShiftEngine::CameraSceneNode::CameraSceneNode(D3DXVECTOR3 _pos, D3DXVECTOR3 _up, D3DXVECTOR3 _right)
-    : UP(_up)
-    , POS(_pos)
-    , RIGHT(_right)
-    , LOOK(0.0f, 1.0f, 0.0f)
-    , ISceneNode()
-    , zNear(0)
-    , zFar(0)
-    , FOV(0)
-    , Frustum(nullptr)
-    , ViewAngle(0)
+ShiftEngine::CameraSceneNode::CameraSceneNode()
+    : ISceneNode()
 {
 }
 
-ShiftEngine::CameraSceneNode::~CameraSceneNode()
+ShiftEngine::CameraSceneNode::CameraSceneNode(D3DXVECTOR3 pos, D3DXVECTOR3 up, D3DXVECTOR3 right)
+    : ISceneNode()
+    , UP(up)
+    , POS(pos)
+    , RIGHT(right)
 {
 }
 
@@ -28,12 +23,11 @@ void ShiftEngine::CameraSceneNode::Initialize(float _screenWidth, float _screenH
     screenWidth = _screenWidth;
     screenHeight = _screenHeight;
 
-    D3DXVECTOR3 LOOK_POS;
-    LOOK_POS = LOOK + POS;
+    D3DXVECTOR3 LOOK_POS = LOOK + POS;
     D3DXMatrixLookAtRH(&matView, &POS, &LOOK_POS, &UP);
     RebuildProjMatrix();
 
-    Frustum = new CameraFrustum;
+    Frustum.reset(new CameraFrustum());
 }
 
 void ShiftEngine::CameraSceneNode::SetPosition(float x, float y, float z)
@@ -41,13 +35,6 @@ void ShiftEngine::CameraSceneNode::SetPosition(float x, float y, float z)
     POS.x = x;
     POS.y = y;
     POS.z = z;
-}
-
-void ShiftEngine::CameraSceneNode::SetPosition(const D3DXVECTOR3 & pos)
-{
-    POS.x = pos.x;
-    POS.y = pos.y;
-    POS.z = pos.z;
 }
 
 void ShiftEngine::CameraSceneNode::SetPosition(const Vector3F & pos)
@@ -96,7 +83,7 @@ D3DXVECTOR3 ShiftEngine::CameraSceneNode::GetPosition() const
 
 ShiftEngine::CameraFrustum * ShiftEngine::CameraSceneNode::GetFrustumPtr()
 {
-    return Frustum;
+    return Frustum.get();
 }
 
 void ShiftEngine::CameraSceneNode::LookAt(D3DXVECTOR3 point)
@@ -172,11 +159,11 @@ void ShiftEngine::CameraSceneNode::SetScreenHeight(float val)
 void ShiftEngine::CameraSceneNode::RebuildProjMatrix()
 {
     D3DXMatrixPerspectiveFovRH(
-        &matProj,
-        (float)D3DX_PI * FOV / 180,
-        screenWidth / screenHeight,
-        zNear,
-        zFar);
+        &matProj,                   // out
+        (float)D3DX_PI * FOV / 180, // vertical FoV
+        screenWidth / screenHeight, // screen rate
+        zNear,                      // near
+        zFar);                      // far
 }
 
 void ShiftEngine::CameraSceneNode::RotateByQuaternion(const MathLib::qaFloat & quat)
@@ -203,6 +190,7 @@ void ShiftEngine::CameraSceneNode::SetSphericalCoords(const D3DXVECTOR3 & lookPo
     float x = r * sin(theta * 0.0175f) * cos(phi * 0.0175f);
     float y = r * sin(theta * 0.0175f) * sin(phi * 0.0175f);
     float z = r * cos(theta * 0.0175f);
+
     POS = D3DXVECTOR3(x, y, z) + lookPoint;
     LOOK = lookPoint - POS;
     D3DXVec3Normalize(&LOOK, &LOOK);

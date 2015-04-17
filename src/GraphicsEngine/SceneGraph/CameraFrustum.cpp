@@ -1,18 +1,16 @@
 #include "CameraFrustum.h"
 
-ShiftEngine::CameraFrustum::CameraFrustum()
-{
-}
-
-ShiftEngine::CameraFrustum::~CameraFrustum()
-{
-}
+#if defined(D3D10_RENDER)
+#   include <D3DX10.h>
+#elif defined(D3D11_RENDER)
+#   include <D3DX11.h>
+#endif // D3D10_RENDER
 
 void ShiftEngine::CameraFrustum::BuildFrustum(D3DXMATRIX * matView, D3DXMATRIX * matProj)
 {
     D3DXMATRIX Matrix;
 
-    ::ZeroMemory(&planes, sizeof(D3DXPLANE) * 6);
+    ::ZeroMemory(&planes, sizeof(MathLib::plane<float>) * 6);
     ::ZeroMemory(&Matrix, sizeof(D3DXMATRIX));
 
     D3DXMatrixMultiply(&Matrix, matView, matProj);
@@ -22,37 +20,37 @@ void ShiftEngine::CameraFrustum::BuildFrustum(D3DXMATRIX * matView, D3DXMATRIX *
     planes[0].b = Matrix._24 + Matrix._23;
     planes[0].c = Matrix._34 + Matrix._33;
     planes[0].d = Matrix._44 + Matrix._43;
-    D3DXPlaneNormalize(&planes[0], &planes[0]);
+    planes[0] = normalize(planes[0]);
 
     planes[1].a = Matrix._14 - Matrix._13; // Передняя плоскость
     planes[1].b = Matrix._24 - Matrix._23;
     planes[1].c = Matrix._34 - Matrix._33;
     planes[1].d = Matrix._44 - Matrix._43;
-    D3DXPlaneNormalize(&planes[1], &planes[1]);
+    planes[1] = normalize(planes[1]);
 
     planes[2].a = Matrix._14 + Matrix._11; // Левая плоскость
     planes[2].b = Matrix._24 + Matrix._21;
     planes[2].c = Matrix._34 + Matrix._31;
     planes[2].d = Matrix._44 + Matrix._41;
-    D3DXPlaneNormalize(&planes[2], &planes[2]);
+    planes[2] = normalize(planes[2]);
 
     planes[3].a = Matrix._14 - Matrix._11; // Правая плоскость
     planes[3].b = Matrix._24 - Matrix._21;
     planes[3].c = Matrix._34 - Matrix._31;
     planes[3].d = Matrix._44 - Matrix._41;
-    D3DXPlaneNormalize(&planes[3], &planes[3]);
+    planes[3] = normalize(planes[3]);
 
     planes[4].a = Matrix._14 - Matrix._12; // Верхняя плоскость
     planes[4].b = Matrix._24 - Matrix._22;
     planes[4].c = Matrix._34 - Matrix._32;
     planes[4].d = Matrix._44 - Matrix._42;
-    D3DXPlaneNormalize(&planes[4], &planes[4]);
+    planes[4] = normalize(planes[4]);
 
     planes[5].a = Matrix._14 + Matrix._12; // Нижняя плоскость
     planes[5].b = Matrix._24 + Matrix._22;
     planes[5].c = Matrix._34 + Matrix._32;
     planes[5].d = Matrix._44 + Matrix._42;
-    D3DXPlaneNormalize(&planes[5], &planes[5]);
+    planes[5] = normalize(planes[5]);
 }
 
 ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(const MathLib::AABB & bbox) const
@@ -62,9 +60,6 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(
 
     // get the corners of the box into the vCorner array
     bbox.GetVertices(vCorner);
-    D3DXVECTOR3 buffer[8];
-    //HACK: very-very ugly hack!
-    memcpy(buffer, vCorner, sizeof(float) * 3 * 8);
 
     // test all 8 corners against the 6 sides 
     // if all points are behind 1 specific plane, we are out
@@ -78,7 +73,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(
         for (int i = 0; i < 8; ++i)
         {
             // test this point against the planes
-            if (D3DXPlaneDotCoord(&planes[p], &buffer[i]) < 0)	//if point behind plane
+            if (planeDotCoord(planes[p], vCorner[i]) < 0)   //if point behind plane
             {
                 iPtIn = 0;
                 --iInCount;
@@ -115,8 +110,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(
 
         for (int i = 0; i < 8; ++i)
         {
-            D3DXVECTOR3 buffer = D3DXVECTOR3(vCorner[i].x, vCorner[i].y, vCorner[i].z);
-            if (D3DXPlaneDotCoord(&planes[p], &buffer) < 0)
+            if (planeDotCoord(planes[p], vCorner[i]) < 0)
             {
                 iPtIn = 0;
                 --iInCount;
@@ -138,11 +132,11 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(
 ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckQTreeNode(const MathLib::AABB & bbox) const
 {
     int iTotalIn = 0;
-    D3DXVECTOR3 buffer[4];
-    buffer[0] = D3DXVECTOR3(bbox.bMin.x, bbox.bMin.y, 0.0f);
-    buffer[1] = D3DXVECTOR3(bbox.bMin.x, bbox.bMax.y, 0.0f);
-    buffer[2] = D3DXVECTOR3(bbox.bMax.x, bbox.bMin.y, 0.0f);
-    buffer[3] = D3DXVECTOR3(bbox.bMax.x, bbox.bMax.y, 0.0f);
+    MathLib::Vector3F buffer[4];
+    buffer[0] = { bbox.bMin.x, bbox.bMin.y, 0.0f };
+    buffer[1] = { bbox.bMin.x, bbox.bMax.y, 0.0f };
+    buffer[2] = { bbox.bMax.x, bbox.bMin.y, 0.0f };
+    buffer[3] = { bbox.bMax.x, bbox.bMax.y, 0.0f };
 
     for (int p = 0; p < 4; ++p) //last 2 is a top and bottom planes of frustum
     {
@@ -151,7 +145,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckQTree
 
         for (int i = 0; i < 4; ++i)
         {
-            if (D3DXPlaneDotCoord(&planes[p], &buffer[i]) < 0)
+            if (planeDotCoord(planes[p], buffer[i]) < 0)
             {
                 iPtIn = 0;
                 --iInCount;

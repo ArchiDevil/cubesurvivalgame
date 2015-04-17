@@ -228,7 +228,7 @@ void gameState::ProcessInput(double dt)
     mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
     Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMatrix, viewMatrix, sizes);
     Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix, sizes);
-    Ray unprojectedRay = Ray(resultNear, MathLib::Normalize(resultFar - resultNear));
+    Ray unprojectedRay = Ray(resultNear, MathLib::normalize(resultFar - resultNear));
 
     pGame->EntityMgr->HighlightEntity(unprojectedRay);
 

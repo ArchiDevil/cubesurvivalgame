@@ -127,7 +127,7 @@ void GameEventHandler::Process(LivingDies* ev)
             continue;
 
         Vector3D velocity(sin(rand() % 16), cos(rand() % 16), 1.0);
-        velocity = MathLib::Normalize(velocity);
+        velocity = MathLib::normalize(velocity);
         velocity *= 6.0f;
         LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, velocity, item.itemId, item.count);
     }

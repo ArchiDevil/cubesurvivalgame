@@ -8,7 +8,11 @@
 #include <vector>
 
 //D3D INCLUDES
-#include <d3dx10.h>
+#if defined(D3D10_RENDER)
+#   include <D3DX10.h>
+#elif defined(D3D11_RENDER)
+#   include <D3DX11.h>
+#endif // D3D10_RENDER
 
 using MathLib::Vector2F;
 using MathLib::Vector3F;

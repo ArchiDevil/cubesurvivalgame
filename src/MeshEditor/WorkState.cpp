@@ -60,7 +60,7 @@ bool WorkState::update(double dt)
 
     auto scg = ShiftEngine::GetSceneGraph();
 
-    scg->GetActiveCamera()->SetPosition(D3DXVECTOR3(x, y, z) + addPos);
+    scg->GetActiveCamera()->SetPosition(Vector3F(x, y, z) + Vector3F(addPos.x, addPos.y, addPos.z));
     scg->GetActiveCamera()->LookAt(addPos - scg->GetActiveCamera()->GetPosition());
 
     static double tempCounter = 0.0;
@@ -281,7 +281,7 @@ bool WorkState::ProcessInput(double dt)
     mat4f projMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetProjectionMatrix();
     nearV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat, sizes);
     farV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat, sizes);
-    Vector3F dir = MathLib::Normalize(farV - nearV);
+    Vector3F dir = MathLib::normalize(farV - nearV);
 
     if (geometryMode)
     {

@@ -204,12 +204,6 @@ std::wstring ShiftEngine::D3D11ContextManager::GetGPUDescription()
     return buffer;
 }
 
-void ShiftEngine::D3D11ContextManager::Shutdown()
-{
-    fontManager->Shutdown();
-    //KILL EVERYTHING
-}
-
 void ShiftEngine::D3D11ContextManager::BeginScene()
 {
     graphicsContext.DeviceContext->ClearRenderTargetView(graphicsContext.DefaultRT->rt, D3DXCOLOR((float)208 / 255, (float)238 / 255, (float)248 / 255, 1.0f));

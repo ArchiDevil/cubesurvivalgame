@@ -3,6 +3,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
+#include "matrix.h"
 
 namespace MathLib
 {
@@ -31,21 +32,21 @@ namespace MathLib
     }
 
     template<typename T>
-    vec2<T> Normalize(const vec2<T> & vec)		//нормализует вектор
+    vec2<T> normalize(const vec2<T> & vec)      //нормализует вектор
     {
         T inv_length = (T)1.0 / vec.length();
         return vec * inv_length;
     }
 
     template<typename T>
-    vec3<T> Normalize(const vec3<T> & vec)
+    vec3<T> normalize(const vec3<T> & vec)
     {
         T inv_length = (T)1.0 / vec.length();
         return vec * inv_length;
     }
 
     template<typename T>
-    vec4<T> Normalize(const vec4<T> & vec)
+    vec4<T> normalize(const vec4<T> & vec)
     {
         T inv_length = (T)1.0 / vec.length();
         return vec * inv_length;
@@ -78,7 +79,7 @@ namespace MathLib
     {
         vec3<T> out = vec;
         out.x = 0.0f;
-        out = Normalize(out);
+        out = normalize(out);
         return out;
     }
 
@@ -88,7 +89,7 @@ namespace MathLib
     {
         vec3<T> out = vec;
         out.y = 0.0f;
-        out = Normalize(out);
+        out = normalize(out);
         return out;
     }
 
@@ -98,7 +99,7 @@ namespace MathLib
     {
         vec3<T> out = vec;
         out.z = 0.0f;
-        out = Normalize(out);
+        out = normalize(out);
         return out;
     }
 

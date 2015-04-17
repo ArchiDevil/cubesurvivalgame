@@ -37,7 +37,7 @@ namespace MathLib
     template<typename T>
     T angleX(const vec2<T> & vec)
     {
-        vec2<T> tempVec = Normalize(vec);
+        vec2<T> tempVec = normalize(vec);
         if (asin(tempVec.y) >= 0)
             return acos(tempVec.x);
         else
