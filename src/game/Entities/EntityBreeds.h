@@ -9,18 +9,23 @@ class InventoryBreed;
 class EntityBreed
 {
 public:
-    EntityBreed(const std::string & meshName, const std::string & materialFile)
+    EntityBreed(const std::string & meshName, const std::string & materialFile, float scale)
         : meshName(meshName)
         , materialFile(materialFile)
+        , scale(scale)
     {
     }
 
-    virtual ~EntityBreed() {}
+    virtual ~EntityBreed()
+    {
+    }
+
     virtual GameObjectPtr Clone() const = 0;
 
 protected:
-    std::string meshName;
-    std::string materialFile;
+    std::string meshName = "";
+    std::string materialFile = "";
+    float scale = 1.0f;
 
 };
 
@@ -29,8 +34,8 @@ typedef std::shared_ptr<EntityBreed> BreedPtr;
 class LiveBreed : public EntityBreed
 {
 public:
-    LiveBreed(const InventoryBreed & inventory, const std::string & meshName, const std::string & materialFile)
-        : EntityBreed(meshName, materialFile)
+    LiveBreed(const InventoryBreed & inventory, const std::string & meshName, const std::string & materialFile, float scale)
+        : EntityBreed(meshName, materialFile, scale)
         , inventoryBreedPtr(inventory)
     {
     }
@@ -44,8 +49,8 @@ private:
 class CollectableBreed : public EntityBreed
 {
 public:
-    CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId, size_t count)
-        : EntityBreed(meshName, materialFile)
+    CollectableBreed(const std::string & meshName, const std::string & materialFile, item_id_t itemId, size_t count, float scale)
+        : EntityBreed(meshName, materialFile, scale)
         , itemId(itemId)
         , count(count)
     {
@@ -61,8 +66,8 @@ protected:
 class HeaterBreed : public EntityBreed
 {
 public:
-    HeaterBreed(const std::string & meshName, const std::string & materialFile, int heatCount)
-        : EntityBreed(meshName, materialFile)
+    HeaterBreed(const std::string & meshName, const std::string & materialFile, int heatCount, float scale)
+        : EntityBreed(meshName, materialFile, scale)
         , heatCount(heatCount)
     {
     }

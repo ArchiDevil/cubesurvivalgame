@@ -12,6 +12,8 @@
 #include "Entities/GameObjectsManager.h"
 #include "Entities/GameObjectInventory.h"
 
+#include <cassert>
+
 void GameEventHandler::DispatchEvent(std::unique_ptr<IGameEvent> ev)
 {
     if (!ev)
@@ -37,17 +39,16 @@ void GameEventHandler::DispatchEvent(std::unique_ptr<IGameEvent> ev)
     case GE_LivingDies:
         Process((LivingDies*)ev.get());
         break;
+    case GE_Heat:
+        Process((HeatEvent*)ev.get());
     default:
-        Process(ev.get());
+        // have you missed some event type?
+        assert(false);
         break;
     }
 
     auto pGame = LostIsland::GetGamePtr();
     pGame->EntityMgr->DispatchEvent(std::move(ev));
-}
-
-void GameEventHandler::Process(IGameEvent* /*ev*/)
-{
 }
 
 void GameEventHandler::Process(PlayerUsesItem* ev)
@@ -131,4 +132,9 @@ void GameEventHandler::Process(LivingDies* ev)
         velocity *= 6.0f;
         LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, velocity, item.itemId, item.count);
     }
+}
+
+void GameEventHandler::Process(HeatEvent* ev)
+{
+    LostIsland::GetGamePtr()->Player->DispatchEvent(ev);
 }
