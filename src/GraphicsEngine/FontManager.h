@@ -33,8 +33,8 @@ namespace ShiftEngine
         void LoadFonts();
         void BatchText(const std::string & text, float x, float y);
 
-        std::vector<TextPoint> batchedVertices;
-        std::vector<uint32_t> batchedIndices;
+        std::map<std::wstring, std::vector<TextPoint>> batchedVertices;
+        std::map<std::wstring, std::vector<uint32_t>> batchedIndices;
 
         std::map<std::wstring, std::unique_ptr<cFont>> Fonts;
         cFont * pCurrentFont = nullptr;

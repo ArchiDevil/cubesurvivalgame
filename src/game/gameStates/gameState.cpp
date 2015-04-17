@@ -239,9 +239,11 @@ void gameState::ProcessInput(double dt)
         if (retVal)
         {
             InteractableGameObject* entity = (InteractableGameObject*)retVal.get();
-            if (!entity) throw;
-            auto interaction = entity->GetInteraction();
-            pGame->Player->Interact(entity, interaction);
+            if (entity)
+            {
+                auto interaction = entity->GetInteraction();
+                pGame->Player->Interact(entity, interaction);
+            }
         }
         else
         {

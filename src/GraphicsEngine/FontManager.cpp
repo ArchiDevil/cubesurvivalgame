@@ -103,11 +103,14 @@ void ShiftEngine::FontManager::BatchText(const std::string & text, float x, floa
     if (text.size() == 0)
         return;
 
-    size_t vertSh = batchedVertices.size();
-    size_t indSh = batchedIndices.size();
+    auto & v = batchedVertices[GetCurrentFontName()];
+    auto & i = batchedIndices[GetCurrentFontName()];
 
-    batchedIndices.resize(batchedIndices.size() + text.size() * 6);
-    batchedVertices.resize(batchedVertices.size() + text.size() * 4);
+    size_t vertSh = v.size();
+    size_t indSh = i.size();
+
+    i.resize(i.size() + text.size() * 6);
+    v.resize(v.size() + text.size() * 4);
 
     int CurX = 0;
 
@@ -123,14 +126,14 @@ void ShiftEngine::FontManager::BatchText(const std::string & text, float x, floa
         int OffsetY = cp->YOffset;
 
         //first triangle
-        batchedIndices[indSh++] = vertSh;
-        batchedIndices[indSh++] = vertSh + 1;
-        batchedIndices[indSh++] = vertSh + 2;
+        i[indSh++] = vertSh;
+        i[indSh++] = vertSh + 1;
+        i[indSh++] = vertSh + 2;
 
         //second triangle
-        batchedIndices[indSh++] = vertSh;
-        batchedIndices[indSh++] = vertSh + 2;
-        batchedIndices[indSh++] = vertSh + 3;
+        i[indSh++] = vertSh;
+        i[indSh++] = vertSh + 2;
+        i[indSh++] = vertSh + 3;
 
         /*
         0   1
@@ -143,28 +146,28 @@ void ShiftEngine::FontManager::BatchText(const std::string & text, float x, floa
         */
 
         //upper left
-        batchedVertices[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
-        batchedVertices[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
-        batchedVertices[vertSh].x = (float)CurX + OffsetX + x;
-        batchedVertices[vertSh++].y = (float)OffsetY + y;
+        v[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
+        v[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
+        v[vertSh].x = (float)CurX + OffsetX + x;
+        v[vertSh++].y = (float)OffsetY + y;
 
         //upper right
-        batchedVertices[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
-        batchedVertices[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
-        batchedVertices[vertSh].x = (float)Width + CurX + OffsetX + x;
-        batchedVertices[vertSh++].y = (float)OffsetY + y;
+        v[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
+        v[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
+        v[vertSh].x = (float)Width + CurX + OffsetX + x;
+        v[vertSh++].y = (float)OffsetY + y;
 
         //lower right
-        batchedVertices[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
-        batchedVertices[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
-        batchedVertices[vertSh].x = (float)Width + CurX + OffsetX + x;
-        batchedVertices[vertSh++].y = (float)Height + OffsetY + y;
+        v[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
+        v[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
+        v[vertSh].x = (float)Width + CurX + OffsetX + x;
+        v[vertSh++].y = (float)Height + OffsetY + y;
 
         //lower left
-        batchedVertices[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
-        batchedVertices[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
-        batchedVertices[vertSh].x = (float)CurX + OffsetX + x;
-        batchedVertices[vertSh++].y = (float)Height + OffsetY + y;
+        v[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
+        v[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
+        v[vertSh].x = (float)CurX + OffsetX + x;
+        v[vertSh++].y = (float)Height + OffsetY + y;
 
         CurX += cp->XAdvance;
     }
@@ -172,43 +175,50 @@ void ShiftEngine::FontManager::BatchText(const std::string & text, float x, floa
 
 void ShiftEngine::FontManager::DrawBatchedText()
 {
-    if (batchedVertices.empty() || batchedIndices.empty())
-        return;
+    for (auto & p : batchedVertices)
+    {
+        auto & v = batchedVertices[p.first];
+        auto & i = batchedIndices[p.first];
 
-    auto* pCtxMgr = GetContextManager();
+        if (v.empty() || i.empty())
+            return;
 
-    batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)batchedVertices.data(), batchedVertices.size() * sizeof(TextPoint), batchedIndices, &plainSpriteVertexSemantic);
+        auto* pCtxMgr = GetContextManager();
 
-    auto cbs = pCtxMgr->GetBlendingState();
-    pCtxMgr->SetBlendingState(BS_AlphaEnabled);
-    auto crs = pCtxMgr->GetRasterizerState();
-    pCtxMgr->SetRasterizerState(RS_Normal);
+        batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)v.data(), v.size() * sizeof(TextPoint), i, &plainSpriteVertexSemantic);
 
-    D3DXMATRIX matOrtho;
-    GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
-    D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
-    textShader->SetMatrixConstantByName("matOrtho", (float*)matOrtho);
+        auto cbs = pCtxMgr->GetBlendingState();
+        pCtxMgr->SetBlendingState(BS_AlphaEnabled);
+        auto crs = pCtxMgr->GetRasterizerState();
+        pCtxMgr->SetRasterizerState(RS_Normal);
 
-    D3DXVECTOR4 vec;
-    vec.x = 0.0f;
-    vec.y = 0.0f;
-    vec.z = 16000.0f;
-    vec.w = 16000.0f;
+        D3DXMATRIX matOrtho;
+        GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
+        D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
+        textShader->SetMatrixConstantByName("matOrtho", (float*)matOrtho);
 
-    textShader->SetVectorConstantByName("Rect", (float*)vec);
-    textShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
-    textShader->Apply(true);
+        D3DXVECTOR4 vec;
+        vec.x = 0.0f;
+        vec.y = 0.0f;
+        vec.z = 16000.0f;
+        vec.w = 16000.0f;
 
-    batchedMesh->GetVertexDeclaration()->Bind();
-    batchedMesh->Draw();
+        textShader->SetVectorConstantByName("Rect", (float*)vec);
+        SetFont(p.first);
+        textShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
+        textShader->Apply(true);
 
-    pCtxMgr->SetRasterizerState(crs);
-    pCtxMgr->SetBlendingState(cbs);
+        batchedMesh->GetVertexDeclaration()->Bind();
+        batchedMesh->Draw();
 
-    //for fix a lot of DXDEBUG warnings
-    pCtxMgr->ResetPipeline();
+        pCtxMgr->SetRasterizerState(crs);
+        pCtxMgr->SetBlendingState(cbs);
 
-    batchedVertices.clear();
-    batchedIndices.clear();
-    batchedMesh->Clear();
+        //for fix a lot of DXDEBUG warnings
+        pCtxMgr->ResetPipeline();
+
+        v.clear();
+        i.clear();
+        batchedMesh->Clear();
+    }
 }
