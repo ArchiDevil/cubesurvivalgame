@@ -11,12 +11,16 @@ if(NOT MSVC)
 endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
+include_directories(${RootDir})
 set(RENDERER D3D11_RENDER)
 
 option(BUILD_TESTS "Generate projects for tests building" ON)
 
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# The NEW behavior for this policy is to convert relative paths to absolute paths by appending the relative path to CMAKE_CURRENT_SOURCE_DIR.
+cmake_policy(SET CMP0015 NEW)
 
 # The NEW behavior for this policy is to ignore CMAKE_SHARED_LIBRARY_<Lang>_FLAGS whether it is modified or not and honor the POSITION_INDEPENDENT_CODE target property.
 cmake_policy(SET CMP0018 NEW)
@@ -40,6 +44,24 @@ set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Run JSON post-build tests")
 set(OLD_CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/jsoncpp")
 add_subdirectory(3rdparty/jsoncpp)
+
+add_definitions(-DMYGUI_STATIC)
+
+add_library(freetype2 STATIC IMPORTED GLOBAL)
+set_property(TARGET freetype2 PROPERTY IMPORTED_LOCATION_DEBUG ${RootDir}/../3rdparty/freetype2/lib/freetype2311_d.lib)
+set_property(TARGET freetype2 PROPERTY IMPORTED_LOCATION_RELEASE ${RootDir}/../3rdparty/freetype2/lib/freetype2311.lib)
+
+add_library(MyGUIDirectX11Platform STATIC IMPORTED GLOBAL)
+set_property(TARGET MyGUIDirectX11Platform PROPERTY IMPORTED_LOCATION_DEBUG ${RootDir}/../3rdparty/mygui/lib/Debug/MyGUI.DirectX11Platform_d.lib)
+set_property(TARGET MyGUIDirectX11Platform PROPERTY IMPORTED_LOCATION_RELEASE ${RootDir}/../3rdparty/mygui/lib/Release/MyGUI.DirectX11Platform.lib)
+
+add_library(MyGUIEngine STATIC IMPORTED GLOBAL)
+set_property(TARGET MyGUIEngine PROPERTY IMPORTED_LOCATION_DEBUG ${RootDir}/../3rdparty/mygui/lib/Debug/MyGUIEngineStatic_d.lib)
+set_property(TARGET MyGUIEngine PROPERTY IMPORTED_LOCATION_RELEASE ${RootDir}/../3rdparty/mygui/lib/Release/MyGUIEngineStatic.lib)
+
+include_directories(3rdparty/mygui/MyGUIEngine/include)
+include_directories(3rdparty/mygui/Platforms/DirectX11/DirectX11Platform/include)
+
 set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
 
 set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
@@ -95,10 +117,9 @@ endfunction(VSTestLinkLibraries)
 
 if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
-    add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS /W4")
+    add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS")
 endif()
 
-include_directories(${RootDir})
 add_subdirectory(src)
 
 if(BUILD_TESTS)

@@ -44,7 +44,7 @@ bool gameState::initState()
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
 
-    console.subscribe(&cInputEngine::GetInstance());
+    console.subscribe(&InputEngine::GetInstance());
 
     ::utils::filesystem::CreateDir(L"saves/worlds/");
     ::utils::filesystem::CreateDir(L"saves/players/");
@@ -177,30 +177,30 @@ void gameState::onResume()
 
 void gameState::ProcessInput(double dt)
 {
-    cInputEngine * InputEngine = &cInputEngine::GetInstance();
+    InputEngine * inputEngine = &InputEngine::GetInstance();
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     Game * pGame = LostIsland::GetGamePtr();
 
     static size_t mousePath = 0;
 
-    InputEngine->GetKeys();
-    auto mouseInfo = InputEngine->GetMouseInfo();
+    inputEngine->GetKeys();
+    auto mouseInfo = inputEngine->GetMouseInfo();
 
-    if (InputEngine->IsKeyUp(DIK_GRAVE))
+    if (inputEngine->IsKeyUp(DIK_GRAVE))
         console.SetVisibility(!console.IsVisible());
 
     if (console.IsVisible())
         return;
 
-    if (InputEngine->IsKeyDown(DIK_ESCAPE))
+    if (inputEngine->IsKeyDown(DIK_ESCAPE))
         this->kill();
 
     auto camPos = pScene->GetActiveCamera()->GetPosition();
     Vector3F newCamPos(camPos.x, camPos.y, camPos.z);
     pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
 
-    if (InputEngine->IsKeyUp(DIK_V))
+    if (inputEngine->IsKeyUp(DIK_V))
     {
         static bool Wflag = false;
         Wflag = !Wflag;
@@ -210,7 +210,7 @@ void gameState::ProcessInput(double dt)
             pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
     }
 
-    if (InputEngine->IsMouseMoved() && InputEngine->IsMouseDown(RButton))
+    if (inputEngine->IsMouseMoved() && inputEngine->IsMouseDown(RButton))
     {
         theta -= (float)mouseInfo.deltaY * (float)dt * 10.0f;
         phi += (float)mouseInfo.deltaX * (float)dt * 10.0f;
@@ -232,7 +232,7 @@ void gameState::ProcessInput(double dt)
 
     pGame->EntityMgr->HighlightEntity(unprojectedRay);
 
-    if (InputEngine->IsMouseUp(RButton))
+    if (inputEngine->IsMouseUp(RButton))
     {
         // check if we are targeting to entity
         auto retVal = pGame->EntityMgr->GetNearestEntity(unprojectedRay);
@@ -260,7 +260,7 @@ void gameState::ProcessInput(double dt)
         mousePath = 0;
     }
 
-    if (InputEngine->IsMouseDown(RButton))
+    if (inputEngine->IsMouseDown(RButton))
         mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
     r -= (float)mouseInfo.deltaZ * (float)dt;
@@ -269,20 +269,20 @@ void gameState::ProcessInput(double dt)
     if (r < 15.0f)
         r = 15.0f;
 
-    if (InputEngine->IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
-    if (InputEngine->IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
-    if (InputEngine->IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
-    if (InputEngine->IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
-    if (InputEngine->IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
-    if (InputEngine->IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
-    if (InputEngine->IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
-    if (InputEngine->IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
-    if (InputEngine->IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
-    if (InputEngine->IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
+    if (inputEngine->IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
+    if (inputEngine->IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
+    if (inputEngine->IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
+    if (inputEngine->IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
+    if (inputEngine->IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
+    if (inputEngine->IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
+    if (inputEngine->IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
+    if (inputEngine->IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
+    if (inputEngine->IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
+    if (inputEngine->IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
 
-    if (InputEngine->IsKeyUp(DIK_C))
+    if (inputEngine->IsKeyUp(DIK_C))
         pGame->gameHud->OpenCraftingWindow();
 
-    if (InputEngine->IsKeyUp(DIK_I))
+    if (inputEngine->IsKeyUp(DIK_I))
         pGame->gameHud->OpenInventoryWindow();
 }

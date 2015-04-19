@@ -35,4 +35,6 @@
 /3rdparty/gtest-1.7.0/
 /3rdparty/jsoncpp/
 /3rdparty/tinyxml2/
+/3rdparty/freetype2/
+/3rdparty/mygui/
 *.log

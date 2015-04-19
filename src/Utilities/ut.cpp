@@ -206,10 +206,10 @@ bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
 
 bool utils::filesystem::RemoveFile(const std::string & fileName)
 {
-    return DeleteFileA(fileName.c_str());
+    return !!DeleteFileA(fileName.c_str());
 }
 
 bool utils::filesystem::RemoveFile(const std::wstring & fileName)
 {
-    return DeleteFileW(fileName.c_str());
+    return !!DeleteFileW(fileName.c_str());
 }
