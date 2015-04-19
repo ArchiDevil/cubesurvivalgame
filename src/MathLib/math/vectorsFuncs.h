@@ -7,37 +7,43 @@
 
 namespace MathLib
 {
+    //dot product between two vectors
     template <typename T>
     T dot(const vec2<T> & vec1, const vec2<T> & vec2)
     {
         return vec1.x*vec2.x + vec1.y*vec2.y;
     }
 
+    //dot product between two vectors
     template <typename T>
     T dot(const vec3<T> & vec1, const vec3<T> & vec2)
     {
         return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z;
     }
 
+    //dot product between two vectors
     template <typename T>
     T dot(const vec4<T> & vec1, const vec4<T> & vec2)
     {
         return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z + vec1.w*vec2.w;
     }
 
+    //cross product between two vectors
     template<typename T>
-    vec3<T> vec(const vec3<T> & vec1, const vec3<T> & vec2)
+    vec3<T> cross(const vec3<T> & vec1, const vec3<T> & vec2)
     {
         return vec3<T>(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
     }
 
+    //normalizes vector
     template<typename T>
-    vec2<T> normalize(const vec2<T> & vec)      //нормализует вектор
+    vec2<T> normalize(const vec2<T> & vec)
     {
         T inv_length = (T)1.0 / vec.length();
         return vec * inv_length;
     }
 
+    //normalizes vector
     template<typename T>
     vec3<T> normalize(const vec3<T> & vec)
     {
@@ -45,6 +51,7 @@ namespace MathLib
         return vec * inv_length;
     }
 
+    //normalizes vector
     template<typename T>
     vec4<T> normalize(const vec4<T> & vec)
     {
@@ -52,28 +59,28 @@ namespace MathLib
         return vec * inv_length;
     }
 
-    //угол между векторами
+    //angle between two vectors
     template<typename T>
     T angle(const vec2<T> &vec1, const vec2<T> &vec2)
     {
         return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
     }
 
-    //угол между векторами
+    //angle between two vectors
     template<typename T>
     T angle(const vec3<T> &vec1, const vec3<T> &vec2)
     {
         return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
     }
 
-    //угол между векторами
+    //angle between two vectors
     template<typename T>
     T angle(const vec4<T> &vec1, const vec4<T> &vec2)
     {
         return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
     }
 
-    //возвращает единичный вектор, спроецированный на X
+    //normalized vector projected onto X
     template<typename T>
     vec3<T> projX(const vec3<T> &vec)
     {
@@ -83,7 +90,7 @@ namespace MathLib
         return out;
     }
 
-    //возвращает единичный вектор, спроецированный на Y
+    //normalized vector projected onto Y
     template<typename T>
     vec3<T> projY(const vec3<T> &vec)
     {
@@ -93,7 +100,7 @@ namespace MathLib
         return out;
     }
 
-    //возвращает единичный вектор, спроецированный на Z
+    //normalized vector projected onto Z
     template<typename T>
     vec3<T> projZ(const vec3<T> &vec)
     {
@@ -103,28 +110,31 @@ namespace MathLib
         return out;
     }
 
+    //distance between two points
     template<typename T>
     T distance(const vec2<T> & arg1, const vec2<T> & arg2)
     {
         return (T)sqrt((T)(arg1.x - arg2.x)*(arg1.x - arg2.x) +
-            (T)(arg1.y - arg2.y)*(arg1.y - arg2.y));
+                       (T)(arg1.y - arg2.y)*(arg1.y - arg2.y));
     }
 
+    //distance between two points
     template<typename T>
     T distance(const vec3<T> & vec1, const vec3<T> & vec2)
     {
         return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
-            (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
-            (T)(vec1.z - vec2.z)*(vec1.z - vec2.z));
+                       (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
+                       (T)(vec1.z - vec2.z)*(vec1.z - vec2.z));
     }
 
+    //distance between two points
     template<typename T>
     T distance(const vec4<T> & vec1, const vec4<T> & vec2)
     {
         return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
-            (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
-            (T)(vec1.z - vec2.z)*(vec1.z - vec2.z) +
-            (T)(vec1.w - vec2.w)*(vec1.w - vec2.w));
+                       (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
+                       (T)(vec1.z - vec2.z)*(vec1.z - vec2.z) +
+                       (T)(vec1.w - vec2.w)*(vec1.w - vec2.w));
     }
 
     template<typename T>

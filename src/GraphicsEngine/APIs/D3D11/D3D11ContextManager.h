@@ -12,6 +12,7 @@
 #include "D3D11RenderTarget.h"
 #include "D3D11VertexDeclaration.h"
 
+#include "../../IContextManager.h"
 #include "../../IProgram.h"
 #include "../../MiscTypes.h"
 #include "../../MaterialManager.h"
@@ -25,56 +26,35 @@ using MathLib::vec4;
 
 namespace ShiftEngine
 {
-    enum BlendingState
-    {
-        BS_None,
-        BS_AlphaEnabled,
-        BS_Additive,
-    };
-
-    enum RasterizerState
-    {
-        RS_Wireframe,
-        RS_Normal,
-        RS_NoCulling,
-    };
-
-    class D3D11ContextManager
+    class D3D11ContextManager : public IContextManager
     {
         friend class Renderer;
     public:
         D3D11ContextManager(HWND hwnd);
         ~D3D11ContextManager();
 
-        virtual bool                        Initialize(GraphicEngineSettings _Settings, PathSettings _Paths);
-
-        std::wstring                        GetGPUDescription();
-
-        void                                BeginScene();
-        void                                EndScene();
-        void                                ResetPipeline();
-
-        ITexturePtr                         LoadTexture(const std::wstring & FileName);
-        MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName);
-        IProgramPtr                         LoadShader(const std::wstring & FileName);
-        IMeshDataPtr                        LoadMesh(const std::wstring & FileName);
-
-        D3D11ShaderManager *                GetShaderManager();
-        D3D11ShaderGenerator *              GetShaderGenerator();
-        D3D11TextureManager *               GetTextureManager();
-        FontManager*                        GetFontManager();
-
-        void                                SetZState(bool enabled);
-        void                                SetBlendingState(BlendingState bs);
-        BlendingState                       GetBlendingState() const;
-        void                                SetRasterizerState(RasterizerState rs);
-        RasterizerState                     GetRasterizerState() const;
-
-        ID3D11Device *                      GetDevicePointer();
-        GraphicEngineSettings               GetEngineSettings() const;
-        PathSettings                        GetPaths() const;
-        int                                 DrawMesh(IMeshDataPtr & mesh);
-        IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic);
+        bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
+        std::wstring                        GetGPUDescription() override;
+        void                                BeginScene() override;
+        void                                EndScene() override;
+        void                                ResetPipeline() override;
+        ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
+        MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
+        IProgramPtr                         LoadShader(const std::wstring & FileName) override;
+        IMeshDataPtr                        LoadMesh(const std::wstring & FileName) override;
+        D3D11ShaderManager *                GetShaderManager() override;
+        D3D11ShaderGenerator *              GetShaderGenerator() override;
+        D3D11TextureManager *               GetTextureManager() override;
+        FontManager*                        GetFontManager() override;
+        void                                SetZState(bool enabled) override;
+        void                                SetBlendingState(BlendingState bs) override;
+        BlendingState                       GetBlendingState() const override;
+        void                                SetRasterizerState(RasterizerState rs) override;
+        RasterizerState                     GetRasterizerState() const override;
+        GraphicEngineSettings               GetEngineSettings() const override;
+        PathSettings                        GetPaths() const override;
+        int                                 DrawMesh(IMeshDataPtr & mesh) override;
+        IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
 
     private:
         IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
@@ -94,8 +74,8 @@ namespace ShiftEngine
         MaterialManager *                   materialManager;
 
         IProgramPtr                         currentProgram;
-        RasterizerState                     currentRasterizerState = RS_Normal;
-        BlendingState                       currentBlendingState = BS_None;
+        RasterizerState                     currentRasterizerState = RasterizerState::Normal;
+        BlendingState                       currentBlendingState = BlendingState::None;
         IVertexDeclaration *                currentVertexDeclaration;
 
         bool                                zBufferState = true;

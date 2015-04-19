@@ -14,7 +14,7 @@ ShiftEngine::D3D11TextureManager::D3D11TextureManager(ID3D11Device * pDevice, ID
     CreateErrorTexture();
 }
 
-ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const std::wstring & FileName)
+ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const std::wstring & FileName)
 {
     std::wstring innerName = texturesPath + FileName;
     auto iter = textures.find(innerName);
@@ -34,19 +34,19 @@ ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(c
         }
         else
         {
-            D3D11TexturePtr buffer = std::shared_ptr<D3D11Texture>(new D3D11Texture(info.Width, info.Height, TextureType::Texture2D, tempT));
+            D3D11TexturePtr buffer = std::shared_ptr<D3D11Texture>(new D3D11Texture(pDeviceContext, info.Width, info.Height, TextureType::Texture2D, tempT));
             textures[innerName] = buffer;
             return buffer;
         }
     }
 }
 
-ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
-                                                                             const std::wstring & negX,
-                                                                             const std::wstring & posY,
-                                                                             const std::wstring & negY,
-                                                                             const std::wstring & posZ,
-                                                                             const std::wstring & negZ)
+ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
+                                                                         const std::wstring & negX,
+                                                                         const std::wstring & posY,
+                                                                         const std::wstring & negY,
+                                                                         const std::wstring & posZ,
+                                                                         const std::wstring & negZ)
 {
     std::wstring superString = negX + posX + negY + posY + negZ + posZ;
 
@@ -169,13 +169,11 @@ ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(con
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
         {
-            D3D11_MAPPED_TEXTURE2D mappedTex2D;
-            srcTex[i]->Map(j, D3D10_MAP_READ, 0, &mappedTex2D);
-
+            D3D11_MAPPED_SUBRESOURCE mappedTex2D;
+            pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
                                               0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
-
-            srcTex[i]->Unmap(j);
+            pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
 
@@ -190,12 +188,12 @@ ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(con
     if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
         LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
-    auto texturePtr = std::make_shared<D3D11Texture>(texElementDesc.Width, texElementDesc.Height, TextureType::TextureCubemap, SRW);
+    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::TextureCubemap, SRW);
     textures[superString] = texturePtr;
     return texturePtr;
 }
 
-ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(const std::vector<std::wstring> & names)
+ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(const std::vector<std::wstring> & names)
 {
     std::wstring superString = L"";
     for (auto & elem : names)
@@ -318,13 +316,11 @@ ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArra
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
         {
-            D3D11_MAPPED_TEXTURE2D mappedTex2D;
-            srcTex[i]->Map(j, D3D10_MAP_READ, 0, &mappedTex2D);
-
+            D3D11_MAPPED_SUBRESOURCE mappedTex2D;
+            pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                                      0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
-
-            srcTex[i]->Unmap(j);
+                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+            pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
 
@@ -339,7 +335,7 @@ ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArra
     if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
         LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
-    auto texturePtr = std::make_shared<D3D11Texture>(texElementDesc.Width, texElementDesc.Height, TextureType::Texture2DArray, SRW);
+    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::Texture2DArray, SRW);
     textures[superString] = texturePtr;
     return texturePtr;
 }
@@ -384,8 +380,8 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
     if (FAILED(pDevice->CreateTexture2D(&description, nullptr, &texture)))
         LOG_FATAL_ERROR("Unable to create error texture");
 
-    D3D11_MAPPED_TEXTURE2D mappedTexture;
-    if (FAILED(texture->Map(D3D11CalcSubresource(0, 0, 1), D3D11_MAP_WRITE_DISCARD, NULL, &mappedTexture)))
+    D3D11_MAPPED_SUBRESOURCE mappedTexture;
+    if (FAILED(pDeviceContext->Map(texture, D3D11CalcSubresource(0, 0, 1), D3D11_MAP_WRITE_DISCARD, NULL, &mappedTexture)))
     {
         texture->Release();
         LOG_FATAL_ERROR("Unable to create error texture");
@@ -419,7 +415,7 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
             }
         }
     }
-    texture->Unmap(D3D11CalcSubresource(0, 0, 1));
+    pDeviceContext->Unmap(texture, D3D11CalcSubresource(0, 0, 1));
     // Create the shader-resource view
     D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
     srDesc.Format = description.Format;
@@ -433,10 +429,10 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
 
     texture->Release();
 
-    errorTexture = D3D11TexturePtr(new D3D11Texture(width, height, TextureType::Texture2D, pShaderResView));
+    errorTexture = D3D11TexturePtr(new D3D11Texture(pDeviceContext, width, height, TextureType::Texture2D, pShaderResView));
 }
 
-ShiftEngine::D3D11TexturePtr ShiftEngine::D3D11TextureManager::GetErrorTexture()
+ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::GetErrorTexture()
 {
     return errorTexture;
 }

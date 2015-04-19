@@ -99,7 +99,7 @@ bool gameState::update(double dt)
     pGame->EntityMgr->Update(dt);
     pGame->environmentMgr->Update(dt * 0.0);
 
-    pScene->GetActiveCamera()->SetSphericalCoords(D3DXVECTOR3(playerPosition.x, playerPosition.y, playerPosition.z), phi, theta, r);
+    pScene->GetActiveCamera()->SetSphericalCoords(playerPosition, phi, theta, r);
     pGame->World->ProcessLoading();
 
     return true;
@@ -108,7 +108,7 @@ bool gameState::update(double dt)
 bool gameState::render(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
     Game * pGame = LostIsland::GetGamePtr();
 
@@ -137,7 +137,7 @@ bool gameState::render(double dt)
     ShiftEngine::FontManager * pFntMgr = pCtxMgr->GetFontManager();
     pFntMgr->SetFont(L"1");
 
-    pCtxMgr->SetBlendingState(ShiftEngine::BS_AlphaEnabled);
+    pCtxMgr->SetBlendingState(ShiftEngine::BlendingState::AlphaEnabled);
 
     pCtxMgr->BeginScene(); //no more needed here, cause clear frame should be called from renderer
 
@@ -179,7 +179,7 @@ void gameState::ProcessInput(double dt)
 {
     cInputEngine * InputEngine = &cInputEngine::GetInstance();
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     Game * pGame = LostIsland::GetGamePtr();
 
     static size_t mousePath = 0;
@@ -205,9 +205,9 @@ void gameState::ProcessInput(double dt)
         static bool Wflag = false;
         Wflag = !Wflag;
         if (Wflag)
-            pCtxMgr->SetRasterizerState(ShiftEngine::RS_Wireframe);
+            pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
         else
-            pCtxMgr->SetRasterizerState(ShiftEngine::RS_Normal);
+            pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
     }
 
     if (InputEngine->IsMouseMoved() && InputEngine->IsMouseDown(RButton))

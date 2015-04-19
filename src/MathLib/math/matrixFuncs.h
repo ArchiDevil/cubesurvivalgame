@@ -2,6 +2,8 @@
 
 #include "matrix.h"
 
+#include <cmath>
+
 namespace MathLib
 {
     /*
@@ -94,7 +96,13 @@ namespace MathLib
     }
 
     template <typename T>
-    matrix<T, 4> matrixScale(T x, T y, T z)
+    matrix<T, 4> matrixScaling(vec3<T> & v)
+    {
+        return matrixScaling(v.x, v.y, v.z);
+    }
+
+    template <typename T>
+    matrix<T, 4> matrixScaling(T x, T y, T z)
     {
         matrix<T, 4> out;
         out[0][0] = x;
@@ -161,6 +169,12 @@ namespace MathLib
     }
 
     template <typename T>
+    matrix<T, 4> matrixTranslation(vec3<T> & v)
+    {
+        return matrixTranslation(v.x, v.y, v.z);
+    }
+
+    template <typename T>
     matrix<T, 4> matrixTranslation(T x, T y, T z)
     {
         matrix<T, 4> out;
@@ -215,6 +229,12 @@ namespace MathLib
         return out;
     }
 
+    template<typename T>
+    vec4<T> vec4Transform(const vec4<T> & v, const matrix<T, 4> & m)
+    {
+        return m * v;
+    }
+
     template<typename T, size_t E>
     T matrixDeterminant(const matrix<T, E> & ref)
     {
@@ -253,14 +273,89 @@ namespace MathLib
         return out;
     }
 
-    //D3DXMatrixLookAtLH 
-    //D3DXMatrixLookAtRH 
+    template<typename T, size_t E>
+    matrix<T, E> matrixLookAtLH(const vec3<T> & eye, const vec3<T> & at, const vec3<T> & up)
+    {
+        vec3<T> zaxis = normalize(at - eye);
+        vec3<T> xaxis = normalize(cross(up, zaxis));
+        vec3<T> yaxis = cross(zaxis, xaxis);
+
+        matrix<T, E> out;
+        out[0][0] = xaxis.x;            out[0][1] = yaxis.x;            out[0][2] = zaxis.x;            out[0][3] = 0;
+        out[1][0] = xaxis.y;            out[1][1] = yaxis.y;            out[1][2] = zaxis.y;            out[1][3] = 0;
+        out[2][0] = xaxis.z;            out[2][1] = yaxis.z;            out[2][2] = zaxis.z;            out[2][3] = 0;
+        out[3][0] = dot(xaxis, eye);    out[3][1] = dot(yaxis, eye);    out[3][2] = dot(zaxis, eye);    out[3][3] = 1;
+        return out;
+    }
+
+    template<typename T, size_t E>
+    matrix<T, E> matrixLookAtRH(const vec3<T> & eye, const vec3<T> & at, const vec3<T> & up)
+    {
+        vec3<T> zaxis = normalize(eye - at);
+        vec3<T> xaxis = normalize(cross(up, zaxis));
+        vec3<T> yaxis = cross(zaxis, xaxis);
+
+        matrix<T, E> out;
+        out[0][0] = xaxis.x;            out[0][1] = yaxis.x;            out[0][2] = zaxis.x;            out[0][3] = 0;
+        out[1][0] = xaxis.y;            out[1][1] = yaxis.y;            out[1][2] = zaxis.y;            out[1][3] = 0;
+        out[2][0] = xaxis.z;            out[2][1] = yaxis.z;            out[2][2] = zaxis.z;            out[2][3] = 0;
+        out[3][0] = -dot(xaxis, eye);   out[3][1] = -dot(yaxis, eye);   out[3][2] = -dot(zaxis, eye);   out[3][3] = 1;
+        return out;
+    }
+
     //D3DXMatrixOrthoLH 
     //D3DXMatrixOrthoRH 
-    //D3DXMatrixOrthoOffCenterLH 
-    //D3DXMatrixOrthoOffCenterRH 
-    //D3DXMatrixPerspectiveFovLH 
-    //D3DXMatrixPerspectiveFovRH 
+
+    template<typename T, size_t E>
+    matrix<T, E> matrixOrthoOffCenterLH(float l, float r, float b, float t, float zn, float zf)
+    {
+        matrix<T, E> out;
+        out[0][0] = 2 / (r - l);        out[0][1] = 0;                  out[0][2] = 0;              out[0][3] = 0;
+        out[1][0] = 0;                  out[1][1] = 2 / (t - b);        out[1][2] = 0;              out[1][3] = 0;
+        out[2][0] = 0;                  out[2][1] = 0;                  out[2][2] = 1 / (zf - zn);  out[2][3] = 0;
+        out[3][0] = (l + r) / (l - r);  out[3][1] = (t + b) / (b - t);  out[3][2] = zn / (zn - zf); out[3][3] = 1;
+        return out;
+    }
+
+    template<typename T, size_t E>
+    matrix<T, E> matrixOrthoOffCenterRH(float l, float r, float b, float t, float zn, float zf)
+    {
+        matrix<T, E> out;
+        out[0][0] = 2 / (r - l);        out[0][1] = 0;                  out[0][2] = 0;              out[0][3] = 0;
+        out[1][0] = 0;                  out[1][1] = 2 / (t - b);        out[1][2] = 0;              out[1][3] = 0;
+        out[2][0] = 0;                  out[2][1] = 0;                  out[2][2] = 1 / (zn - zf);  out[2][3] = 0;
+        out[3][0] = (l + r) / (l - r);  out[3][1] = (t + b) / (b - t);  out[3][2] = zn / (zn - zf); out[3][3] = 1;
+        return out;
+    }
+
+    template<typename T, size_t E>
+    matrix<T, E> matrixPerspectiveFovLH(float fovy, float aspectRatio, float zn, float zf)
+    {
+        float yScale = 1.0f / std::tan(fovy / 2.0f);
+        float xScale = yScale / aspectRatio;
+
+        matrix<T, E> out;
+        out[0][0] = xScale; out[0][1] = 0;      out[0][2] = 0;                      out[0][3] = 0;
+        out[1][0] = 0;      out[1][1] = yScale; out[1][2] = 0;                      out[1][3] = 0;
+        out[2][0] = 0;      out[2][1] = 0;      out[2][2] = zf / (zf - zn);         out[2][3] = 1;
+        out[3][0] = 0;      out[3][1] = 0;      out[3][2] = -zn * zf / (zf - zn);   out[3][3] = 0;
+        return out;
+    }
+
+    template<typename T, size_t E>
+    matrix<T, E> matrixPerspectiveFovRH(float fovy, float aspectRatio, float zn, float zf)
+    {
+        float yScale = 1.0f / std::tan(fovy / 2.0f);
+        float xScale = yScale / aspectRatio;
+
+        matrix<T, E> out;
+        out[0][0] = xScale; out[0][1] = 0;      out[0][2] = 0;                      out[0][3] = 0;
+        out[1][0] = 0;      out[1][1] = yScale; out[1][2] = 0;                      out[1][3] = 0;
+        out[2][0] = 0;      out[2][1] = 0;      out[2][2] = zf / (zn - zf);         out[2][3] = -1;
+        out[3][0] = 0;      out[3][1] = 0;      out[3][2] = zn * zf / (zn - zf);    out[3][3] = 0;
+        return out;
+    }
+
     //D3DXMatrixReflect 
     //D3DXMatrixRotationAxis 
     //D3DXMatrixShadow 

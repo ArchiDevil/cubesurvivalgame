@@ -56,7 +56,7 @@ bool Application::Initialize()
     state->initState();
 
     mainTimer.Start();
-    ShiftEngine::GetContextManager()->SetBlendingState(ShiftEngine::BS_AlphaEnabled);
+    ShiftEngine::GetContextManager()->SetBlendingState(ShiftEngine::BlendingState::AlphaEnabled);
 
     return true;
 }

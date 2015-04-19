@@ -3,14 +3,6 @@
 #include "../RenderQueue.h"
 #include "CameraSceneNode.h"
 
-#ifdef min
-    #undef min
-#endif
-
-#ifdef max
-    #undef max
-#endif
-
 ShiftEngine::QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
     : ISceneNode()
     , bbox(Vector3F(x1, y1, std::numeric_limits<float>::lowest()), Vector3F(x2, y2, std::numeric_limits<float>::max()))
@@ -166,20 +158,18 @@ bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
     return true;
 }
 
-D3DXMATRIX ShiftEngine::QuadTreeNode::GetWorldMatrix() const
+MathLib::mat4f ShiftEngine::QuadTreeNode::GetWorldMatrix() const
 {
-    D3DXMATRIX out;
-    D3DXMatrixIdentity(&out);
-    return out;
+    return MathLib::matrixIdentity<float>();
 }
 
 int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
 {
-    D3DXMATRIX matWorld = this->GetWorldMatrix();
-    D3DXVECTOR4 vecMin = D3DXVECTOR4(bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f);
-    D3DXVECTOR4 vecMax = D3DXVECTOR4(bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f);
-    D3DXVec4Transform(&vecMin, &vecMin, &matWorld);
-    D3DXVec4Transform(&vecMax, &vecMax, &matWorld);
+    MathLib::mat4f matWorld = GetWorldMatrix();
+    MathLib::Vector4F vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    MathLib::Vector4F vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    vecMin = MathLib::vec4Transform(vecMin, matWorld);
+    vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox(MathLib::Vector3F(vecMin.x, vecMin.y, vecMin.z), Vector3F(vecMax.x, vecMax.y, vecMax.z));
 
     return activeCam->GetFrustumPtr()->CheckQTreeNode(newBbox);

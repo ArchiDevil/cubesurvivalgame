@@ -1,8 +1,10 @@
 #include "ShiftEngine.h"
 
+#include "APIs/D3D10/D3D10ContextManager.h"
+
 namespace ShiftEngine
 {
-    D3D10ContextManager * ContextManagerInstance;
+    IContextManager * ContextManagerInstance;
     SceneGraph * SceneGraphInstance;
     Renderer * RendererInstance;
 
@@ -46,7 +48,7 @@ namespace ShiftEngine
         return initialized;
     }
 
-    D3D10ContextManager * GetContextManager()
+    IContextManager * GetContextManager()
     {
         return ContextManagerInstance;
     }

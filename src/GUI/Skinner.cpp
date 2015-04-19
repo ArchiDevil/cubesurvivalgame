@@ -38,7 +38,7 @@ void SimpleGUI::Skinner::DrawButton(Button * but)
     if (!but)
         return;
 
-    ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * cm = ShiftEngine::GetContextManager();
 
     Vector4F maskColor = {};
     if (but->IsSelected())
@@ -80,7 +80,7 @@ void SimpleGUI::Skinner::DrawTextbox(TextBox * textbox, bool Focused)
     if (!textbox)
         return;
 
-    ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * cm = ShiftEngine::GetContextManager();
 
     if (Focused)
         TextboxCache->SetMaskColor(Vector4F(1.0f, 0.8f, 0.8f, 1.0f));
@@ -152,7 +152,7 @@ void SimpleGUI::Skinner::DrawListRow(TableRow * row)
     if (!row)
         return;
 
-    ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * cm = ShiftEngine::GetContextManager();
 
     std::string str = row->GetString();
     if (row->IsSelected())
@@ -185,7 +185,7 @@ void SimpleGUI::Skinner::DrawLabel(Text * label)
     if (!label)
         return;
 
-    ShiftEngine::D3D10ContextManager * cm = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * cm = ShiftEngine::GetContextManager();
 
     if (label->GetText().empty())
         return;

@@ -188,7 +188,8 @@ std::wstring ShiftEngine::D3D10ContextManager::GetGPUDescription()
 
 void ShiftEngine::D3D10ContextManager::BeginScene()
 {
-    graphicsContext.Device->ClearRenderTargetView(graphicsContext.DefaultRT->rt, D3DXCOLOR((float)208 / 255, (float)238 / 255, (float)248 / 255, 1.0f));
+    float clearColors[] = { 208.0f / 255.0f, 238.0f / 255.0f, 248.0f / 255.0f, 1.0f };
+    graphicsContext.Device->ClearRenderTargetView(graphicsContext.DefaultRT->rt, clearColors);
     graphicsContext.Device->ClearDepthStencilView(graphicsContext.DepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -262,11 +263,6 @@ void ShiftEngine::D3D10ContextManager::SetZState(bool enabled)
         graphicsContext.Device->OMSetDepthStencilState(graphicsContext.dsStateZOff, 1);
 }
 
-ID3D10Device * ShiftEngine::D3D10ContextManager::GetDevicePointer()
-{
-    return graphicsContext.Device;
-}
-
 ShiftEngine::GraphicEngineSettings ShiftEngine::D3D10ContextManager::GetEngineSettings() const
 {
     return engineSettings;
@@ -310,13 +306,13 @@ void ShiftEngine::D3D10ContextManager::SetBlendingState(BlendingState bs)
 
     switch (bs)
     {
-    case ShiftEngine::BS_None:
+    case ShiftEngine::BlendingState::None:
         graphicsContext.Device->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BS_AlphaEnabled:
+    case ShiftEngine::BlendingState::AlphaEnabled:
         graphicsContext.Device->OMSetBlendState(graphicsContext.bsAlpha, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BS_Additive:
+    case ShiftEngine::BlendingState::Additive:
         graphicsContext.Device->OMSetBlendState(graphicsContext.bsAdditive, BlendFactor, 0xffffffff);
         break;
     default:
@@ -331,18 +327,18 @@ ShiftEngine::BlendingState ShiftEngine::D3D10ContextManager::GetBlendingState() 
     return currentBlendingState;
 }
 
-void ShiftEngine::D3D10ContextManager::SetRasterizerState(ShiftEngine::RasterizerState rs)
+void ShiftEngine::D3D10ContextManager::SetRasterizerState(RasterizerState rs)
 {
     currentRasterizerState = rs;
     switch (rs)
     {
-    case ShiftEngine::RS_Wireframe:
+    case ShiftEngine::RasterizerState::Wireframe:
         graphicsContext.Device->RSSetState(graphicsContext.rsWireframe);
         break;
-    case ShiftEngine::RS_Normal:
+    case ShiftEngine::RasterizerState::Normal:
         graphicsContext.Device->RSSetState(graphicsContext.rsNormal);
         break;
-    case ShiftEngine::RS_NoCulling:
+    case ShiftEngine::RasterizerState::NoCulling:
         graphicsContext.Device->RSSetState(graphicsContext.rsNoCulling);
         break;
     default:

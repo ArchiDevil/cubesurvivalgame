@@ -13,7 +13,7 @@
     uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #endif
 
-    ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
+ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
     : pDevice(_pDevice)
     , shaderGenerator(new D3D11ShaderGenerator())
 {
@@ -37,15 +37,16 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource
         LOG_FATAL_ERROR(temp);
     }
 
-    ID3D10VertexShader * finalShader = nullptr;
-    pDevice->CreateVertexShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &finalShader);
-    ID3D10ShaderReflection* pReflector = NULL;
-    hr = D3D10ReflectShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &pReflector);
+    ID3D11VertexShader * finalShader = nullptr;
+    pDevice->CreateVertexShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+    ID3D11ShaderReflection* pReflector = nullptr;
+    void *pR = pReflector;
+    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, &pR);
     if (FAILED(hr))
     {
         LOG_FATAL_ERROR("Unable to parse shader");
     }
-    D3D10ShaderPtr out = std::make_shared<D3D10Shader>(finalShader, ShaderType::ST_Vertex, pReflector);
+    D3D11ShaderPtr out = std::make_shared<D3D11Shader>(finalShader, D3D11ShaderType::ST_Vertex, pReflector);
 
     return out;
 }
@@ -64,15 +65,16 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
         LOG_FATAL_ERROR(temp);
     }
 
-    ID3D10PixelShader * finalShader = nullptr;
-    pDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &finalShader);
-    ID3D10ShaderReflection* pReflector = NULL;
-    hr = D3D10ReflectShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &pReflector);
+    ID3D11PixelShader * finalShader = nullptr;
+    pDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+    ID3D11ShaderReflection* pReflector = NULL;
+    void *pR = pReflector;
+    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, &pR);
     if (FAILED(hr))
     {
         LOG_FATAL_ERROR("Unable to parse shader");
     }
-    D3D10ShaderPtr out = std::make_shared<D3D10Shader>(finalShader, ShaderType::ST_Pixel, pReflector);
+    D3D11ShaderPtr out = std::make_shared<D3D11Shader>(finalShader, D3D11ShaderType::ST_Pixel, pReflector);
     return out;
 }
 
@@ -99,7 +101,9 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(
 
         auto vs = CompileVSFromSource(content);
         auto ps = CompilePSFromSource(content);
-        auto ptr = std::make_shared<D3D10Program>(vs, ps, pDevice);
+        ID3D11DeviceContext * pImmediate = nullptr;
+        pDevice->GetImmediateContext(&pImmediate);
+        auto ptr = std::make_shared<D3D11Program>(vs, ps, pDevice, pImmediate);
         filePrograms[fileName] = ptr;
         return ptr;
     }
@@ -116,8 +120,9 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromSourc
     {
         auto vs = CompileVSFromSource(source);
         auto ps = CompilePSFromSource(source);
-
-        auto ptr = std::make_shared<D3D10Program>(vs, ps, pDevice);
+        ID3D11DeviceContext * pImmediate = nullptr;
+        pDevice->GetImmediateContext(&pImmediate);
+        auto ptr = std::make_shared<D3D11Program>(vs, ps, pDevice, pImmediate);
         sourcePrograms[source] = ptr;
 
         return ptr;
@@ -135,11 +140,13 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromMater
     {
         auto shaderCode = shaderGenerator->CreateShaderCode(verticesInfo, mtlInfo);
 
-        D3D10VertexDeclaration vd(nullptr, pDevice);
+        ID3D11DeviceContext *pImmediate = nullptr;
+        pDevice->GetImmediateContext(&pImmediate);
+        D3D11VertexDeclaration vd(nullptr, pImmediate);
         auto vs = CompileVSFromSource(shaderCode);
         auto ps = CompilePSFromSource(shaderCode);
 
-        auto ptr = std::make_shared<D3D10Program>(vs, ps, pDevice);
+        auto ptr = std::make_shared<D3D11Program>(vs, ps, pDevice, pImmediate);
         materialPrograms[std::make_pair(mtlInfo, verticesInfo)] = ptr;
 
         return ptr;

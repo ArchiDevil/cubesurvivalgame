@@ -7,13 +7,6 @@
 //STL INCLUDES
 #include <vector>
 
-//D3D INCLUDES
-#if defined(D3D10_RENDER)
-#   include <D3DX10.h>
-#elif defined(D3D11_RENDER)
-#   include <D3DX11.h>
-#endif // D3D10_RENDER
-
 using MathLib::Vector2F;
 using MathLib::Vector3F;
 using MathLib::qaFloat;
@@ -57,7 +50,7 @@ namespace ShiftEngine
         SceneGraph * GetSceneGraph() const;
         void SetSceneGraph(SceneGraph * val);
 
-        virtual D3DXMATRIX GetWorldMatrix() const;
+        virtual MathLib::mat4f GetWorldMatrix() const;
 
         virtual MathLib::AABB GetBBox() const = 0;
 
@@ -74,7 +67,7 @@ namespace ShiftEngine
         Vector3F Scale;
         qaFloat Rotation;
 
-        D3DXMATRIX worldMatrix;
+        MathLib::mat4f worldMatrix;
 
         ISceneNode * parent;
         ChildsList children;    //semi-automatic shared ptrs

@@ -10,7 +10,7 @@ ShiftEngine::FontManager::FontManager()
     : currentFont(L"")
     , textShader(nullptr)
 {
-    D3D10ContextManager* pCntMng = GetContextManager();
+    IContextManager* pCntMng = GetContextManager();
     textShader = pCntMng->LoadShader(L"text.fx");
     LoadFonts();
     if (!Fonts.empty())
@@ -54,7 +54,7 @@ int ShiftEngine::FontManager::GetStringWidth(const std::string & string)
 
 void ShiftEngine::FontManager::LoadFonts()
 {
-    D3D10ContextManager* pCntMng = GetContextManager();
+    IContextManager* pCntMng = GetContextManager();
     //TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
     PathSettings pPaths = pCntMng->GetPaths();
     auto fontsNames = utils::filesystem::CollectFileNames(pPaths.FontsPath, L"fnt2");
@@ -188,22 +188,21 @@ void ShiftEngine::FontManager::DrawBatchedText()
         batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)v.data(), v.size() * sizeof(TextPoint), i, &plainSpriteVertexSemantic);
 
         auto cbs = pCtxMgr->GetBlendingState();
-        pCtxMgr->SetBlendingState(BS_AlphaEnabled);
+        pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);
         auto crs = pCtxMgr->GetRasterizerState();
-        pCtxMgr->SetRasterizerState(RS_Normal);
+        pCtxMgr->SetRasterizerState(RasterizerState::Normal);
 
-        D3DXMATRIX matOrtho;
         GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
-        D3DXMatrixOrthoOffCenterLH(&matOrtho, 0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
-        textShader->SetMatrixConstantByName("matOrtho", (float*)matOrtho);
+        MathLib::mat4f matOrtho = MathLib::matrixOrthoOffCenterLH<float, 4>(0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
+        textShader->SetMatrixConstantByName("matOrtho", matOrtho);
 
-        D3DXVECTOR4 vec;
+        MathLib::Vector4F vec;
         vec.x = 0.0f;
         vec.y = 0.0f;
         vec.z = 16000.0f;
         vec.w = 16000.0f;
 
-        textShader->SetVectorConstantByName("Rect", (float*)vec);
+        textShader->SetVectorConstantByName("Rect", vec.el);
         SetFont(p.first);
         textShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
         textShader->Apply(true);

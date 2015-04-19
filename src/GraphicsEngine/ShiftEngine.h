@@ -1,6 +1,6 @@
 #pragma once
 
-#include "APIs/D3D10/D3D10ContextManager.h"
+#include "IContextManager.h"
 #include "Renderer.h"
 #include "SceneGraph/SceneGraph.h"
 #include "Utils.h"
@@ -17,7 +17,7 @@ namespace ShiftEngine
     bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd);
     void ShutdownEngine();
 
-    D3D10ContextManager * GetContextManager();
+    IContextManager * GetContextManager();
     SceneGraph * GetSceneGraph();
     Renderer * GetRenderer();
 }

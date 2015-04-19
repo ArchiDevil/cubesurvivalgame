@@ -7,8 +7,6 @@
 
 #include <memory>
 
-//REMOVE D3DX LIB !!!
-
 namespace ShiftEngine
 {
     static const float MAX_ANGLE = 89.5f;
@@ -17,7 +15,7 @@ namespace ShiftEngine
     {
     public:
         CameraSceneNode();
-        CameraSceneNode(D3DXVECTOR3 _pos, D3DXVECTOR3 _up, D3DXVECTOR3 _right);
+        CameraSceneNode(MathLib::Vector3F _pos, MathLib::Vector3F _up, MathLib::Vector3F _right);
 
         void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
 
@@ -30,20 +28,20 @@ namespace ShiftEngine
         void MoveLeftRight(float units);
         void MoveForwardBackward(float units);
         void RotateByQuaternion(const MathLib::qaFloat & quat);
-        void LookAt(D3DXVECTOR3 point);
-        void SetSphericalCoords(const D3DXVECTOR3 & lookPoint, float phi, float theta, float r);
+        void LookAt(const MathLib::Vector3F & point);
+        void SetSphericalCoords(const MathLib::Vector3F & lookPoint, float phi, float theta, float r);
 
-        D3DXVECTOR3 GetLookVector() const;
-        D3DXVECTOR3 GetRightVector() const;
-        D3DXVECTOR3 GetPosition() const;
-        D3DXVECTOR3 GetUpVector() const;
+        MathLib::Vector3F GetLookVector() const;
+        MathLib::Vector3F GetRightVector() const;
+        MathLib::Vector3F GetPosition() const;
+        MathLib::Vector3F GetUpVector() const;
 
         CameraFrustum * GetFrustumPtr();
 
         virtual void PushToRQ(RenderQueue & rq) override;
 
-        const D3DXMATRIX & GetProjectionMatrix() const;
-        const D3DXMATRIX & GetViewMatrix() const;
+        const MathLib::mat4f & GetProjectionMatrix() const;
+        const MathLib::mat4f & GetViewMatrix() const;
 
         void SetZNear(float val);
         float GetZNear() const;
@@ -62,8 +60,8 @@ namespace ShiftEngine
     private:
         void RebuildProjMatrix();
 
-        D3DXMATRIX matView;
-        D3DXMATRIX matProj;
+        MathLib::mat4f matView;
+        MathLib::mat4f matProj;
 
         float zNear = 0.1f;
         float zFar = 100.0f;
@@ -73,12 +71,11 @@ namespace ShiftEngine
         std::unique_ptr<CameraFrustum> Frustum = nullptr;
 
         float ViewAngle = 0.0f;
-        D3DXVECTOR3 Angles = { 0.0f, 0.0f, 0.0f };
-
-        D3DXVECTOR3 UP = { 0.0f, 0.0f, 1.0f };
-        D3DXVECTOR3 LOOK = { 0.0f, 1.0f, 0.0f };
-        D3DXVECTOR3 POS = { 0.0f, 0.0f, 0.0f };
-        D3DXVECTOR3 RIGHT = { 1.0f, 0.0f, 0.0f };
+        MathLib::Vector3F Angles = { 0.0f, 0.0f, 0.0f };
+        MathLib::Vector3F UP = { 0.0f, 0.0f, 1.0f };
+        MathLib::Vector3F LOOK = { 0.0f, 1.0f, 0.0f };
+        MathLib::Vector3F POS = { 0.0f, 0.0f, 0.0f };
+        MathLib::Vector3F RIGHT = { 1.0f, 0.0f, 0.0f };
 
     };
 }

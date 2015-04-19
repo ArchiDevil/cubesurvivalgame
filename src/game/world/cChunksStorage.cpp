@@ -24,7 +24,7 @@ void cChunksStorage::Initialize(int ChunksPerSide, int CenterChunkX, int CenterC
     this->CenterChunkX = CenterChunkX;
     this->CenterChunkY = CenterChunkY;
 
-    D3D10ContextManager * pCtxMgr = GetContextManager();
+    IContextManager * pCtxMgr = GetContextManager();
 
     landSemantics.addSemantic(ET_FLOAT, 3, ES_Position);
     landSemantics.addSemantic(ET_FLOAT, 3, ES_Normal);

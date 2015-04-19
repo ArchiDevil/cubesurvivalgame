@@ -1,11 +1,5 @@
 #pragma once
 
-#if defined(D3D10_RENDER)
-#   include <D3DX10.h>
-#elif defined(D3D11_RENDER)
-#   include <D3DX11.h>
-#endif // D3D10_RENDER
-
 #include "vector3.h"
 #include "vector4.h"
 
@@ -33,14 +27,15 @@ namespace MathLib
                     arr[i][j] = ref.arr[i][j];
         }
 
-#if defined(D3D10_RENDER) || defined(D3D11_RENDER)
-        matrix(const D3DXMATRIX & ref)
+        template<size_t oE>
+        matrix(const matrix<T, oE> & ref)
+            : matrix{}
         {
-            for (int i = 0; i < E; i++)
-                for (int j = 0; j < E; j++)
-                    arr[i][j] = ref(i, j);
+            size_t maxE = E >= oE ? oE : E;
+            for (int i = 0; i < maxE; ++i)
+                for (int j = 0; j < maxE; ++j)
+                    arr[i][j] = ref.arr[i][j];
         }
-#endif
 
         matrix operator + (const matrix & ref) const
         {
@@ -65,14 +60,14 @@ namespace MathLib
         vec3<T> operator * (const vec3<T> & ref) const
         {
             static_assert(E == 3, "Unable to multiply matrices with different sizes");
-            const int r = 3;	//number of rows in 2nd and columns in 1st matrices
-            const int m = E;	//number of rows in 1st matrix
+            const size_t r = 3;        //number of rows in 2nd and columns in 1st matrices
+            const size_t m = E;        //number of rows in 1st matrix
             vec3<T> out;
 
-            for (int i = 0; i < m; i++)
+            for (size_t i = 0; i < m; i++)
             {
                 float summ = 0;
-                for (int z = 0; z < r; z++)
+                for (size_t z = 0; z < r; z++)
                     summ += arr[i][z] * ref.el[z];
                 out.el[i] = summ;
             }
@@ -82,15 +77,15 @@ namespace MathLib
         vec4<T> operator * (const vec4<T> & ref) const
         {
             static_assert(E == 4, "Unable to multiply matrices with different sizes");
-            const int r = 4;	//number of rows in 2nd and columns in 1st matrices
-            const int m = E;	//number of rows in 1st matrix
+            const size_t r = 4; //number of rows in 2nd and columns in 1st matrices
+            const size_t m = 4; //number of rows in 1st matrix
             vec4<T> out;
 
-            for (int i = 0; i < m; i++)
+            for (size_t i = 0; i < m; i++)
             {
-                float summ = 0;
-                for (int z = 0; z < r; z++)
-                    summ += arr[i][z] * ref.el[z];
+                float summ = 0.0f;
+                for (size_t z = 0; z < r; z++)
+                    summ += arr[z][i] * ref.el[z];
                 out.el[i] = summ;
             }
             return out;
@@ -98,17 +93,17 @@ namespace MathLib
 
         matrix<T, E> operator * (const matrix<T, E> & ref) const
         {
-            const int r = E;	//number of rows in 2nd and columns in 1st matrices
-            const int m = E;	//number of rows in 1st matrix
-            const int q = E;	//number of columns in 2nd matrix
+            const size_t r = E; //number of rows in 2nd and columns in 1st matrices
+            const size_t m = E; //number of rows in 1st matrix
+            const size_t q = E; //number of columns in 2nd matrix
             matrix temp;
 
-            for (int i = 0; i < m; i++)
+            for (size_t i = 0; i < m; i++)
             {
-                for (int j = 0; j < q; j++)
+                for (size_t j = 0; j < q; j++)
                 {
                     float summ = 0;
-                    for (int z = 0; z < r; z++)
+                    for (size_t z = 0; z < r; z++)
                     {
                         summ += this->arr[i][z] * ref.arr[z][j];
                     }
@@ -235,6 +230,16 @@ namespace MathLib
                     out[i][j] = arr[i][j];
 
             return out;
+        }
+
+        operator T*()
+        {
+            return &(arr[0][0]);
+        }
+
+        operator const T*() const
+        {
+            return &(arr[0][0]);
         }
     };
 

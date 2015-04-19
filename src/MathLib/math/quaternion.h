@@ -88,7 +88,7 @@ namespace MathLib
         quaternion operator * (const quaternion & ref) const
         {
             quaternion<T> out;
-            out.vector = vec(this->vector, ref.vector) + ref.vector * this->w + this->vector * ref.w;
+            out.vector = cross(this->vector, ref.vector) + ref.vector * this->w + this->vector * ref.w;
             out.w = this->w * ref.w - dot(this->vector, ref.vector);
             return out;
         }
@@ -163,7 +163,7 @@ namespace MathLib
             return quaternion<T>(vector.x / module, vector.y / module, vector.z / module, w / module);
         }
 
-        matrix<T, 3> to_matrix() const
+        matrix<T, 4> to_matrix() const
         {
             float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
             float s = 2.0f / norm();  // 4 mul 3 add 1 div
@@ -172,19 +172,24 @@ namespace MathLib
             yy = vector.y * y2;   yz = vector.y * z2;   zz = vector.z * z2;
             wx = w * x2;   wy = w * y2;   wz = w * z2;
 
-            matrix<T, 3> m;
+            matrix<T, 4> m;
 
-            m.arr[0][0] = 1.0f - (yy + zz);
-            m.arr[1][0] = xy - wz;
-            m.arr[2][0] = xz + wy;
+            m[0][0] = 1.0f - (yy + zz);
+            m[1][0] = xy - wz;
+            m[2][0] = xz + wy;
 
-            m.arr[0][1] = xy + wz;
-            m.arr[1][1] = 1.0f - (xx + zz);
-            m.arr[2][1] = yz - wx;
+            m[0][1] = xy + wz;
+            m[1][1] = 1.0f - (xx + zz);
+            m[2][1] = yz - wx;
 
-            m.arr[0][2] = xz - wy;
-            m.arr[1][2] = yz + wx;
-            m.arr[2][2] = 1.0f - (xx + yy);
+            m[0][2] = xz - wy;
+            m[1][2] = yz + wx;
+            m[2][2] = 1.0f - (xx + yy);
+
+            m[3][0] = 0.0f;
+            m[3][1] = 0.0f;
+            m[3][2] = 0.0f;
+            m[3][3] = 1.0f;
 
             return m;
         }
@@ -258,7 +263,7 @@ namespace MathLib
     quaternion<T> shortest_arc(const vec3<T> & from, const vec3<T> & to)
     {
         quaternion<T> out;
-        auto c = MathLib::vec(from, to);
+        auto c = MathLib::cross(from, to);
         out.vector = c;
         out.w = MathLib::dot(from, to);
         out = out.normalize();

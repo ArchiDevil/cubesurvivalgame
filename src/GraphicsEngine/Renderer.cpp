@@ -184,7 +184,7 @@ void ShiftEngine::Renderer::bindEngineUniforms(MeshNode * currentNode, const Ren
             if (currentState.shaderChanged)
             {
                 currentState.UniformsBindings++;
-                program->SetVectorConstantByIndex(uniformIndex, list.GetActiveCamera()->GetPosition());
+                program->SetVectorConstantByIndex(uniformIndex, list.GetActiveCamera()->GetPosition().ptr());
             }
             break;
         case SV_AmbientColor:

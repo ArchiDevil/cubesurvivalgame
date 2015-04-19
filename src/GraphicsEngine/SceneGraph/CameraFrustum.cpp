@@ -1,55 +1,46 @@
 #include "CameraFrustum.h"
 
-#if defined(D3D10_RENDER)
-#   include <D3DX10.h>
-#elif defined(D3D11_RENDER)
-#   include <D3DX11.h>
-#endif // D3D10_RENDER
-
-void ShiftEngine::CameraFrustum::BuildFrustum(D3DXMATRIX * matView, D3DXMATRIX * matProj)
+void ShiftEngine::CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj)
 {
-    D3DXMATRIX Matrix;
+    memset(&planes, 0, sizeof(MathLib::plane<float>) * 6);
 
-    ::ZeroMemory(&planes, sizeof(MathLib::plane<float>) * 6);
-    ::ZeroMemory(&Matrix, sizeof(D3DXMATRIX));
-
-    D3DXMatrixMultiply(&Matrix, matView, matProj);
+    const MathLib::mat4f matrix = matView * matProj;
 
     // Вычисление плоскостей
-    planes[0].a = Matrix._14 + Matrix._13; // Задняя плоскость
-    planes[0].b = Matrix._24 + Matrix._23;
-    planes[0].c = Matrix._34 + Matrix._33;
-    planes[0].d = Matrix._44 + Matrix._43;
+    planes[0].a = matrix[0][3] + matrix[0][2]; // Задняя плоскость
+    planes[0].b = matrix[1][3] + matrix[1][2];
+    planes[0].c = matrix[2][3] + matrix[2][2];
+    planes[0].d = matrix[3][3] + matrix[3][2];
     planes[0] = normalize(planes[0]);
 
-    planes[1].a = Matrix._14 - Matrix._13; // Передняя плоскость
-    planes[1].b = Matrix._24 - Matrix._23;
-    planes[1].c = Matrix._34 - Matrix._33;
-    planes[1].d = Matrix._44 - Matrix._43;
+    planes[1].a = matrix[0][3] - matrix[0][2]; // Передняя плоскость
+    planes[1].b = matrix[1][3] - matrix[1][2];
+    planes[1].c = matrix[2][3] - matrix[2][2];
+    planes[1].d = matrix[3][3] - matrix[3][2];
     planes[1] = normalize(planes[1]);
 
-    planes[2].a = Matrix._14 + Matrix._11; // Левая плоскость
-    planes[2].b = Matrix._24 + Matrix._21;
-    planes[2].c = Matrix._34 + Matrix._31;
-    planes[2].d = Matrix._44 + Matrix._41;
+    planes[2].a = matrix[0][3] + matrix[0][0]; // Левая плоскость
+    planes[2].b = matrix[1][3] + matrix[1][0];
+    planes[2].c = matrix[2][3] + matrix[2][0];
+    planes[2].d = matrix[3][3] + matrix[3][0];
     planes[2] = normalize(planes[2]);
 
-    planes[3].a = Matrix._14 - Matrix._11; // Правая плоскость
-    planes[3].b = Matrix._24 - Matrix._21;
-    planes[3].c = Matrix._34 - Matrix._31;
-    planes[3].d = Matrix._44 - Matrix._41;
+    planes[3].a = matrix[0][3] - matrix[0][0]; // Правая плоскость
+    planes[3].b = matrix[1][3] - matrix[1][0];
+    planes[3].c = matrix[2][3] - matrix[2][0];
+    planes[3].d = matrix[3][3] - matrix[3][0];
     planes[3] = normalize(planes[3]);
 
-    planes[4].a = Matrix._14 - Matrix._12; // Верхняя плоскость
-    planes[4].b = Matrix._24 - Matrix._22;
-    planes[4].c = Matrix._34 - Matrix._32;
-    planes[4].d = Matrix._44 - Matrix._42;
+    planes[4].a = matrix[0][3] - matrix[0][1]; // Верхняя плоскость
+    planes[4].b = matrix[1][3] - matrix[1][1];
+    planes[4].c = matrix[2][3] - matrix[2][1];
+    planes[4].d = matrix[3][3] - matrix[3][1];
     planes[4] = normalize(planes[4]);
 
-    planes[5].a = Matrix._14 + Matrix._12; // Нижняя плоскость
-    planes[5].b = Matrix._24 + Matrix._22;
-    planes[5].c = Matrix._34 + Matrix._32;
-    planes[5].d = Matrix._44 + Matrix._42;
+    planes[5].a = matrix[0][3] + matrix[0][1]; // Нижняя плоскость
+    planes[5].b = matrix[1][3] + matrix[1][1];
+    planes[5].c = matrix[2][3] + matrix[2][1];
+    planes[5].d = matrix[3][3] + matrix[3][1];
     planes[5] = normalize(planes[5]);
 }
 

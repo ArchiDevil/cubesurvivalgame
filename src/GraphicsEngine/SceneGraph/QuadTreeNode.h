@@ -12,7 +12,7 @@ namespace ShiftEngine
 
         virtual void AddChild(ISceneNode * node) override;
         virtual void PushToRQ(RenderQueue & rq) override;
-        virtual D3DXMATRIX GetWorldMatrix() const override;
+        virtual MathLib::mat4f GetWorldMatrix() const override;
         virtual MathLib::AABB GetBBox() const override;
 
     private:

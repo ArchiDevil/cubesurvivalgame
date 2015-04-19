@@ -128,8 +128,8 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
     D3D11_VIEWPORT vp;
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
-    vp.Width = engineSettings.screenWidth;
-    vp.Height = engineSettings.screenHeight;
+    vp.Width = (float)engineSettings.screenWidth;
+    vp.Height = (float)engineSettings.screenHeight;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
 
@@ -206,7 +206,8 @@ std::wstring ShiftEngine::D3D11ContextManager::GetGPUDescription()
 
 void ShiftEngine::D3D11ContextManager::BeginScene()
 {
-    graphicsContext.DeviceContext->ClearRenderTargetView(graphicsContext.DefaultRT->rt, D3DXCOLOR((float)208 / 255, (float)238 / 255, (float)248 / 255, 1.0f));
+    float clearColors[] = { 208.0f / 255.0f, 238.0f / 255.0f, 248.0f / 255.0f, 1.0f };
+    graphicsContext.DeviceContext->ClearRenderTargetView(graphicsContext.DefaultRT->rt, clearColors);
     graphicsContext.DeviceContext->ClearDepthStencilView(graphicsContext.DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -278,11 +279,6 @@ void ShiftEngine::D3D11ContextManager::SetZState(bool enabled)
         graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOff, 1);
 }
 
-ID3D11Device * ShiftEngine::D3D11ContextManager::GetDevicePointer()
-{
-    return graphicsContext.Device;
-}
-
 ShiftEngine::GraphicEngineSettings ShiftEngine::D3D11ContextManager::GetEngineSettings() const
 {
     return engineSettings;
@@ -326,13 +322,13 @@ void ShiftEngine::D3D11ContextManager::SetBlendingState(BlendingState bs)
 
     switch (bs)
     {
-    case ShiftEngine::BS_None:
+    case ShiftEngine::BlendingState::None:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BS_AlphaEnabled:
+    case ShiftEngine::BlendingState::AlphaEnabled:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAlpha, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BS_Additive:
+    case ShiftEngine::BlendingState::Additive:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAdditive, BlendFactor, 0xffffffff);
         break;
     default:
@@ -347,18 +343,18 @@ ShiftEngine::BlendingState ShiftEngine::D3D11ContextManager::GetBlendingState() 
     return currentBlendingState;
 }
 
-void ShiftEngine::D3D11ContextManager::SetRasterizerState(ShiftEngine::RasterizerState rs)
+void ShiftEngine::D3D11ContextManager::SetRasterizerState(RasterizerState rs)
 {
     currentRasterizerState = rs;
     switch (rs)
     {
-    case ShiftEngine::RS_Wireframe:
+    case ShiftEngine::RasterizerState::Wireframe:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsWireframe);
         break;
-    case ShiftEngine::RS_Normal:
+    case ShiftEngine::RasterizerState::Normal:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
         break;
-    case ShiftEngine::RS_NoCulling:
+    case ShiftEngine::RasterizerState::NoCulling:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNoCulling);
         break;
     default:
@@ -499,7 +495,7 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
     compiledShader->Release();
 
     //HACK: slow but I'm lazy to rework
-    declarations[semantic] = std::make_shared<D3D11VertexDeclaration>(outIL, pDevice);
+    declarations[semantic] = std::make_shared<D3D11VertexDeclaration>(outIL, graphicsContext.DeviceContext);
     return declarations[semantic];
 }
 

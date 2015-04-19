@@ -77,7 +77,7 @@ bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
     if (MathLib::distance(s1, r.Origin) > r1 && MathLib::dot(diff, r.Direction) < 0.0f)
         return false;
 
-    Vector3F res = MathLib::vec(diff, r.Direction);
+    Vector3F res = MathLib::cross(diff, r.Direction);
     float distance = (res.length()) / (r.Direction.length());
     if (distance < r1)
         return true;
@@ -91,17 +91,17 @@ bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
 bool MathLib::LineTriangleIntersectionPoint(const Vector3F &t1, const Vector3F &t2, const Vector3F &t3,
     const Vector3F &l1, const Vector3F &l2, Vector3F &p)
 {
-    Vector3F n = normalize(vec(t2 - t1, t3 - t2));
+    Vector3F n = normalize(cross(t2 - t1, t3 - t2));
     float d1 = dot((l1 - t1), n) / n.length();
     float d2 = dot((l2 - t1), n) / n.length();
     if ((d1 > 0 && d2 > 0) || (d1 < 0 && d2 < 0))
         return false;
     p = l1 + (l2 - l1) * (-d2 / (d2 - d1));
-    if (dot((vec(t2 - t1, p - t1)), n) <= 0)
+    if (dot((cross(t2 - t1, p - t1)), n) <= 0)
         return false;
-    if (dot((vec(t3 - t2, p - t2)), n) <= 0)
+    if (dot((cross(t3 - t2, p - t2)), n) <= 0)
         return false;
-    if (dot((vec(t1 - t3, p - t3)), n) <= 0)
+    if (dot((cross(t1 - t3, p - t3)), n) <= 0)
         return false;
     return true;
 }

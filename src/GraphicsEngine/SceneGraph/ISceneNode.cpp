@@ -100,7 +100,7 @@ void ShiftEngine::ISceneNode::Draw(RenderQueue & rq)
             child->Draw(rq);
 }
 
-D3DXMATRIX ShiftEngine::ISceneNode::GetWorldMatrix() const
+MathLib::mat4f ShiftEngine::ISceneNode::GetWorldMatrix() const
 {
     if (parent)
         return worldMatrix * parent->GetWorldMatrix();
@@ -110,19 +110,15 @@ D3DXMATRIX ShiftEngine::ISceneNode::GetWorldMatrix() const
 
 void ShiftEngine::ISceneNode::CreateWorldMatrix()
 {
-    D3DXMATRIX scale;
-    D3DXMATRIX rot;
-    D3DXMATRIX pos;
-    D3DXMatrixScaling(&scale, Scale.x, Scale.y, Scale.z);
-    D3DXQUATERNION q;
-    q.x = Rotation.vector.x;
-    q.y = Rotation.vector.y;
-    q.z = Rotation.vector.z;
-    q.w = Rotation.w;
-    //auto matrix = Rotation.to_matrix();
-    D3DXMatrixRotationQuaternion(&rot, &q);
-    D3DXMatrixTranslation(&pos, Position.x, Position.y, Position.z);
-    worldMatrix = scale * rot * pos;
+    MathLib::matrix<float, 4> scale;
+    MathLib::matrix<float, 4> rotation;
+    MathLib::matrix<float, 4> position;
+
+    scale = MathLib::matrixScaling(Scale);
+    rotation = Rotation.to_matrix();
+    position = MathLib::matrixTranslation(Position);
+
+    worldMatrix = scale * rotation * position;
 }
 
 Vector3F ShiftEngine::ISceneNode::GetPosition() const
@@ -177,12 +173,13 @@ void ShiftEngine::ISceneNode::RotateBy(const qaFloat & val)
 
 int ShiftEngine::ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
 {
-    D3DXMATRIX matWorld = this->GetWorldMatrix();
+    MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::AABB bbox = GetBBox();
-    D3DXVECTOR4 vecMin = D3DXVECTOR4(bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f);
-    D3DXVECTOR4 vecMax = D3DXVECTOR4(bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f);
-    D3DXVec4Transform(&vecMin, &vecMin, &matWorld);
-    D3DXVec4Transform(&vecMax, &vecMax, &matWorld);
+
+    MathLib::Vector4F vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    MathLib::Vector4F vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    vecMin = MathLib::vec4Transform(vecMin, matWorld);
+    vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox(MathLib::Vector3F(vecMin.x, vecMin.y, vecMin.z), Vector3F(vecMax.x, vecMax.y, vecMax.z));
 
     return activeCam->GetFrustumPtr()->CheckAABB(newBbox);

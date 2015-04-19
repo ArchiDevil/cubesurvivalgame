@@ -111,7 +111,7 @@ void GameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
 
 void GameHUD::Draw()
 {
-    ShiftEngine::D3D10ContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     auto settings = pCtxMgr->GetEngineSettings();
     int screenWidth = settings.screenWidth;
     int screenHeight = settings.screenHeight;

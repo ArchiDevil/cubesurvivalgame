@@ -2,8 +2,6 @@
 
 #include <MathLib/math.h>
 
-struct D3DXMATRIX;
-
 namespace ShiftEngine
 {
     class CameraFrustum
@@ -16,7 +14,7 @@ namespace ShiftEngine
             CS_In
         };
 
-        void BuildFrustum(D3DXMATRIX * matView, D3DXMATRIX * matProj);
+        void BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj);
 
         CullingStatus CheckAABB(const MathLib::AABB & bbox) const;
         CullingStatus CheckOOBB(const MathLib::OOBB & bbox) const;

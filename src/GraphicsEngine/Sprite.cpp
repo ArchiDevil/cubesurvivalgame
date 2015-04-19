@@ -2,8 +2,6 @@
 
 #include "ShiftEngine.h"
 
-#include <D3DX10.h>
-
 ShiftEngine::IProgramPtr ShiftEngine::Sprite::SpriteShader;
 
 ShiftEngine::Sprite::Sprite()
@@ -31,11 +29,11 @@ void ShiftEngine::Sprite::Draw()
 
     auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
 
-    D3DXMATRIX mat, scale, pos, rot;
-    D3DXMatrixTranslation(&pos, Position.x, Position.y, 0.0f);
-    D3DXMatrixScaling(&scale, Scale.x, Scale.y, 0.0f);
-    D3DXMatrixRotationZ(&rot, Rotation);
-    D3DXMatrixOrthoOffCenterRH(&mat, 0.0, (float)settings.screenWidth, (float)settings.screenHeight, 0.0f, 0.0f, 1.0f);
+    MathLib::mat4f mat, scale, pos, rot;
+    pos = MathLib::matrixTranslation(Position.x, Position.y, 0.0f);
+    scale = MathLib::matrixScaling(Scale.x, Scale.y, 0.0f);
+    rot = MathLib::matrixRotationZ(Rotation);
+    mat = MathLib::matrixOrthoOffCenterLH<float, 4>(0.0, (float)settings.screenWidth, (float)settings.screenHeight, 0.0f, 0.0f, 1.0f);
     mat = (scale * rot * pos) * mat;
 
     SpriteShader->SetMatrixConstantByName("matRes", (float*)mat);
@@ -107,9 +105,9 @@ void ShiftEngine::Sprite::CreateBuffers(const Vector2F & LT, const Vector2F & RB
 
     IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
     spriteMesh = pMeshManager->CreateMeshFromVertices(
-        (uint8_t*)ver.data(), 
-        ver.size() * sizeof(decltype(ver)::value_type), 
-        ind, 
+        (uint8_t*)ver.data(),
+        ver.size() * sizeof(PlainSpriteVertex),
+        ind,
         &ShiftEngine::plainSpriteVertexSemantic
         );
 }

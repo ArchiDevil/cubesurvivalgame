@@ -5,7 +5,7 @@
 float SensivityMultiplier = 0.2f;
 static float x_angle = -45.0f;
 static float y_angle = 45.0f;
-static float R = 15.0f;	//default camera radius
+static float R = 15.0f; //default camera radius
 static float lenghtOfMove = 0;
 const float threshold = 20.0f;
 
@@ -56,11 +56,10 @@ bool WorkState::update(double dt)
     float y = R * sin(y_angle * 0.0175f) * sin(x_angle * 0.0175f);
     float z = R * cos(y_angle * 0.0175f);
 
-    D3DXVECTOR3 addPos = D3DXVECTOR3(Workspace->GetHalfSize().x, Workspace->GetHalfSize().y, Workspace->GetHalfSize().z);
-
+    Vector3F addPos = Workspace->GetHalfSize();
     auto scg = ShiftEngine::GetSceneGraph();
 
-    scg->GetActiveCamera()->SetPosition(Vector3F(x, y, z) + Vector3F(addPos.x, addPos.y, addPos.z));
+    scg->GetActiveCamera()->SetPosition(Vector3F(x, y, z) + addPos);
     scg->GetActiveCamera()->LookAt(addPos - scg->GetActiveCamera()->GetPosition());
 
     static double tempCounter = 0.0;
@@ -289,8 +288,8 @@ bool WorkState::ProcessInput(double dt)
         {
             if (lenghtOfMove < threshold)
             {
-                D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-                float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
+                Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+                float distance = MathLib::distance(camPos, Vector3F());
 
                 for (float mult = 0.0f; mult < distance*2.0f; mult += 0.1f)
                 {
@@ -309,8 +308,8 @@ bool WorkState::ProcessInput(double dt)
 
         if (InputEngine.IsMouseUp(LButton))
         {
-            D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-            float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
+            Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+            float distance = MathLib::distance(camPos, Vector3F());
             //calculate new position
             const float step = 0.1f;
             for (float mult = 0.0f; mult < distance * 2.0f; mult += step)
@@ -384,8 +383,8 @@ bool WorkState::ProcessInput(double dt)
     {
         if (InputEngine.IsMouseDown(LButton))
         {
-            D3DXVECTOR3 camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-            float distance = MathLib::distance(Vector3F(camPos.x, camPos.y, camPos.z), Vector3F());
+            Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
+            float distance = MathLib::distance(camPos, Vector3F());
 
             for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
             {
@@ -437,9 +436,9 @@ bool WorkState::ProcessInput(double dt)
 #if defined DEBUG || _DEBUG
 
     if (InputEngine.IsKeyDown(DIK_V))
-        ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RS_Wireframe);
+        ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
     else if (InputEngine.IsKeyUp(DIK_V))
-        ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RS_Normal);
+        ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
 
     static bool showBbox = false;
 

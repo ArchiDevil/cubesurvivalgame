@@ -65,21 +65,21 @@ int ShiftEngine::MeshNode::Render()
 
 MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
 {
-    D3DXMATRIX matWorld = this->GetWorldMatrix();
-    D3DXVECTOR4 points[8];
-    points[0] = D3DXVECTOR4(bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f);
-    points[1] = D3DXVECTOR4(bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f);
-    points[2] = D3DXVECTOR4(bbox.bMin.x, bbox.bMax.y, bbox.bMin.z, 1.0f);
-    points[3] = D3DXVECTOR4(bbox.bMax.x, bbox.bMin.y, bbox.bMin.z, 1.0f);
-    points[4] = D3DXVECTOR4(bbox.bMax.x, bbox.bMax.y, bbox.bMin.z, 1.0f);
-    points[5] = D3DXVECTOR4(bbox.bMin.x, bbox.bMax.y, bbox.bMax.z, 1.0f);
-    points[6] = D3DXVECTOR4(bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f);
-    points[7] = D3DXVECTOR4(bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f);
+    MathLib::mat4f matWorld = GetWorldMatrix();
+    MathLib::Vector4F points[8];
+    points[0] = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    points[1] = { bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
+    points[2] = { bbox.bMin.x, bbox.bMax.y, bbox.bMin.z, 1.0f };
+    points[3] = { bbox.bMax.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    points[4] = { bbox.bMax.x, bbox.bMax.y, bbox.bMin.z, 1.0f };
+    points[5] = { bbox.bMin.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    points[6] = { bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
+    points[7] = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
 
-    D3DXVECTOR3 min, max;
+    MathLib::Vector3F min, max;
 
     for (int i = 0; i < 8; i++)
-        D3DXVec4Transform(points + i, points + i, &matWorld);
+        points[i] = MathLib::vec4Transform(points[i], matWorld);
 
     min.x = points[0].x;
     min.y = points[0].y;
