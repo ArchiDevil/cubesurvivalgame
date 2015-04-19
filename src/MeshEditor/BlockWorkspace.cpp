@@ -29,6 +29,12 @@ MeshEditor::BlockWorkspace::~BlockWorkspace()
 {
     if (light)
         ShiftEngine::GetSceneGraph()->RemoveDirectionalLightNode(light);
+    if (mesh)
+        mesh->KillSelf();
+    if (plane)
+        plane->KillSelf();
+    if (bbox)
+        bbox->KillSelf();
 }
 
 void MeshEditor::BlockWorkspace::Initialize()

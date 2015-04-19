@@ -142,11 +142,15 @@ std::wstring utils::ExtractExtension(const std::wstring & filename)
 
 bool utils::IsNumber(const std::string & str)
 {
+    if (str.empty())
+        return false;
     return std::all_of(str.cbegin(), str.cend(), ::isdigit);
 }
 
 bool utils::IsNumber(const std::wstring & str)
 {
+    if (str.empty())
+        return false;
     return std::all_of(str.cbegin(), str.cend(), ::isdigit);
 }
 
