@@ -57,6 +57,8 @@ namespace ShiftEngine
         int                                 DrawMesh(IMeshDataPtr & mesh) override;
         IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
 
+        ID3D11Device*                       GetDevicePtr() const;
+
     private:
         IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
 

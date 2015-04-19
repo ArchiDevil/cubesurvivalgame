@@ -523,3 +523,8 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::GetVertexDe
         return iter->second;
     }
 }
+
+ID3D11Device* ShiftEngine::D3D11ContextManager::GetDevicePtr() const
+{
+    return graphicsContext.Device;
+}
