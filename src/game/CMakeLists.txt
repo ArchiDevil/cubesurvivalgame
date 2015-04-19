@@ -51,8 +51,19 @@ else()
     link_directories($ENV{DXSDK_DIR}/lib/x86)
 endif()
 
+set(GAME_LIBS   jsoncpp_lib 
+                GraphicsEngine 
+                GUI 
+                Utilities 
+                MathLib 
+                SimplePhysicsEngine
+                freetype2
+                MyGUIDirectX11Platform
+                MyGUIEngine
+    )
+
 add_executable(Game ${SRC})
-target_link_libraries(Game jsoncpp_lib GraphicsEngine GUI Utilities MathLib SimplePhysicsEngine)
+target_link_libraries(Game ${GAME_LIBS})
 
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     foreach(arg ${CMAKE_CONFIGURATION_TYPES})

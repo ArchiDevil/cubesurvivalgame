@@ -10,6 +10,9 @@
 #include <Utilities/InputEngine.h>
 #include <Utilities/iniloader.h>
 
+#include <MyGUI.h>
+#include <MyGUI_DirectX11Platform.h>
+
 #include "MenuState.h"
 #include "WorkState.h"
 
@@ -30,15 +33,13 @@ public:
     void Activate();
 
 private:
-    //////////////////////
-    // OTHER STRUCTURES //
-    //////////////////////
-    cTimer							mainTimer;
-    IniWorker						SettingsLoader;
+    cTimer                      mainTimer;
+    IniWorker                   SettingsLoader;
 
-    std::stack<appState *>			statesStack;	//stack of game states like MainMenu, GameState and more
-    std::vector<wchar_t>			charQueue;
+    std::stack<appState *>      statesStack;    //stack of game states like MainMenu, GameState and more
+    std::vector<wchar_t>        charQueue;
 
-    SimpleGUI::MainListener *		GUIListener;
+    MyGUI::Gui *                pGui = nullptr;
+    MyGUI::DirectX11Platform *  pPlatform = nullptr;
 
 };

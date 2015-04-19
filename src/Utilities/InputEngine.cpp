@@ -1,6 +1,6 @@
 #include "InputEngine.h"
 
-cInputEngine::cInputEngine()
+InputEngine::InputEngine()
     : mouse(nullptr)
     , keyboard(nullptr)
     , di(nullptr)
@@ -8,7 +8,7 @@ cInputEngine::cInputEngine()
 {
 }
 
-cInputEngine::~cInputEngine()
+InputEngine::~InputEngine()
 {
     if (keyboard)
         keyboard->Release();
@@ -18,7 +18,7 @@ cInputEngine::~cInputEngine()
         di->Release();
 }
 
-bool cInputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
+bool InputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
     this->hWnd = hWnd;
 
@@ -49,7 +49,7 @@ bool cInputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
     return true;
 }
 
-void cInputEngine::GetKeys()
+void InputEngine::GetKeys()
 {
     preMouseBuffer = curMouseBuffer;
     memcpy(preKeyBuffer, curKeyBuffer, 256);
@@ -62,9 +62,17 @@ void cInputEngine::GetKeys()
 
     mouse->Acquire();
     mouse->GetDeviceState(sizeof(curMouseBuffer), &curMouseBuffer);
+
+    for (int i = 0; i < 256; ++i)
+    {
+        if (curKeyBuffer[i] && !preKeyBuffer[i])
+            notifyAll(InputEvent(InputEventType::KeyDown, i));
+        if (!curKeyBuffer[i] && preKeyBuffer[i])
+            notifyAll(InputEvent(InputEventType::KeyUp, i));
+    }
 }
 
-MouseInfo cInputEngine::GetMouseInfo() const
+MouseInfo InputEngine::GetMouseInfo() const
 {
     POINT pt;
     POINT pt2;
@@ -75,56 +83,44 @@ MouseInfo cInputEngine::GetMouseInfo() const
     return out;
 }
 
-bool cInputEngine::IsMouseUp(MouseKeys key) const
+bool InputEngine::IsMouseUp(MouseKeys key) const
 {
     if (preMouseBuffer.rgbButtons[(int)key] && !curMouseBuffer.rgbButtons[(int)key])
         return true;
     return false;
 }
 
-bool cInputEngine::IsMouseDown(MouseKeys key) const
+bool InputEngine::IsMouseDown(MouseKeys key) const
 {
     if (preMouseBuffer.rgbButtons[(int)key] && curMouseBuffer.rgbButtons[(int)key])
         return true;
     return false;
 }
 
-bool cInputEngine::IsKeyDown(unsigned char Key) const
+bool InputEngine::IsKeyDown(unsigned char Key) const
 {
     if (curKeyBuffer[Key] && preKeyBuffer[Key])
         return true;
     return false;
 }
 
-bool cInputEngine::IsKeyUp(unsigned char Key) const
+bool InputEngine::IsKeyUp(unsigned char Key) const
 {
     if (!curKeyBuffer[Key] && preKeyBuffer[Key])
         return true;
     return false;
 }
 
-bool cInputEngine::IsMouseMoved() const
+bool InputEngine::IsMouseMoved() const
 {
     if (curMouseBuffer.lX != 0 || curMouseBuffer.lY != 0 || curMouseBuffer.lZ != 0)
         return true;
     return false;
 }
 
-bool cInputEngine::handleEvent(const SystemKeyMessage & keyEvent)
+bool InputEngine::handleEvent(const SystemKeyMessage & keyEvent)
 {
-    switch (keyEvent.system_key)
-    {
-    case SK_BACKSPACE:
-    case SK_ENTER:
-    case SK_ESC:
-    case SK_TAB:
-        notifyAll(InputEvent(IE_SpecialKey, keyEvent.system_key));
-        break;
-    case SK_CHAR:
-        notifyAll(InputEvent(IE_SystemKey, keyEvent.character));
-        return true;
-    default:
-        return false;
-    }
-    return false;
+    notifyAll(InputEvent(InputEventType::SystemKey, keyEvent.character));
+    return true;
+
 }

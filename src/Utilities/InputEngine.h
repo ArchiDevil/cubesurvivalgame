@@ -10,33 +10,35 @@
 #include "singleton.h"
 #include "System/System.h"
 
-enum InputEventType
+enum class InputEventType
 {
-    IE_MouseUp,
-    IE_MouseDown,
-    IE_KeyDown,
-    IE_KeyUp,
-    IE_SystemKey,
-    IE_SpecialKey,
+    MouseUp,
+    MouseDown,
+    KeyDown,
+    KeyUp,
+    SystemKey,
 };
 
 struct InputEvent
 {
     InputEvent(InputEventType type, long key)
-        : type(type), key(key) {}
+        : type(type)
+        , key(key)
+    {
+    }
 
     InputEventType type;
     long key;
 };
 
-class cInputEngine
-    : public singleton<cInputEngine>
-    , public notifier<InputEvent>
-    , public observer<SystemKeyMessage>
+class InputEngine
+    : public singleton < InputEngine >
+    , public notifier < InputEvent >
+    , public observer < SystemKeyMessage >
 {
 public:
-    cInputEngine();
-    ~cInputEngine();
+    InputEngine();
+    ~InputEngine();
 
     bool Initialize(HWND hWnd, HINSTANCE hInstance);
     void GetKeys();

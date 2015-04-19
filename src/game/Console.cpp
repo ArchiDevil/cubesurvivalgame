@@ -100,30 +100,30 @@ void Console::ProcessInputKey(long key)
 
 bool Console::handleEvent(const InputEvent & event)
 {
-    switch (event.type)
-    {
-    case IE_SystemKey:
-        ProcessInputKey((char)event.key);
-        return true;
-    case IE_SpecialKey:
-        if (event.key == SK_BACKSPACE)
-        {
-            if (inputBuffer.size())
-            {
-                inputBuffer.pop_back();
-            }
-        }
+    //switch (event.type)
+    //{
+    //case IE_SystemKey:
+    //    ProcessInputKey((char)event.key);
+    //    return true;
+    //case IE_SpecialKey:
+    //    if (event.key == SK_BACKSPACE)
+    //    {
+    //        if (inputBuffer.size())
+    //        {
+    //            inputBuffer.pop_back();
+    //        }
+    //    }
 
-        if (event.key == SK_ENTER)
-        {
-            HandleCommand();
-            visibility = false;
-        }
+    //    if (event.key == SK_ENTER)
+    //    {
+    //        HandleCommand();
+    //        visibility = false;
+    //    }
 
-        return true;
-    default:
+    //    return true;
+    //default:
         return false;
-    }
+    //}
 }
 
 void Console::SetVisibility(bool val)

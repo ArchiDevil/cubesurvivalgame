@@ -11,24 +11,13 @@ enum AppState
     AS_Inactive
 };
 
-enum SystemKey
-{
-    SK_BACKSPACE,
-    SK_ENTER,
-    SK_ESC,
-    SK_TAB,
-    SK_CHAR
-};
-
 struct SystemKeyMessage
 {
-    SystemKeyMessage(SystemKey system_key = SK_CHAR, unsigned long character = 0)
-        : system_key(system_key)
-        , character(character)
+    SystemKeyMessage(unsigned long character = 0)
+        : character(character)
     {
     }
 
-    SystemKey system_key;
     unsigned long character;
 };
 

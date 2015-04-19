@@ -51,14 +51,14 @@ bool Application::Initialize()
     else
         LOG_INFO("Graphics engine has been initialized");
 
-    if (!cInputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
+    if (!InputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
         LOG_FATAL_ERROR("Unable to create DIDevice");
     else
         LOG_INFO("Input system has been initialized");
 
-    cInputEngine::GetInstance().subscribe(&System);
+    InputEngine::GetInstance().subscribe(&System);
 
-    GUIListener.reset(new SimpleGUI::MainListener(nullptr, &(cInputEngine::GetInstance()), charQueue));
+    GUIListener.reset(new SimpleGUI::MainListener(nullptr, &(InputEngine::GetInstance()), charQueue));
     SimpleGUI::ActiveListener = GUIListener.get();
 
     ////////////////////////////

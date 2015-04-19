@@ -1,6 +1,7 @@
 #include "WorkState.h"
 
 #include <GraphicsEngine/Renderer.h>
+#include <Utilities/inputConverter.h>
 
 float SensivityMultiplier = 0.2f;
 static float x_angle = -45.0f;
@@ -11,35 +12,29 @@ const float threshold = 20.0f;
 
 using namespace MeshEditor;
 
-WorkState::WorkState(int x_size, int y_size, int z_size)
+WorkState::WorkState(int x_size, int y_size, int z_size, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
     : flag(false)
     , geometryMode(true)
     , colorBox(L"gui/box.png")
     , curBrush({ 100.0f / 255.0f, 100.0f / 255.0f, 100.0f / 255.0f })
+    , pGui(pGui)
+    , pPlatform(pPlatform)
 {
     Workspace.reset(new BlockWorkspace(x_size, y_size, z_size));
-
-    pCanvas = new SimpleGUI::Canvas;
-    pSkinner = new SimpleGUI::Skinner;
-    pSkinner->Initialize();
 }
 
-WorkState::WorkState(const std::string & loadFile)
-    : WorkState(1, 1, 1)
+WorkState::WorkState(const std::string & loadFile, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
+    : WorkState{ 1, 1, 1, pGui, pPlatform }
 {
     Workspace->Load(loadFile);
 }
 
 WorkState::~WorkState()
 {
-    delete pCanvas;
-    delete pSkinner;
 }
 
 bool WorkState::initState()
 {
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
     Workspace->Initialize();
     CreateGUI();
     int maxsize = Workspace->GetMaxSize();
@@ -72,7 +67,7 @@ bool WorkState::update(double dt)
 
     if (flag)
     {
-        auto & Input = cInputEngine::GetInstance();
+        auto & Input = InputEngine::GetInstance();
         newCoordinates = Vector2I(Input.GetMouseInfo().absoluteX, Input.GetMouseInfo().absoluteY);
         float distance = 0.0f;
         distance = (float)MathLib::distance(oldCoordinates, newCoordinates);
@@ -88,14 +83,14 @@ bool WorkState::update(double dt)
 
 bool WorkState::render(double dt)
 {
-    auto t = cInputEngine::GetInstance().GetMouseInfo();
+    auto t = InputEngine::GetInstance().GetMouseInfo();
 
     const int infoSize = 5;
     auto pContextManager = ShiftEngine::GetContextManager();
     auto pSceneGraph = ShiftEngine::GetSceneGraph();
 
     std::ostringstream di[infoSize];
-    di[0] << "Alpha build number 140, for testing purposes only";
+    di[0] << "Alpha build number 216, for testing purposes only";
     if (geometryMode)
         di[1] << "Geometry";
     else
@@ -118,9 +113,9 @@ bool WorkState::render(double dt)
     auto font = pContextManager->GetFontManager()->GetCurrentFontName();
     pContextManager->GetFontManager()->SetFont(L"2");
     for (int i = 0; i < infoSize; i++)
-        pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i * 18);
+        pContextManager->GetFontManager()->DrawTextTL(di[i].str(), 0.0f, 0.0f + i * 18.0f);
 
-    SimpleGUI::DrawUI();
+    pPlatform->getRenderManagerPtr()->drawOneFrame();
 
     if (!geometryMode)
         colorBox.Draw();
@@ -133,144 +128,126 @@ bool WorkState::render(double dt)
 
 void WorkState::onKill()
 {
-    SimpleGUI::SetCanvas(nullptr);
-    SimpleGUI::SetSkinner(nullptr);
+    pGui->destroyChildWidget(pSaveButton);
+    pGui->destroyChildWidget(pColorButton);
+    pGui->destroyChildWidget(pColorWindow);
+    pGui->destroyChildWidget(pSaveWindow);
 }
 
 void WorkState::onSuspend()
 {
+    pColorWindow->setVisible(false);
+    pSaveWindow->setVisible(false);
 }
 
 void WorkState::onResume()
 {
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
 }
 
 void WorkState::CreateGUI()
 {
     int screenWidth = ShiftEngine::GetContextManager()->GetEngineSettings().screenWidth;
     int screenHeight = ShiftEngine::GetContextManager()->GetEngineSettings().screenHeight;
-    /////////	
-    SimpleGUI::Text * f = new SimpleGUI::Text(pCanvas, "Filename: ");
-    f->SetPosition(50, screenHeight - 45);
-    f->Hide();
 
-    SimpleGUI::TextBox * fname = new SimpleGUI::TextBox(pCanvas);
-    fname->SetSize(100, 20);
-    fname->SetPosition(50, screenHeight - 25);
-    fname->Hide();
+    // save dialog
 
-    SimpleGUI::Button * butSaveOk = new SimpleGUI::Button(pCanvas);
-    butSaveOk->SetPosition(170, screenHeight - 25);
-    butSaveOk->SetSize(40, 20);
-    butSaveOk->SetText("Ok");
-    butSaveOk->Hide();
+    pSaveWindow = pGui->createWidget<MyGUI::Window>("Window", MyGUI::IntCoord(screenWidth / 2 - 300 / 2, screenHeight / 2 - 130 / 2, 300, 130), MyGUI::Align::Default, "Overlapped");
+    pSaveWindow->setCaption("Select name to save file");
+    pSaveWindow->setVisible(false);
+    pSaveWindow->setMovable(true);
 
-    SimpleGUI::Button * butSave = new SimpleGUI::Button(pCanvas);
-    butSave->SetPosition(5, screenHeight - 45);
-    butSave->SetSize(40, 40);
-    butSave->SetText("Save");
+    MyGUI::TextBox * pText = pSaveWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 5, 270, 25), MyGUI::Align::Default);
+    pText->setCaption("Filename: ");
+    pText->setTextAlign(MyGUI::Align::HCenter);
 
-    butSave->SetClickHandler(
-        [=](MouseKeys, int, int)
-    {
-        f->Show();
-        fname->Show();
-        butSaveOk->Show();
-    }
-    );
+    pSaveWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(10, 30, 270, 25), MyGUI::Align::Default, "save_file_name");
 
-    butSaveOk->SetClickHandler(
-        [=](MouseKeys, int, int)
-    {
-        const std::string rr = ".block";
-        Workspace->Save("saves/" + utils::Narrow(fname->GetText()) + rr);
-        f->Hide();
-        fname->Hide();
-        butSaveOk->Hide();
-        SimpleGUI::FocusedControl = nullptr;
-    }
-    );
+    MyGUI::Button * pButton = pSaveWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(10, 60, 130, 25), MyGUI::Align::Default);
+    pButton->setCaption("Ok");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &WorkState::SaveFile);
 
-    //////////////////////////////////////////////////////////////////////////
+    pButton = pSaveWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(150, 60, 130, 25), MyGUI::Align::Default);
+    pButton->setCaption("Cancel");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &WorkState::CancelSave);
 
-    // values boxes
+    // color dialog
 
-    float panelWidth = 150;
-    float panelHeight = 3 * 20 + 3 * 5; //(75)
+    pColorWindow = pGui->createWidget<MyGUI::Window>("Window", MyGUI::IntCoord(screenWidth / 2 - 300 / 2, screenHeight / 2 - 200 / 2, 300, 200), MyGUI::Align::Default, "Overlapped");
+    pColorWindow->setCaption("Select color");
+    pColorWindow->setVisible(false);
+    pColorWindow->setMovable(true);
 
-    colorBox.SetPosition(Vector2F((float)screenWidth - 5.0f - panelWidth - 35.0f - panelHeight / 2 - 5, (float)screenHeight - panelHeight - 5.0f + 20 + 5 + 10));
-    colorBox.SetSizeInPixels((int)panelHeight, (int)panelHeight);
+    pText = pColorWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 5, 20, 16), MyGUI::Align::Default);
+    pText->setCaption("R:");
 
-    SimpleGUI::ValueBox * boxR = new SimpleGUI::ValueBox(pCanvas);
-    boxR->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5);
-    boxR->SetSize((int)panelWidth, 20);
-    boxR->SetMaxValue(255);
-    boxR->SetValue(100);
-    boxR->SetName("Name");
-    boxR->Hide();
+    MyGUI::ScrollBar * pScroll = pColorWindow->createWidget<MyGUI::ScrollBar>("SliderH", MyGUI::IntCoord(30, 5, 250, 16), MyGUI::Align::Default, "red_scroll");
+    pScroll->setColour(MyGUI::Colour(1.0f, 0.5f, 0.5f));
+    pScroll->setScrollRange(256);
+    pScroll->setScrollPosition((size_t)(curBrush.color.x * 255.0f));
+    pScroll->eventScrollChangePosition += MyGUI::newDelegate(this, &WorkState::ColorChange);
 
-    SimpleGUI::Text * texR = new SimpleGUI::Text(pCanvas, "100");
-    texR->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5);
-    texR->SetName("Name");
-    texR->Hide();
+    pText = pColorWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 30, 20, 16), MyGUI::Align::Default);
+    pText->setCaption("G:");
 
-    boxR->SetOnValueChangedHandler([texR, boxR, this](int)
-    {
-        ColorsCallBack(texR, boxR);
-        curBrush.color.x = boxR->GetValue() / 255.0f;
-    });
+    pScroll = pColorWindow->createWidget<MyGUI::ScrollBar>("SliderH", MyGUI::IntCoord(30, 30, 250, 16), MyGUI::Align::Default, "green_scroll");
+    pScroll->setColour(MyGUI::Colour(0.5f, 1.0f, 0.5f));
+    pScroll->setScrollRange(256);
+    pScroll->setScrollPosition((size_t)(curBrush.color.y * 255.0f));
+    pScroll->eventScrollChangePosition += MyGUI::newDelegate(this, &WorkState::ColorChange);
 
-    SimpleGUI::ValueBox * boxG = new SimpleGUI::ValueBox(pCanvas);
-    boxG->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5 + 20 + 5);
-    boxG->SetSize((int)panelWidth, 20);
-    boxG->SetMaxValue(255);
-    boxG->SetValue(100);
-    boxG->SetName("Name");
-    boxG->Hide();
+    pText = pColorWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 55, 20, 16), MyGUI::Align::Default);
+    pText->setCaption("B:");
 
-    SimpleGUI::Text * texG = new SimpleGUI::Text(pCanvas, "100");
-    texG->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5 + 20 + 5);
-    texG->SetName("Name");
-    texG->Hide();
+    pScroll = pColorWindow->createWidget<MyGUI::ScrollBar>("SliderH", MyGUI::IntCoord(30, 55, 250, 16), MyGUI::Align::Default, "blue_scroll");
+    pScroll->setColour(MyGUI::Colour(0.5f, 0.5f, 1.0f));
+    pScroll->setScrollRange(256);
+    pScroll->setScrollPosition((size_t)(curBrush.color.z * 255.0f));
+    pScroll->eventScrollChangePosition += MyGUI::newDelegate(this, &WorkState::ColorChange);
 
-    boxG->SetOnValueChangedHandler([texG, boxG, this](int)
-    {
-        ColorsCallBack(texG, boxG);
-        curBrush.color.y = boxG->GetValue() / 255.0f;
-    });
+    MyGUI::Widget * pColorPanel = pColorWindow->createWidget<MyGUI::Widget>("PanelSkin", MyGUI::IntCoord(5, 80, 280, 25), MyGUI::Align::Default);
+    pColorPanel->setAlpha(1.0f);
+    pColorPanel->createWidget<MyGUI::Widget>("WhiteSkin", MyGUI::IntCoord(3, 3, 272, 17), MyGUI::Align::Stretch, "panel_color")->setColour(MyGUI::Colour(curBrush.color.x, curBrush.color.y, curBrush.color.z, 1.0f));
 
-    SimpleGUI::ValueBox * boxB = new SimpleGUI::ValueBox(pCanvas);
-    boxB->SetPosition(screenWidth - 5 - (int)panelWidth - 35, screenHeight - (int)panelHeight - 5 + 20 + 5 + 20 + 5);
-    boxB->SetSize((int)panelWidth, 20);
-    boxB->SetMaxValue(255);
-    boxB->SetValue(100);
-    boxB->SetName("Name");
-    boxB->Hide();
+    pButton = pColorWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(5, 120, 280, 25), MyGUI::Align::Default);
+    pButton->setCaption("Close");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &WorkState::CloseColorDialog);
 
-    SimpleGUI::Text * texB = new SimpleGUI::Text(pCanvas, "100");
-    texB->SetPosition(screenWidth - 5 - 25, screenHeight - (int)panelHeight - 5 + 20 + 5 + 20 + 5);
-    texB->SetName("Name");
-    texB->Hide();
+    // other buttons
 
-    boxB->SetOnValueChangedHandler([texB, boxB, this](int)
-    {
-        ColorsCallBack(texB, boxB);
-        curBrush.color.z = boxB->GetValue() / 255.0f;
-    });
+    pSaveButton = pGui->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(5, screenHeight - 30, 100, 25), MyGUI::Align::Default, "Overlapped");
+    pSaveButton->setCaption("Save");
+    pSaveButton->eventMouseButtonClick += MyGUI::newDelegate(this, &WorkState::ShowSaveDialog);
+
+    pColorButton = pGui->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(120, screenHeight - 30, 100, 25), MyGUI::Align::Default, "Overlapped");
+    pColorButton->setCaption("Color");
+    pColorButton->eventMouseButtonClick += MyGUI::newDelegate(this, &WorkState::ShowColorDialog);
 }
 
 bool WorkState::ProcessInput(double dt)
 {
-    auto &InputEngine = cInputEngine::GetInstance();
+    auto &inputEngine = InputEngine::GetInstance();
+    inputEngine.GetKeys();
+    auto mouseInfo = inputEngine.GetMouseInfo();
 
-    InputEngine.GetKeys();
+    bool guiInjected = false;
 
-    if (SimpleGUI::HoveredControl != pCanvas)
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
+    guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
+
+    if (inputEngine.IsMouseDown(LButton))
+        guiInjected |= inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+
+    if (inputEngine.IsMouseUp(LButton))
+        guiInjected |= inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+
+    if (inputEngine.IsMouseDown(RButton))
+        guiInjected |= inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+
+    if (inputEngine.IsMouseUp(RButton))
+        guiInjected |= inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+
+    if (guiInjected)
         return true;
-
-    auto mouseInfo = InputEngine.GetMouseInfo();
 
     ShiftEngine::GraphicEngineSettings settings = ShiftEngine::GetContextManager()->GetEngineSettings();
     vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
@@ -284,7 +261,7 @@ bool WorkState::ProcessInput(double dt)
 
     if (geometryMode)
     {
-        if (InputEngine.IsMouseUp(RButton))
+        if (inputEngine.IsMouseUp(RButton))
         {
             if (lenghtOfMove < threshold)
             {
@@ -306,7 +283,7 @@ bool WorkState::ProcessInput(double dt)
             lenghtOfMove = 0.0f;
         }
 
-        if (InputEngine.IsMouseUp(LButton))
+        if (inputEngine.IsMouseUp(LButton))
         {
             Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
             float distance = MathLib::distance(camPos, Vector3F());
@@ -381,7 +358,7 @@ bool WorkState::ProcessInput(double dt)
     }
     else
     {
-        if (InputEngine.IsMouseDown(LButton))
+        if (inputEngine.IsMouseDown(LButton))
         {
             Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
             float distance = MathLib::distance(camPos, Vector3F());
@@ -398,14 +375,14 @@ bool WorkState::ProcessInput(double dt)
         }
     }
 
-    if (InputEngine.IsMouseDown(RButton))
+    if (inputEngine.IsMouseDown(RButton))
     {
         if (!flag)
             oldCoordinates = Vector2I(mouseInfo.absoluteX, mouseInfo.absoluteY);
         flag = true;
     }
 
-    if (InputEngine.IsMouseMoved() && InputEngine.IsMouseDown(RButton))
+    if (inputEngine.IsMouseMoved() && inputEngine.IsMouseDown(RButton))
     {
         //flag = true;
         if (lenghtOfMove > threshold)
@@ -421,10 +398,10 @@ bool WorkState::ProcessInput(double dt)
 
     R += static_cast<float>(-mouseInfo.deltaZ * dt * SensivityMultiplier * 5);
 
-    if (InputEngine.IsKeyUp(DIK_ESCAPE))
+    if (inputEngine.IsKeyUp(DIK_ESCAPE))
         this->kill();
 
-    if (InputEngine.IsKeyUp(DIK_SPACE))
+    if (inputEngine.IsKeyUp(DIK_SPACE))
     {
         geometryMode = !geometryMode;
         if (geometryMode)
@@ -435,14 +412,14 @@ bool WorkState::ProcessInput(double dt)
 
 #if defined DEBUG || _DEBUG
 
-    if (InputEngine.IsKeyDown(DIK_V))
+    if (inputEngine.IsKeyDown(DIK_V))
         ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
-    else if (InputEngine.IsKeyUp(DIK_V))
+    else if (inputEngine.IsKeyUp(DIK_V))
         ShiftEngine::GetContextManager()->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
 
     static bool showBbox = false;
 
-    if (InputEngine.IsKeyUp(DIK_F))
+    if (inputEngine.IsKeyUp(DIK_F))
         showBbox = !showBbox;
 
     if (showBbox)
@@ -452,7 +429,7 @@ bool WorkState::ProcessInput(double dt)
 
 #endif
 
-    if (InputEngine.IsKeyDown(DIK_LCONTROL) && InputEngine.IsKeyUp(DIK_Z))
+    if (inputEngine.IsKeyDown(DIK_LCONTROL) && inputEngine.IsKeyUp(DIK_Z))
         Workspace->Undo();
 
     return true;
@@ -460,25 +437,80 @@ bool WorkState::ProcessInput(double dt)
 
 void WorkState::MoveToGeometryMode()
 {
-    auto childs = pCanvas->GetChildrenList();
-    for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
-        if ((*iter)->GetName() != "")
-            (*iter)->Hide();
-
     Workspace->VanishColor(true);
 }
 
 void WorkState::MoveToColorMode()
 {
-    auto childs = pCanvas->GetChildrenList();
-    for (auto iter = childs.cbegin(); iter != childs.cend(); iter++)
-        if ((*iter)->GetName() != "")
-            (*iter)->Show();
-
     Workspace->VanishColor(false);
 }
 
-void WorkState::ColorsCallBack(SimpleGUI::Text * t, SimpleGUI::ValueBox * val)
+void WorkState::SaveFile(MyGUI::Widget * _sender)
 {
-    t->SetText(std::to_string(val->GetValue()));
+    MyGUI::EditBox * pEdit = pSaveWindow->findWidget("save_file_name")->castType<MyGUI::EditBox>();
+    const std::wstring fileName = pEdit->getCaption().asWStr();
+
+    const std::wstring extension = L".block";
+    Workspace->Save(utils::Narrow(L"saves/" + fileName + extension));
+
+    pSaveWindow->setVisible(false);
+}
+
+void WorkState::CancelSave(MyGUI::Widget * _sender)
+{
+    pSaveWindow->setVisible(false);
+}
+
+void WorkState::ShowSaveDialog(MyGUI::Widget * _sender)
+{
+    pSaveWindow->setVisible(true);
+}
+
+void WorkState::ShowColorDialog(MyGUI::Widget * _sender)
+{
+    pColorWindow->setVisible(true);
+}
+
+void WorkState::CloseColorDialog(MyGUI::Widget * _sender)
+{
+    pColorWindow->setVisible(false);
+}
+
+bool WorkState::handleEvent(const InputEvent & event)
+{
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
+
+    switch (event.type)
+    {
+        // there will be always DirectInput keys in first two handlers
+    case InputEventType::KeyDown:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
+        break;
+    case InputEventType::KeyUp:
+        inputManager.injectKeyRelease((MyGUI::KeyCode::Enum)event.key);
+        break;
+
+        // there will be windows keys
+    case InputEventType::SystemKey:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
+        break;
+    }
+
+    return true;
+}
+
+void WorkState::ColorChange(MyGUI::ScrollBar* _sender, size_t newVal)
+{
+    if (_sender->getName() == "red_scroll")
+        curBrush.color.x = (float)newVal / 255.0f;
+
+    if (_sender->getName() == "green_scroll")
+        curBrush.color.y = (float)newVal / 255.0f;
+
+    if (_sender->getName() == "blue_scroll")
+        curBrush.color.z = (float)newVal / 255.0f;
+
+    MyGUI::Widget * pWidget = pColorWindow->findWidget("panel_color");
+    if (pWidget)
+        pWidget->setColour(MyGUI::Colour(curBrush.color.x, curBrush.color.y, curBrush.color.z));
 }

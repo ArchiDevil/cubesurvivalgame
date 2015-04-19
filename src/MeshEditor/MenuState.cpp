@@ -1,25 +1,21 @@
 #include "MenuState.h"
 
-MenuState::MenuState(Application * _pApp)
-    : pCanvas(nullptr)
-    , pSkinner(nullptr)
-    , pApp(_pApp)
+#include <Utilities/inputConverter.h>
+
+MenuState::MenuState(Application * _pApp, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
+    : pApp(_pApp)
+    , pGui(pGui)
+    , pPlatform(pPlatform)
 {
-    pCanvas = new SimpleGUI::Canvas;
-    pSkinner = new SimpleGUI::Skinner;
-    pSkinner->Initialize();
 }
 
 MenuState::~MenuState()
 {
-    delete pCanvas;
-    delete pSkinner;
 }
 
 bool MenuState::initState()
 {
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
+    subscribe(&InputEngine::GetInstance());
 
     CreateGUI();
     return true;
@@ -34,11 +30,10 @@ bool MenuState::update(double /*dt*/)
 
 bool MenuState::render(double /*dt*/)
 {
-    auto t = cInputEngine::GetInstance().GetMouseInfo();
     auto ge = ShiftEngine::GetContextManager();
 
-    std::ostringstream di[1];
-    di[0] << "Alpha build number 140, for testing purposes only";
+    std::ostringstream di;
+    di << "Alpha build number 216, for testing purposes only";
 
     ////////////
     // RENDER //
@@ -47,12 +42,12 @@ bool MenuState::render(double /*dt*/)
     ge->BeginScene();
     auto font = ge->GetFontManager()->GetCurrentFontName();
     ge->GetFontManager()->SetFont(L"2");
-    for (int i = 0; i < 1; i++)
-        ge->GetFontManager()->DrawTextTL(di[i].str(), 0, 0 + i * 18);
-
-    SimpleGUI::DrawUI();
+    ge->GetFontManager()->DrawTextTL(di.str(), 0.0f, 18.0f);
 
     ge->GetFontManager()->SetFont(font);
+
+    pPlatform->getRenderManagerPtr()->drawOneFrame();
+
     ge->EndScene();
 
     return true;
@@ -60,118 +55,177 @@ bool MenuState::render(double /*dt*/)
 
 void MenuState::onKill()
 {
-    SimpleGUI::SetCanvas(nullptr);
-    SimpleGUI::SetSkinner(nullptr);
+    delete pWindow;
 }
 
 void MenuState::onSuspend()
 {
+    if (pWindow)
+        pWindow->setVisible(false);
 }
 
 void MenuState::onResume()
 {
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
+    if (pWindow)
+        pWindow->setVisible(true);
 }
 
 void MenuState::CreateGUI()
 {
-    SimpleGUI::Image * back = new SimpleGUI::Image(pCanvas, L"MainMenuBack.png");
-    back->SetSize(160, 280);
-    back->SetPosition(200, 150);
+    auto & settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+    int xSize = 600;
+    int ySize = 450;
 
-    SimpleGUI::Text * create = new SimpleGUI::Text(back, "Create new block model");
-    create->SetPosition(5, 10);
+    pWindow = pGui->createWidget<MyGUI::Window>("Window", MyGUI::IntCoord(settings.screenWidth / 2 - xSize / 2, settings.screenHeight / 2 - ySize / 2, xSize, ySize), MyGUI::Align::Default, "Overlapped");
+    pWindow->setVisible(true);
+    pWindow->setCaption("Start window");
 
-    //////////////////////////////////////////////////////////////////////////
+    // left part
 
-    SimpleGUI::TextBox * tbX = new SimpleGUI::TextBox(back);
-    tbX->SetSize(100, 20);
-    tbX->SetPosition(40, 50);
-    tbX->SetText(L"8");
+    MyGUI::TextBox * pTextBox = pWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 5, 280, 25), MyGUI::Align::Center);
+    pTextBox->setCaption("Create model");
+    pTextBox->setTextAlign(MyGUI::Align::HCenter);
 
-    SimpleGUI::Text * x = new SimpleGUI::Text(back, "X: ");
-    x->SetPosition(20, 50);
+    MyGUI::EditBox* pEdit = pWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(80, 30, 220, 24), MyGUI::Align::Default, "x_edit_box");
+    pEdit->setEditMultiLine(true);
 
-    //////////////////////////////////////////////////////////////////////////
+    pEdit = pWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(80, 70, 220, 24), MyGUI::Align::Default, "y_edit_box");
+    pEdit->setEditMultiLine(true);
 
-    SimpleGUI::TextBox * tbY = new SimpleGUI::TextBox(back);
-    tbY->SetSize(100, 20);
-    tbY->SetPosition(40, 110);
-    tbY->SetText(L"8");
+    pEdit = pWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(80, 110, 220, 24), MyGUI::Align::Default, "z_edit_box");
+    pEdit->setEditMultiLine(true);
 
-    SimpleGUI::Text * y = new SimpleGUI::Text(back, "Y: ");
-    y->SetPosition(20, 110);
+    pWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 33, 70, 24), MyGUI::Align::Center)->setCaption("X size: ");
+    pWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 73, 70, 24), MyGUI::Align::Center)->setCaption("Y size: ");
+    pWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(5, 113, 70, 24), MyGUI::Align::Center)->setCaption("Z size: ");
 
-    //////////////////////////////////////////////////////////////////////////
+    MyGUI::Button * pButton = pWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(5, 150, 295, 20), MyGUI::Align::Default);
+    pButton->setCaption("Create");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &MenuState::Create);
 
-    SimpleGUI::TextBox * tbZ = new SimpleGUI::TextBox(back);
-    tbZ->SetSize(100, 20);
-    tbZ->SetPosition(40, 170);
-    tbZ->SetText(L"8");
+    // right part
 
-    SimpleGUI::Text * z = new SimpleGUI::Text(back, "Z: ");
-    z->SetPosition(20, 170);
+    pTextBox = pWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(310, 5, 280, 25), MyGUI::Align::Center);
+    pTextBox->setCaption("Load model");
+    pTextBox->setTextAlign(MyGUI::Align::HCenter);
 
-    //////////////////////////////////////////////////////////////////////////
-
-    SimpleGUI::Button * butNext = new SimpleGUI::Button(back);
-    butNext->SetPosition(20, 230);
-    butNext->SetSize(120, 20);
-    butNext->SetText("Next");
-    butNext->SetClickHandler(
-        [=](MouseKeys /*mb*/, int /*innerX*/, int /*innerY*/)
-    {
-        if (utils::IsNumber(tbX->GetText()) && tbX->GetText() != L"" &&
-            utils::IsNumber(tbY->GetText()) && tbY->GetText() != L"" &&
-            utils::IsNumber(tbZ->GetText()) && tbZ->GetText() != L"")
-            pApp->PushState(new WorkState(std::stoi(utils::Narrow(tbX->GetText())), std::stoi(utils::Narrow(tbY->GetText())), std::stoi(utils::Narrow(tbZ->GetText()))));
-    }
-    );
-
-    // creating load list
-    SimpleGUI::List * loadingList = new SimpleGUI::List(pCanvas);
-    loadingList->SetPosition(400, 150);
-    loadingList->SetSize(160, 240);
+    MyGUI::ListBox * pFileList = pWindow->createWidget<MyGUI::ListBox>("ListBox", MyGUI::IntCoord(310, 30, 280, 350), MyGUI::Align::Default, "file_list");
     auto files = utils::filesystem::CollectFileNames(L"saves", L"block");
     for (size_t i = 0; i < files.size(); i++)
-    {
-        loadingList->GetTable()->GetModel()->Add(utils::Narrow(files[i]));
-    }
+        pFileList->addItem(files[i]);
 
-    SimpleGUI::Button * butLoad = new SimpleGUI::Button(pCanvas);
-    butLoad->SetPosition(400, 410);
-    butLoad->SetSize(160, 20);
-    butLoad->SetText("Load");
-    butLoad->SetClickHandler(
-        [=](MouseKeys /*mb*/, int /*innerX*/, int /*innerY*/)
-    {
-        size_t selectedRow = loadingList->GetTable()->GetSelectedRow();
-        if (selectedRow == (size_t)-1)
-            return;
+    pButton = pWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(310, 385, 250, 20), MyGUI::Align::Default);
+    pButton->setCaption("Load");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &MenuState::LoadFile);
 
-        std::string filename = loadingList->GetTable()->GetModel()->Get(selectedRow).GetName();
-        if (!filename.empty())
-        {
-            std::string fullPath = "saves/" + filename;
-            pApp->PushState(new WorkState(filename));
-        }
-    }
-    );
-
-    // SimpleGUI::Window * w = new SimpleGUI::Window(pCanvas);
-    // w->SetPosition(100, 100);
-    // w->SetSize(200, 100);
+    pButton = pWindow->createWidget<MyGUI::Button>("Button", MyGUI::IntCoord(565, 385, 25, 20), MyGUI::Align::Default);
+    pButton->setCaption("X");
+    pButton->eventMouseButtonClick += MyGUI::newDelegate(this, &MenuState::RemoveFile);
 }
 
 bool MenuState::ProcessInput()
 {
-    auto &InputEngine = cInputEngine::GetInstance();
+    auto &inputEngine = InputEngine::GetInstance();
+    inputEngine.GetKeys();
+    auto mouseInfo = inputEngine.GetMouseInfo();
 
-    InputEngine.GetKeys();
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    if (InputEngine.IsKeyDown(DIK_ESCAPE))
+    inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
+
+    if (inputEngine.IsMouseDown(LButton)) inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+    if (inputEngine.IsMouseUp(LButton)) inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+
+    if (inputEngine.IsMouseDown(RButton)) inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+    if (inputEngine.IsMouseUp(RButton)) inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+
+    if (inputEngine.IsKeyDown(DIK_ESCAPE))
         return false;
+
+    return true;
+}
+
+void MenuState::Create(MyGUI::Widget* _sender)
+{
+    size_t x = 0, y = 0, z = 0;
+
+    auto text = pWindow->findWidget("x_edit_box")->castType<MyGUI::EditBox>()->getCaption();
+    std::wstring t = text.asWStr();
+
+    if (!utils::IsNumber(t))
+        return;
+
+    x = std::stoi(utils::Narrow(t));
+    if (x > 20)
+        x = 20;
+
+    text = pWindow->findWidget("y_edit_box")->castType<MyGUI::EditBox>()->getCaption();
+    t = text.asWStr();
+
+    if (!utils::IsNumber(t))
+        return;
+
+    y = std::stoi(utils::Narrow(t));
+    if (y > 20)
+        y = 20;
+
+    text = pWindow->findWidget("z_edit_box")->castType<MyGUI::EditBox>()->getCaption();
+    t = text.asWStr();
+
+    if (!utils::IsNumber(t))
+        return;
+
+    z = std::stoi(utils::Narrow(t));
+    if (z > 20)
+        z = 20;
+
+    pApp->PushState(new WorkState(x, y, z, pGui, pPlatform));
+}
+
+void MenuState::LoadFile(MyGUI::Widget* _sender)
+{
+    MyGUI::ListBox * pList = pWindow->findWidget("file_list")->castType<MyGUI::ListBox>();
+    size_t selectedFile = pList->getIndexSelected();
+    std::wstring fileName = pList->getItemNameAt(selectedFile).asWStr();
+    if (!fileName.empty())
+    {
+        std::string fullPath = "saves/" + utils::Narrow(fileName);
+        pApp->PushState(new WorkState(fullPath, pGui, pPlatform));
+    }
+}
+
+void MenuState::RemoveFile(MyGUI::Widget* _sender)
+{
+    MyGUI::ListBox * pList = pWindow->findWidget("file_list")->castType<MyGUI::ListBox>();
+    size_t selectedFile = pList->getIndexSelected();
+    std::wstring fileName = pList->getItemNameAt(selectedFile).asWStr();
+    if (!fileName.empty())
+    {
+        std::string fullPath = "saves/" + utils::Narrow(fileName);
+        utils::filesystem::RemoveFile(fullPath);
+        pList->removeItemAt(selectedFile);
+    }
+}
+
+bool MenuState::handleEvent(const InputEvent & event)
+{
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
+
+    switch (event.type)
+    {
+        // there will be always DirectInput keys in first two handlers
+    case InputEventType::KeyDown:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
+        break;
+    case InputEventType::KeyUp:
+        inputManager.injectKeyRelease((MyGUI::KeyCode::Enum)event.key);
+        break;
+
+        // there will be windows keys
+    case InputEventType::SystemKey:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
+        break;
+    }
 
     return true;
 }

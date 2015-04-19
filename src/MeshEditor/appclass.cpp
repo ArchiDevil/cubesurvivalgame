@@ -1,7 +1,5 @@
 #include "appclass.h"
 
-using namespace SimpleGUI;
-
 Application::Application(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
     : cApplication(Width, Height, AppName)
 {
@@ -37,32 +35,48 @@ bool Application::Initialize()
     path.MaterialsPath = SettingsLoader.GetWString("MaterialsPath");
 
     //инициализируем графический движок
-    ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND());
+    ShiftEngine::InitEngine(ShiftEngine::AT_DX11, settings, path, GetHWND());
     LOG_INFO("DirectX has been initialized");
 
     ShiftEngine::GetSceneGraph()->AddCameraSceneNode();
 
-    if (!cInputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
+    if (!InputEngine::GetInstance().Initialize(GetHWND(), GetHINSTANCE()))
         LOG_INFO("Unable to create DIDevice");
     else
         LOG_INFO("Input system has been initialized");
 
-    GUIListener = new SimpleGUI::MainListener(nullptr, &(cInputEngine::GetInstance()), charQueue);
-    SimpleGUI::ActiveListener = GUIListener;
-
-    MenuState * state = new MenuState(this);
-    statesStack.push(state);
-
-    state->initState();
-
     mainTimer.Start();
     ShiftEngine::GetContextManager()->SetBlendingState(ShiftEngine::BlendingState::AlphaEnabled);
+
+    pPlatform = new MyGUI::DirectX11Platform();
+    std::string logFile = "MyGUI.log";
+#ifdef NDEBUG
+    logFile = "";
+#endif // NDEBUG
+    pPlatform->initialise(((ShiftEngine::D3D11ContextManager*)ShiftEngine::GetContextManager())->GetDevicePtr(), logFile);
+    pPlatform->getDataManagerPtr()->addResourceLocation("resources/ui/MyGUI_Media", false);
+
+    pGui = new MyGUI::Gui();
+    pGui->initialise();
+
+    pPlatform->getRenderManagerPtr()->setViewSize(settings.screenWidth, settings.screenHeight);
+
+    MenuState * state = new MenuState(this, pGui, pPlatform);
+    statesStack.push(state);
+    state->initState();
 
     return true;
 }
 
 void Application::Shutdown()
 {
+    if (pGui)
+        pGui->shutdown();
+    delete pGui;
+
+    if (pPlatform)
+        pPlatform->shutdown();
+    delete pPlatform;
 }
 
 bool Application::Frame()
@@ -75,24 +89,21 @@ bool Application::Frame()
     elapsedTime = mainTimer.GetDeltaTime();
     mainTimer.Tick();
 
-    GUIListener->Update();
-
-    //anyone, explain me that code =)
     if (statesStack.size() != 0)
     {
         if (statesStack.top()->isDead())
         {
-            auto * state = statesStack.top();
+            appState * state = statesStack.top();
             statesStack.pop();
             state->onKill();
             delete state;
 
             if (statesStack.size() != 0)
                 statesStack.top()->onResume();
-            return true;		//skip frame
+            return true; //skip frame
         }
 
-        if (!statesStack.top()->update(elapsedTime))		//use current state
+        if (!statesStack.top()->update(elapsedTime)) //use current state
             return false;
         if (!statesStack.top()->render(elapsedTime))
             return false;
@@ -144,6 +155,7 @@ void Application::ProcessMessage(MSG msg)
     {
     case WM_CHAR:
     {
+        InputEngine::GetInstance().handleEvent(SystemKeyMessage(msg.wParam));
         charQueue.push_back((wchar_t)msg.wParam);
     }
     default:

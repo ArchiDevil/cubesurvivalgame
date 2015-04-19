@@ -2,7 +2,7 @@
 
 namespace SimpleGUI
 {
-    MainListener::MainListener(Canvas * _pCanvas, cInputEngine * _eng, std::vector<wchar_t> & _charQueue)
+    MainListener::MainListener(Canvas * _pCanvas, InputEngine * _eng, std::vector<wchar_t> & _charQueue)
         : Engine(_eng)
         , charQueue(_charQueue)
         , Listener(_pCanvas)

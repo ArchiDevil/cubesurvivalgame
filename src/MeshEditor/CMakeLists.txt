@@ -11,7 +11,8 @@ else()
 endif()
 
 add_executable(MeshEditor ${SRC})
-target_link_libraries(MeshEditor GraphicsEngine GUI Utilities MathLib)
+target_link_libraries(MeshEditor GraphicsEngine Utilities MathLib)
+target_link_libraries(MeshEditor freetype2 MyGUIDirectX11Platform MyGUIEngine)
 
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     foreach(arg ${CMAKE_CONFIGURATION_TYPES})

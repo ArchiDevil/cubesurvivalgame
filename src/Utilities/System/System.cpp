@@ -38,25 +38,8 @@ LRESULT CALLBACK cSystem::MessageHandler(HWND windowHandle, UINT msg, WPARAM wPa
             State = AS_Inactive;
         break;
     case WM_CHAR:
-        switch (wParam)
-        {
-        case 0x08:
-            notifyAll(SystemKeyMessage(SK_BACKSPACE));
-            break;
-        case 0x0A:
-        case 0x0D:
-            notifyAll(SystemKeyMessage(SK_ENTER));
-            break;
-        case 0x1B:
-            notifyAll(SystemKeyMessage(SK_ESC));
-            break;
-        case 0x09:
-            notifyAll(SystemKeyMessage(SK_TAB));
-            break;
-        default:
-            notifyAll(SystemKeyMessage(SK_CHAR, wParam));
-            break;
-        }
+        notifyAll(SystemKeyMessage(wParam));
+        break;
     default:
         break;
     }
