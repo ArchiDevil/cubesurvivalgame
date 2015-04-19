@@ -18,15 +18,9 @@
 using namespace ShiftEngine;
 
 GameObjectsManager::GameObjectsManager()
-    : selectedEntity(nullptr)
-    , entityMaterial(nullptr)
 {
     IProgramPtr EntityShader = GetContextManager()->LoadShader(L"EntityShader.fx");
     entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
-}
-
-GameObjectsManager::~GameObjectsManager()
-{
 }
 
 ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId, size_t count)
@@ -47,18 +41,18 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
     std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, count, SimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity, bbox), meshNode);
     meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
     meshNode->SetScale(Vector3F(scale, scale, scale));
-    GameObjects.push_back(out);
+    gameObjects.push_back(out);
     return out;
 }
 
 void GameObjectsManager::Update(double dt)
 {
-    auto iter = GameObjects.begin();
-    while (iter != GameObjects.end())
+    auto iter = gameObjects.begin();
+    while (iter != gameObjects.end())
     {
         (*iter)->Update(dt);
         if ((*iter)->MustBeDeleted())
-            iter = GameObjects.erase(iter);
+            iter = gameObjects.erase(iter);
         else
             ++iter;
     }
@@ -66,8 +60,8 @@ void GameObjectsManager::Update(double dt)
 
 GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
 {
-    auto iter = Breeds.find(entityId);
-    if (iter == Breeds.end())
+    auto iter = breeds.find(entityId);
+    if (iter == breeds.end())
     {
         LOG_ERROR("Unable to create entity with id: ", entityId);
         return nullptr;
@@ -75,7 +69,7 @@ GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & positio
 
     auto out = iter->second->Clone();
     out->SetPosition(position);
-    GameObjects.push_back(out);
+    gameObjects.push_back(out);
     return out;
 }
 
@@ -93,7 +87,7 @@ PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
     ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
     PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr.get());
     player->SetPosition(Position);
-    GameObjects.push_back(player);
+    gameObjects.push_back(player);
     pGame->Player = player.get();
     return player;
 }
@@ -104,7 +98,7 @@ void GameObjectsManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
         return;
 
     bool selected = false;
-    for (auto & entity : GameObjects)
+    for (auto & entity : gameObjects)
     {
         if (entity->CanBeHighlighted(unprojectedRay))
         {
@@ -127,7 +121,7 @@ void GameObjectsManager::HighlightEntity(const MathLib::Ray &unprojectedRay)
 
 GameObjectPtr GameObjectsManager::GetNearestEntity(const MathLib::Ray &unprojectedRay)
 {
-    for (auto & entity : GameObjects)
+    for (auto & entity : gameObjects)
         if (entity->CanBeHighlighted(unprojectedRay))
             return entity;
     return nullptr;
@@ -200,9 +194,9 @@ void GameObjectsManager::LoadEntities()
             std::string inventoryName = root.get("inventory", buff).asString();
             InventoryBreed emptyBreed;
             if (!inventoryName.empty())
-                Breeds[id] = std::make_shared<LiveBreed>(Inventories[inventoryName], meshName, materialName, scale);
+                breeds[id] = std::make_shared<LiveBreed>(inventories[inventoryName], meshName, materialName, scale);
             else
-                Breeds[id] = std::make_shared<LiveBreed>(emptyBreed, meshName, materialName, scale);
+                breeds[id] = std::make_shared<LiveBreed>(emptyBreed, meshName, materialName, scale);
         }
         else if (type == "collectable")
         {
@@ -216,13 +210,13 @@ void GameObjectsManager::LoadEntities()
             item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
             buff = root.get("count", buff);
             unsigned count = buff.asUInt();
-            Breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count, scale);
+            breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count, scale);
         }
         else if (type == "heater")
         {
             buff = root.get("heat_count", buff);
             int heatCount = buff.asInt();
-            Breeds[id] = std::make_shared<HeaterBreed>(meshName, materialName, heatCount, scale);
+            breeds[id] = std::make_shared<HeaterBreed>(meshName, materialName, heatCount, scale);
         }
         else
         {
@@ -310,13 +304,13 @@ void GameObjectsManager::LoadInventories()
                 inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->ItemMgr->GetItemId(itemName), 0, min_count, max_count));
         }
 
-        Inventories.emplace(std::make_pair(utils::Narrow(file_name.substr(0, file_name.find(L"."))), std::move(inventory)));
+        inventories.emplace(std::make_pair(utils::Narrow(file_name.substr(0, file_name.find(L"."))), std::move(inventory)));
     }
 }
 
 void GameObjectsManager::DispatchEvent(std::unique_ptr<IGameEvent> ev)
 {
-    for (auto & el : GameObjects)
+    for (auto & el : gameObjects)
     {
         el->DispatchEvent(ev.get());
     }

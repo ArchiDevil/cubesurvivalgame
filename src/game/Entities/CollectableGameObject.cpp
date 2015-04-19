@@ -33,7 +33,7 @@ size_t CollectableGameObject::GetCount() const
 void CollectableGameObject::Update(double /*dt*/)
 {
     auto pGame = LostIsland::GetGamePtr();
-    auto bbox = SceneNode->GetBBox();
+    auto bbox = sceneNode->GetBBox();
     int heights[4] = { 0 };
     int minX = (int)std::floor(bbox.bMin.x);
     int maxX = (int)std::floor(bbox.bMax.x);

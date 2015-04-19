@@ -11,27 +11,27 @@ double dot(int * g, double x, double y, double z);
 class cNoise
 {
 public:
-	cNoise();
+    cNoise();
 
-	double SimplexNoise(double x, double y, double z);
-	double SimplexNoise(double x, double y);
+    double SimplexNoise(double x, double y, double z);
+    double SimplexNoise(double x, double y);
 
-	void SetFrequency(double freq);
-	void SetPersistence(double pers);
-	void SetLacunarity(double lac);
-	void SetSeed(int seed);
-	void SetOctaves(int oct);
+    void SetFrequency(double freq);
+    void SetPersistence(double pers);
+    void SetLacunarity(double lac);
+    void SetSeed(int seed);
+    void SetOctaves(int oct);
 
 private:
-	double Noise(double xin, double yin);
-	double Noise(double xin, double yin, double zin);
+    double Noise(double xin, double yin);
+    double Noise(double xin, double yin, double zin);
 
- 	int grad3[12][3];
- 	int perm[512];
+    int grad3[12][3];
+    int perm[512];
 
-	int m_octaves;
-	double m_frequency;
-	double m_persistence;
-	double m_lacunarity;
+    int m_octaves;
+    double m_frequency;
+    double m_persistence;
+    double m_lacunarity;
 
 };

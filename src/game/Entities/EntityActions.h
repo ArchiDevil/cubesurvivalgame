@@ -14,8 +14,7 @@ class LiveGameObject;
 class IEntityAction
 {
 public:
-    IEntityAction();
-    virtual ~IEntityAction();
+    virtual ~IEntityAction() {}
 
     void Start(ControllableGameObject * gameObject);
     void End(ControllableGameObject * gameObject);
@@ -34,9 +33,9 @@ protected:
     void die();
 
 private:
-    bool m_dead;
-    bool m_started;
-    bool m_cancelled;
+    bool m_dead = false;
+    bool m_started = false;
+    bool m_cancelled = false;
 };
 
 // should be used for aggregating actions like a: move (rotate + move), attack (move + attack) and etc.
@@ -70,8 +69,8 @@ protected:
     virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
 
 private:
-    MathLib::Vector2F targetPosition;
-    bool rotated;
+    MathLib::Vector2F targetPosition = {};
+    bool rotated = false;
 
 };
 
@@ -87,9 +86,9 @@ protected:
     virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
 
 private:
-    float maximum_distance;	// distance to collect
-    CollectableGameObject * collectable;
-    double collecting_time;
+    float maximum_distance = 0.0f; // distance to collect
+    CollectableGameObject * collectable = nullptr;
+    double collecting_time = 0.0;
 
 };
 
@@ -104,7 +103,7 @@ protected:
     virtual void onCancel(ControllableGameObject * gameObject) override;
     virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
 
-    LiveGameObject * target;
-    float maximum_distance;
+    LiveGameObject * target = nullptr;
+    float maximum_distance = 0.0f;
 
 };

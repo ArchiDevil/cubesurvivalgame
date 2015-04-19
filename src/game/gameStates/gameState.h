@@ -18,24 +18,24 @@ using MathLib::Vector2D;
 class gameState : public appState
 {
 public:
-	gameState(IniWorker * iw);
-	~gameState();
+    gameState(IniWorker * iw);
+    ~gameState();
 
-	virtual bool initState();
-	virtual bool update( double dt );
-	virtual bool render( double dt );
-	virtual void onKill();
-	virtual void onSuspend();
-	virtual void onResume();
+    virtual bool initState();
+    virtual bool update(double dt);
+    virtual bool render(double dt);
+    virtual void onKill();
+    virtual void onSuspend();
+    virtual void onResume();
 
 private:
-	void ProcessInput(double dt);
+    void ProcessInput(double dt);
 
-	IniWorker * pIniLoader;
+    IniWorker * pIniLoader;
 
     SimpleGUI::Skinner * pSkinner;
     SimpleGUI::Canvas * pCanvas;
 
-	Console console;
+    Console console;
 
 };

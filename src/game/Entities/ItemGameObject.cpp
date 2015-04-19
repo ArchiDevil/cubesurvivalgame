@@ -19,9 +19,9 @@ void ItemGameObject::Update(double dt)
 {
     PhysicsGameObject::Update(dt);
 
-    //	Vector3F rot = SceneNode->GetRotation();
-    //	rot.z += dt;
-    //	SceneNode->SetRotation(rot);
+    //  Vector3F rot = SceneNode->GetRotation();
+    //  rot.z += dt;
+    //  SceneNode->SetRotation(rot);
 
     Game * pGame = LostIsland::GetGamePtr();
     auto ppos = pGame->Player->GetPosition();

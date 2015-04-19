@@ -40,9 +40,9 @@ private:
     std::unique_ptr<SimpleGUI::MainListener> GUIListener;
     std::vector<wchar_t>                     charQueue;
 
-    std::stack<appState *>	                 statesStack;		//stack of game states like MainMenu, GameState and more
-    cTimer					                 gameTimer;			//frame timer
-    IniWorker				                 SettingsLoader;	//settings loader
-    cRegWorker				                 RegistryWorker;	//registry handler
+    std::stack<appState *>                   statesStack;       //stack of game states like MainMenu, GameState and more
+    cTimer                                   gameTimer;         //frame timer
+    IniWorker                                SettingsLoader;    //settings loader
+    cRegWorker                               RegistryWorker;    //registry handler
 
 };

@@ -7,16 +7,16 @@
 class AppStateMachine
 {
 public:
-	AppStateMachine();
-	~AppStateMachine();
+    AppStateMachine();
+    ~AppStateMachine();
 
-	void PushState( appState * state );
-	appState * GetTopState() const;
-	void Suspend();
-	void Resume();
-	bool Frame(double dt);
+    void PushState(appState * state);
+    appState * GetTopState() const;
+    void Suspend();
+    void Resume();
+    bool Frame(double dt);
 
 private:
-	std::stack<appState *> statesStack; //stack of game states like MainMenu, GameState and more
+    std::stack<appState *> statesStack; //stack of game states like MainMenu, GameState and more
 
 };

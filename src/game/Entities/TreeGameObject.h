@@ -6,7 +6,7 @@
 class TreeGameObject : public LiveGameObject
 {
 public:
-	TreeGameObject(ShiftEngine::MeshNode * mesh);
-	virtual ~TreeGameObject();
+    TreeGameObject(ShiftEngine::MeshNode * mesh);
+    virtual ~TreeGameObject();
 
 };

@@ -3,55 +3,54 @@
 #include "../game.h"
 
 GameObject::GameObject(ShiftEngine::MeshNode * sceneNode)
-	: SceneNode(sceneNode)
-	, ToDelete(false)
+    : sceneNode(sceneNode)
 {
 }
 
 GameObject::~GameObject()
 {
-	if (SceneNode)
-		SceneNode->KillSelf();
+    if (sceneNode)
+        sceneNode->KillSelf();
 }
 
 Vector3F GameObject::GetPosition() const
 {
-	return SceneNode->GetPosition();
+    return sceneNode->GetPosition();
 }
 
 void GameObject::SetPosition(const Vector3F & Position)
 {
-	SceneNode->SetPosition(Vector3F(Position.x, Position.y, Position.z));
+    sceneNode->SetPosition(Vector3F(Position.x, Position.y, Position.z));
 }
 
 bool GameObject::MustBeDeleted() const
 {
-	return ToDelete;
+    return toDelete;
 }
 
 void GameObject::Delete()
 {
-	ToDelete = true;
+    toDelete = true;
 }
 
 ShiftEngine::MeshNode * GameObject::GetSceneNode()
 {
-	return SceneNode;
+    return sceneNode;
 }
 
 bool GameObject::CanBeHighlighted(const MathLib::Ray &uprojectedRay)
 {
-	if (MathLib::RayBoxIntersect(uprojectedRay, SceneNode->GetBBox(), 0.0f, 10000.0f))
-		return true;
-	return false;
+    if (MathLib::RayBoxIntersect(uprojectedRay, sceneNode->GetBBox(), 0.0f, 10000.0f))
+        return true;
+    return false;
 }
 
 void GameObject::Highlight()
 {
-	SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.5f, 1.5f, 1.5f, 1.0f));
+    sceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.5f, 1.5f, 1.5f, 1.0f));
 }
 
 void GameObject::UnHightlight()
 {
-	SceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
+    sceneNode->GetMaterialPtr()->SetDiffuseColor(MathLib::Vector4F(1.0f, 1.0f, 1.0f, 1.0f));
 }

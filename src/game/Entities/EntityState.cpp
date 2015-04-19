@@ -6,15 +6,6 @@
 #include "../game.h"
 #include "../GameEventHandler.h"
 
-IEntityState::IEntityState()
-    : dead(false)
-{
-}
-
-IEntityState::~IEntityState()
-{
-}
-
 bool IEntityState::Dead() const
 {
     return dead;
@@ -44,7 +35,6 @@ EntityState WaitingState::GetType() const
 
 RotatingState::RotatingState(const MathLib::Vector2F & targetPosition)
     : targetPosition(targetPosition)
-    , rotatingTime(0.0)
 {
 }
 
@@ -113,8 +103,7 @@ EntityState MovingState::GetType() const
 //////////////////////////////////////////////////////////////////////////
 
 DyingState::DyingState(double dyingTime)
-    : accumulatedTime(0.0)
-    , fullTime(dyingTime)
+    : fullTime(dyingTime)
 {
 }
 
@@ -164,7 +153,6 @@ EntityState DecayState::GetType() const
 
 CollectingState::CollectingState(double collectingTime)
     : collectingTime(collectingTime)
-    , accumulatedTime(0.0)
 {
 }
 
@@ -188,7 +176,6 @@ void CollectingState::Update(LiveGameObject * entity, double dt)
 AttackingState::AttackingState(LiveGameObject * target, double cycleTime)
     : target(target)
     , cycleTime(cycleTime)
-    , accumulatedTime(0.0)
 {
 }
 

@@ -6,17 +6,6 @@
 #include "../game.h"
 #include "../GameEventHandler.h"
 
-IEntityAction::IEntityAction()
-    : m_dead(false)
-    , m_started(false)
-    , m_cancelled(false)
-{
-}
-
-IEntityAction::~IEntityAction()
-{
-}
-
 void IEntityAction::die()
 {
     m_dead = true;
@@ -76,7 +65,6 @@ bool IEntityAction::IsCancelled() const
 
 MoveAction::MoveAction(const MathLib::Vector2F & targetPosition)
     : targetPosition(targetPosition)
-    , rotated(false)
 {
 }
 

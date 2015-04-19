@@ -8,14 +8,14 @@ using ShiftEngine::MeshNode;
 class PhysicsGameObject : public GameObject
 {
 public:
-	PhysicsGameObject(PhysObjectPtr physicsObject, MeshNode * meshNode);
-	virtual ~PhysicsGameObject();
+    PhysicsGameObject(PhysObjectPtr physicsObject, MeshNode * meshNode);
+    virtual ~PhysicsGameObject();
 
-	virtual void Update(double dt);
-	virtual void SetPosition(MathLib::Vector3F & position);
+    virtual void Update(double dt);
+    virtual void SetPosition(MathLib::Vector3F & position);
 
 private:
-	PhysObjectPtr physicsObject;
+    PhysObjectPtr physicsObject;
 
 };
 

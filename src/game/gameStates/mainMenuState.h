@@ -8,15 +8,15 @@
 class mainMenuState : public appState
 {
 public:
-	mainMenuState();
-	~mainMenuState();
+    mainMenuState();
+    ~mainMenuState();
 
-	virtual bool initState();
-	virtual bool update( double dt );
-	virtual bool render( double dt );
-	virtual void onKill();
-	virtual void onSuspend();
-	virtual void onResume();
+    virtual bool initState();
+    virtual bool update(double dt);
+    virtual bool render(double dt);
+    virtual void onKill();
+    virtual void onSuspend();
+    virtual void onResume();
 
 private:
 };

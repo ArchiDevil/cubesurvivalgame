@@ -14,33 +14,33 @@
 class GameObject
 {
 public:
-	GameObject(ShiftEngine::MeshNode * sceneNode);
-	virtual ~GameObject();
+    GameObject(ShiftEngine::MeshNode * sceneNode);
+    virtual ~GameObject();
 
-	// pure virtuals 
-	virtual void Update(double dt) = 0;
+    // pure virtuals 
+    virtual void Update(double dt) = 0;
 
-	// setters
-	virtual void SetPosition(const Vector3F & Position);
+    // setters
+    virtual void SetPosition(const Vector3F & Position);
 
-	// getters
-	virtual Vector3F GetPosition() const;
-	ShiftEngine::MeshNode * GetSceneNode();
+    // getters
+    virtual Vector3F GetPosition() const;
+    ShiftEngine::MeshNode * GetSceneNode();
 
-	// highlight methods
-	virtual bool CanBeHighlighted(const MathLib::Ray &uprojectedRay);
-	virtual void Highlight();
-	virtual void UnHightlight();
+    // highlight methods
+    virtual bool CanBeHighlighted(const MathLib::Ray &uprojectedRay);
+    virtual void Highlight();
+    virtual void UnHightlight();
 
-	// service methods
-	bool MustBeDeleted() const;
-	void Delete();
+    // service methods
+    bool MustBeDeleted() const;
+    void Delete();
 
     virtual void DispatchEvent(const IGameEvent *) {}
 
 protected:
-	ShiftEngine::MeshNode * SceneNode;
-	bool ToDelete;
+    ShiftEngine::MeshNode * sceneNode;
+    bool toDelete = false;
 
 };
 

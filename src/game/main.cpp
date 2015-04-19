@@ -4,18 +4,18 @@
 #include "appclass.h" //Win32 application class
 
 #if defined(DEBUG) || defined(_DEBUG) 
-	int main()
+int main()
 #elif defined(NDEBUG) || defined(_NDEBUG)
-	int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nShowCmd*/)
+int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nShowCmd*/)
 #endif
 {
-	srand(GetTickCount());
+    srand(GetTickCount());
 
-	IniWorker i;
-	if(!i.Initialize("settings.ini"))
-		return -1;
+    IniWorker i;
+    if (!i.Initialize("settings.ini"))
+        return -1;
 
-	Application app(i.GetInteger("Width"), i.GetInteger("Height"), L"Lost Island");
+    Application app(i.GetInteger("Width"), i.GetInteger("Height"), L"Lost Island");
 
-	return app.Run();
+    return app.Run();
 }

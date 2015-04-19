@@ -9,20 +9,20 @@
 class ControllableGameObject : public LiveGameObject
 {
 public:
-	ControllableGameObject(ShiftEngine::MeshNode * sceneNode);
-	virtual ~ControllableGameObject();
+    ControllableGameObject(ShiftEngine::MeshNode * sceneNode);
+    virtual ~ControllableGameObject();
 
-	virtual void Update(double dt) override;
-	virtual bool Go(const MathLib::Vector2F & target);
-	virtual void Stop();
-	virtual void PushCommand(std::unique_ptr<IEntityAction> action);
-	virtual void Interact(InteractableGameObject * target, InteractionType interaction);
-	virtual void CancelCurrentCommand();
+    virtual void Update(double dt) override;
+    virtual bool Go(const MathLib::Vector2F & target);
+    virtual void Stop();
+    virtual void PushCommand(std::unique_ptr<IEntityAction> action);
+    virtual void Interact(InteractableGameObject * target, InteractionType interaction);
+    virtual void CancelCurrentCommand();
 
 private:
-	void CancelCommands();
-	virtual void OnStateChange(EntityState from, EntityState to) override;
+    void CancelCommands();
+    virtual void OnStateChange(EntityState from, EntityState to) override;
 
-	std::queue<std::unique_ptr<IEntityAction>> Actions;
+    std::queue<std::unique_ptr<IEntityAction>> Actions;
 
 };

@@ -11,20 +11,20 @@
 class EnvironmentManager
 {
 public:
-	EnvironmentManager();
-	~EnvironmentManager();
+    EnvironmentManager();
+    ~EnvironmentManager();
 
-	void Initialize(const dayTimer & initialTime);
-	void Update(double deltaTime);
-	void SetTime(const dayTimer & t);
-	dayTimer GetTime() const;
-	MathLib::Vector3F GetSunPosition(const MathLib::Vector3F & playerPos) const;
-	float GetEnvironmentTemperature() const;
+    void Initialize(const dayTimer & initialTime);
+    void Update(double deltaTime);
+    void SetTime(const dayTimer & t);
+    dayTimer GetTime() const;
+    MathLib::Vector3F GetSunPosition(const MathLib::Vector3F & playerPos) const;
+    float GetEnvironmentTemperature() const;
 
 private:
-	dayTimer time;
+    dayTimer time;
 
-	float minimalTemperature; // temperature at the midnight
-	float maximalTemperature; // temperature at the midday
+    float minimalTemperature; // temperature at the midnight
+    float maximalTemperature; // temperature at the midday
 
 };

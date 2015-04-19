@@ -9,22 +9,22 @@
 class LiveGameObject : public InteractableGameObject, public FiniteStateMachine
 {
 public:
-	LiveGameObject(ShiftEngine::MeshNode * sceneNode);
-	virtual ~LiveGameObject();
+    LiveGameObject(ShiftEngine::MeshNode * sceneNode);
+    virtual ~LiveGameObject();
 
-	virtual void Update(double dt) override;
-	virtual void Attack(LiveGameObject * target) const;
+    virtual void Update(double dt) override;
+    virtual void Attack(LiveGameObject * target) const;
 
-	// getters
-	int GetHealth() const;
-	virtual InteractionType GetInteraction() const override;
-	GameObjectInventory * GetInventory();
+    // getters
+    int GetHealth() const;
+    virtual InteractionType GetInteraction() const override;
+    GameObjectInventory * GetInventory();
 
-	// setters
-	void SetHealth(int in_health);
+    // setters
+    void SetHealth(int in_health);
 
 private:
-	int health;
-	GameObjectInventory inventory;
+    int health;
+    GameObjectInventory inventory;
 
 };
