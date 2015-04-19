@@ -18,12 +18,12 @@ def gen():
     path = get_path()
     os.mkdir(os.path.join(path, "build"))
     os.chdir(os.path.join(path, "build"))
-    runCmd(['cmake', '-G', 'Visual Studio 12 2013', '..'])
+    runCmd(['cmake', '--graphviz=dependencies/d.dot', '-G', 'Visual Studio 12 2013', '..'])
     os.chdir(path)
  
 def compilation():
     print ("compilation")
-    runCmd(['cmake', '--build', './build'])    
+    runCmd(['cmake', '--build', './build'])
     
 def build():
     print ("build") 
