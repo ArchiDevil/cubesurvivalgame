@@ -68,12 +68,9 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
 
     D3D_FEATURE_LEVEL featureLevels[] =
     {
-        D3D_FEATURE_LEVEL_9_1,
-        D3D_FEATURE_LEVEL_9_2,
-        D3D_FEATURE_LEVEL_9_3,
+        D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_11_0
+        D3D_FEATURE_LEVEL_9_1,
     };
 
     D3D_FEATURE_LEVEL featureLevel;
@@ -84,7 +81,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
         NULL,
         Flags,
         featureLevels,
-        6,
+        3,
         D3D11_SDK_VERSION,
         &desc,
         &graphicsContext.SwapChain,
@@ -95,6 +92,9 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
 
     if (FAILED(hr))
         LOG_FATAL_ERROR("Unable to create D3D11 device");
+
+    if (featureLevel != D3D_FEATURE_LEVEL_11_0)
+        LOG_ERROR("Unable to create device with DX11 feature level, further work may be unstable");
 
     LOG_INFO("Device created");
 
@@ -135,7 +135,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
 
     graphicsContext.DeviceContext->RSSetViewports(1, &vp);
 
-    if (!graphicsContext.CreateStates())
+    if (FAILED(graphicsContext.CreateStates()))
         LOG_FATAL_ERROR("Unable to create states for renderer");
 
     zBufferState = true;
@@ -213,6 +213,8 @@ void ShiftEngine::D3D11ContextManager::BeginScene()
 
 void ShiftEngine::D3D11ContextManager::EndScene()
 {
+    fontManager->DrawBatchedText();
+
     if (engineSettings.screenRate > 0)
         graphicsContext.SwapChain->Present(1, 0);
     else
@@ -306,12 +308,12 @@ int ShiftEngine::D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
     }
 }
 
-ShiftEngine::D3D11ShaderManager * ShiftEngine::D3D11ContextManager::GetShaderManager()
+ShiftEngine::IShaderManager * ShiftEngine::D3D11ContextManager::GetShaderManager()
 {
     return shaderManager;
 }
 
-ShiftEngine::D3D11ShaderGenerator * ShiftEngine::D3D11ContextManager::GetShaderGenerator()
+ShiftEngine::IShaderGenerator * ShiftEngine::D3D11ContextManager::GetShaderGenerator()
 {
     return shaderGenerator;
 }
@@ -499,7 +501,25 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
     return declarations[semantic];
 }
 
-ShiftEngine::D3D11TextureManager * ShiftEngine::D3D11ContextManager::GetTextureManager()
+ShiftEngine::ITextureManager * ShiftEngine::D3D11ContextManager::GetTextureManager()
 {
     return textureManager;
+}
+
+ShiftEngine::IMeshManager * ShiftEngine::D3D11ContextManager::GetMeshManager()
+{
+    return meshManager;
+}
+
+ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
+{
+    auto iter = declarations.find(semantic);
+    if (iter == declarations.end())
+    {
+        return CreateVDFromDescription(semantic);
+    }
+    else
+    {
+        return iter->second;
+    }
 }

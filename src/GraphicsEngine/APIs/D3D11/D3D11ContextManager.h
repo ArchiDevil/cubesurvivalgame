@@ -42,9 +42,10 @@ namespace ShiftEngine
         MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
         IProgramPtr                         LoadShader(const std::wstring & FileName) override;
         IMeshDataPtr                        LoadMesh(const std::wstring & FileName) override;
-        D3D11ShaderManager *                GetShaderManager() override;
-        D3D11ShaderGenerator *              GetShaderGenerator() override;
-        D3D11TextureManager *               GetTextureManager() override;
+        IShaderManager *                    GetShaderManager() override;
+        IShaderGenerator *                  GetShaderGenerator() override;
+        ITextureManager *                   GetTextureManager() override;
+        IMeshManager *                      GetMeshManager() override;
         FontManager*                        GetFontManager() override;
         void                                SetZState(bool enabled) override;
         void                                SetBlendingState(BlendingState bs) override;

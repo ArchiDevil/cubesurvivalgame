@@ -62,7 +62,7 @@ struct D3D11Context
         Device->Release();
     }
 
-    bool CreateStates()
+    HRESULT CreateStates()
     {
         D3D11_BLEND_DESC bdDescNormal;
         ZeroMemory(&bdDescNormal, sizeof(D3D11_BLEND_DESC));
@@ -75,8 +75,9 @@ struct D3D11Context
             bdDescNormal.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_COLOR;
             bdDescNormal.RenderTarget[i].RenderTargetWriteMask = 0x0F;
         }
-        if (FAILED(Device->CreateBlendState(&bdDescNormal, &bsNormal)))
-            return false;
+        HRESULT hr = Device->CreateBlendState(&bdDescNormal, &bsNormal);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_BLEND_DESC bdDescAlpha;
         ZeroMemory(&bdDescAlpha, sizeof(D3D11_BLEND_DESC));
@@ -92,8 +93,9 @@ struct D3D11Context
             bdDescAlpha.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
             bdDescAlpha.RenderTarget[i].RenderTargetWriteMask = 0x0F;
         }
-        if (FAILED(Device->CreateBlendState(&bdDescAlpha, &bsAlpha)))
-            return false;
+        hr = Device->CreateBlendState(&bdDescAlpha, &bsAlpha);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_BLEND_DESC bdDescAdditive;
         ZeroMemory(&bdDescAdditive, sizeof(D3D11_BLEND_DESC));
@@ -109,49 +111,58 @@ struct D3D11Context
             bdDescAdditive.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
             bdDescAdditive.RenderTarget[i].RenderTargetWriteMask = 0x0F;
         }
-        if (FAILED(Device->CreateBlendState(&bdDescAdditive, &bsAdditive)))
-            return false;
+        hr = Device->CreateBlendState(&bdDescAdditive, &bsAdditive);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_DEPTH_STENCIL_DESC dsDescZOn;
         ZeroMemory(&dsDescZOn, sizeof(D3D11_DEPTH_STENCIL_DESC));
         dsDescZOn.DepthEnable = true;
         dsDescZOn.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         dsDescZOn.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-        if (FAILED(Device->CreateDepthStencilState(&dsDescZOn, &dsStateZOn)))
-            return false;
+        hr = Device->CreateDepthStencilState(&dsDescZOn, &dsStateZOn);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_DEPTH_STENCIL_DESC dsDescZOff;
         ZeroMemory(&dsDescZOff, sizeof(D3D11_DEPTH_STENCIL_DESC));
         dsDescZOff.DepthEnable = false;
-        if (FAILED(Device->CreateDepthStencilState(&dsDescZOff, &dsStateZOff)))
-            return false;
+        hr = Device->CreateDepthStencilState(&dsDescZOff, &dsStateZOff);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_RASTERIZER_DESC rsDescNormal;
         ZeroMemory(&rsDescNormal, sizeof(D3D11_RASTERIZER_DESC));
-        rsDescNormal.FillMode = D3D11_FILL_SOLID;
-        rsDescNormal.CullMode = D3D11_CULL_BACK;
-        rsDescNormal.FrontCounterClockwise = false;
-        rsDescNormal.MultisampleEnable = true;
-        if (FAILED(Device->CreateRasterizerState(&rsDescNormal, &rsNormal)))
+        rsDescNormal.FillMode                   = D3D11_FILL_SOLID;
+        rsDescNormal.CullMode                   = D3D11_CULL_BACK;
+        rsDescNormal.FrontCounterClockwise      = FALSE;
+        rsDescNormal.MultisampleEnable          = TRUE;
+        rsDescNormal.DepthClipEnable            = TRUE;
+        hr = Device->CreateRasterizerState(&rsDescNormal, &rsNormal);
+        if (FAILED(hr))
             return false;
 
         D3D11_RASTERIZER_DESC rsDescWireframe;
         ZeroMemory(&rsDescWireframe, sizeof(D3D11_RASTERIZER_DESC));
-        rsDescWireframe.FillMode = D3D11_FILL_WIREFRAME;
-        rsDescWireframe.CullMode = D3D11_CULL_NONE;
-        rsDescWireframe.FrontCounterClockwise = false;
-        rsDescWireframe.MultisampleEnable = true;
-        if (FAILED(Device->CreateRasterizerState(&rsDescWireframe, &rsWireframe)))
-            return false;
+        rsDescWireframe.FillMode                = D3D11_FILL_WIREFRAME;
+        rsDescWireframe.CullMode                = D3D11_CULL_NONE;
+        rsDescWireframe.FrontCounterClockwise   = FALSE;
+        rsDescWireframe.MultisampleEnable       = TRUE;
+        rsDescWireframe.DepthClipEnable = TRUE;
+        hr = Device->CreateRasterizerState(&rsDescWireframe, &rsWireframe);
+        if (FAILED(hr))
+            return hr;
 
         D3D11_RASTERIZER_DESC rsDescNoCulling;
         ZeroMemory(&rsDescNoCulling, sizeof(D3D11_RASTERIZER_DESC));
-        rsDescNoCulling.FillMode = D3D11_FILL_SOLID;
-        rsDescNoCulling.CullMode = D3D11_CULL_NONE;
-        rsDescNoCulling.FrontCounterClockwise = false;
-        rsDescNoCulling.MultisampleEnable = true;
-        if (FAILED(Device->CreateRasterizerState(&rsDescNoCulling, &rsNoCulling)))
-            return false;
+        rsDescNoCulling.FillMode                = D3D11_FILL_SOLID;
+        rsDescNoCulling.CullMode                = D3D11_CULL_NONE;
+        rsDescNoCulling.FrontCounterClockwise   = FALSE;
+        rsDescNoCulling.MultisampleEnable       = TRUE;
+        rsDescNoCulling.DepthClipEnable = TRUE;
+        hr = Device->CreateRasterizerState(&rsDescNoCulling, &rsNoCulling);
+        if (FAILED(hr))
+            return hr;
 
         return true;
     }

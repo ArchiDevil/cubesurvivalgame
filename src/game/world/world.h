@@ -8,8 +8,7 @@
 #include <memory>
 
 #include <Utilities/ut.h>
-#include <MathLib/math/ray.h>
-#include <MathLib/math/vector3.h>
+#include <MathLib/math.h>
 
 #define NOTLOADED 0
 #define LOADED 1

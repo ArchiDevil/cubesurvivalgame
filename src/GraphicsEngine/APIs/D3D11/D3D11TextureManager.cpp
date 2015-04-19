@@ -179,7 +179,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
 
     D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
     viewDesc.Format = texArrayDesc.Format;
-    viewDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURECUBE;
+    viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
     viewDesc.Texture2DArray.MostDetailedMip = 0;
     viewDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
     viewDesc.Texture2DArray.FirstArraySlice = 0;
@@ -326,7 +326,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
 
     D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
     viewDesc.Format = texArrayDesc.Format;
-    viewDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2DARRAY;
+    viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
     viewDesc.Texture2DArray.MostDetailedMip = 0;
     viewDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
     viewDesc.Texture2DArray.FirstArraySlice = 0;

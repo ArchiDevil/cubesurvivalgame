@@ -30,7 +30,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource
     HRESULT hr = S_OK;
 
     hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_5_0", flags, 0, &compiledShader, &errors);
-    if (hr != S_OK && errors != nullptr)
+    if (FAILED(hr) || errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");
         std::string temp = (char*)errors->GetBufferPointer();
@@ -38,10 +38,14 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource
     }
 
     ID3D11VertexShader * finalShader = nullptr;
-    pDevice->CreateVertexShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+    hr = pDevice->CreateVertexShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+    if (FAILED(hr))
+    {
+        LOG_ERROR("Unable to create vertex shader");
+        return nullptr;
+    }
     ID3D11ShaderReflection* pReflector = nullptr;
-    void *pR = pReflector;
-    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, &pR);
+    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
     if (FAILED(hr))
     {
         LOG_FATAL_ERROR("Unable to parse shader");
@@ -58,7 +62,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
     HRESULT hr = S_OK;
 
     hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_5_0", flags, 0, &compiledShader, &errors);
-    if (hr != S_OK && errors != nullptr)
+    if (FAILED(hr) || errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");
         std::string temp = (char*)errors->GetBufferPointer();
@@ -66,10 +70,14 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
     }
 
     ID3D11PixelShader * finalShader = nullptr;
-    pDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
-    ID3D11ShaderReflection* pReflector = NULL;
-    void *pR = pReflector;
-    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, &pR);
+    hr = pDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+    if (FAILED(hr))
+    {
+        LOG_ERROR("Unable to create pixel shader");
+        return nullptr;
+    }
+    ID3D11ShaderReflection* pReflector = nullptr;
+    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&pReflector);
     if (FAILED(hr))
     {
         LOG_FATAL_ERROR("Unable to parse shader");
@@ -77,6 +85,71 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
     D3D11ShaderPtr out = std::make_shared<D3D11Shader>(finalShader, D3D11ShaderType::ST_Pixel, pReflector);
     return out;
 }
+
+//ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileShaderFromSource(const std::string & source, D3D11ShaderType shaderType)
+//{
+//    ID3DBlob * compiledShader = nullptr;
+//    ID3DBlob * errors = nullptr;
+//    HRESULT hr = S_OK;
+//
+//    std::string shaderMain = "";
+//    std::string shaderVersion = "";
+//
+//    switch (shaderType)
+//    {
+//    case ShiftEngine::D3D11ShaderType::ST_Vertex:
+//        shaderMain = "VS";
+//        shaderVersion = "vs_5_0";
+//        break;
+//    case ShiftEngine::D3D11ShaderType::ST_Pixel:
+//        shaderMain = "PS";
+//        shaderVersion = "ps_5_0";
+//        break;
+//    case ShiftEngine::D3D11ShaderType::ST_Geometry:
+//        shaderMain = "GS";
+//        shaderVersion = "gs_5_0";
+//        break;
+//    case ShiftEngine::D3D11ShaderType::ST_Compute:
+//        shaderMain = "CS";
+//        shaderVersion = "cs_5_0";
+//        break;
+//    case ShiftEngine::D3D11ShaderType::ST_Hull:
+//        shaderMain = "HS";
+//        shaderVersion = "hs_5_0";
+//        break;
+//    case ShiftEngine::D3D11ShaderType::ST_Domain:
+//        shaderMain = "DS";
+//        shaderVersion = "ds_5_0";
+//        break;
+//    default:
+//        break;
+//    }
+//
+//    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, shaderMain.c_str(), shaderVersion.c_str(), flags, 0, &compiledShader, &errors);
+//    if (hr != S_OK && errors != nullptr)
+//    {
+//        LOG_ERROR("Unable to compile custom shader");
+//        std::string temp = (char*)errors->GetBufferPointer();
+//        LOG_FATAL_ERROR(temp);
+//    }
+//
+//    ID3D11PixelShader * finalShader = nullptr;
+//    HRESULT hr = pDevice->CreatePixelShader(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), nullptr, &finalShader);
+//    if (FAILED(hr))
+//    {
+//        LOG_ERROR("Unable to create custom shader");
+//        return nullptr;
+//    }
+//    ID3D11ShaderReflection* pReflector = NULL;
+//    void *pR = pReflector;
+//    hr = D3DReflect(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), IID_ID3D11ShaderReflection, &pR);
+//    if (FAILED(hr))
+//    {
+//        LOG_FATAL_ERROR("Unable to parse shader");
+//    }
+//    D3D11ShaderPtr out = std::make_shared<D3D11Shader>(finalShader, D3D11ShaderType::ST_Pixel, pReflector);
+//    return out;
+//}
 
 ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(const std::wstring & fileName)
 {

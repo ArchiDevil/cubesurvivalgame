@@ -1,6 +1,10 @@
 #include "ShiftEngine.h"
 
+#ifdef D3D10_RENDER
 #include "APIs/D3D10/D3D10ContextManager.h"
+#elif D3D11_RENDER
+#include "APIs/D3D11/D3D11ContextManager.h"
+#endif
 
 namespace ShiftEngine
 {
@@ -10,17 +14,30 @@ namespace ShiftEngine
 
     bool InitDX10Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
     {
+#ifdef D3D10_RENDER
         ContextManagerInstance = new D3D10ContextManager(hwnd);
         if (!ContextManagerInstance->Initialize(settings, paths))
             return false;
         RendererInstance = new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator());
         SceneGraphInstance = new SceneGraph(SceneGraphType::SGT_QuadTree);
         return true;
+#else
+        return false;
+#endif
     }
 
-    bool InitDX11Api(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
+    bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
     {
+#ifdef D3D11_RENDER
+        ContextManagerInstance = new D3D11ContextManager(hwnd);
+        if (!ContextManagerInstance->Initialize(settings, paths))
+            return false;
+        RendererInstance = new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator());
+        SceneGraphInstance = new SceneGraph(SceneGraphType::SGT_QuadTree);
+        return true;
+#else
         return false;
+#endif
     }
 
     bool InitGL33Api(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
@@ -30,22 +47,13 @@ namespace ShiftEngine
 
     bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd)
     {
-        static bool initialized = false;
         switch (apiType)
         {
-        case ShiftEngine::AT_DX10:
-            initialized = InitDX10Api(hwnd, settings, paths);
-            break;
-        case ShiftEngine::AT_DX11:
-            initialized = InitDX11Api(hwnd, settings, paths);
-            break;
-        case ShiftEngine::AT_OGL33:
-            initialized = InitGL33Api(hwnd, settings, paths);
-            break;
-        default:
-            break;
+        case ShiftEngine::AT_DX10:  return InitDX10Api(hwnd, settings, paths);
+        case ShiftEngine::AT_DX11:  return InitDX11Api(hwnd, settings, paths);
+        case ShiftEngine::AT_OGL33: return InitGL33Api(hwnd, settings, paths);
         }
-        return initialized;
+        return false;
     }
 
     IContextManager * GetContextManager()

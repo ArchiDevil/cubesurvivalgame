@@ -3,7 +3,7 @@
 #include "../Entities/GameObject.h"
 
 #include <GraphicsEngine/ITexture.h>
-#include <GraphicsEngine/APIs/D3D10/D3D10Mesh.h>
+#include <GraphicsEngine/IMeshData.h>
 
 #include <string>
 

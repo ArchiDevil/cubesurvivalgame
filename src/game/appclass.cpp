@@ -46,7 +46,7 @@ bool Application::Initialize()
     path.MaterialsPath = SettingsLoader.GetWString("MaterialsPath");
 
     //инициализируем графический движок
-    if (!ShiftEngine::InitEngine(ShiftEngine::AT_DX10, settings, path, GetHWND()))
+    if (!ShiftEngine::InitEngine(ShiftEngine::AT_DX11, settings, path, GetHWND()))
         LOG_FATAL_ERROR("Unable to inititalize graphics engine");
     else
         LOG_INFO("Graphics engine has been initialized");

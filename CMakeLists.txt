@@ -11,7 +11,7 @@ if(NOT MSVC)
 endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
-set(RENDERER D3D10_RENDER)
+set(RENDERER D3D11_RENDER)
 
 option(BUILD_TESTS "Generate projects for tests building" ON)
 

@@ -25,6 +25,7 @@ namespace ShiftEngine
     private:
         D3D11ShaderPtr CompileVSFromSource(const std::string & source);
         D3D11ShaderPtr CompilePSFromSource(const std::string & source);
+        D3D11ShaderPtr CompileShaderFromSource(const std::string & source, D3D11ShaderType shaderType);
 
         ID3D11Device * pDevice = nullptr;
         std::unique_ptr<D3D11ShaderGenerator> shaderGenerator = nullptr;
