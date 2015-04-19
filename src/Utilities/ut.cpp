@@ -203,3 +203,13 @@ bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
     return false;
 #endif
 }
+
+bool utils::filesystem::RemoveFile(const std::string & fileName)
+{
+    return DeleteFileA(fileName.c_str());
+}
+
+bool utils::filesystem::RemoveFile(const std::wstring & fileName)
+{
+    return DeleteFileW(fileName.c_str());
+}

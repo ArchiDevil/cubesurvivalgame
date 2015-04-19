@@ -28,6 +28,9 @@ namespace utils
         bool DeleteDir(const std::string & directoryName);
         bool DeleteDir(const std::wstring & directoryName);
 
+        bool RemoveFile(const std::string & fileName);
+        bool RemoveFile(const std::wstring & fileName);
+
         std::vector<std::string> CollectFileNames(const std::string & Path, const std::string & Extension = "*");
         std::vector<std::wstring> CollectFileNames(const std::wstring & Path, const std::wstring & Extension = L"*");
     }
