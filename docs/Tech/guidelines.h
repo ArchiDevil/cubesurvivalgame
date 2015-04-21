@@ -47,7 +47,8 @@ public:
     ClassA()
         : a1(1)
         , a2(2)
-        , a3(nullptr) // nullptr's everywhere, deprecate using of NULL{
+        , a3(nullptr) // nullptr's everywhere, deprecate using of NULL
+    {
     }
     
     virtual ~ClassA() {}
@@ -77,15 +78,15 @@ void Function()
     // use camelCase from small letter here
     int a = 0;
     std::vector<int> inits = {1, 2, 4, 12};
-    for (auto & elem : inits) // use ranged-for everytime if it possible
+    for (const auto & elem : inits) // use ranged-for everytime if it possible
         std::cout << elem << " " << std::endl;
-    
+        
     if (a > 0 && inits[0])
     {
         // use standard algorithms instead of handmade
         std::for_each(inits.cbegin(), inits.cend(), [](const int & e){std::cout << e << std::endl;});
     }
-    
+
     // avoid to use strange and pre-optimized expressions
     a = 4511 >> 10;
     // instead of

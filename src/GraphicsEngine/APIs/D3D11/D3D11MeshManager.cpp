@@ -118,7 +118,7 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     if (!declaration)
         declaration = GetContextManager()->GetVertexDeclaration(*sem);
 
-    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size(), sem, declaration))
+    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size() * sizeof(uint32_t), sem, declaration))
         return false;
 
     return true;
