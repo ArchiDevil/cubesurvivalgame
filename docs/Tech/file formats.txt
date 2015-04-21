@@ -1,0 +1,17 @@
+Mesh editor .block file format:
+[ 3x32 bit uints: sizes XYZ ]
+[ [ 3x32 bit floats: block colors RGB ], [ 1x8 bits bool: true if block exists ] ] * X*Y*Z blocks
+
+
+ShiftEngine mesh file format, version 3:
+[ 32 bits uint - file version ]
+[ 8 bits bool - are normals here? ]
+[ 8 bits bool - are texture coordinates here? ]
+[ 8 bits bool - are colors here? ]
+[ 32 bits uint - vertices count ]
+[ 32 bits uint - indices count ]
+[ 3x32 bit floats: positions XYZ ] * vertices count
+optional [ 3x32 bit floats: normals XYZ ] * vertices count
+optional [ 2x32 bit floats: texture coordinates UV ] * vertices count
+optional [ 3x32 bit floats: vertex colors by all components RGB ] * vertices count
+[ 32 bits uint - index ] * indices count
