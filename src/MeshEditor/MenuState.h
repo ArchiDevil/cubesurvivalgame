@@ -2,20 +2,20 @@
 
 #include <algorithm>
 
-#include "appclass.h"
-#include "cAppStateBase.h"
+#include "MeshEditorApplication.h"
+#include <Utilities/appState.h>
 
 #include <MyGUI.h>
 #include <MyGUI_DirectX11Platform.h>
 
-class Application;
+class MeshEditorApplication;
 
 class MenuState : 
     public appState,
     observer<InputEvent>
 {
 public:
-    MenuState(Application * _pApp, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform);
+    MenuState(MeshEditorApplication * _pApp, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform);
     ~MenuState();
 
     virtual bool initState() override;
@@ -35,7 +35,7 @@ private:
 
     virtual bool handleEvent(const InputEvent & event);
 
-    Application *               pApp = nullptr;
+    MeshEditorApplication *     pApp = nullptr;
 
     MyGUI::Gui *                pGui = nullptr;
     MyGUI::DirectX11Platform *  pPlatform = nullptr;

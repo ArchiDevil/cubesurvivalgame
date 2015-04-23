@@ -16,11 +16,11 @@
 #include "MenuState.h"
 #include "WorkState.h"
 
-class Application : public cApplication
+class MeshEditorApplication : public cApplication
 {
 public:
-    Application(HINSTANCE hInstance, int Width, int Height, LPCWSTR AppName);
-    ~Application();
+    MeshEditorApplication(HINSTANCE hInstance, int Width, int Height, LPCWSTR AppName);
+    ~MeshEditorApplication();
 
     bool Initialize();
     void Shutdown();
@@ -34,7 +34,7 @@ public:
 
 private:
     cTimer                      mainTimer;
-    IniWorker                   SettingsLoader;
+    IniWorker                   settingsLoader;
 
     std::stack<appState *>      statesStack;    //stack of game states like MainMenu, GameState and more
     std::vector<wchar_t>        charQueue;

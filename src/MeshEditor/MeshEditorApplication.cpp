@@ -1,41 +1,41 @@
-#include "appclass.h"
+#include "MeshEditorApplication.h"
 
-Application::Application(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
+MeshEditorApplication::MeshEditorApplication(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
     : cApplication(Width, Height, AppName)
 {
     utils::filesystem::CreateDir(L"saves");
 }
 
-Application::~Application()
+MeshEditorApplication::~MeshEditorApplication()
 {
 }
 
-bool Application::Initialize()
+bool MeshEditorApplication::Initialize()
 {
     //инициализируем наш загрузчик .ini файлов
-    SettingsLoader.Initialize("settings.ini");
+    settingsLoader.Initialize("settings.ini");
 
     //загружаем настройки для графического движка из файла настроек
     ShiftEngine::GraphicEngineSettings settings;
-    settings.screenHeight = SettingsLoader.GetInteger("Height");
-    settings.screenWidth = SettingsLoader.GetInteger("Width");
-    settings.multisampleQuality = SettingsLoader.GetInteger("MultisampleQuality");
-    settings.windowed = SettingsLoader.GetBoolean("Windowed");
-    settings.screenRate = SettingsLoader.GetInteger("ScreenRate");
-    settings.anisotropyLevel = SettingsLoader.GetInteger("AnisotropyLevel");
-    settings.zNear = SettingsLoader.GetFloat("zNear");
-    settings.zFar = SettingsLoader.GetFloat("zFar");
+    settings.screenHeight = settingsLoader.GetInteger("Height");
+    settings.screenWidth = settingsLoader.GetInteger("Width");
+    settings.multisampleQuality = settingsLoader.GetInteger("MultisampleQuality");
+    settings.windowed = settingsLoader.GetBoolean("Windowed");
+    settings.screenRate = settingsLoader.GetInteger("ScreenRate");
+    settings.anisotropyLevel = settingsLoader.GetInteger("AnisotropyLevel");
+    settings.zNear = settingsLoader.GetFloat("zNear");
+    settings.zFar = settingsLoader.GetFloat("zFar");
 
     //загружаем данные о путях
     ShiftEngine::PathSettings path;
-    path.MeshPath = SettingsLoader.GetWString("MeshPath");
-    path.TexturePath = SettingsLoader.GetWString("TexturePath");
-    path.ShaderPath = SettingsLoader.GetWString("ShaderPath");
-    path.FontsPath = SettingsLoader.GetWString("FontsPath");
-    path.MaterialsPath = SettingsLoader.GetWString("MaterialsPath");
+    path.MeshPath = settingsLoader.GetWString("MeshPath");
+    path.TexturePath = settingsLoader.GetWString("TexturePath");
+    path.ShaderPath = settingsLoader.GetWString("ShaderPath");
+    path.FontsPath = settingsLoader.GetWString("FontsPath");
+    path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
     //инициализируем графический движок
-    ShiftEngine::InitEngine(ShiftEngine::AT_DX11, settings, path, GetHWND());
+    ShiftEngine::InitEngine(settings, path, GetHWND());
     LOG_INFO("DirectX has been initialized");
 
     ShiftEngine::GetSceneGraph()->AddCameraSceneNode();
@@ -68,7 +68,7 @@ bool Application::Initialize()
     return true;
 }
 
-void Application::Shutdown()
+void MeshEditorApplication::Shutdown()
 {
     if (pGui)
         pGui->shutdown();
@@ -79,7 +79,7 @@ void Application::Shutdown()
     delete pPlatform;
 }
 
-bool Application::Frame()
+bool MeshEditorApplication::Frame()
 {
     if (System.GetState() == AS_Inactive)
         return true;
@@ -113,26 +113,26 @@ bool Application::Frame()
     return false;
 }
 
-void Application::PushState(appState * state)
+void MeshEditorApplication::PushState(appState * state)
 {
     statesStack.top()->onSuspend();
     statesStack.push(state);
     statesStack.top()->initState();
 }
 
-void Application::Stop()
+void MeshEditorApplication::Stop()
 {
     mainTimer.Stop();
     statesStack.top()->onSuspend();
 }
 
-void Application::Activate()
+void MeshEditorApplication::Activate()
 {
     mainTimer.Start();
     statesStack.top()->onResume();
 }
 
-void Application::ProcessMessage(MSG msg)
+void MeshEditorApplication::ProcessMessage(MSG msg)
 {
     static AppState prevState = AS_Running;
     AppState currState = System.GetState();

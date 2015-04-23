@@ -2,7 +2,7 @@
 
 #include <Utilities/inputConverter.h>
 
-MenuState::MenuState(Application * _pApp, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
+MenuState::MenuState(MeshEditorApplication * _pApp, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
     : pApp(_pApp)
     , pGui(pGui)
     , pPlatform(pPlatform)

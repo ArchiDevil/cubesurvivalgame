@@ -8,7 +8,7 @@
 #include <MyGUI_DirectX11Platform.h>
 
 #include "Common.h"
-#include "cAppStateBase.h"
+#include <Utilities/appState.h>
 #include "BlockWorkspace.h"
 
 class WorkState :
