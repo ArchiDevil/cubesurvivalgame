@@ -16,26 +16,26 @@ bool IniWorker::Initialize(const std::string & FileName)
     return true;
 }
 
-std::string IniWorker::GetKey(const std::string & Key)
+std::string IniWorker::GetKey(const std::string & Key) const
 {
     if (data.find(Key) != data.end())
-        return data[Key];
+        return data.at(Key);
 
     LOG_ERROR("Unable to get key for: ", Key);
     return "";
 }
 
-int IniWorker::GetInteger(const std::string & Parameter)
+int IniWorker::GetInteger(const std::string & Parameter) const
 {
     return std::stoi(GetKey(Parameter));
 }
 
-float IniWorker::GetFloat(const std::string & Parameter)
+float IniWorker::GetFloat(const std::string & Parameter) const
 {
     return std::stof(GetKey(Parameter));
 }
 
-bool IniWorker::GetBoolean(const std::string & Parameter)
+bool IniWorker::GetBoolean(const std::string & Parameter) const
 {
     std::string buffer = GetKey(Parameter);
     if (buffer == "true")
@@ -49,12 +49,12 @@ bool IniWorker::GetBoolean(const std::string & Parameter)
     }
 }
 
-std::string IniWorker::GetString(const std::string & Parameter)
+std::string IniWorker::GetString(const std::string & Parameter) const
 {
     return GetKey(Parameter);
 }
 
-std::wstring IniWorker::GetWString(const std::string & Parameter)
+std::wstring IniWorker::GetWString(const std::string & Parameter) const
 {
     return utils::Widen(GetKey(Parameter));
 }
