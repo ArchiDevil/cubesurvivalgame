@@ -10,15 +10,14 @@
 #include "CraftingManager.h"
 
 Game::Game()
-    : Player(nullptr)
+    : player(nullptr)
 {
-    World.reset(new cWorld);
+    world.reset(new cWorld);
     environmentMgr.reset(new EnvironmentManager);
-    EntityMgr.reset(new GameObjectsManager);
-    GlobalEventHandler.reset(new GameEventHandler);
-    gameHud.reset(new GameHUD);
-    ItemMgr.reset(new ItemManager());
-    CratingMgr.reset(new CraftingManager);
+    entityMgr.reset(new GameObjectsManager);
+    gameEventHandler.reset(new GameEventHandler);
+    itemMgr.reset(new ItemManager());
+    craftingMgr.reset(new CraftingManager);
 }
 
 Game::~Game()

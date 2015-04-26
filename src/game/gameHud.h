@@ -1,6 +1,7 @@
 #pragma once
 
-#include <GUI/GUI.h>
+#include <GraphicsEngine/Sprite.h>
+#include <MyGUI.h>
 
 #include <memory>
 #include <array>
@@ -8,9 +9,8 @@
 class GameHUD
 {
 public:
-    GameHUD();
+    GameHUD(MyGUI::Gui * guiModule);
 
-    void Initialize(SimpleGUI::Canvas * pCanvas);
     void Draw();
     void OnUserInventoryChange();
     void OnCraftingProgress();
@@ -24,32 +24,22 @@ public:
     void CloseCraftingWindow();
 
 private:
-    void onCraftRequest();
-    void onSelectRecipe(size_t row);
+    void OnCraftRequest(MyGUI::Widget * _sender);
+    void OnSelectRecipe(MyGUI::Widget * _sender, size_t row);
 
-    uint32_t selectedSlot = 0;
-    std::unique_ptr<ShiftEngine::Sprite> itemPanel = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite> selectedBorder = nullptr;
-    std::array<std::unique_ptr<ShiftEngine::Sprite>, 10> itemsSprites; // for now it's just only 10 items in inventory
+    //TODO: remove all and replace on MyGUI widgets
+    uint32_t                                                selectedSlot = 0;
+    std::unique_ptr<ShiftEngine::Sprite>                    itemPanel = nullptr;
+    std::unique_ptr<ShiftEngine::Sprite>                    selectedBorder = nullptr;
+    std::array<std::unique_ptr<ShiftEngine::Sprite>, 10>    itemsSprites; // for now it's just only 10 items in inventory
 
-    std::unique_ptr<ShiftEngine::Sprite> progressBarBack = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite> healthBar = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite> warmthBar = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite> hungerBar = nullptr;
+    std::unique_ptr<ShiftEngine::Sprite>                    progressBarBack = nullptr;
+    std::unique_ptr<ShiftEngine::Sprite>                    healthBar = nullptr;
+    std::unique_ptr<ShiftEngine::Sprite>                    warmthBar = nullptr;
+    std::unique_ptr<ShiftEngine::Sprite>                    hungerBar = nullptr;
 
-    // inventory items
-    SimpleGUI::Window * pInventory = nullptr;
+    MyGUI::Gui *                                            guiModule = nullptr;
 
-    // crafting items
-    SimpleGUI::Window * pCrafting = nullptr;
-    SimpleGUI::List   * pRecipesList = nullptr;
-    SimpleGUI::Image  * pItemImage = nullptr;
-    SimpleGUI::Text   * pItemName = nullptr;
-    SimpleGUI::Text   * pItemDescription = nullptr;
-
-    std::array<SimpleGUI::Image *, 4> pIngredientIcons;
-    std::array<SimpleGUI::Text *, 4>  pIngredientNames;
-    std::array<SimpleGUI::Text *, 4>  pIngredientCounts;
-
-    SimpleGUI::Canvas * pCanvas = nullptr;
+    MyGUI::Window *                                         craftingWindow = nullptr;
+    MyGUI::Window *                                         inventoryWindow = nullptr;
 };

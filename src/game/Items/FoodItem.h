@@ -23,7 +23,7 @@ public:
 
     bool UseOnPlayer() override
     {
-        auto * pPlayer = LostIsland::GetGamePtr()->Player;
+        auto * pPlayer = LostIsland::GetGamePtr()->player;
         pPlayer->SetHunger(pPlayer->GetHunger() + GetHunger());
         return true;
     }

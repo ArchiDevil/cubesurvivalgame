@@ -53,7 +53,6 @@ endif()
 
 set(GAME_LIBS   jsoncpp_lib 
                 GraphicsEngine 
-                GUI 
                 Utilities 
                 MathLib 
                 SimplePhysicsEngine

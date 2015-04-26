@@ -7,14 +7,8 @@
 
 namespace ShiftEngine
 {
-    enum API_TYPE
-    {
-        AT_DX10,
-        AT_DX11,
-        AT_OGL33
-    };
-
-    bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd);
+    //TODO: remove window handle and replace it by something cross-platform
+    bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd);
     void ShutdownEngine();
 
     IContextManager * GetContextManager();

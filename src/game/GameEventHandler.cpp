@@ -48,13 +48,13 @@ void GameEventHandler::DispatchEvent(std::unique_ptr<IGameEvent> ev)
     }
 
     auto pGame = LostIsland::GetGamePtr();
-    pGame->EntityMgr->DispatchEvent(std::move(ev));
+    pGame->entityMgr->DispatchEvent(std::move(ev));
 }
 
 void GameEventHandler::Process(PlayerUsesItem* ev)
 {
     auto pGame = LostIsland::GetGamePtr();
-    auto pItem = pGame->ItemMgr->GetItemById(ev->item_id);
+    auto pItem = pGame->itemMgr->GetItemById(ev->item_id);
     if (!pItem)
         return;
     if (ev->self)
@@ -75,23 +75,23 @@ void GameEventHandler::Process(PlayerMoves* /*ev*/)
     prePlayerCX = PlayerCX;
     prePlayerCY = PlayerCY;
 
-    PlayerCX = (int)floor(pGame->Player->GetPosition().x / (int)pGame->World->GetDataStorage()->GetChunkWidth());
-    PlayerCY = (int)floor(pGame->Player->GetPosition().y / (int)pGame->World->GetDataStorage()->GetChunkWidth());
+    PlayerCX = (int)floor(pGame->player->GetPosition().x / (int)pGame->world->GetDataStorage()->GetChunkWidth());
+    PlayerCY = (int)floor(pGame->player->GetPosition().y / (int)pGame->world->GetDataStorage()->GetChunkWidth());
 
     if (PlayerCX != prePlayerCX)
     {
         if (PlayerCX - prePlayerCX < 0)
-            pGame->World->ShiftChunkX(-1);
+            pGame->world->ShiftChunkX(-1);
         if (PlayerCX - prePlayerCX > 0)
-            pGame->World->ShiftChunkX(1);
+            pGame->world->ShiftChunkX(1);
     }
 
     if (PlayerCY != prePlayerCY)
     {
         if (PlayerCY - prePlayerCY < 0)
-            pGame->World->ShiftChunkY(-1);
+            pGame->world->ShiftChunkY(-1);
         if (PlayerCY - prePlayerCY > 0)
-            pGame->World->ShiftChunkY(1);
+            pGame->world->ShiftChunkY(1);
     }
 }
 
@@ -102,16 +102,16 @@ void GameEventHandler::Process(PlayerAttacks* /*ev*/)
 void GameEventHandler::Process(PlayerPicksItem* ev)
 {
     auto pGame = LostIsland::GetGamePtr();
-    pGame->Player->GetInventoryPtr()->AddItem(ev->itemId, ev->count);
+    pGame->player->GetInventoryPtr()->AddItem(ev->itemId, ev->count);
     pGame->gameHud->OnUserInventoryChange();
 }
 
 void GameEventHandler::Process(PlayerDropsItem* ev)
 {
-    LostIsland::GetGamePtr()->Player->GetInventoryPtr()->RemoveItem(ev->slot);
-    auto pos = LostIsland::GetGamePtr()->Player->GetPosition();
+    LostIsland::GetGamePtr()->player->GetInventoryPtr()->RemoveItem(ev->slot);
+    auto pos = LostIsland::GetGamePtr()->player->GetPosition();
     pos.z += 10.0f;
-    LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), ev->itemId, ev->count);
+    LostIsland::GetGamePtr()->entityMgr->CreateItemEntity(pos, Vector3D(0.0, 0.0, 3.0), ev->itemId, ev->count);
 }
 
 void GameEventHandler::Process(LivingDies* ev)
@@ -130,11 +130,11 @@ void GameEventHandler::Process(LivingDies* ev)
         Vector3D velocity(sin(rand() % 16), cos(rand() % 16), 1.0);
         velocity = MathLib::normalize(velocity);
         velocity *= 6.0f;
-        LostIsland::GetGamePtr()->EntityMgr->CreateItemEntity(pos, velocity, item.itemId, item.count);
+        LostIsland::GetGamePtr()->entityMgr->CreateItemEntity(pos, velocity, item.itemId, item.count);
     }
 }
 
 void GameEventHandler::Process(HeatEvent* ev)
 {
-    LostIsland::GetGamePtr()->Player->DispatchEvent(ev);
+    LostIsland::GetGamePtr()->player->DispatchEvent(ev);
 }

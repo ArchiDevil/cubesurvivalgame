@@ -102,7 +102,7 @@ bool PlayerGameObject::Go(const MathLib::Vector2F & target)
     auto pGame = LostIsland::GetGamePtr();
     targetMarker->SetVisibility(true);
     targetMarker->SetPosition(Vector3F(target.x, target.y, 0.0f));
-    float height = (float)pGame->World->GetDataStorage()->GetFullHeight((int)std::floor(target.x), (int)std::floor(target.y));
+    float height = (float)pGame->world->GetDataStorage()->GetFullHeight((int)std::floor(target.x), (int)std::floor(target.y));
     auto position = targetMarker->GetPosition();
     position.z = height;
     targetMarker->SetPosition(position);
@@ -116,7 +116,7 @@ void PlayerGameObject::Attack(LiveGameObject * target) const
         return;
 
     auto pGame = LostIsland::GetGamePtr();
-    auto itemInHand = pGame->ItemMgr->GetItemById(Inventory.GetItemInRightHand().itemId);
+    auto itemInHand = pGame->itemMgr->GetItemById(Inventory.GetItemInRightHand().itemId);
 
     int damage = 0;
 

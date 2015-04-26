@@ -24,10 +24,10 @@ void ItemGameObject::Update(double dt)
     //  SceneNode->SetRotation(rot);
 
     Game * pGame = LostIsland::GetGamePtr();
-    auto ppos = pGame->Player->GetPosition();
+    auto ppos = pGame->player->GetPosition();
     if (MathLib::distance((Vector3F)ppos, GetPosition()) < 1.0f)
     {
-        LostIsland::GetGamePtr()->GlobalEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(itemId, count));
+        LostIsland::GetGamePtr()->gameEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(itemId, count));
         Delete();
     }
 }

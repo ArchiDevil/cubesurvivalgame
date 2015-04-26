@@ -21,14 +21,14 @@ struct Game
     Game(Game && ref) = delete;
     Game & operator=(Game && ref) = delete;
 
-    std::unique_ptr<cWorld> World;
-    PlayerGameObject * Player;
-    std::unique_ptr<GameObjectsManager> EntityMgr;
-    std::unique_ptr<GameEventHandler> GlobalEventHandler;
-    std::unique_ptr<ItemManager> ItemMgr;
-    std::unique_ptr<CraftingManager> CratingMgr;
-    std::unique_ptr<EnvironmentManager> environmentMgr;
-    std::unique_ptr<GameHUD> gameHud;
+    std::unique_ptr<cWorld> world = nullptr;
+    PlayerGameObject * player = nullptr;
+    std::unique_ptr<GameObjectsManager> entityMgr = nullptr;
+    std::unique_ptr<GameEventHandler> gameEventHandler = nullptr;
+    std::unique_ptr<ItemManager> itemMgr = nullptr;
+    std::unique_ptr<CraftingManager> craftingMgr = nullptr;
+    std::unique_ptr<EnvironmentManager> environmentMgr = nullptr;
+    std::unique_ptr<GameHUD> gameHud = nullptr;
 
 };
 

@@ -1,4 +1,4 @@
-#include "appclass.h"
+#include "LostIslandApplication.h"
 
 //TEMPORARY
 
@@ -11,42 +11,41 @@ double AllTime = 0.0f;
 
 Log PerformanceLog("Performance.log");
 
-Application::Application(int Width, int Height, LPCWSTR AppName)
+LostIslandApplication::LostIslandApplication(int Width, int Height, LPCWSTR AppName)
     : cApplication(Width, Height, AppName)
-    , GUIListener(nullptr)
 {
 }
 
-Application::~Application()
+LostIslandApplication::~LostIslandApplication()
 {
 }
 
-bool Application::Initialize()
+bool LostIslandApplication::Initialize()
 {
     //инициализируем наш загрузчик .ini файлов
-    SettingsLoader.Initialize("settings.ini");
+    settingsLoader.Initialize("settings.ini");
 
     //загружаем настройки для графического движка из файла настроек
     ShiftEngine::GraphicEngineSettings settings;
-    settings.screenHeight       = SettingsLoader.GetInteger("Height");
-    settings.screenWidth        = SettingsLoader.GetInteger("Width");
-    settings.multisampleQuality = SettingsLoader.GetInteger("MultisampleQuality");
-    settings.windowed           = SettingsLoader.GetBoolean("Windowed");
-    settings.screenRate         = SettingsLoader.GetInteger("ScreenRate");
-    settings.zNear              = SettingsLoader.GetFloat("zNear");
-    settings.zFar               = SettingsLoader.GetFloat("zFar");
-    settings.anisotropyLevel    = SettingsLoader.GetInteger("AnisotropyLevel");
+    settings.screenHeight       = settingsLoader.GetInteger("Height");
+    settings.screenWidth        = settingsLoader.GetInteger("Width");
+    settings.multisampleQuality = settingsLoader.GetInteger("MultisampleQuality");
+    settings.windowed           = settingsLoader.GetBoolean("Windowed");
+    settings.screenRate         = settingsLoader.GetInteger("ScreenRate");
+    settings.zNear              = settingsLoader.GetFloat("zNear");
+    settings.zFar               = settingsLoader.GetFloat("zFar");
+    settings.anisotropyLevel    = settingsLoader.GetInteger("AnisotropyLevel");
 
     //загружаем данные о путях
     ShiftEngine::PathSettings path;
-    path.MeshPath      = SettingsLoader.GetWString("MeshPath");
-    path.TexturePath   = SettingsLoader.GetWString("TexturePath");
-    path.ShaderPath    = SettingsLoader.GetWString("ShaderPath");
-    path.FontsPath     = SettingsLoader.GetWString("FontsPath");
-    path.MaterialsPath = SettingsLoader.GetWString("MaterialsPath");
+    path.MeshPath      = settingsLoader.GetWString("MeshPath");
+    path.TexturePath   = settingsLoader.GetWString("TexturePath");
+    path.ShaderPath    = settingsLoader.GetWString("ShaderPath");
+    path.FontsPath     = settingsLoader.GetWString("FontsPath");
+    path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
     //инициализируем графический движок
-    if (!ShiftEngine::InitEngine(ShiftEngine::AT_DX11, settings, path, GetHWND()))
+    if (!ShiftEngine::InitEngine(settings, path, GetHWND()))
         LOG_FATAL_ERROR("Unable to inititalize graphics engine");
     else
         LOG_INFO("Graphics engine has been initialized");
@@ -58,14 +57,25 @@ bool Application::Initialize()
 
     InputEngine::GetInstance().subscribe(&System);
 
-    GUIListener.reset(new SimpleGUI::MainListener(nullptr, &(InputEngine::GetInstance()), charQueue));
-    SimpleGUI::ActiveListener = GUIListener.get();
+    guiPlatform = new MyGUI::DirectX11Platform();
+    std::string logFile = "MyGUI.log";
+#ifdef NDEBUG
+    logFile = "";
+#endif // NDEBUG
+    guiPlatform->initialise(((ShiftEngine::D3D11ContextManager*)ShiftEngine::GetContextManager())->GetDevicePtr(), logFile);
+    guiPlatform->getDataManagerPtr()->addResourceLocation("resources/ui/MyGUI_Media", false);
+    guiPlatform->getDataManagerPtr()->addResourceLocation("resources/textures", false);
+
+    guiModule = new MyGUI::Gui();
+    guiModule->initialise();
+
+    guiPlatform->getRenderManagerPtr()->setViewSize(settings.screenWidth, settings.screenHeight);
 
     ////////////////////////////
     /// GAME STRUCTURES INIT ///
     ////////////////////////////
 
-    gameState * state = new gameState(&SettingsLoader);
+    gameState * state = new gameState(&settingsLoader, guiModule, guiPlatform);
     statesStack.push(state);
 
     state->initState();
@@ -77,7 +87,7 @@ bool Application::Initialize()
     return true;
 }
 
-void Application::Shutdown()
+void LostIslandApplication::Shutdown()
 {
     ShiftEngine::ShutdownEngine();
 
@@ -89,7 +99,7 @@ void Application::Shutdown()
     LOG_INFO("Working done");
 }
 
-bool Application::Frame()
+bool LostIslandApplication::Frame()
 {
     static double elapsedTime = 0.0f;
 
@@ -104,8 +114,6 @@ bool Application::Frame()
         maxFPS = curFPS;
     if (curFPS < minFPS)
         minFPS = curFPS;
-
-    GUIListener->Update();
 
     if (!statesStack.empty())
     {
@@ -133,26 +141,26 @@ bool Application::Frame()
     }
 }
 
-void Application::PushState(appState * state)
+void LostIslandApplication::PushState(appState * state)
 {
     statesStack.top()->onSuspend();
     statesStack.push(state);
     statesStack.top()->initState();
 }
 
-void Application::Stop()
+void LostIslandApplication::Stop()
 {
     gameTimer.Stop();
     statesStack.top()->onSuspend();
 }
 
-void Application::Activate()
+void LostIslandApplication::Activate()
 {
     gameTimer.Start();
     statesStack.top()->onResume();
 }
 
-void Application::ProcessMessage(MSG /*msg*/)
+void LostIslandApplication::ProcessMessage(MSG /*msg*/)
 {
     static AppState prevState = AS_Running;
     AppState currState = System.GetState();
@@ -172,11 +180,11 @@ void Application::ProcessMessage(MSG /*msg*/)
     }
 }
 
-void Application::SaveTechInfo()
+void LostIslandApplication::SaveTechInfo()
 {
     //собираем информацию о процессоре и его частоте
-    PerformanceLog.Message("Processor name: " + utils::Narrow(RegistryWorker.GetString(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"ProcessorNameString")));
-    PerformanceLog.Message("Frequency = " + std::to_string(RegistryWorker.GetInteger(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"~MHz")) + " MHz");
+    PerformanceLog.Message("Processor name: " + utils::Narrow(registryWorker.GetString(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"ProcessorNameString")));
+    PerformanceLog.Message("Frequency = " + std::to_string(registryWorker.GetInteger(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"~MHz")) + " MHz");
 
     //получаем количество оперативной памяти в системе и её загруженность
     //после, записываем все это в файл

@@ -47,7 +47,7 @@ void CraftingManager::LoadRecipes(const std::string & path)
 {
     auto files = utils::filesystem::CollectFileNames(path, "json");
     auto pGame = LostIsland::GetGamePtr();
-    auto pItemMgr = pGame->ItemMgr.get();
+    auto pItemMgr = pGame->itemMgr.get();
 
     for (auto &file : files)
     {
@@ -166,7 +166,7 @@ void CraftingManager::LoadRecipes(const std::string & path)
 
 void CraftingManager::Craft(const Recipe& recipe)
 {
-    auto * pInventory = LostIsland::GetGamePtr()->Player->GetInventoryPtr();
+    auto * pInventory = LostIsland::GetGamePtr()->player->GetInventoryPtr();
     for (auto item : recipe.itemsToCraft)
     {
         if (!pInventory->IsExist(item.first))

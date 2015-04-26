@@ -39,7 +39,7 @@ void Console::HandleCommand()
         float y_pos = std::stof(tokens[3]);
         float z_pos = std::stof(tokens[4]);
 
-        pGame->EntityMgr->CreateEntity(Vector3F(x_pos, y_pos, z_pos), tokens[1]);
+        pGame->entityMgr->CreateEntity(Vector3F(x_pos, y_pos, z_pos), tokens[1]);
     }
     else if (commandName == "add_item")
     {
@@ -52,7 +52,7 @@ void Console::HandleCommand()
         std::string name = tokens[1];
         unsigned int count = std::stoul(tokens[2]);
 
-        pGame->GlobalEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(pGame->ItemMgr->GetItemId(name), count));
+        pGame->gameEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(pGame->itemMgr->GetItemId(name), count));
     }
     else
     {

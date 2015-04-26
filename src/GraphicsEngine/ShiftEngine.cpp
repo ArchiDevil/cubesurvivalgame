@@ -40,20 +40,20 @@ namespace ShiftEngine
 #endif
     }
 
-    bool InitGL33Api(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
+    bool InitOpenGLApi(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
     {
         return false;
     }
 
-    bool InitEngine(API_TYPE apiType, GraphicEngineSettings settings, PathSettings paths, HWND hwnd)
+    bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd)
     {
-        switch (apiType)
-        {
-        case ShiftEngine::AT_DX10:  return InitDX10Api(hwnd, settings, paths);
-        case ShiftEngine::AT_DX11:  return InitDX11Api(hwnd, settings, paths);
-        case ShiftEngine::AT_OGL33: return InitGL33Api(hwnd, settings, paths);
-        }
-        return false;
+#if defined(D3D10_RENDER)
+        return InitDX10Api(hwnd, settings, paths);
+#elif defined(D3D11_RENDER)
+        return InitDX11Api(hwnd, settings, paths);
+#elif defined(OPENGL_RENDER)
+        return InitOpenGLApi(hwnd, settings, paths);
+#endif;
     }
 
     IContextManager * GetContextManager()

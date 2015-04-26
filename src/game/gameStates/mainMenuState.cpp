@@ -29,4 +29,3 @@ void mainMenuState::onResume()
 {
     throw std::exception("The method or operation is not implemented.");
 }
-

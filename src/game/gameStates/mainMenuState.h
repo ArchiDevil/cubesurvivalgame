@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../appState.h"
-#include "../game.h"
-#include "../../utilities/ut.h"
-#include "../../utilities/iniloader.h"
+#include <utilities/ut.h>
+#include <utilities/iniloader.h>
+#include <Utilities/appState.h>
 
 class mainMenuState : public appState
 {
@@ -11,12 +10,10 @@ public:
     mainMenuState();
     ~mainMenuState();
 
-    virtual bool initState();
-    virtual bool update(double dt);
-    virtual bool render(double dt);
-    virtual void onKill();
-    virtual void onSuspend();
-    virtual void onResume();
-
-private:
+    bool initState() override;
+    bool update(double dt) override;
+    bool render(double dt) override;
+    void onKill() override;
+    void onSuspend() override;
+    void onResume() override;
 };

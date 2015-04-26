@@ -24,7 +24,7 @@ GameObjectsManager::GameObjectsManager()
 ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId, size_t count)
 {
     auto pGame = LostIsland::GetGamePtr();
-    auto * item = pGame->ItemMgr->GetItemById(itemId);
+    auto * item = pGame->itemMgr->GetItemById(itemId);
     if (!item)
     {
         LOG_ERROR("Unable to create item entity with ", itemId, " itemId");
@@ -74,7 +74,7 @@ GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & positio
 PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
 {
     auto pGame = LostIsland::GetGamePtr();
-    if (pGame->Player)
+    if (pGame->player)
     {
         LOG_ERROR("Player is already created");
         return nullptr;
@@ -83,10 +83,10 @@ PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
     auto pScene = ShiftEngine::GetSceneGraph();
 
     ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->ItemMgr.get());
+    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->itemMgr.get());
     player->SetPosition(Position);
     gameObjects.push_back(player);
-    pGame->Player = player.get();
+    pGame->player = player.get();
     return player;
 }
 
@@ -205,7 +205,7 @@ void GameObjectsManager::LoadEntities()
                 LOG_ERROR("Unable to find entity item for: ", id);
                 continue;
             }
-            item_id_t itemId = pGame->ItemMgr->GetItemId(itemName);
+            item_id_t itemId = pGame->itemMgr->GetItemId(itemName);
             buff = root.get("count", buff);
             unsigned count = buff.asUInt();
             breeds[id] = std::make_shared<CollectableBreed>(meshName, materialName, itemId, count, scale);
@@ -296,10 +296,10 @@ void GameObjectsManager::LoadInventories()
             }
 
             if (count)
-                inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->ItemMgr->GetItemId(itemName), count));
+                inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->itemMgr->GetItemId(itemName), count));
 
             if (min_count || max_count)
-                inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->ItemMgr->GetItemId(itemName), 0, min_count, max_count));
+                inventory.AddItem(InventoryBreed::ExtendedSlotUnit(pGame->itemMgr->GetItemId(itemName), 0, min_count, max_count));
         }
 
         inventories.emplace(std::make_pair(utils::Narrow(file_name.substr(0, file_name.find(L"."))), std::move(inventory)));

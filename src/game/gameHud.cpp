@@ -9,21 +9,16 @@
 #include <GraphicsEngine/ShiftEngine.h>
 
 using ShiftEngine::Sprite;
+using namespace MyGUI;
 
-GameHUD::GameHUD()
-{
-    pIngredientIcons.fill(nullptr);
-    pIngredientNames.fill(nullptr);
-    pIngredientCounts.fill(nullptr);
-}
-
-void GameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
+GameHUD::GameHUD(MyGUI::Gui * guiModule)
+    : guiModule(guiModule)
 {
     auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
     int screenWidth = settings.screenWidth;
     int screenHeight = settings.screenHeight;
 
-    this->pCanvas = pCanvas;
+    this->guiModule = guiModule;
 
     itemPanel.reset(new Sprite(L"gui/itemPanel.png"));
     float xPos = (float)screenWidth / 2.0f;
@@ -51,60 +46,42 @@ void GameHUD::Initialize(SimpleGUI::Canvas * pCanvas)
     position = Vector2F(8 + progressBarBack->GetTextureDimensions().x / 2, screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 0 * 40);
     hungerBar->SetPosition(position);
 
-    // not used now
-    pInventory = new SimpleGUI::Window(pCanvas);
-    pInventory->SetDraggable(false);
-    pInventory->Hide();
+    //// not used now
+    //pInventory = new SimpleGUI::Window(pCanvas);
+    //pInventory->SetDraggable(false);
+    //pInventory->Hide();
 
-    // creating crafting window
-    pCrafting = new SimpleGUI::Window(pCanvas);
-    pCrafting->SetSize(600, 300);
-    pCrafting->SetPosition(300, 300);
-    pCrafting->SetDraggable(false);
-    pCrafting->Hide();
+    craftingWindow = guiModule->createWidget<Window>("Window", IntCoord(300, 300, 600, 330), Align::Default, "Overlapped");
+    craftingWindow->setMovable(false);
+    craftingWindow->setVisible(false);
+    craftingWindow->setCaption("Crafting window");
 
-    SimpleGUI::Button * pCraftButton = new SimpleGUI::Button(pCrafting);
-    pCraftButton->SetPosition(2, 275);
-    pCraftButton->SetSize(596, 24);
-    pCraftButton->SetText("CRAFT");
-    pCraftButton->SetClickHandler([&](MouseKeys, int, int) { onCraftRequest(); });
+    Button * button = craftingWindow->createWidget<Button>("Button", IntCoord(2, 253, 596, 24), Align::Default);
+    button->setCaption("CRAFT");
+    button->eventMouseButtonClick += newDelegate(this, &GameHUD::OnCraftRequest);
 
-    pRecipesList = new SimpleGUI::List(pCrafting);
-    pRecipesList->SetPosition(2, 24);
-    pRecipesList->SetSize(196, 250);
-    pRecipesList->GetTable()->SetOnRowSelectedHandler([this](size_t row) { onSelectRecipe(row); });
+    ListBox * list = craftingWindow->createWidget<ListBox>("ListBox", IntCoord(2, 2, 196, 250), Align::Default, "recipes_list");
+    list->eventListChangePosition += newDelegate(this, &GameHUD::OnSelectRecipe);
     OnCraftingProgress();
 
-    pItemImage = new SimpleGUI::Image(pCrafting, L"");
-    pItemImage->SetPosition(224, 24);
-    pItemImage->SetSize(64, 64);
-
-    pItemName = new SimpleGUI::Text(pCrafting, "EMPTY NAME");
-    pItemName->SetPosition(288 + 16, 24); // DNIWE, create layouts!
-    pItemName->SetSize(100, 32);
-
-    pItemDescription = new SimpleGUI::Text(pCrafting, "EMPTY DESCRIPTION");
-    pItemDescription->SetPosition(288 + 16, 24 + 20);
-    pItemDescription->SetSize(100, 32);
+    craftingWindow->createWidget<ImageBox>("ImageBox", IntCoord(224, 2, 64, 64), Align::Default, "item_image");
+    craftingWindow->createWidget<TextBox>("TextBox", IntCoord(288 + 16, 2, 200, 32), Align::Default, "item_name")->setCaption("EMPTY NAME");
+    craftingWindow->createWidget<TextBox>("TextBox", IntCoord(288 + 16, 2 + 20, 200, 32), Align::Default, "item_description")->setCaption("EMPTY DESC");
 
     for (int i = 0; i < 2; ++i)
     {
         for (int j = 0; j < 2; ++j)
         {
-            SimpleGUI::Image * pImage = new SimpleGUI::Image(pCrafting, L"");
-            pImage->SetPosition(224 + j * 124, 94 + i * 70);
-            pImage->SetSize(64, 64);
-            pIngredientIcons[i * 2 + j] = pImage;
+            std::string name = "ingredient_icon_" + std::to_string(i) + std::to_string(j);
+            craftingWindow->createWidget<ImageBox>("ImageBox", IntCoord(224 + j * 124, 72 + i * 70, 64, 64), Align::Default, name);
 
-            SimpleGUI::Text * pName = new SimpleGUI::Text(pCrafting, "EMPTY");
-            pName->SetPosition(224 + j * 124 + 64, 94 + i * 70);
-            pName->SetSize(60, 32);
-            pIngredientNames[i * 2 + j] = pName;
+            name = "ingredient_name_" + std::to_string(i) + std::to_string(j);
+            TextBox * t = craftingWindow->createWidget<TextBox>("TextBox", IntCoord(224 + j * 124 + 64, 72 + i * 70, 60, 32), Align::Default, name);
+            t->setCaption("EMPTY NAME");
 
-            SimpleGUI::Text * pCount = new SimpleGUI::Text(pCrafting, "0");
-            pCount->SetPosition(224 + j * 124 + 64, 94 + i * 70 + 32);
-            pCount->SetSize(60, 32);
-            pIngredientCounts[i * 2 + j] = pCount;
+            name = "ingredient_count_" + std::to_string(i) + std::to_string(j);
+            t = craftingWindow->createWidget<TextBox>("TextBox", IntCoord(224 + j * 124 + 64, 72 + i * 70 + 32, 60, 32), Align::Default, name);
+            t->setCaption("0");
         }
     }
 }
@@ -117,7 +94,7 @@ void GameHUD::Draw()
     int screenHeight = settings.screenHeight;
 
     auto pGame = LostIsland::GetGamePtr();
-    auto pPlayer = pGame->Player;
+    auto pPlayer = pGame->player;
     SlotUnit handItem = pPlayer->GetInventoryPtr()->GetItemInRightHand();
 
     for (int i = 0; i < 3; i++)
@@ -127,19 +104,19 @@ void GameHUD::Draw()
         progressBarBack->Draw();
     }
 
-    float scale = (float)pGame->Player->GetHealth() / 20.0f;
+    float scale = (float)pGame->player->GetHealth() / 20.0f;
     float xPos = 10 + healthBar->GetTextureDimensions().x * scale / 2;
     float yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 2 * 40;
     healthBar->SetScale(Vector2F(scale, 1.0f));
     healthBar->SetPosition(Vector2F(xPos, yPos));
 
-    scale = (float)pGame->Player->GetWarmth() / 100.0f;
+    scale = (float)pGame->player->GetWarmth() / 100.0f;
     xPos = 10 + warmthBar->GetTextureDimensions().x * scale / 2;
     yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 1 * 40;
     warmthBar->SetScale(Vector2F(scale, 1.0f));
     warmthBar->SetPosition(Vector2F(xPos, yPos));
 
-    scale = (float)pGame->Player->GetHunger() / 25.0f;
+    scale = (float)pGame->player->GetHunger() / 25.0f;
     xPos = 10 + hungerBar->GetTextureDimensions().x * scale / 2;
     yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 0 * 40;
     hungerBar->SetScale(Vector2F(scale, 1.0f));
@@ -169,14 +146,14 @@ void GameHUD::Draw()
 void GameHUD::OnUserInventoryChange()
 {
     auto pGame = LostIsland::GetGamePtr();
-    auto & pItemMgr = pGame->ItemMgr;
+    auto & pItemMgr = pGame->itemMgr;
 
     for (int i = 0; i < 10; ++i)
     {
         itemsSprites[i]->SetTexture(ShiftEngine::ITexturePtr(nullptr));
     }
 
-    const std::vector<SlotUnit> &items = pGame->Player->GetInventoryPtr()->GetItems();
+    const std::vector<SlotUnit> &items = pGame->player->GetInventoryPtr()->GetItems();
     size_t maxi = items.size();
     if (maxi > 10)
         maxi = 10;
@@ -196,7 +173,7 @@ void GameHUD::SelectSlot(uint32_t slot)
 {
     selectedSlot = slot;
     auto pGame = LostIsland::GetGamePtr();
-    pGame->Player->GetInventoryPtr()->RemoveItemFromRightHand();
+    pGame->player->GetInventoryPtr()->RemoveItemFromRightHand();
 }
 
 uint32_t GameHUD::GetSelectedSlot() const
@@ -206,90 +183,103 @@ uint32_t GameHUD::GetSelectedSlot() const
 
 void GameHUD::OpenCraftingWindow()
 {
-    pCrafting->Show();
+    if (craftingWindow)
+        craftingWindow->setVisible(true);
 }
 
 void GameHUD::CloseCraftingWindow()
 {
-    pCrafting->Hide();
+    if (craftingWindow)
+        craftingWindow->setVisible(false);
 }
 
 void GameHUD::OpenInventoryWindow()
 {
-    pInventory->Show();
+    //pInventory->Show();
 }
 
 void GameHUD::CloseInventoryWindow()
 {
-    pInventory->Hide();
+    //pInventory->Hide();
 }
 
 void GameHUD::OnCraftingProgress()
 {
-    SimpleGUI::Table * pTable = pRecipesList->GetTable();
-    CraftingManager * pCraftingMgr = LostIsland::GetGamePtr()->CratingMgr.get();
+    CraftingManager * pCraftingMgr = LostIsland::GetGamePtr()->craftingMgr.get();
     auto recipesVec = pCraftingMgr->GetAllRecipes();
-    SimpleGUI::ListModel * pModel = pTable->GetModel();
-    if (!pModel)
+
+    ListBox * list = craftingWindow->findWidget("recipes_list")->castType<ListBox>();
+    if (!list)
         return;
 
-    auto & pItemMgr = LostIsland::GetGamePtr()->ItemMgr;
+    auto & pItemMgr = LostIsland::GetGamePtr()->itemMgr;
 
-    pModel->Clear();
+    list->removeAllItems();
     for (auto& recipe : recipesVec)
     {
         Item * pItem = pItemMgr->GetItemById(recipe.second.producedItem);
         if (!pItem)
             continue;
 
-        SimpleGUI::ListModelElement elementToInsert(pItem->GetName());
-        elementToInsert.SetValue("id", recipe.first);
-        pModel->Add(elementToInsert);
+        list->addItem(pItem->GetName(), recipe.first);
     }
 }
 
-void GameHUD::onCraftRequest()
+void GameHUD::OnCraftRequest(Widget * _sender)
 {
-    SimpleGUI::Table * pTable = pRecipesList->GetTable();
     auto * pGame = LostIsland::GetGamePtr();
-
-    size_t selectedRecipe = pTable->GetSelectedRow();
-    if (selectedRecipe == ~0x0)
+    ListBox * list = craftingWindow->findWidget("recipes_list")->castType<ListBox>();
+    if (!list)
         return;
 
-    SimpleGUI::ListModel * pModel = pTable->GetModel();
-    if (!pModel)
+    size_t selectedRow = list->getIndexSelected();
+    if (selectedRow == ITEM_NONE)
         return;
 
-    const std::string & name = pModel->Get(selectedRecipe).GetValue("id");
-    const Recipe & recipe = pGame->CratingMgr->GetRecipeByName(name);
-    pGame->CratingMgr->Craft(recipe);
+    const std::string * recipeName = list->getItemDataAt<std::string>(selectedRow);
+    const Recipe & recipe = pGame->craftingMgr->GetRecipeByName(*recipeName);
+    pGame->craftingMgr->Craft(recipe);
     OnUserInventoryChange();
 }
 
-void GameHUD::onSelectRecipe(size_t row)
+void GameHUD::OnSelectRecipe(Widget * _sender, size_t row)
 {
+    auto &pCraftingMgr = LostIsland::GetGamePtr()->craftingMgr;
+    auto &pItemMgr = LostIsland::GetGamePtr()->itemMgr;
+
+    if (row == ITEM_NONE)
+        return;
+
     // update icon, name and description
-    SimpleGUI::ListModel * pModel = pRecipesList->GetTable()->GetModel();
-    const std::string & recipeName = pModel->Get(row).GetValue("id");
+    ListBox * list = craftingWindow->findWidget("recipes_list")->castType<ListBox>();
+    if (!list)
+        return;
 
-    auto &pCraftingMgr = LostIsland::GetGamePtr()->CratingMgr;
-    const Recipe &recipe = pCraftingMgr->GetRecipeByName(recipeName);
+    const std::string * recipeName = list->getItemDataAt<std::string>(row);
+    const Recipe &recipe = pCraftingMgr->GetRecipeByName(*recipeName);
 
-    auto &pItemMgr = LostIsland::GetGamePtr()->ItemMgr;
     Item * pItem = pItemMgr->GetItemById(recipe.producedItem);
     if (!pItem)
         LOG_ERROR("Unable to find item: ", recipe.producedItem);
 
-    pItemImage->SetImage(utils::Widen(pItem->GetImageFile()));
-    pItemName->SetText(pItem->GetName());
-    pItemDescription->SetText(pItem->GetDescription());
+    ImageBox * itemImage = craftingWindow->findWidget("item_image")->castType<ImageBox>();
+    TextBox * itemName = craftingWindow->findWidget("item_name")->castType<TextBox>();
+    TextBox * itemDescription = craftingWindow->findWidget("item_description")->castType<TextBox>();
+
+    itemImage->setImageTexture(pItem->GetImageFile());
+    itemName->setCaption(pItem->GetName());
+    itemDescription->setCaption(pItem->GetDescription());
 
     for (size_t i = 0; i < recipe.itemsToCraft.size(); ++i)
     {
-        pIngredientIcons[i]->SetImage(L"");
-        pIngredientNames[i]->SetText("");
-        pIngredientCounts[i]->SetText("");
+        itemImage = craftingWindow->findWidget("ingredient_icon_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<ImageBox>();
+        itemImage->setImageTexture("");
+
+        itemName = craftingWindow->findWidget("ingredient_name_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<TextBox>();
+        itemName->setCaption("");
+
+        itemName = craftingWindow->findWidget("ingredient_count_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<TextBox>();
+        itemName->setCaption("");
     }
 
     for (size_t i = 0; i < recipe.itemsToCraft.size(); ++i)
@@ -306,8 +296,13 @@ void GameHUD::onSelectRecipe(size_t row)
             continue;
         }
 
-        pIngredientIcons[i]->SetImage(utils::Widen(pItem->GetImageFile()));
-        pIngredientNames[i]->SetText(pItem->GetName());
-        pIngredientCounts[i]->SetText(std::to_string(pair.second));
+        itemImage = craftingWindow->findWidget("ingredient_icon_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<ImageBox>();
+        itemImage->setImageTexture(pItem->GetImageFile());
+
+        itemName = craftingWindow->findWidget("ingredient_name_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<TextBox>();
+        itemName->setCaption(pItem->GetName());
+
+        itemName = craftingWindow->findWidget("ingredient_count_" + std::to_string(i / 2) + std::to_string((i % 2)))->castType<TextBox>();
+        itemName->setCaption(std::to_string(pair.second));
     }
 }

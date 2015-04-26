@@ -2,6 +2,7 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <SimplePhysicsEngine/PhysicsEngine.h>
+#include <Utilities/inputConverter.h>
 
 #include "../world/world.h"
 #include "../Items/ItemManager.h"
@@ -17,29 +18,24 @@ float r = 20.0f;
 ShiftEngine::LightNode * pSun = nullptr;
 //END OF TEMPORARY
 
-gameState::gameState(IniWorker * iw)
-    : pIniLoader(iw)
-    , pSkinner(nullptr)
-    , pCanvas(nullptr)
+gameState::gameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform)
+    : iniLoader(iw)
     , console()
+    , guiModule(guiModule)
+    , guiPlatform(guiPlatform)
 {
-    pCanvas = new SimpleGUI::Canvas;
-    pSkinner = new SimpleGUI::Skinner;
-    pSkinner->Initialize();
 }
 
 gameState::~gameState()
 {
-    delete pCanvas;
-    delete pSkinner;
 }
 
 bool gameState::initState()
 {
-    LostIsland::CreateGame();
+    // to receive events for GUI
+    subscribe(&InputEngine::GetInstance());
 
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
+    LostIsland::CreateGame();
 
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
@@ -50,26 +46,26 @@ bool gameState::initState()
     ::utils::filesystem::CreateDir(L"saves/players/");
     ::utils::filesystem::CreateDir(L"saves/worlds/tempWorld/");
 
-    int ChunksPerSide = pIniLoader->GetInteger("ChunksPerSide");
-    pGame->World->Initialize(ChunksPerSide, 0, 0, "tempWorld");
+    int ChunksPerSide = iniLoader->GetInteger("ChunksPerSide");
+    pGame->world->Initialize(ChunksPerSide, 0, 0, "tempWorld");
     LOG_INFO("World Manager has been initialized");
 
-    SimplePhysicsEngine::GetInstance().Initialize(pGame->World->GetDataStorage());
+    SimplePhysicsEngine::GetInstance().Initialize(pGame->world->GetDataStorage());
     LOG_INFO("Physics initialized");
 
-    pGame->ItemMgr->Initialize("resources/gamedata/Items/");
+    pGame->itemMgr->Initialize("resources/gamedata/Items/");
     LOG_INFO("Items have been loaded");
 
-    pGame->CratingMgr->Initialize("resources/gamedata/crafting/");
+    pGame->craftingMgr->Initialize("resources/gamedata/crafting/");
     LOG_INFO("Crafting manager has been initialized");
 
-    pGame->gameHud->Initialize(pCanvas);
+    pGame->gameHud.reset(new GameHUD(guiModule));
     LOG_INFO("HUD has been created");
 
-    pGame->Player = pGame->EntityMgr->CreatePlayer(Vector3F()).get();
+    pGame->player = pGame->entityMgr->CreatePlayer(Vector3F()).get();
 
     pGame->environmentMgr->Initialize(dayTimer(11, 00));
-    pGame->EntityMgr->LoadEntities();
+    pGame->entityMgr->LoadEntities();
 
     pScene->AddCameraSceneNode();
     pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
@@ -77,9 +73,9 @@ bool gameState::initState()
     pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
     pSun = pScene->AddDirectionalLightNode(Vector3F());
 
-    pGame->EntityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
-    pGame->EntityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
-    pGame->EntityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->ItemMgr->GetItemId("smooth_stone"), 10);
+    pGame->entityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
+    pGame->entityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
+    pGame->entityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->itemMgr->GetItemId("smooth_stone"), 10);
 
     LOG_INFO("End of game state initializing");
 
@@ -91,16 +87,16 @@ bool gameState::update(double dt)
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
 
-    Vector3F playerPosition = pGame->Player->GetPosition();
+    Vector3F playerPosition = pGame->player->GetPosition();
     Vector3F sunPosition = pGame->environmentMgr->GetSunPosition(playerPosition);
     pSun->SetDirection(-sunPosition);
     ProcessInput(dt);
     SimplePhysicsEngine::GetInstance().Update(dt);
-    pGame->EntityMgr->Update(dt);
+    pGame->entityMgr->Update(dt);
     pGame->environmentMgr->Update(dt * 0.0);
 
     pScene->GetActiveCamera()->SetSphericalCoords(playerPosition, phi, theta, r);
-    pGame->World->ProcessLoading();
+    pGame->world->ProcessLoading();
 
     return true;
 }
@@ -152,7 +148,7 @@ bool gameState::render(double dt)
 
     console.Draw();
 
-    SimpleGUI::DrawUI();
+    guiPlatform->getRenderManagerPtr()->drawOneFrame();
 
     pCtxMgr->EndScene();
 
@@ -161,8 +157,6 @@ bool gameState::render(double dt)
 
 void gameState::onKill()
 {
-    SimpleGUI::SetCanvas(nullptr);
-    SimpleGUI::SetSkinner(nullptr);
 }
 
 void gameState::onSuspend()
@@ -171,36 +165,48 @@ void gameState::onSuspend()
 
 void gameState::onResume()
 {
-    SimpleGUI::SetCanvas(pCanvas);
-    SimpleGUI::SetSkinner(pSkinner);
 }
 
 void gameState::ProcessInput(double dt)
 {
-    InputEngine * inputEngine = &InputEngine::GetInstance();
+    InputEngine & inputEngine = InputEngine::GetInstance();
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     Game * pGame = LostIsland::GetGamePtr();
+    inputEngine.GetKeys();
+    auto mouseInfo = inputEngine.GetMouseInfo();
 
-    static size_t mousePath = 0;
+    if (inputEngine.IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
+    if (inputEngine.IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
+    if (inputEngine.IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
+    if (inputEngine.IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
+    if (inputEngine.IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
+    if (inputEngine.IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
+    if (inputEngine.IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
+    if (inputEngine.IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
+    if (inputEngine.IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
+    if (inputEngine.IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
 
-    inputEngine->GetKeys();
-    auto mouseInfo = inputEngine->GetMouseInfo();
+    if (inputEngine.IsKeyUp(DIK_C))
+        pGame->gameHud->OpenCraftingWindow();
 
-    if (inputEngine->IsKeyUp(DIK_GRAVE))
+    if (inputEngine.IsKeyUp(DIK_I))
+        pGame->gameHud->OpenInventoryWindow();
+
+    if (inputEngine.IsKeyUp(DIK_GRAVE))
         console.SetVisibility(!console.IsVisible());
 
     if (console.IsVisible())
         return;
 
-    if (inputEngine->IsKeyDown(DIK_ESCAPE))
+    if (inputEngine.IsKeyDown(DIK_ESCAPE))
         this->kill();
 
     auto camPos = pScene->GetActiveCamera()->GetPosition();
     Vector3F newCamPos(camPos.x, camPos.y, camPos.z);
     pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
 
-    if (inputEngine->IsKeyUp(DIK_V))
+    if (inputEngine.IsKeyUp(DIK_V))
     {
         static bool Wflag = false;
         Wflag = !Wflag;
@@ -210,7 +216,29 @@ void gameState::ProcessInput(double dt)
             pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
     }
 
-    if (inputEngine->IsMouseMoved() && inputEngine->IsMouseDown(RButton))
+    bool guiInjected = false;
+
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
+    guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
+
+    if (inputEngine.IsMouseDown(LButton))
+        guiInjected |= inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+
+    if (inputEngine.IsMouseUp(LButton))
+        guiInjected |= inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);
+
+    if (inputEngine.IsMouseDown(RButton))
+        guiInjected |= inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+
+    if (inputEngine.IsMouseUp(RButton))
+        guiInjected |= inputManager.injectMouseRelease(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Right);
+
+    if (guiInjected)
+        return;
+
+    static size_t mousePath = 0;
+
+    if (inputEngine.IsMouseMoved() && inputEngine.IsMouseDown(RButton))
     {
         theta -= (float)mouseInfo.deltaY * (float)dt * 10.0f;
         phi += (float)mouseInfo.deltaX * (float)dt * 10.0f;
@@ -230,19 +258,19 @@ void gameState::ProcessInput(double dt)
     Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix, sizes);
     Ray unprojectedRay = Ray(resultNear, MathLib::normalize(resultFar - resultNear));
 
-    pGame->EntityMgr->HighlightEntity(unprojectedRay);
+    pGame->entityMgr->HighlightEntity(unprojectedRay);
 
-    if (inputEngine->IsMouseUp(RButton))
+    if (inputEngine.IsMouseUp(RButton))
     {
         // check if we are targeting to entity
-        auto retVal = pGame->EntityMgr->GetNearestEntity(unprojectedRay);
+        auto retVal = pGame->entityMgr->GetNearestEntity(unprojectedRay);
         if (retVal)
         {
             InteractableGameObject* entity = (InteractableGameObject*)retVal.get();
             if (entity)
             {
                 auto interaction = entity->GetInteraction();
-                pGame->Player->Interact(entity, interaction);
+                pGame->player->Interact(entity, interaction);
             }
         }
         else
@@ -250,17 +278,17 @@ void gameState::ProcessInput(double dt)
             if (mousePath <= 15)
             {
                 Vector3F column;
-                if (pGame->World->SelectColumnByRay(unprojectedRay, column))
+                if (pGame->world->SelectColumnByRay(unprojectedRay, column))
                 {
-                    pGame->Player->CancelCurrentCommand();
-                    pGame->Player->Go(Vector2F(column.x, column.y));
+                    pGame->player->CancelCurrentCommand();
+                    pGame->player->Go(Vector2F(column.x, column.y));
                 }
             }
         }
         mousePath = 0;
     }
 
-    if (inputEngine->IsMouseDown(RButton))
+    if (inputEngine.IsMouseDown(RButton))
         mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
     r -= (float)mouseInfo.deltaZ * (float)dt;
@@ -268,21 +296,27 @@ void gameState::ProcessInput(double dt)
         r = 60.0f;
     if (r < 15.0f)
         r = 15.0f;
+}
 
-    if (inputEngine->IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
-    if (inputEngine->IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
-    if (inputEngine->IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
-    if (inputEngine->IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
-    if (inputEngine->IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
-    if (inputEngine->IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
-    if (inputEngine->IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
-    if (inputEngine->IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
-    if (inputEngine->IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
-    if (inputEngine->IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
+bool gameState::handleEvent(const InputEvent & event)
+{
+    MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    if (inputEngine->IsKeyUp(DIK_C))
-        pGame->gameHud->OpenCraftingWindow();
+    switch (event.type)
+    {
+        // there will be always DirectInput keys in first two handlers
+    case InputEventType::KeyDown:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
+        break;
+    case InputEventType::KeyUp:
+        inputManager.injectKeyRelease((MyGUI::KeyCode::Enum)event.key);
+        break;
 
-    if (inputEngine->IsKeyUp(DIK_I))
-        pGame->gameHud->OpenInventoryWindow();
+        // there will be windows keys
+    case InputEventType::SystemKey:
+        inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
+        break;
+    }
+
+    return true;
 }

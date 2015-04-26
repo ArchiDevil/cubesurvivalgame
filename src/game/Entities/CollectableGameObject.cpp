@@ -39,10 +39,10 @@ void CollectableGameObject::Update(double /*dt*/)
     int maxX = (int)std::floor(bbox.bMax.x);
     int minY = (int)std::floor(bbox.bMin.y);
     int maxY = (int)std::floor(bbox.bMax.y);
-    heights[0] = pGame->World->GetDataStorage()->GetFullHeight(minX, minY);
-    heights[1] = pGame->World->GetDataStorage()->GetFullHeight(minX, maxY);
-    heights[2] = pGame->World->GetDataStorage()->GetFullHeight(maxX, minY);
-    heights[3] = pGame->World->GetDataStorage()->GetFullHeight(maxX, maxY);
+    heights[0] = pGame->world->GetDataStorage()->GetFullHeight(minX, minY);
+    heights[1] = pGame->world->GetDataStorage()->GetFullHeight(minX, maxY);
+    heights[2] = pGame->world->GetDataStorage()->GetFullHeight(maxX, minY);
+    heights[3] = pGame->world->GetDataStorage()->GetFullHeight(maxX, maxY);
 
     float maxHeight = (float)heights[0];
     for (int i = 0; i < 4; ++i)

@@ -32,7 +32,7 @@ bool ControllableGameObject::Go(const MathLib::Vector2F & target)
 
     for (unsigned i = 0;; ++i)
     {
-        BlockTypes currentBlock = pGame->World->GetDataStorage()->GetBlockType((int)std::floor(target.x), (int)std::floor(target.y), i++);
+        BlockTypes currentBlock = pGame->world->GetDataStorage()->GetBlockType((int)std::floor(target.x), (int)std::floor(target.y), i++);
         if (currentBlock == BT_Empty)
             break;
         topColumn = currentBlock;
