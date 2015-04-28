@@ -10,32 +10,27 @@ class Item;
 class FoodItem : public Item
 {
 public:
-    FoodItem(const std::string & name, 
-        const std::string & desc, 
-        ShiftEngine::IMeshDataPtr data,
-        ShiftEngine::ITexturePtr ptr, 
-        int hunger,
-        const std::string & imageName)
+    FoodItem(const std::string & name,
+             const std::string & desc,
+             ShiftEngine::IMeshDataPtr data,
+             ShiftEngine::ITexturePtr ptr,
+             int hunger,
+             const std::string & imageName)
         : Item(ptr, data, name, desc, imageName)
         , hunger(hunger)
     {
     }
 
-    bool UseOnPlayer() override
+    bool UseOnPlayer() const override
     {
         auto * pPlayer = LostIsland::GetGamePtr()->Player;
         pPlayer->SetHunger(pPlayer->GetHunger() + GetHunger());
         return true;
     }
 
-    bool UseInWorld() override
-    {
-        return false;
-    }
-
     ItemType GetType() const override
     {
-        return IT_Food;
+        return ItemType::Food;
     }
 
     int GetHunger() const
@@ -44,6 +39,6 @@ public:
     }
 
 private:
-    const int hunger;
+    const int hunger = 0;
 
 };

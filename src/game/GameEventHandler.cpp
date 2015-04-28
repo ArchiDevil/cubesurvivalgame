@@ -59,8 +59,6 @@ void GameEventHandler::Process(PlayerUsesItem* ev)
         return;
     if (ev->self)
         pItem->UseOnPlayer();
-    else
-        pItem->UseInWorld();
 }
 
 void GameEventHandler::Process(PlayerMoves* /*ev*/)

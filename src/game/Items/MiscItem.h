@@ -8,26 +8,16 @@ class MiscItem : public Item
 {
 public:
     MiscItem(const std::string & name,
-        const std::string & desc,
-        ShiftEngine::IMeshDataPtr data,
-        ShiftEngine::ITexturePtr ptr,
-        const std::string & imageName)
+             const std::string & desc,
+             ShiftEngine::IMeshDataPtr data,
+             ShiftEngine::ITexturePtr ptr,
+             const std::string & imageName)
         : Item(ptr, data, name, desc, imageName)
     {
     }
 
-    bool UseOnPlayer() override
-    {
-        return false;
-    }
-
-    bool UseInWorld() override
-    {
-        return false;
-    }
-
     ItemType GetType() const override
     {
-        return IT_Misc;
+        return ItemType::Misc;
     }
 };
