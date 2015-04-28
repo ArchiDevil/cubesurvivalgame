@@ -120,7 +120,7 @@ void PlayerGameObject::Attack(LiveGameObject * target) const
 
     int damage = 0;
 
-    if (!itemInHand || itemInHand->GetType() != IT_Weapon)
+    if (!itemInHand || itemInHand->GetType() != ItemType::Weapon)
         damage = 1;
 
     if (!damage)

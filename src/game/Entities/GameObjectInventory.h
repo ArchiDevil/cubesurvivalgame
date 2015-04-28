@@ -5,7 +5,7 @@
 
 #include "../Items/ItemManager.h"
 
-enum ItemTypes;
+enum class ItemType;
 
 struct SlotUnit
 {
@@ -28,7 +28,7 @@ public:
     void RemoveItem(unsigned slot);
 
     bool IsExist(std::string & Name) const;
-    bool IsExist(ItemTypes Type) const;
+    bool IsExist(ItemType Type) const;
     bool IsExist(item_id_t itemId) const;
 
     SlotUnit GetItemInSlot(unsigned slot) const;

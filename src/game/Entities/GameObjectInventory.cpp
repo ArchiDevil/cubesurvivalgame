@@ -17,7 +17,7 @@ bool GameObjectInventory::IsExist(std::string & Name) const
     return false;
 }
 
-bool GameObjectInventory::IsExist(ItemTypes Type) const
+bool GameObjectInventory::IsExist(ItemType Type) const
 {
     for (const auto &it : items)
         if (pItemMgr->GetItemById(it.itemId)->GetType() == Type)
@@ -26,7 +26,7 @@ bool GameObjectInventory::IsExist(ItemTypes Type) const
     return false;
 }
 
-bool GameObjectInventory::IsExist(uint64_t itemId) const
+bool GameObjectInventory::IsExist(item_id_t itemId) const
 {
     for (const auto &item : items)
         if (item.itemId == itemId)
