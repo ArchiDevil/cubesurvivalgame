@@ -76,14 +76,6 @@ bool ShiftEngine::D3D10MeshManager::Load(const std::wstring & filename, D3D10Mes
         vertices.texcoord.size() * sizeof(MathLib::Vector2F) +
         vertices.colors.size() * sizeof(MathLib::Vector3F);
 
-    size_t vertexSize = sizeof(MathLib::Vector3F);
-    if (!vertices.normal.empty())
-        vertexSize += sizeof(MathLib::Vector3F);
-    if (!vertices.texcoord.empty())
-        vertexSize += sizeof(MathLib::Vector2F);
-    if (!vertices.colors.empty())
-        vertexSize += sizeof(MathLib::Vector3F);
-
     vertexData.resize(resultSize);
 
     uint8_t *pData = vertexData.data();

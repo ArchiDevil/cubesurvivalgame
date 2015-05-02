@@ -27,9 +27,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
-    HRESULT hr = S_OK;
-
-    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_5_0", flags, 0, &compiledShader, &errors);
+    HRESULT hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "VS", "vs_5_0", flags, 0, &compiledShader, &errors);
     if (FAILED(hr) || errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");
@@ -59,9 +57,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
-    HRESULT hr = S_OK;
-
-    hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_5_0", flags, 0, &compiledShader, &errors);
+    HRESULT hr = D3DCompile(source.c_str(), source.size(), NULL, NULL, NULL, "PS", "ps_5_0", flags, 0, &compiledShader, &errors);
     if (FAILED(hr) || errors != nullptr)
     {
         LOG_ERROR("Unable to compile custom shader");

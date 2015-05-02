@@ -91,7 +91,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
         );
 
     if (FAILED(hr))
-        LOG_FATAL_ERROR("Unable to create D3D11 device");
+        LOG_FATAL_ERROR("Unable to create D3D11 device: ", std::hex, hr, std::dec);
 
     if (featureLevel != D3D_FEATURE_LEVEL_11_0)
         LOG_ERROR("Unable to create device with DX11 feature level, further work may be unstable");

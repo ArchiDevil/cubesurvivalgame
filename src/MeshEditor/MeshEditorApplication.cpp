@@ -12,6 +12,8 @@ MeshEditorApplication::~MeshEditorApplication()
 
 bool MeshEditorApplication::Initialize()
 {
+    ::ShowCursor(false);
+
     //инициализируем наш загрузчик .ini файлов
     settingsLoader.Initialize("settings.ini");
 
@@ -89,7 +91,7 @@ bool MeshEditorApplication::Frame()
     elapsedTime = mainTimer.GetDeltaTime();
     mainTimer.Tick();
 
-    if (statesStack.size() != 0)
+    if (!statesStack.empty())
     {
         if (statesStack.top()->isDead())
         {
@@ -98,7 +100,7 @@ bool MeshEditorApplication::Frame()
             state->onKill();
             delete state;
 
-            if (statesStack.size() != 0)
+            if (!statesStack.empty())
                 statesStack.top()->onResume();
             return true; //skip frame
         }

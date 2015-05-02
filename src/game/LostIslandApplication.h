@@ -43,7 +43,7 @@ private:
     IniWorker                                   settingsLoader;    //settings loader
     cRegWorker                                  registryWorker;    //registry handler
 
-    MyGUI::Gui *                                guiModule;
-    MyGUI::DirectX11Platform *                  guiPlatform;
+    MyGUI::Gui *                                guiModule = nullptr;
+    MyGUI::DirectX11Platform *                  guiPlatform = nullptr;
 
 };

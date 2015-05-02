@@ -26,7 +26,7 @@ public:
     const Recipe& GetRecipeByName(const std::string & name) const;
     const Recipe& GetRecipeById(recipe_id_t id) const;
     std::vector<std::pair<std::string, Recipe>> GetAllRecipes() const;
-    void Craft(const Recipe& recipe);
+    bool Craft(const Recipe& recipe);
 
 private:
     void LoadRecipes(const std::string & path);

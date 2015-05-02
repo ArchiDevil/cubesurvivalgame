@@ -12,6 +12,7 @@ MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z)
     , plane(nullptr)
     , mesh(nullptr)
     , tesselated(false)
+    , light(nullptr)
 {
     GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
     GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));

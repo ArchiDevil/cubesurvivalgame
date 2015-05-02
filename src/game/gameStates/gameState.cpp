@@ -216,10 +216,8 @@ void gameState::ProcessInput(double dt)
             pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
     }
 
-    bool guiInjected = false;
-
     MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
-    guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
+    bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
 
     if (inputEngine.IsMouseDown(LButton))
         guiInjected |= inputManager.injectMousePress(mouseInfo.clientX, mouseInfo.clientY, MyGUI::MouseButton::Left);

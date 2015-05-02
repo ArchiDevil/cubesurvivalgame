@@ -22,6 +22,8 @@ LostIslandApplication::~LostIslandApplication()
 
 bool LostIslandApplication::Initialize()
 {
+    ::ShowCursor(false);
+
     //инициализируем наш загрузчик .ini файлов
     settingsLoader.Initialize("settings.ini");
 

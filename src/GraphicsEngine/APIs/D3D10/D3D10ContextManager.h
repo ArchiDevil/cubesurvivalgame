@@ -66,17 +66,17 @@ namespace ShiftEngine
         std::map<VertexSemantic, IVertexDeclarationPtr> declarations;
 
         D3D10Context                                    graphicsContext;
-        FontManager*                                    fontManager;
-        D3D10TextureManager *                           textureManager;
-        D3D10MeshManager *                              meshManager;
-        D3D10ShaderManager *                            shaderManager;
-        D3D10ShaderGenerator *                          shaderGenerator;
-        MaterialManager *                               materialManager;
+        FontManager*                                    fontManager = nullptr;
+        D3D10TextureManager *                           textureManager = nullptr;
+        D3D10MeshManager *                              meshManager = nullptr;
+        D3D10ShaderManager *                            shaderManager = nullptr;
+        D3D10ShaderGenerator *                          shaderGenerator = nullptr;
+        MaterialManager *                               materialManager = nullptr;
 
         IProgramPtr                                     currentProgram;
         RasterizerState                                 currentRasterizerState = RasterizerState::Normal;
         BlendingState                                   currentBlendingState = BlendingState::None;
-        IVertexDeclaration *                            currentVertexDeclaration;
+        IVertexDeclaration *                            currentVertexDeclaration = nullptr;
 
         bool                                            zBufferState = true;
         bool                                            cullingEnabled = true;

@@ -21,16 +21,11 @@ namespace ShiftEngine
     //just move LightNode?
     struct LightInfo
     {
-        LightInfo()
-        {
-            memset(this, 0, sizeof(LightInfo));
-        }
-
-        Vector3F Color;
-        Vector3F Position;
-        Vector3F Direction;
-        LightNodeType Type;
-        float Radius;
+        Vector3F Color = {};
+        Vector3F Position = {};
+        Vector3F Direction = {};
+        LightNodeType Type = LNT_Point;
+        float Radius = 1.0f;
     };
 
     enum engineUniforms

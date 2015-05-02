@@ -164,17 +164,17 @@ void CraftingManager::LoadRecipes(const std::string & path)
     }
 }
 
-void CraftingManager::Craft(const Recipe& recipe)
+bool CraftingManager::Craft(const Recipe& recipe)
 {
     auto * pInventory = LostIsland::GetGamePtr()->player->GetInventoryPtr();
     for (auto item : recipe.itemsToCraft)
     {
         if (!pInventory->IsExist(item.first))
-            return;
+            return false;
 
         SlotUnit & slot = pInventory->FindSlotWithItem(item.first);
         if (slot.count < item.second)
-            return; // not enough items to craft it
+            return false; // not enough items to craft it
     }
 
     // after all checks we need to remove items from inventory and add new crafted item to the player
@@ -187,4 +187,5 @@ void CraftingManager::Craft(const Recipe& recipe)
     }
 
     pInventory->AddItem(recipe.producedItem, recipe.producedCount);
+    return true;
 }

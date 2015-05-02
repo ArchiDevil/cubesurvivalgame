@@ -35,8 +35,6 @@ public:
     void SetCriticalSection(std::mutex * sect);
 
 private:
-    void TesselateSubChunk(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &blockPos, const Vector3F &color, int chunkX, int chunkY);
-
     void PushLeftSide(std::vector<PNC> &vertices, std::vector<uint32_t> &indices, const Vector3F &color, const Vector3F &pos, const Vector3F &sizes = { 1.0f, 1.0f, 1.0f })
     {
         unsigned long curIndex = (unsigned long)vertices.size();

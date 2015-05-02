@@ -47,11 +47,9 @@ MathLib::Vector3F EnvironmentManager::GetSunPosition(const MathLib::Vector3F & p
     // 0; 0; -1 at midnight = yAngle == 180
     // need to rotate yAngle
 
-    float yAngle = 0.0f;
     const float maxTime = 24 * 60.0f;
     float currentTime = (float)time.getRawTime() - (maxTime / 2.0f);
-    yAngle = -currentTime / maxTime * 360.0f;
-
+    float yAngle = -currentTime / maxTime * 360.0f;
     return MathLib::GetPointOnSphere(playerPos, 10000.0f, 0.0f, yAngle);
 }
 

@@ -145,23 +145,19 @@ void ShiftEngine::Material::SetZState(bool zState)
     ZState = zState;
 }
 
+//must be equal to shader struct with 4-byte pack!
+struct shaderLightRefl
+{
+    vec3<float> color = {};
+    float type = 0.0f;
+    vec3<float> dir = {};
+    float radius = 0.0f;
+    vec3<float> pos = {};
+    float pack = 0.0f;
+};
+
 void ShiftEngine::Material::BindLights(const std::vector<LightInfo> & lights)
 {
-    //must be equal to shader struct with 4-byte pack!
-    struct shaderLightRefl
-    {
-        shaderLightRefl()
-        {
-            memset(this, 0, sizeof(*this));
-        }
-        vec3<float> color;
-        float type;
-        vec3<float> dir;
-        float radius;
-        vec3<float> pos;
-        float pack;
-    };
-
     if (!program || lights.size() > 4)
         return;
 
