@@ -40,11 +40,38 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (!converter->Convert(open, save))
+    std::ifstream input;
+    input.open(open.c_str());
+
+    if (input.fail() || !input.is_open())
+    {
+        std::cout << "Unable to open file: " << open << std::endl;
+        return 1;
+    }
+
+    std::ofstream output;
+    output.open(save.c_str(), std::ios_base::binary);
+
+    if (output.fail() || !output.is_open())
+    {
+        std::cout << "Unable to open file: " << save << std::endl;
+        return 1;
+    }
+
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+    MeshLIMHeader header;
+    if (!converter->Convert(input, vertices, indices, header))
     {
         std::cout << "Unable to convert" << std::endl;
         return 1;
     }
 
+    std::cout << "Converted: " << vertices.size() << " vertices, " << indices.size() << " indices" << std::endl;
+    if (!LIMSaver::Save(output, vertices.data(), indices.data(), header))
+    {
+        std::cout << "Unable to save file " << save << std::endl;
+        return 1;
+    }
     return 0;
 }

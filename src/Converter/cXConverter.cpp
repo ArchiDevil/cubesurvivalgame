@@ -5,23 +5,20 @@
 #include <sstream>
 #include <vector>
 
-bool cXConverter::Convert(const std::string & in, const std::string & out)
+bool cXConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header)
 {
-    std::ifstream input;
-    input.open(in.c_str());
-    if (input.fail())
-        return false;
-
     std::string bufStr;
     std::stringstream Reader;
     unsigned int DelimiterPosition;
 
-    while (input >> bufStr)
+    while (in >> bufStr)
+    {
         if (bufStr == "Mesh")
             break;  //we found beginning of mesh description
+    }
 
-    getline(input, bufStr);
-    getline(input, bufStr, ';');
+    getline(in, bufStr);
+    getline(in, bufStr, ';');
     Reader << bufStr;
     unsigned int verticesCount; //count of vertices
     Reader >> verticesCount;
@@ -31,10 +28,10 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
     bool haveNormals = false;
     bool haveTextureCoords = false;
 
-    std::vector<Vertex> Mesh(verticesCount);
+    vertices.resize(verticesCount);
     unsigned int VertexNum = 0;
 
-    while (getline(input, bufStr))
+    while (getline(in, bufStr))
     {
         if (bufStr.size() == 0)
             continue;
@@ -48,7 +45,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
             bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
             Reader << curKey;
-            Reader >> Mesh[VertexNum].Pos.el[index];
+            Reader >> vertices[VertexNum].Pos.el[index];
             Reader.clear();
         }
 
@@ -59,8 +56,8 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
     }
 
 
-    getline(input, bufStr);
-    getline(input, bufStr, ';');
+    getline(in, bufStr);
+    getline(in, bufStr, ';');
 
     Reader << bufStr;
     int indicesCount;   //count of indices
@@ -69,11 +66,11 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
     bufStr.clear();
 
     const int indicesInString = 3;
-    std::vector<unsigned long> Ind(indicesCount * indicesInString);
+    indices.resize(indicesCount * indicesInString, 0);
 
     VertexNum = 0;
 
-    while (getline(input, bufStr))
+    while (getline(in, bufStr))
     {
         if (bufStr.size() == 0)
             continue;
@@ -94,7 +91,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
             bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
             Reader << curKey;
-            Reader >> Ind[VertexNum * indicesInString + index];
+            Reader >> indices[VertexNum * indicesInString + index];
             Reader.clear();
         }
 
@@ -104,7 +101,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
             break;
     }
 
-    while (getline(input, bufStr))
+    while (getline(in, bufStr))
     {
         if (bufStr.find("MeshNormals") != std::string::npos)
         {
@@ -113,13 +110,13 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
         }
     }
 
-    getline(input, bufStr);
+    getline(in, bufStr);
 
     if (haveNormals)
     {
         VertexNum = 0;
 
-        while (getline(input, bufStr))
+        while (getline(in, bufStr))
         {
             if (bufStr.size() == 0)
                 continue;
@@ -133,7 +130,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
                 bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
                 Reader << curKey;
-                Reader >> Mesh[VertexNum].Normal.el[index];
+                Reader >> vertices[VertexNum].Normal.el[index];
                 Reader.clear();
             }
 
@@ -144,7 +141,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
         }
     }
 
-    while (getline(input, bufStr))
+    while (getline(in, bufStr))
     {
         if (bufStr.find("MeshTextureCoords") != std::string::npos)
         {
@@ -153,13 +150,13 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
         }
     }
 
-    getline(input, bufStr);
+    getline(in, bufStr);
 
     if (haveTextureCoords)
     {
         VertexNum = 0;
 
-        while (getline(input, bufStr))
+        while (getline(in, bufStr))
         {
             if (bufStr.size() == 0)
                 continue;
@@ -173,7 +170,7 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
                 bufStr = bufStr.substr(DelimiterPosition + 1, bufStr.size());
 
                 Reader << curKey;
-                Reader >> Mesh[VertexNum].TexCoord.el[index];
+                Reader >> vertices[VertexNum].TexCoord.el[index];
                 Reader.clear();
             }
 
@@ -184,12 +181,11 @@ bool cXConverter::Convert(const std::string & in, const std::string & out)
         }
     }
 
-    MeshLIMHeader header;
-    header.version = LIM_HEADER_VERSION;
     header.hasNormals = haveNormals;
     header.hasTexCoords = haveTextureCoords;
     header.hasColors = false;
     header.verticesCount = verticesCount;
     header.indicesCount = indicesCount * indicesInString;
-    return LIMSaver::Save(out, Mesh.data(), Ind.data(), header);
+
+    return true;
 }

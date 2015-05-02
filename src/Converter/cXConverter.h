@@ -6,5 +6,5 @@
 class cXConverter : public IConverter
 {
 public:
-    virtual bool Convert(const std::string & in, const std::string & out) override;
+    virtual bool Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header) override;
 };

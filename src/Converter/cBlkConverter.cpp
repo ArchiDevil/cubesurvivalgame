@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 #include <MathLib/math.h>
 
@@ -16,29 +17,28 @@ cBlkConverter::cBlkConverter()
 {
 }
 
-bool cBlkConverter::Convert(const std::string & in, const std::string & out)
+bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header)
 {
-    std::ifstream input;
-
-    input.open(in.c_str());
-
-    if (input.fail() || !input.is_open())
-        return false;
-
     uint32_t head[3] = { 0 };
-    input.read((char*)head, sizeof(uint32_t) * 3);
+    in.read((char*)head, sizeof(uint32_t) * 3);
     SetSize(head[0], head[1], head[2]);
 
     data.reset(new Block[x_size * y_size * z_size]);
     for (unsigned i = 0; i < x_size; i++)
+    {
         for (unsigned j = 0; j < y_size; j++)
+        {
             for (unsigned k = 0; k < z_size; k++)
-                input.read((char*)(&data[GetIndex(i, j, k)]), sizeof(Block));
+            {
+                in.read((char*)(&data[GetIndex(i, j, k)]), sizeof(Block));
+            }
+        }
+    }
+
+    std::cout << "Found block mesh with: X(" << head[0] << "), Y(" << head[1] << "), Z(" << head[2] << ")" << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::vector<Vertex> vertices;
-    std::vector<unsigned long> indices;
     unsigned int ind_index = 0;
 
     const Vector3F FRONT{ -1.0f, 0.0f, 0.0f };
@@ -187,13 +187,12 @@ bool cBlkConverter::Convert(const std::string & in, const std::string & out)
     //////////////////////////////////////////////////////////////////////////
 
     MeshLIMHeader header;
-    header.version = LIM_HEADER_VERSION;
     header.hasNormals = true;
     header.hasTexCoords = false;
     header.hasColors = true;
     header.verticesCount = (unsigned int)vertices.size();
     header.indicesCount = (unsigned int)indices.size();
-    return LIMSaver::Save(out, vertices.data(), indices.data(), header);
+    return true;
 }
 
 void cBlkConverter::SetSize(unsigned int x_size, unsigned int y_size, unsigned int z_size)

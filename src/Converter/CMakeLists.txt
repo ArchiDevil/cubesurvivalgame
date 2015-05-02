@@ -1,9 +1,18 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(Converter)
 
-file(GLOB_RECURSE SOURCE *.cpp)
-file(GLOB_RECURSE HEADERS *.h)
+set(SOURCES
+            cBlkConverter.cpp
+            cBlkConverter.h
+            cObjConverter.cpp
+            cObjConverter.h
+            cXConverter.cpp
+            cXConverter.h
+            IConverter.h
+            LIMSaver.h
+            misc.h
+            main.cpp)
 
-add_executable(Converter ${SOURCE} ${HEADERS})
-target_link_libraries(Converter Utilities)
+add_executable(Converter ${SOURCES})
+target_link_libraries(Converter MathLib Utilities)

@@ -8,18 +8,13 @@ class cBlkConverter : public IConverter
 {
     struct Block
     {
-        Block()
-            : color()
-            , exist(false)
-        {}
-
-        Vector3F color;
-        bool exist;
+        Vector3F color = {};
+        bool exist = false;
     };
 
 public:
     cBlkConverter();
-    virtual bool Convert(const std::string & in, const std::string & out) override;
+    virtual bool Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header) override;
 
 private:
     void SetSize(unsigned int x_size, unsigned int y_size, unsigned int z_size);
@@ -28,8 +23,8 @@ private:
     const Block* GetBlock(unsigned x, unsigned y, unsigned z) const;
     unsigned int GetIndex(unsigned x, unsigned y, unsigned z) const;
 
-    std::unique_ptr<Block[]> data;
-    unsigned int x_size;
-    unsigned int y_size;
-    unsigned int z_size;
+    std::unique_ptr<Block[]> data = nullptr;
+    unsigned int x_size = 0;
+    unsigned int y_size = 0;
+    unsigned int z_size = 0;
 };

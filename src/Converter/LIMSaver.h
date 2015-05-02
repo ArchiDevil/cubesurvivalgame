@@ -7,14 +7,9 @@
 class LIMSaver
 {
 public:
-    static bool Save(const std::string & fileName, const Vertex * verticesArray,
-        const unsigned long * indicesArray, MeshLIMHeader header)
+    static bool Save(std::ofstream & output, const Vertex * verticesArray,
+        const uint32_t * indicesArray, MeshLIMHeader header)
     {
-        std::ofstream output;
-        output.open(fileName.c_str(), std::ios_base::binary);
-
-        if (output.fail())
-            return false;
         output.write(reinterpret_cast<const char*>(&header), sizeof(MeshLIMHeader));
 
         for (unsigned int i = 0; i < header.verticesCount; i++)
@@ -38,4 +33,3 @@ public:
         return true;
     }
 };
-

@@ -4,28 +4,19 @@
 
 #include <MathLib/math.h>
 
+#include <cstdint>
+
 using MathLib::Vector2F;
 using MathLib::Vector3F;
 
 struct MeshLIMHeader
 {
-    MeshLIMHeader(int version = 0, bool hasNormals = false, bool hasTexcoords = false, bool hasColors = false,
-        unsigned int verticesCount = 0, unsigned int indicesCount = 0)
-        : version(version)
-        , hasNormals(hasNormals)
-        , hasTexCoords(hasTexcoords)
-        , hasColors(hasColors)
-        , verticesCount(verticesCount)
-        , indicesCount(indicesCount)
-    {
-    }
-
-    unsigned int version;
-    bool hasNormals;
-    bool hasTexCoords;
-    bool hasColors;
-    unsigned int verticesCount;
-    unsigned int indicesCount;
+    const uint32_t version = LIM_HEADER_VERSION;
+    bool hasNormals = false;
+    bool hasTexCoords = false;
+    bool hasColors = false;
+    uint32_t verticesCount = 0;
+    uint32_t indicesCount = 0;
 };
 
 struct Vertex
@@ -43,4 +34,3 @@ struct Vertex
     MathLib::Vector2F TexCoord;
     MathLib::Vector3F Color;
 };
-

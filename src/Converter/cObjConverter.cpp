@@ -26,14 +26,8 @@ std::vector<std::string> split(const std::string &s, char delim)
     return elems;
 }
 
-bool cObjConverter::Convert(const std::string & in, const std::string & out)
+bool cObjConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header)
 {
-    std::ifstream input;
-    input.open(in.c_str());
-
-    if (input.fail())
-        return false;
-
     std::vector<Vector3F> positions;
     std::vector<Vector3F> normals;
     //unable to use UVW coordinates
@@ -50,12 +44,9 @@ bool cObjConverter::Convert(const std::string & in, const std::string & out)
 
     //key is data from F .obj, value is index of vertex in M array
     std::unordered_map<key_t, unsigned long, key_hash> verticesMap;
-    std::vector<unsigned long> indices;
-    std::vector<Vertex> MeshData;
-
     std::string bufStr;
 
-    while (getline(input, bufStr))
+    while (getline(in, bufStr))
     {
         if (!bufStr.empty() && bufStr[0] == '#')
             continue;
@@ -138,30 +129,28 @@ bool cObjConverter::Convert(const std::string & in, const std::string & out)
                 }
                 else
                 {
-                    index = MeshData.size(); //must be equal but...
+                    index = vertices.size(); //must be equal but...
                     verticesMap[t] = index;
                     long posIndex = std::get<0>(t);
                     long texIndex = std::get<1>(t);
                     long normIndex = std::get<2>(t);
                     if (texIndex != -1)
-                        MeshData.push_back(Vertex(positions[posIndex], normals[normIndex], texCoords[texIndex], {}));
+                        vertices.push_back(Vertex(positions[posIndex], normals[normIndex], texCoords[texIndex], {}));
                     else
-                        MeshData.push_back(Vertex(positions[posIndex], normals[normIndex], {}, {}));
+                        vertices.push_back(Vertex(positions[posIndex], normals[normIndex], {}, {}));
                     indices.push_back(index);
                 }
             }
         }
     }
 
-    MeshLIMHeader header;
     if (!normals.empty())
         header.hasNormals = true;
     if (!texCoords.empty())
         header.hasTexCoords = true;
     header.hasColors = false;
-    header.version = LIM_HEADER_VERSION;
     header.indicesCount = indices.size();
-    header.verticesCount = MeshData.size();
+    header.verticesCount = vertices.size();
 
-    return LIMSaver::Save(out, MeshData.data(), indices.data(), header);
+    return true;
 }
