@@ -17,15 +17,17 @@ public:
     void SelectSlot(uint32_t slot);
     uint32_t GetSelectedSlot() const;
 
-    void OpenInventoryWindow();
-    void CloseInventoryWindow();
-
-    void OpenCraftingWindow();
-    void CloseCraftingWindow();
+    void SwitchInventoryWindow();
+    void SwitchCraftingWindow();
 
 private:
     void OnCraftRequest(MyGUI::Widget * _sender);
     void OnSelectRecipe(MyGUI::Widget * _sender, size_t row);
+    void OnCloseCraftingWindowClick(MyGUI::Widget * _sender, const std::string & eventName);
+
+    void CreateOtherElements();
+    void CreateInventoryWindow();
+    void CreateCraftingWindow();
 
     //TODO: remove all and replace on MyGUI widgets
     uint32_t                                                selectedSlot = 0;

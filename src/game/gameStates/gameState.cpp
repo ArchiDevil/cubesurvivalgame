@@ -188,10 +188,10 @@ void gameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
 
     if (inputEngine.IsKeyUp(DIK_C))
-        pGame->gameHud->OpenCraftingWindow();
+        pGame->gameHud->SwitchCraftingWindow();
 
     if (inputEngine.IsKeyUp(DIK_I))
-        pGame->gameHud->OpenInventoryWindow();
+        pGame->gameHud->SwitchInventoryWindow();
 
     if (inputEngine.IsKeyUp(DIK_GRAVE))
         console.SetVisibility(!console.IsVisible());
