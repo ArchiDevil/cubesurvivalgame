@@ -186,7 +186,6 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
 
     //////////////////////////////////////////////////////////////////////////
 
-    MeshLIMHeader header;
     header.hasNormals = true;
     header.hasTexCoords = false;
     header.hasColors = true;
