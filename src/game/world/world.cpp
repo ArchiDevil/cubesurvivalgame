@@ -16,6 +16,15 @@
 
 using MathLib::Vector2D;
 
+cWorld::cWorld()
+    : DataStorage(nullptr)
+    , ChunksStorage(nullptr)
+    , Generator(nullptr)
+    , Streamer(nullptr)
+    , Tesselator(nullptr)
+{
+}
+
 cWorld::~cWorld()
 {
     int size = ChunksStorage->GetChunksPerSide();

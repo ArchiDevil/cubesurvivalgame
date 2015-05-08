@@ -45,6 +45,7 @@ class cWorld
     };
 
 public:
+    cWorld();
     ~cWorld();
 
     void             Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName);
@@ -80,11 +81,11 @@ private:
 
     float            GetInterpolatedHeight(int x, int y);
 
-    std::unique_ptr<WorldStorage>       DataStorage = nullptr;
-    std::unique_ptr<cChunksStorage>     ChunksStorage = nullptr;
-    std::unique_ptr<WorldGenerator>     Generator = nullptr;
-    std::unique_ptr<cChunkStreamer>     Streamer = nullptr;
-    std::unique_ptr<WorldTesselator>    Tesselator = nullptr;
+    std::unique_ptr<WorldStorage>       DataStorage;
+    std::unique_ptr<cChunksStorage>     ChunksStorage;
+    std::unique_ptr<WorldGenerator>     Generator;
+    std::unique_ptr<cChunkStreamer>     Streamer;
+    std::unique_ptr<WorldTesselator>    Tesselator;
 
     std::mutex                          critSect;
     std::mutex                          updatingSection;
