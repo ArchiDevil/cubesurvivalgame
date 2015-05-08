@@ -1,8 +1,8 @@
 {
-    "id": "stone",
+    "id": "smooth_stone",
     "type": "collectable",
     "item": "smooth_stone",
     "count": 1,
-    "mesh": "stone.lim",
+    "mesh": "smooth_stone.lim",
     "material": "collectablestone.mtl"
 }

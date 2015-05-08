@@ -1,7 +1,7 @@
 {
     "id": "tree1",
     "type": "static",
-    "mesh": "cube",
+    "mesh": "tree1.lim",
     "material": "treeobject.mtl",
     "inventory": "tree"
 }

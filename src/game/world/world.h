@@ -10,35 +10,41 @@
 #include <Utilities/ut.h>
 #include <MathLib/math.h>
 
-#define NOTLOADED 0
-#define LOADED 1
-#define ALREADYLOADED 2
-
-#define MAX_SUN_LIGHT_INDEX 10
-
 class WorldStorage;
 class cChunksStorage;
 class WorldGenerator;
 class cChunkStreamer;
 class WorldTesselator;
 
-enum Action
-{
-    Load,
-    Tesselate
-};
-
-struct LoadQuery
-{
-    LoadQuery(int _x, int _y, Action _action) : x(_x), y(_y), action(_action) {};
-    int x, y;
-    Action action;
-};
-
 class cWorld
 {
+    enum Action
+    {
+        Load,
+        Tesselate
+    };
+
+    struct LoadQuery
+    {
+        LoadQuery(int x, int y, Action action)
+            : x(x)
+            , y(y)
+            , action(action)
+        {
+        }
+
+        int x, y;
+        Action action;
+    };
+
+    enum LoadingStatus
+    {
+        LS_NotLoaded,
+        LS_Loaded,
+        LS_AlreadyLoaded
+    };
+
 public:
-    cWorld();
     ~cWorld();
 
     void             Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName);
@@ -65,7 +71,7 @@ private:
     void             RemoveRepeatingElems();
 
     //chunk handlers
-    int              ProcessChunk(int WorldX, int WorldY, Action action);
+    LoadingStatus    ProcessChunk(int WorldX, int WorldY, Action action);
     void             ClearChunkData(int WorldX, int WorldY);
     void             ComputeUpsideLight(int WorldX, int WorldY);
     void             ComputeScatteringLight(int WorldX, int WorldY);
@@ -74,15 +80,15 @@ private:
 
     float            GetInterpolatedHeight(int x, int y);
 
-    std::unique_ptr<WorldStorage>       DataStorage;
-    std::unique_ptr<cChunksStorage>     ChunksStorage;
-    std::unique_ptr<WorldGenerator>     Generator;
-    std::unique_ptr<cChunkStreamer>     Streamer;
-    std::unique_ptr<WorldTesselator>    Tesselator;
+    std::unique_ptr<WorldStorage>       DataStorage = nullptr;
+    std::unique_ptr<cChunksStorage>     ChunksStorage = nullptr;
+    std::unique_ptr<WorldGenerator>     Generator = nullptr;
+    std::unique_ptr<cChunkStreamer>     Streamer = nullptr;
+    std::unique_ptr<WorldTesselator>    Tesselator = nullptr;
 
     std::mutex                          critSect;
     std::mutex                          updatingSection;
 
     std::deque<LoadQuery>               loadingQueue;
-    std::string                         worldName;
+    std::string                         worldName = "";
 };

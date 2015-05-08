@@ -2,6 +2,9 @@
 
 #include "Item.h"
 
+#include "../Game.h"
+#include "../Entities/GameObjectsManager.h"
+
 class Item;
 
 class EntityItem : public Item
@@ -26,6 +29,11 @@ public:
     const std::string & GetEntityId() const
     {
         return entityId;
+    }
+
+    virtual bool UseInWorld(const Vector3F & position) const override
+    {
+        return LostIsland::GetGamePtr()->entityMgr->CreateEntity(position, entityId) != nullptr;
     }
 
 private:

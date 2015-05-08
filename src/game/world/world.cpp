@@ -7,16 +7,14 @@
 #include "worldTesselator.h"
 
 #include "../Environment/EnvironmentManager.h"
+#include "../Game.h"
+#include "../Entities/GameObjectsManager.h"
 
 #include <sstream>
 
 #define waterLevel 70
 
 using MathLib::Vector2D;
-
-cWorld::cWorld()
-{
-}
 
 cWorld::~cWorld()
 {
@@ -32,7 +30,7 @@ cWorld::~cWorld()
 void cWorld::Initialize(unsigned int ChunksPerSide, int CentralChunkX, int CentralChunkY, const std::string & worldName)
 {
     if (ChunksPerSide % 2 == 0)
-        ChunksPerSide++;		//необходимо для нечетного числа в чанках
+        ChunksPerSide++;        //необходимо для нечетного числа в чанках
 
     Generator.reset(new WorldGenerator);
     ChunksStorage.reset(new cChunksStorage);
@@ -70,6 +68,8 @@ void cWorld::ClearChunkData(int WorldX, int WorldY)
 
 void cWorld::GenerateChunk(int WorldX, int WorldY)
 {
+    GameObjectsManager * pEntityMgr = LostIsland::GetGamePtr()->entityMgr.get();
+
     unsigned int ChunkWidth = DataStorage->GetChunkWidth();
 
     int FromX = WorldX * ChunkWidth;
@@ -78,33 +78,57 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
     int FromY = WorldY * ChunkWidth;
     int ToY = WorldY * ChunkWidth + ChunkWidth;
 
+    cNoise * pNoise = Generator->GetNoise();
+
     for (int i = FromX; i < ToX; i++)
     {
         for (int j = FromY; j < ToY; j++)
         {
-            Generator->GetNoise()->SetFrequency(0.007);
-            Generator->GetNoise()->SetOctaves(5);
+            pNoise->SetFrequency(0.007);
+            pNoise->SetOctaves(5);
 
-            double noise = Generator->GetNoise()->SimplexNoise(i, j) * 6.0f;
+            double noise = pNoise->SimplexNoise(i, j) * 6.0f;
             double distance = MathLib::distance(Vector2D(), Vector2D((double)i, (double)j)) / 400.0;
             int result = (int)((noise + 90.0) * (1.0 - distance));
             unsigned char kMax = result < 3 ? 3 : (unsigned char)result; //+ GetInterpolatedHeight(i, j);
-            //unsigned int kMax = 90;
 
             DataStorage->SetColumn(i, j, 0, BlockColumn(BlockTypes::BT_Stone, kMax));
             if (kMax < waterLevel)
             {
+                // water
                 DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Water, waterLevel - kMax + 1));
             }
             else if (kMax >= waterLevel && kMax <= waterLevel + 3)
             {
+                // sand
                 DataStorage->SetColumn(i, j, 0, BlockColumn(BlockTypes::BT_Stone, waterLevel));
                 DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Sand, kMax - waterLevel + 2));
+
+                pNoise->SetFrequency(0.5);
+                pNoise->SetOctaves(4);
+
+                Vector3F position = { (float)i, (float)j, 0.0f };
+                noise = pNoise->SimplexNoise(i, j);
+                if (noise > 1.1)
+                {
+                    pEntityMgr->CreateEntity(position, "smooth_stone");
+                }
             }
             else
             {
+                // grass
                 DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Dirt, 1));
                 DataStorage->SetColumn(i, j, 2, BlockColumn(BlockTypes::BT_Grass, 1));
+
+                Vector3F position = { (float)i, (float)j, 0.0f };
+                pNoise->SetFrequency(0.4);
+                pNoise->SetOctaves(6);
+
+                noise = pNoise->SimplexNoise(i, j);
+                if (noise > 1.4)
+                {
+                    pEntityMgr->CreateEntity(position, "tree1");
+                }
             }
         }
     }
@@ -203,12 +227,12 @@ void cWorld::ProcessLoading()
 
         int status = ProcessChunk((*iter).x, (*iter).y, (*iter).action);
 
-        if (status == LOADED)
+        if (status == LS_Loaded)
         {
             iter = loadingQueue.erase(iter);
             break;
         }
-        else if (status == ALREADYLOADED)
+        else if (status == LS_AlreadyLoaded)
         {
             iter = loadingQueue.erase(iter);
         }
@@ -233,14 +257,14 @@ void cWorld::UpdateChunk(int WorldX, int WorldY)
     loadingQueue.push_front(LoadQuery(WorldX, WorldY, Tesselate));
 }
 
-int cWorld::ProcessChunk(int WorldX, int WorldY, Action action)
+cWorld::LoadingStatus cWorld::ProcessChunk(int WorldX, int WorldY, Action action)
 {
     WorldChunk * ChunkPtr = ChunksStorage->GetChunkPtr(WorldX, WorldY);
 
     if (action == Load)
     {
         if (ChunkPtr->GetStatus() > CS_EMPTY)
-            return ALREADYLOADED;
+            return LS_AlreadyLoaded;
 
         ClearChunkData(WorldX, WorldY);
 
@@ -250,32 +274,32 @@ int cWorld::ProcessChunk(int WorldX, int WorldY, Action action)
             GenerateChunk(WorldX, WorldY);
 
         ChunkPtr->SetStatus(CS_FILLED);
-        return LOADED;
+        return LS_Loaded;
     }
 
     if (action == Tesselate)
     {
         if (ChunkPtr->GetStatus() > CS_FILLED)
-            return ALREADYLOADED;
+            return LS_AlreadyLoaded;
         if (ChunksStorage->IsBorder(WorldX, WorldY))
-            return NOTLOADED;
+            return LS_NotLoaded;
         if (!ChunksStorage->HaveRightNeighbors(WorldX, WorldY, CS_FILLED))
-            return NOTLOADED;
+            return LS_NotLoaded;
 
         if (Tesselator->TesselateChunk(WorldX, WorldY, ChunkPtr->GetLandNode(), ChunkPtr->GetWaterNode()))
         {
             //Tesselator->BuildWaterMesh(WorldX, WorldY);
             ChunkPtr->SetStatus(CS_TESSELATED);
             ChunkPtr->Show();
-            return LOADED;
+            return LS_Loaded;
         }
         else
         {
-            return NOTLOADED;
+            return LS_NotLoaded;
         }
     }
 
-    return NOTLOADED;
+    return LS_NotLoaded;
 }
 
 float cWorld::GetInterpolatedHeight(int x, int y)
@@ -406,7 +430,7 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
     }
     else
     {
-        out = Vector3F();
+        out = {};
         return false;
     }
 }
