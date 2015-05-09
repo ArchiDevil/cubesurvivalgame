@@ -31,8 +31,8 @@ namespace MathLib
     template<typename T>
     plane<T> normalize(const plane<T> & p)
     {
-        vec3<T> n = normalize<T>(vec3<T>(p.a, p.b, p.c));
-        return{ n.x, n.y, n.z, p.d };
+        T inv_length = (T)1.0 / vec3<T>(p.a, p.b, p.c).length();
+        return{ p.a * inv_length, p.b * inv_length, p.c * inv_length, p.d * inv_length };
     }
 
     template<typename T>
