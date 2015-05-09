@@ -36,14 +36,14 @@ namespace MathLib
     }
 
     template<typename T>
-    T planeDotCoord(const plane<T> & p, const vec3<T> & v)
+    T planeDotNormal(const plane<T> & p, const vec3<T> & v)
     {
-        return p.a * v.x + p.b * v.y + p.c * v.z + p.d * (T)1.0;
+        return p.a * v.x + p.b * v.y + p.c * v.z + p.d * (T)0.0;
     }
 
     template<typename T>
-    T planeDotNormal(const plane<T> & p, const vec3<T> & v)
+    T planeDotCoord(const plane<T> & p, const vec3<T> & v)
     {
-        return p.a * v.x + p.b * v.y + p.c * v.z + p.d * 0.0;
+        return p.a * v.x + p.b * v.y + p.c * v.z + p.d * (T)1.0;
     }
 }
