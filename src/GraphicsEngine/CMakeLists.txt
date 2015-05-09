@@ -65,5 +65,8 @@ if(NOT UNIX)
     target_link_libraries(GraphicsEngine ${DXSDK_LIBS})
 endif()
 
-target_link_libraries(GraphicsEngine tinyxml2)
-add_dependencies(GraphicsEngine Utilities MathLib)
+target_link_libraries(GraphicsEngine tinyxml2 Utilities MathLib)
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

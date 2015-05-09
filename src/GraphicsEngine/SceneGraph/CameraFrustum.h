@@ -25,6 +25,7 @@ namespace ShiftEngine
         bool CheckBox(const MathLib::Vector3F & center, const MathLib::Vector3F & radius) const;
         bool CheckSphere(const MathLib::Vector3F & position, const MathLib::Vector3F & radius) const;
         bool CheckRectangle(const MathLib::Vector3F & position, const MathLib::Vector3F & sizes) const;
+
     private:
         MathLib::plane<float> planes[6]; //6 плоскостей - передн€€, задн€€, 2 боковые, 2 верхн€€/нижн€€
     };
