@@ -48,6 +48,9 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
     const Vector3F DOWN{ 0.0f, 0.0f, -1.0f };
     const Vector3F UP{ 0.0f, 0.0f, 1.0f };
 
+    float centerX = (float)x_size / 2.0f;
+    float centerY = (float)y_size / 2.0f;
+
     for (float x = 0.0f; x < (float)x_size; x += 1.0f)
     {
         for (float y = 0.0f; y < (float)y_size; y += 1.0f)
@@ -60,10 +63,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     auto buffer = GetBlock((unsigned)x - 1, (unsigned)y, (unsigned)z);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x, y, z }, FRONT, {}, block->color));
-                        vertices.push_back(Vertex({ x, y + 1, z }, FRONT, {}, block->color));
-                        vertices.push_back(Vertex({ x, y, z + 1 }, FRONT, {}, block->color));
-                        vertices.push_back(Vertex({ x, y + 1, z + 1 }, FRONT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z }, FRONT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z }, FRONT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z + 1 }, FRONT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z + 1 }, FRONT, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 3);
@@ -78,10 +81,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     buffer = GetBlock((unsigned)x + 1, (unsigned)y, (unsigned)z);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x + 1, y, z }, BACK, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z }, BACK, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y, z + 1 }, BACK, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z + 1 }, BACK, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z }, BACK, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z }, BACK, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z + 1 }, BACK, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z + 1 }, BACK, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 2);
@@ -96,10 +99,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     buffer = GetBlock((unsigned)x, (unsigned)y - 1, (unsigned)z);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x, y, z }, LEFT, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y, z }, LEFT, {}, block->color));
-                        vertices.push_back(Vertex({ x, y, z + 1 }, LEFT, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y, z + 1 }, LEFT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z }, LEFT, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z }, LEFT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z + 1 }, LEFT, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z + 1 }, LEFT, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 2);
@@ -114,10 +117,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     buffer = GetBlock((unsigned)x, (unsigned)y + 1, (unsigned)z);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x, y + 1, z }, RIGHT, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z }, RIGHT, {}, block->color));
-                        vertices.push_back(Vertex({ x, y + 1, z + 1 }, RIGHT, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z + 1 }, RIGHT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z }, RIGHT, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z }, RIGHT, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z + 1 }, RIGHT, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z + 1 }, RIGHT, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 3);
@@ -132,10 +135,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     buffer = GetBlock((unsigned)x, (unsigned)y, (unsigned)z - 1);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x, y, z }, DOWN, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y, z }, DOWN, {}, block->color));
-                        vertices.push_back(Vertex({ x, y + 1, z }, DOWN, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z }, DOWN, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z }, DOWN, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z }, DOWN, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z }, DOWN, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z }, DOWN, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 3);
@@ -150,10 +153,10 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
                     buffer = GetBlock((unsigned)x, (unsigned)y, (unsigned)z + 1);
                     if (!buffer->exist)
                     {
-                        vertices.push_back(Vertex({ x, y, z + 1 }, UP, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y, z + 1 }, UP, {}, block->color));
-                        vertices.push_back(Vertex({ x, y + 1, z + 1 }, UP, {}, block->color));
-                        vertices.push_back(Vertex({ x + 1, y + 1, z + 1 }, UP, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y - centerY, z + 1 }, UP, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y - centerY, z + 1 }, UP, {}, block->color));
+                        vertices.push_back(Vertex({ x - centerX, y + 1 - centerY, z + 1 }, UP, {}, block->color));
+                        vertices.push_back(Vertex({ x + 1 - centerX, y + 1 - centerY, z + 1 }, UP, {}, block->color));
 
                         indices.push_back(ind_index + 0);
                         indices.push_back(ind_index + 2);
