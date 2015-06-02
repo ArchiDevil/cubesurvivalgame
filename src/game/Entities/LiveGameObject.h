@@ -24,7 +24,7 @@ public:
     void SetHealth(int in_health);
 
 private:
-    int health;
+    int health = 1;
     GameObjectInventory inventory;
 
 };

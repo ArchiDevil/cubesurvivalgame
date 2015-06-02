@@ -101,11 +101,8 @@ bool PlayerGameObject::Go(const MathLib::Vector2F & target)
 
     auto pGame = LostIsland::GetGamePtr();
     targetMarker->SetVisibility(true);
-    targetMarker->SetPosition(Vector3F(target.x, target.y, 0.0f));
     float height = (float)pGame->world->GetDataStorage()->GetFullHeight((int)std::floor(target.x), (int)std::floor(target.y));
-    auto position = targetMarker->GetPosition();
-    position.z = height;
-    targetMarker->SetPosition(position);
+    targetMarker->SetPosition({ target.x, target.y, height });
 
     return true;
 }

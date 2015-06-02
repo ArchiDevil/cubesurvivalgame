@@ -6,7 +6,6 @@
 
 LiveGameObject::LiveGameObject(ShiftEngine::MeshNode * sceneNode)
     : InteractableGameObject(sceneNode)
-    , health(1)
     , inventory(LostIsland::GetGamePtr()->itemMgr.get(), 10)
 {
     FiniteStateMachine::AddTransition(EntityState::Waiting, EntityState::Dying);
@@ -52,7 +51,7 @@ void LiveGameObject::Update(double dt)
             maxHeight = (float)heights[i];
 
     auto position = GetPosition();
-    position.z = (float)maxHeight;
+    position.z = maxHeight;
     SetPosition(position);
 }
 

@@ -18,10 +18,7 @@ ShiftEngine::MeshNode::~MeshNode()
 void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
 {
     int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
-    //LOG_INFO(visibility);
-    //auto bbox = GetBBox();
-    //LOG_INFO(bbox.bMin.x, " ", bbox.bMin.y, " ", bbox.bMin.z, " ");
-    //LOG_INFO(bbox.bMax.x, " ", bbox.bMax.y, " ", bbox.bMax.z, " ");
+
     if (IsVisible() && visibility)
         rq.AddRenderableNode(this);
 }

@@ -394,12 +394,10 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
         auto bbox = pChunk->GetLandNode()->GetBBox();
 
         if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
-        {
             foundChunksList.push_back(pChunk);
-        }
     }
 
-    std::vector<MathLib::AABB> foundBBoxes;
+    std::vector<MathLib::AABB> foundBBoxes(foundChunksList.size());
     for (WorldChunk * pChunk : foundChunksList)
     {
         int WorldX = pChunk->GetWorldX();
@@ -413,16 +411,14 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
                 bbox.bMin = Vector3F((float)xStart, (float)yStart, (float)DataStorage->GetFullHeight(xStart, yStart));
                 bbox.bMax = Vector3F((float)xStart + 1.0f, (float)yStart + 1.0f, (float)DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
                 if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
-                {
                     foundBBoxes.push_back(bbox);
-                }
             }
         }
     }
 
     float minimalDistance = 1000.0f;
-    MathLib::AABB * resultedBBox = nullptr;
-    for (MathLib::AABB & bbox : foundBBoxes)
+    const MathLib::AABB * resultedBBox = nullptr;
+    for (const MathLib::AABB & bbox : foundBBoxes)
     {
         float distance = MathLib::distance(bbox.GetCentralPoint(), unprojectedRay.Origin);
         if (distance < minimalDistance)
@@ -432,14 +428,33 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
         }
     }
 
-    if (resultedBBox)
-    {
-        out = resultedBBox->GetCentralPoint();
-        return true;
-    }
-    else
+    if (!resultedBBox)
     {
         out = {};
         return false;
     }
+
+    Vector3F topPoints[4] =
+    {
+        { resultedBBox->bMin.x, resultedBBox->bMin.y, resultedBBox->bMax.z },
+        { resultedBBox->bMin.x, resultedBBox->bMax.y, resultedBBox->bMax.z },
+        { resultedBBox->bMax.x, resultedBBox->bMin.y, resultedBBox->bMax.z },
+        { resultedBBox->bMax.x, resultedBBox->bMax.y, resultedBBox->bMax.z }
+    };
+
+    MathLib::Vector3F outPoint = {};
+    if (MathLib::LineTriangleIntersectionPoint(topPoints[0], topPoints[1], topPoints[2], unprojectedRay.Origin, unprojectedRay.Origin + unprojectedRay.Direction * 256.0f, outPoint))
+    {
+        out = outPoint;
+        return true;
+    }
+
+    if (MathLib::LineTriangleIntersectionPoint(topPoints[1], topPoints[2], topPoints[3], unprojectedRay.Origin, unprojectedRay.Origin + unprojectedRay.Direction * 256.0f, outPoint))
+    {
+        out = outPoint;
+        return true;
+    }
+
+    assert(false); // something gone wrong
+    return false;
 }

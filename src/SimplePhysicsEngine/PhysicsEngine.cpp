@@ -48,7 +48,7 @@ void SimplePhysicsEngine::UpdatePhysics(double dt)
 
             Vector3F Velocities = object->Velocities;
             Velocities.z += gravityAcc * cur_dt;
-            Vector3F delta = Velocities * (float)cur_dt;
+            Vector3F delta = Velocities * cur_dt;
             newPos = object->Position + delta;
             AABB bboxToCalculate = { object->bbox.bMin + newPos, object->bbox.bMax + newPos };
 
@@ -61,39 +61,6 @@ void SimplePhysicsEngine::UpdatePhysics(double dt)
         object->Position = newPos;
     }
 }
-
-/*
-void cSimplePhysicsEngine::UpdatePlayer( double dt )
-{
-Vector3D XNew = Vector3D(PlayerBBox.GetPtr()->Velocities.x * dt, 0.0f, 0.0f);
-Vector3D YNew = Vector3D(0.0f, PlayerBBox.GetPtr()->Velocities.y * dt, 0.0f);
-Vector3D ZNew = Vector3D(0.0f, 0.0f, PlayerBBox.GetPtr()->Velocities.z * dt);
-
-if(!Physics::IsPlayerCollidesWithWorld(PlayerBBox.GetPtr()->Position + XNew, 1.6f, WorldStorage))
-{
-PlayerBBox.GetPtr()->Position += XNew;
-}
-
-if(!Physics::IsPlayerCollidesWithWorld(PlayerBBox.GetPtr()->Position + YNew, 1.6f, WorldStorage))
-{
-PlayerBBox.GetPtr()->Position += YNew;
-}
-
-if(!Physics::IsPlayerCollidesWithWorld(PlayerBBox.GetPtr()->Position + ZNew, 1.6f, WorldStorage))
-{
-PlayerBBox.GetPtr()->Position += ZNew;
-PlayerCollidesWithWorld = false;
-}
-else
-{
-PlayerBBox.GetPtr()->Velocities.z = 0.0f;
-PlayerCollidesWithWorld = true;
-}
-
-PlayerBBox.GetPtr()->Velocities.x = 0.0f;
-PlayerBBox.GetPtr()->Velocities.y = 0.0f;
-}
-*/
 
 const std::vector<CollisionInfo> & SimplePhysicsEngine::GetCollisions() const
 {
