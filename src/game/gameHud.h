@@ -12,6 +12,7 @@ public:
     GameHUD(MyGUI::Gui * guiModule);
 
     void Draw();
+    void Update(double dt);
     void OnUserInventoryChange();
     void OnCraftingProgress();
     void SelectSlot(uint32_t slot);

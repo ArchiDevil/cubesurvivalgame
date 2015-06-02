@@ -17,8 +17,8 @@
 #include <MyGUI.h>
 #include <MyGUI_DirectX11Platform.h>
 
-#include "gameStates/gameState.h"
-#include "gameStates/mainMenuState.h"
+#include "gameStates/GameState.h"
+#include "gameStates/MainMenuState.h"
 #include "game.h"
 
 class LostIslandApplication : public cApplication

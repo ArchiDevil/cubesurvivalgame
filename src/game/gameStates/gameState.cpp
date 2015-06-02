@@ -1,4 +1,4 @@
-#include "gameState.h"
+#include "GameState.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <SimplePhysicsEngine/PhysicsEngine.h>
@@ -12,13 +12,14 @@
 #include "../CraftingManager.h"
 
 //TEMPORARY
+const float minR = 15.0f;
+const float maxR = 60.0f;
 float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
-ShiftEngine::LightNode * pSun = nullptr;
 //END OF TEMPORARY
 
-gameState::gameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform)
+GameState::GameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform)
     : iniLoader(iw)
     , console()
     , guiModule(guiModule)
@@ -26,11 +27,11 @@ gameState::gameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Pla
 {
 }
 
-gameState::~gameState()
+GameState::~GameState()
 {
 }
 
-bool gameState::initState()
+bool GameState::initState()
 {
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
@@ -69,9 +70,8 @@ bool gameState::initState()
 
     pScene->AddCameraSceneNode();
     pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
-    pScene->GetActiveCamera()->SetPosition(0.0f, 0.0f, 0.0f);
+    pScene->GetActiveCamera()->SetPosition({ 0.0f, 0.0f, 0.0f });
     pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
-    pSun = pScene->AddDirectionalLightNode(Vector3F());
 
     pGame->entityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
     pGame->entityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
@@ -82,26 +82,27 @@ bool gameState::initState()
     return true;
 }
 
-bool gameState::update(double dt)
+bool GameState::update(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
 
-    Vector3F playerPosition = pGame->player->GetPosition();
-    Vector3F sunPosition = pGame->environmentMgr->GetSunPosition(playerPosition);
-    pSun->SetDirection(-sunPosition);
     ProcessInput(dt);
-    SimplePhysicsEngine::GetInstance().Update(dt);
+    pGame->gameHud->Update(dt);
+
+    pGame->world->ProcessLoading();
     pGame->entityMgr->Update(dt);
+    SimplePhysicsEngine::GetInstance().Update(dt);
     pGame->environmentMgr->Update(dt * 0.0);
 
-    pScene->GetActiveCamera()->SetSphericalCoords(playerPosition, phi, theta, r);
-    pGame->world->ProcessLoading();
+    Vector3F playerPosition = pGame->player->GetPosition();
+    ShiftEngine::CameraSceneNode * pCamera = pScene->GetActiveCamera();
+    pCamera->SetSphericalCoords(playerPosition, phi, theta, r);
 
     return true;
 }
 
-bool gameState::render(double dt)
+bool GameState::render(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
@@ -144,7 +145,7 @@ bool gameState::render(double dt)
     pCtxMgr->SetZState(true);
 
     for (int i = 0; i < infoSize; i++)
-        pFntMgr->DrawTextTL(di[i].str(), 0, 0 + i * 32);
+        pFntMgr->DrawTextTL(di[i].str(), 0.0f, i * 32.0f);
 
     console.Draw();
 
@@ -155,19 +156,19 @@ bool gameState::render(double dt)
     return true; //return false if something wrong
 }
 
-void gameState::onKill()
+void GameState::onKill()
 {
 }
 
-void gameState::onSuspend()
+void GameState::onSuspend()
 {
 }
 
-void gameState::onResume()
+void GameState::onResume()
 {
 }
 
-void gameState::ProcessInput(double dt)
+void GameState::ProcessInput(double dt)
 {
     InputEngine & inputEngine = InputEngine::GetInstance();
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
@@ -201,10 +202,6 @@ void gameState::ProcessInput(double dt)
 
     if (inputEngine.IsKeyDown(DIK_ESCAPE))
         this->kill();
-
-    auto camPos = pScene->GetActiveCamera()->GetPosition();
-    Vector3F newCamPos(camPos.x, camPos.y, camPos.z);
-    pScene->GetActiveCamera()->SetPosition(newCamPos.x, newCamPos.y, newCamPos.z);
 
     if (inputEngine.IsKeyUp(DIK_V))
     {
@@ -275,11 +272,11 @@ void gameState::ProcessInput(double dt)
         {
             if (mousePath <= 15)
             {
-                Vector3F column;
+                Vector3F column = {};
                 if (pGame->world->SelectColumnByRay(unprojectedRay, column))
                 {
                     pGame->player->CancelCurrentCommand();
-                    pGame->player->Go(Vector2F(column.x, column.y));
+                    pGame->player->Go({ column.x, column.y });
                 }
             }
         }
@@ -290,13 +287,10 @@ void gameState::ProcessInput(double dt)
         mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
     r -= (float)mouseInfo.deltaZ * (float)dt;
-    if (r > 60.0f)
-        r = 60.0f;
-    if (r < 15.0f)
-        r = 15.0f;
+    r = MathLib::clamp(r, minR, maxR);
 }
 
-bool gameState::handleEvent(const InputEvent & event)
+bool GameState::handleEvent(const InputEvent & event)
 {
     MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 

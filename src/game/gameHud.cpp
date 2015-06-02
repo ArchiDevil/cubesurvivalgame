@@ -30,35 +30,6 @@ void GameHUD::Draw()
     auto pPlayer = pGame->player;
     SlotUnit handItem = pPlayer->GetInventoryPtr()->GetItemInRightHand();
 
-    for (int i = 0; i < 3; i++)
-    {
-        Vector2F position = Vector2F(8 + progressBarBack->GetTextureDimensions().x / 2, screenHeight - progressBarBack->GetTextureDimensions().y + 8 - i * 40);
-        progressBarBack->SetPosition(position);
-        progressBarBack->Draw();
-    }
-
-    float scale = (float)pGame->player->GetHealth() / 20.0f;
-    float xPos = 10 + healthBar->GetTextureDimensions().x * scale / 2;
-    float yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 2 * 40;
-    healthBar->SetScale(Vector2F(scale, 1.0f));
-    healthBar->SetPosition(Vector2F(xPos, yPos));
-
-    scale = (float)pGame->player->GetWarmth() / 100.0f;
-    xPos = 10 + warmthBar->GetTextureDimensions().x * scale / 2;
-    yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 1 * 40;
-    warmthBar->SetScale(Vector2F(scale, 1.0f));
-    warmthBar->SetPosition(Vector2F(xPos, yPos));
-
-    scale = (float)pGame->player->GetHunger() / 25.0f;
-    xPos = 10 + hungerBar->GetTextureDimensions().x * scale / 2;
-    yPos = screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 0 * 40;
-    hungerBar->SetScale(Vector2F(scale, 1.0f));
-    hungerBar->SetPosition(Vector2F(xPos, yPos));
-
-    healthBar->Draw();
-    warmthBar->Draw();
-    hungerBar->Draw();
-
     itemPanel->Draw();
     selectedBorder->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + selectedSlot*48.0f, screenHeight - 30.0f });
     selectedBorder->Draw();
@@ -277,16 +248,21 @@ void GameHUD::CreateOtherElements()
         sprite->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + i*48.0f, screenHeight - 30.0f });
     }
 
-    progressBarBack.reset(new Sprite(L"gui/backgroundbar.png"));
-    Vector2F position = Vector2F(8 + progressBarBack->GetTextureDimensions().x / 2, screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 2 * 40);
-    healthBar.reset(new Sprite(L"gui/healthbar.png"));
-    healthBar->SetPosition(position);
-    position = Vector2F(8 + progressBarBack->GetTextureDimensions().x / 2, screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 1 * 40);
-    warmthBar.reset(new Sprite(L"gui/warmthbar.png"));
-    warmthBar->SetPosition(position);
-    hungerBar.reset(new Sprite(L"gui/hungerbar.png"));
-    position = Vector2F(8 + progressBarBack->GetTextureDimensions().x / 2, screenHeight - progressBarBack->GetTextureDimensions().y + 8 - 0 * 40);
-    hungerBar->SetPosition(position);
+    const char * names[] = { "health_bar", "warmth_bar", "hunger_bar" };
+    const Colour colors[] = { { 1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f, 0.8f }, { 0.8f, 0.8f, 0.0f } };
+
+    for (int i = 0; i < 3; ++i)
+    {
+        ProgressBar * bar = guiModule->createWidget<ProgressBar>("ProgressBar",
+                                                                 IntCoord(8, screenHeight - 90 + i * 30, 200, 24),
+                                                                 Align::Default,
+                                                                 "Overlapped",
+                                                                 names[i]);
+
+        bar->setProgressRange(100);
+        bar->setProgressPosition(50);
+        bar->setColour(colors[i]);
+    }
 }
 
 void GameHUD::CreateInventoryWindow()
@@ -359,4 +335,41 @@ void GameHUD::CreateCraftingWindow()
             t->setCaption("0");
         }
     }
+}
+
+void GameHUD::Update(double dt)
+{
+    auto pPlayer = LostIsland::GetGamePtr()->player;
+
+    ProgressBar * p = guiModule->findWidget<ProgressBar>("health_bar");
+    p->setProgressRange(pPlayer->GetMaxHealth());
+    p->setProgressPosition(pPlayer->GetHealth());
+
+    p = guiModule->findWidget<ProgressBar>("warmth_bar");
+    p->setProgressRange(pPlayer->GetMaxWarmth());
+    p->setProgressPosition(pPlayer->GetWarmth());
+    Colour center = { 0.8f, 0.8f, 0.8f }, left = { 0.0f, 0.0f, 0.8f }, right = { 0.8f, 0.0f, 0.0f };
+    float halfWarmth = pPlayer->GetMaxWarmth() / 2.0f;
+    if (pPlayer->GetWarmth() > halfWarmth)
+    {
+        // hot
+        Colour resultColor = {};
+        resultColor.red = MathLib::LinearInterpolation(center.red, right.red, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        resultColor.green = MathLib::LinearInterpolation(center.green, right.green, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        resultColor.blue = MathLib::LinearInterpolation(center.blue, right.blue, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        p->setColour(resultColor);
+    }
+    else
+    {
+        // cold
+        Colour resultColor = {};
+        resultColor.red = MathLib::LinearInterpolation(left.red, center.red, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        resultColor.green = MathLib::LinearInterpolation(left.green, center.green, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        resultColor.blue = MathLib::LinearInterpolation(left.blue, center.blue, (float)(pPlayer->GetWarmth() - halfWarmth) / halfWarmth);
+        p->setColour(resultColor);
+    }
+
+    p = guiModule->findWidget<ProgressBar>("hunger_bar");
+    p->setProgressRange(pPlayer->GetMaxHunger());
+    p->setProgressPosition(pPlayer->GetHunger());
 }

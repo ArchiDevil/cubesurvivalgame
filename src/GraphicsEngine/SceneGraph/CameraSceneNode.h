@@ -15,15 +15,11 @@ namespace ShiftEngine
     {
     public:
         CameraSceneNode();
-        CameraSceneNode(MathLib::Vector3F _pos, MathLib::Vector3F _up, MathLib::Vector3F _right);
+        CameraSceneNode(MathLib::Vector3F position);
 
         void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
-
-        void SetPosition(float x, float y, float z);
         void SetPosition(const Vector3F & pos);
-
         void Update();
-
         void MoveUpDown(float units);
         void MoveLeftRight(float units);
         void MoveForwardBackward(float units);
@@ -65,17 +61,17 @@ namespace ShiftEngine
 
         float zNear = 0.1f;
         float zFar = 100.0f;
-        float FOV = 60.0f;
+        float fov = 60.0f;
         float screenWidth = 800.0f;
         float screenHeight = 600.0f;
-        std::unique_ptr<CameraFrustum> Frustum = nullptr;
+        std::unique_ptr<CameraFrustum> frustum = nullptr;
 
-        float ViewAngle = 0.0f;
-        MathLib::Vector3F Angles = { 0.0f, 0.0f, 0.0f };
-        MathLib::Vector3F UP = { 0.0f, 0.0f, 1.0f };
-        MathLib::Vector3F LOOK = { 0.0f, 1.0f, 0.0f };
-        MathLib::Vector3F POS = { 0.0f, 0.0f, 0.0f };
-        MathLib::Vector3F RIGHT = { 1.0f, 0.0f, 0.0f };
+        float viewAngle = 0.0f;
+        MathLib::Vector3F angles = { 0.0f, 0.0f, 0.0f };
+        MathLib::Vector3F upVector = { 0.0f, 0.0f, 1.0f };
+        MathLib::Vector3F lookVector = { 0.0f, 1.0f, 0.0f };
+        MathLib::Vector3F position = { 0.0f, 0.0f, 0.0f };
+        MathLib::Vector3F rightVector = { 1.0f, 0.0f, 0.0f };
 
     };
 }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
     include_directories($ENV{DXSDK_DIR}/include)
 else()
     add_definitions(-std=c++0x)

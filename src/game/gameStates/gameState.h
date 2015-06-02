@@ -20,14 +20,14 @@
 using MathLib::Vector3D;
 using MathLib::Vector2D;
 
-class gameState final
+class GameState final
     : public appState
     , public IManager
     , public observer<InputEvent>
 {
 public:
-    gameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform);
-    ~gameState();
+    GameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform);
+    ~GameState();
 
     // Inherited via appState
     bool initState() override;

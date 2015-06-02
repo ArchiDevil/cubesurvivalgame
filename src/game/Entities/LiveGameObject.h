@@ -17,14 +17,17 @@ public:
 
     // getters
     int GetHealth() const;
+    int GetMaxHealth() const;
     virtual InteractionType GetInteraction() const override;
     GameObjectInventory * GetInventory();
 
     // setters
     void SetHealth(int in_health);
+    void SetMaxHealth(int in_maxHealth);
 
 private:
     int health = 1;
+    int maxHealth = 1;
     GameObjectInventory inventory;
 
 };

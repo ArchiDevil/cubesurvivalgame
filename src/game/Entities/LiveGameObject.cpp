@@ -24,6 +24,8 @@ int LiveGameObject::GetHealth() const
 void LiveGameObject::SetHealth(int in_health)
 {
     health = in_health;
+    if (health > maxHealth)
+        health = maxHealth;
 
     if (health <= 0)
         DispatchState(std::make_unique<DyingState>(1.0));
@@ -68,4 +70,14 @@ GameObjectInventory * LiveGameObject::GetInventory()
 
 void LiveGameObject::Attack(LiveGameObject * /*target*/) const
 {
+}
+
+int LiveGameObject::GetMaxHealth() const
+{
+    return maxHealth;
+}
+
+void LiveGameObject::SetMaxHealth(int in_maxHealth)
+{
+    maxHealth = in_maxHealth;
 }

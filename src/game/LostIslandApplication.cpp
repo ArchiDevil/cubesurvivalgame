@@ -77,7 +77,7 @@ bool LostIslandApplication::Initialize()
     /// GAME STRUCTURES INIT ///
     ////////////////////////////
 
-    gameState * state = new gameState(&settingsLoader, guiModule, guiPlatform);
+    GameState * state = new GameState(&settingsLoader, guiModule, guiPlatform);
     statesStack.push(state);
 
     state->initState();

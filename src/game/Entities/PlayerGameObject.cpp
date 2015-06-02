@@ -10,8 +10,6 @@
 
 PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManager * pItemMgr)
     : ControllableGameObject(sceneNode)
-    , hunger(25)
-    , warmth(100)
     , targetMarker(nullptr)
     , Inventory(pItemMgr, 10)
 {
@@ -21,6 +19,7 @@ PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManage
     targetMarker->SetVisibility(false);
     targetMarker->SetScale(0.3f);
 
+    SetMaxHealth(20);
     SetHealth(20);
 }
 
@@ -42,11 +41,15 @@ unsigned int PlayerGameObject::GetWarmth() const
 void PlayerGameObject::SetHunger(unsigned int in_hunger)
 {
     hunger = in_hunger;
+    if (hunger > maxHunger)
+        hunger = maxHunger;
 }
 
 void PlayerGameObject::SetWarmth(unsigned int in_temperature)
 {
     warmth = in_temperature;
+    if (warmth > maxWarmth)
+        warmth = maxWarmth;
 }
 
 void PlayerGameObject::Update(double dt)
@@ -70,7 +73,7 @@ void PlayerGameObject::Update(double dt)
     if ((int)accumulatedTime % 10 == 0 && ((int)accumulatedTime - (int)prevTime == 1))
     {
         if (hunger)
-            hunger--;
+            SetHunger(hunger - 1);
     }
 
     if ((int)accumulatedTime % 3 == 0 && ((int)accumulatedTime - (int)prevTime == 1))
@@ -85,9 +88,9 @@ void PlayerGameObject::Update(double dt)
             SetHealth(GetHealth() - 1);
 
         if (pGame->environmentMgr->GetEnvironmentTemperature() < 21.0f)
-            warmth--;
+            SetWarmth(warmth - 1);
         else
-            warmth++;
+            SetWarmth(warmth + 1);
     }
 
     warmth = MathLib::clamp(warmth, 0u, 100u);
@@ -143,4 +146,19 @@ void PlayerGameObject::DispatchEvent(const IGameEvent *ev)
     // assume that campfire heats only 3 blocks around for now
     hv *= (int)(MathLib::distance(heat->heatSource, GetPosition()) / 3.0f);
     SetWarmth(GetWarmth() + hv);
+}
+
+unsigned int PlayerGameObject::GetMaxHunger() const
+{
+    return maxHunger;
+}
+
+unsigned int PlayerGameObject::GetMaxWarmth() const
+{
+    return maxWarmth;
+}
+
+void PlayerGameObject::SetMaxHunger(unsigned int val)
+{
+    maxHunger = val;
 }
