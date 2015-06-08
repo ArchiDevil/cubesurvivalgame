@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "MeshEditorApplication.h"
-#include <Utilities/appState.h>
+#include <Utilities/IAppState.h>
 
 #include <MyGUI.h>
 #include <MyGUI_DirectX11Platform.h>
@@ -11,7 +11,7 @@
 class MeshEditorApplication;
 
 class MenuState : 
-    public appState,
+    public IAppState,
     observer<InputEvent>
 {
 public:

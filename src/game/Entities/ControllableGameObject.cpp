@@ -99,7 +99,11 @@ void ControllableGameObject::OnStateChange(EntityState from, EntityState to)
 
 void ControllableGameObject::Interact(InteractableGameObject * target, InteractionType interaction)
 {
+    float radius = 1.0f; // temporarily hardcoded, but must be varied with different interactions
     Vector2F targetPosition = Vector2F(target->GetPosition().x, target->GetPosition().y);
+    Vector2F direction = targetPosition - Vector2F(GetPosition().x, GetPosition().y);
+    direction = MathLib::normalize(direction);
+    targetPosition -= direction * radius;
     switch (interaction)
     {
     case InteractionType::Nothing:

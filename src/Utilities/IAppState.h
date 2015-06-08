@@ -1,10 +1,10 @@
 #pragma once
 
-class appState
+class IAppState
 {
 public:
-    appState() : Dead(false) {}
-    virtual ~appState() {}
+    IAppState() : Dead(false) {}
+    virtual ~IAppState() {}
 
     virtual bool initState() = 0;           //вызывается, когда стейт инициализируется
     virtual bool update(double dt) = 0;     //вызывается для обновления состояний подконтрольных стейту

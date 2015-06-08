@@ -9,6 +9,7 @@
 #include <Utilities/cRegWorker.h>
 #include <Utilities/InputEngine.h>
 #include <Utilities/iniloader.h>
+#include <Utilities/AppStateMachine.h>
 
 #include <MyGUI.h>
 #include <MyGUI_DirectX11Platform.h>
@@ -16,7 +17,7 @@
 #include "MenuState.h"
 #include "WorkState.h"
 
-class MeshEditorApplication : public cApplication
+class MeshEditorApplication : public Application
 {
 public:
     MeshEditorApplication(HINSTANCE hInstance, int Width, int Height, LPCWSTR AppName);
@@ -24,7 +25,7 @@ public:
 
     bool Initialize();
     void Shutdown();
-    void PushState(appState * state);
+    void PushState(IAppState * state);
 
     bool Frame();
     void ProcessMessage(MSG msg);
@@ -36,7 +37,7 @@ private:
     cTimer                      mainTimer;
     IniWorker                   settingsLoader;
 
-    std::stack<appState *>      statesStack;    //stack of game states like MainMenu, GameState and more
+    AppStateMachine             stateMachine;
     std::vector<wchar_t>        charQueue;
 
     MyGUI::Gui *                pGui = nullptr;

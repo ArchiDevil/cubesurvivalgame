@@ -57,7 +57,7 @@ protected:
 
 };
 
-class MoveAction : public IEntityAction
+class MoveAction final : public IEntityAction
 {
 public:
     MoveAction(const MathLib::Vector2F & targetPosition);
@@ -74,7 +74,7 @@ private:
 
 };
 
-class CollectingAction : public IEntityAction
+class CollectingAction final : public IEntityAction
 {
 public:
     CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximumDistance);
@@ -92,7 +92,7 @@ private:
 
 };
 
-class AttackAction : public IEntityAction
+class AttackAction final : public IEntityAction
 {
 public:
     AttackAction(LiveGameObject * object, float maximum_distance);

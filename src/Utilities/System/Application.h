@@ -1,15 +1,12 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
 #include "System.h"
 
-class cApplication
+class Application
 {
 public:
-    cApplication(int Width, int Height, LPCWSTR AppName);
-    virtual ~cApplication();
+    Application(int Width, int Height, LPCWSTR AppName);
+    virtual ~Application();
 
     virtual bool Initialize() = 0;
     virtual void Shutdown() = 0;

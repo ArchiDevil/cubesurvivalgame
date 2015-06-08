@@ -1,7 +1,7 @@
 #include "MeshEditorApplication.h"
 
 MeshEditorApplication::MeshEditorApplication(HINSTANCE /*hInstance*/, int Width, int Height, LPCWSTR AppName)
-    : cApplication(Width, Height, AppName)
+    : Application(Width, Height, AppName)
 {
     utils::filesystem::CreateDir(L"saves");
 }
@@ -64,8 +64,7 @@ bool MeshEditorApplication::Initialize()
     pPlatform->getRenderManagerPtr()->setViewSize(settings.screenWidth, settings.screenHeight);
 
     MenuState * state = new MenuState(this, pGui, pPlatform);
-    statesStack.push(state);
-    state->initState();
+    PushState(state);
 
     return true;
 }
@@ -91,47 +90,24 @@ bool MeshEditorApplication::Frame()
     elapsedTime = mainTimer.GetDeltaTime();
     mainTimer.Tick();
 
-    if (!statesStack.empty())
-    {
-        if (statesStack.top()->isDead())
-        {
-            appState * state = statesStack.top();
-            statesStack.pop();
-            state->onKill();
-            delete state;
-
-            if (!statesStack.empty())
-                statesStack.top()->onResume();
-            return true; //skip frame
-        }
-
-        if (!statesStack.top()->update(elapsedTime)) //use current state
-            return false;
-        if (!statesStack.top()->render(elapsedTime))
-            return false;
-        return true;
-    }
-
-    return false;
+    return stateMachine.Frame(elapsedTime);
 }
 
-void MeshEditorApplication::PushState(appState * state)
+void MeshEditorApplication::PushState(IAppState * state)
 {
-    statesStack.top()->onSuspend();
-    statesStack.push(state);
-    statesStack.top()->initState();
+    stateMachine.PushState(state);
 }
 
 void MeshEditorApplication::Stop()
 {
     mainTimer.Stop();
-    statesStack.top()->onSuspend();
+    stateMachine.Suspend();
 }
 
 void MeshEditorApplication::Activate()
 {
     mainTimer.Start();
-    statesStack.top()->onResume();
+    stateMachine.Resume();
 }
 
 void MeshEditorApplication::ProcessMessage(MSG msg)

@@ -2,9 +2,9 @@
 
 #include <utilities/ut.h>
 #include <utilities/iniloader.h>
-#include <Utilities/appState.h>
+#include <Utilities/IAppState.h>
 
-class mainMenuState : public appState
+class mainMenuState : public IAppState
 {
 public:
     mainMenuState();

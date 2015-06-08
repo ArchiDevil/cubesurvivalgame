@@ -12,7 +12,7 @@ double AllTime = 0.0f;
 Log PerformanceLog("Performance.log");
 
 LostIslandApplication::LostIslandApplication(int Width, int Height, LPCWSTR AppName)
-    : cApplication(Width, Height, AppName)
+    : Application(Width, Height, AppName)
 {
 }
 
@@ -78,9 +78,7 @@ bool LostIslandApplication::Initialize()
     ////////////////////////////
 
     GameState * state = new GameState(&settingsLoader, guiModule, guiPlatform);
-    statesStack.push(state);
-
-    state->initState();
+    PushState(state);
 
     this->SaveTechInfo();
     LOG_INFO("Successfully initialized, starting main loop");
@@ -117,49 +115,24 @@ bool LostIslandApplication::Frame()
     if (curFPS < minFPS)
         minFPS = curFPS;
 
-    if (!statesStack.empty())
-    {
-        if (statesStack.top()->isDead())
-        {
-            auto * state = statesStack.top();
-            statesStack.pop();
-            state->onKill();
-            delete state;
-
-            if (!statesStack.empty())
-                statesStack.top()->onResume();
-            return true;		//skip frame
-        }
-
-        if (!statesStack.top()->update(elapsedTime))		//use current state
-            return false;
-        if (!statesStack.top()->render(elapsedTime))
-            return false;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return stateMachine.Frame(elapsedTime);
 }
 
-void LostIslandApplication::PushState(appState * state)
+void LostIslandApplication::PushState(IAppState * state)
 {
-    statesStack.top()->onSuspend();
-    statesStack.push(state);
-    statesStack.top()->initState();
+    stateMachine.PushState(state);
 }
 
 void LostIslandApplication::Stop()
 {
     gameTimer.Stop();
-    statesStack.top()->onSuspend();
+    stateMachine.Suspend();
 }
 
 void LostIslandApplication::Activate()
 {
     gameTimer.Start();
-    statesStack.top()->onResume();
+    stateMachine.Resume();
 }
 
 void LostIslandApplication::ProcessMessage(MSG /*msg*/)
@@ -196,4 +169,9 @@ void LostIslandApplication::SaveTechInfo()
     PerformanceLog.Message("Total physical memory: " + std::to_string((int64_t)memoryStatus.ullTotalPhys / 1024 / 1024) + " MBs");
     PerformanceLog.Message("Using: " + std::to_string((int)memoryStatus.dwMemoryLoad) + "%");
     PerformanceLog.Message("Videocard description: " + utils::Narrow(ShiftEngine::GetContextManager()->GetGPUDescription()));
+}
+
+IAppState * LostIslandApplication::GetTopState() const
+{
+    return stateMachine.GetTopState();
 }

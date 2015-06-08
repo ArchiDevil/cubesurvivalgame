@@ -10,7 +10,7 @@
 
 #include <MathLib/math.h>
 
-#include <Utilities/appState.h>
+#include <Utilities/IAppState.h>
 #include <Utilities/ut.h>
 #include <Utilities/iniloader.h>
 #include <Utilities/InputEngine.h>
@@ -21,7 +21,7 @@ using MathLib::Vector3D;
 using MathLib::Vector2D;
 
 class GameState final
-    : public appState
+    : public IAppState
     , public IManager
     , public observer<InputEvent>
 {

@@ -1,15 +1,15 @@
 #include "Application.h"
 
-cApplication::cApplication(int Width, int Height, LPCWSTR AppName)
+Application::Application(int Width, int Height, LPCWSTR AppName)
 {
     System.InitializeWindow(Width, Height, AppName);
 }
 
-cApplication::~cApplication()
+Application::~Application()
 {
 }
 
-int cApplication::Run()
+int Application::Run()
 {
     Initialize();
 
@@ -37,7 +37,7 @@ int cApplication::Run()
     return 0;
 }
 
-bool cApplication::CreateDefaultWindow(int Width, int Height, LPCWSTR AppName)
+bool Application::CreateDefaultWindow(int Width, int Height, LPCWSTR AppName)
 {
     if (System.InitializeWindow(Width, Height, AppName))
         return true;
@@ -45,12 +45,12 @@ bool cApplication::CreateDefaultWindow(int Width, int Height, LPCWSTR AppName)
         return false;
 }
 
-HWND cApplication::GetHWND() const
+HWND Application::GetHWND() const
 {
     return System.GetHWND();
 }
 
-HINSTANCE cApplication::GetHINSTANCE() const
+HINSTANCE Application::GetHINSTANCE() const
 {
     return System.GetHINSTANCE();
 }

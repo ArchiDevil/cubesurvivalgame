@@ -177,16 +177,8 @@ void GameState::ProcessInput(double dt)
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
 
-    if (inputEngine.IsKeyUp(DIK_1)) pGame->gameHud->SelectSlot(0);
-    if (inputEngine.IsKeyUp(DIK_2)) pGame->gameHud->SelectSlot(1);
-    if (inputEngine.IsKeyUp(DIK_3)) pGame->gameHud->SelectSlot(2);
-    if (inputEngine.IsKeyUp(DIK_4)) pGame->gameHud->SelectSlot(3);
-    if (inputEngine.IsKeyUp(DIK_5)) pGame->gameHud->SelectSlot(4);
-    if (inputEngine.IsKeyUp(DIK_6)) pGame->gameHud->SelectSlot(5);
-    if (inputEngine.IsKeyUp(DIK_7)) pGame->gameHud->SelectSlot(6);
-    if (inputEngine.IsKeyUp(DIK_8)) pGame->gameHud->SelectSlot(7);
-    if (inputEngine.IsKeyUp(DIK_9)) pGame->gameHud->SelectSlot(8);
-    if (inputEngine.IsKeyUp(DIK_0)) pGame->gameHud->SelectSlot(9);
+    for (int i = DIK_1; i < DIK_0 + 1; ++i)
+        pGame->gameHud->SelectSlot(i - DIK_1);
 
     if (inputEngine.IsKeyUp(DIK_C))
         pGame->gameHud->SwitchCraftingWindow();

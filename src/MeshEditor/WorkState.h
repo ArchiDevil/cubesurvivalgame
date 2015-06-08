@@ -8,11 +8,11 @@
 #include <MyGUI_DirectX11Platform.h>
 
 #include "Common.h"
-#include <Utilities/appState.h>
+#include <Utilities/IAppState.h>
 #include "BlockWorkspace.h"
 
 class WorkState :
-    public appState,
+    public IAppState,
     observer < InputEvent >
 {
 public:
