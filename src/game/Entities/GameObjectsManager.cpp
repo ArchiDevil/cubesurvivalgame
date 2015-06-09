@@ -31,7 +31,7 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
         return nullptr;
     }
 
-    float scale = 0.4f;
+    float scale = 0.15f;
     MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
     bbox.bMin *= scale;
     bbox.bMax *= scale;
