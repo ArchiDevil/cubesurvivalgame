@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Entities/LiveGameObject.h"
+#include "../world/blockColumn.h"
 
 #include <GraphicsEngine/ITexture.h>
 #include <GraphicsEngine/IMeshData.h>
@@ -12,7 +13,8 @@ enum class ItemType
     Misc,
     Weapon,
     Entity,
-    Food
+    Food,
+    Tool
 };
 
 class Item
@@ -60,10 +62,20 @@ public:
         return itemImage;
     }
 
-    // next three calls are empty to simplify description of inherited items
+    // next calls are empty to simplify description of inherited items
     virtual bool UseInWorld(const Vector3F & position) const
     {
         return false;
+    }
+
+    virtual bool CanBeUsedOnBlock(BlockTypes type) const
+    {
+        return false;
+    }
+
+    virtual InteractionType GetInteractionWithBlock() const
+    {
+        return InteractionType::Nothing;
     }
 
     virtual bool UseOnPlayer() const

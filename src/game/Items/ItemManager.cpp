@@ -5,6 +5,7 @@
 #include "WeaponItem.h"
 #include "FoodItem.h"
 #include "EntityItem.h"
+#include "FishingItem.h"
 
 #include <Utilities/fnv.h>
 #include <json/json.h>

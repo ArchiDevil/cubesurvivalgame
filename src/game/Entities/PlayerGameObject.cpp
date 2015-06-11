@@ -162,3 +162,8 @@ void PlayerGameObject::SetMaxHunger(unsigned int val)
 {
     maxHunger = val;
 }
+
+void PlayerGameObject::Fishing(const Vector3F & targetBlock) const
+{
+    // player goes to the some point near water and fish here
+}

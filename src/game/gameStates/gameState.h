@@ -43,6 +43,10 @@ public:
 private:
     void ProcessInput(double dt);
 
+    void switchWireframe();
+    Ray getUnprojectedRay(const Vector2I & clientMouseCoords) const;
+    void playerAction(const Vector2I & clientMouseCoords);
+
     IniWorker *                     iniLoader = nullptr;
 
     MyGUI::Gui *                    guiModule = nullptr;

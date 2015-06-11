@@ -16,7 +16,8 @@ public:
     virtual bool Go(const MathLib::Vector2F & target);
     virtual void Stop();
     virtual void PushCommand(std::unique_ptr<IEntityAction> action);
-    virtual void Interact(InteractableGameObject * target, InteractionType interaction);
+    virtual void InteractWithGameObject(InteractableGameObject * target, InteractionType interaction);
+    virtual void InteractWithBlock(const Vector3F & column, InteractionType interaction);
     virtual void CancelCurrentCommand();
 
 private:
