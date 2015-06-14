@@ -9,13 +9,13 @@ ControllableGameObject::ControllableGameObject(ShiftEngine::MeshNode * sceneNode
     : LiveGameObject(sceneNode)
 {
     AddTransition(EntityState::Waiting, EntityState::Rotating);
-    AddTransition(EntityState::Rotating, EntityState::Moving);
     AddTransition(EntityState::Waiting, EntityState::Moving);
+    AddTransition(EntityState::Waiting, EntityState::Collecting);
+    AddTransition(EntityState::Waiting, EntityState::Attacking);
+    AddTransition(EntityState::Rotating, EntityState::Moving);
     AddTransition(EntityState::Rotating, EntityState::Waiting);
     AddTransition(EntityState::Moving, EntityState::Waiting);
-    AddTransition(EntityState::Waiting, EntityState::Collecting);
     AddTransition(EntityState::Collecting, EntityState::Waiting);
-    AddTransition(EntityState::Waiting, EntityState::Attacking);
     AddTransition(EntityState::Attacking, EntityState::Waiting);
 }
 

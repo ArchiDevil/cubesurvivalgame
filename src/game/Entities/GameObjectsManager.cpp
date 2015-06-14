@@ -31,7 +31,7 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
         return nullptr;
     }
 
-    float scale = 0.4f;
+    float scale = 0.15f;
     MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
     bbox.bMin *= scale;
     bbox.bMax *= scale;
@@ -180,10 +180,7 @@ void GameObjectsManager::LoadEntities()
         buff = { 1.0f };
         buff = root.get("scale", buff);
         float scale = 1.0f;
-        if (buff.empty())
-            scale = 1.0f;
-        else
-            scale = buff.asFloat();
+        scale = buff.asFloat();
 
         buff = root.get("type", buff);
         std::string type = buff.asString();

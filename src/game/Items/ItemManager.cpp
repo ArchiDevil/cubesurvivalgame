@@ -78,27 +78,27 @@ void ItemManager::LoadDefinitions(const std::string & path)
         }
         NameHash[id] = hash;
 
-        auto cubeMesh = ShiftEngine::Utilities::createCube();
+        auto sackMesh = ShiftEngine::GetContextManager()->LoadMesh(L"sack.lim");
         auto iconTexture = ShiftEngine::GetContextManager()->LoadTexture(utils::Widen(iconName));
 
         if (type == "misc")
         {
-            HashItem[hash] = new MiscItem(name, description, cubeMesh, iconTexture, iconName);
+            HashItem[hash] = new MiscItem(name, description, sackMesh, iconTexture, iconName);
         }
         else if (type == "weapon")
         {
             int damageCount = root.get("damage", null).asInt();
-            HashItem[hash] = new WeaponItem(name, description, cubeMesh, iconTexture, damageCount, iconName);
+            HashItem[hash] = new WeaponItem(name, description, sackMesh, iconTexture, damageCount, iconName);
         }
         else if (type == "food")
         {
             int hungerCount = root.get("hunger", null).asInt();
-            HashItem[hash] = new FoodItem(name, description, cubeMesh, iconTexture, hungerCount, iconName);
+            HashItem[hash] = new FoodItem(name, description, sackMesh, iconTexture, hungerCount, iconName);
         }
         else if (type == "entity")
         {
             std::string entityId = root.get("entity", null).asString();
-            HashItem[hash] = new EntityItem(name, description, cubeMesh, iconTexture, entityId, iconName);
+            HashItem[hash] = new EntityItem(name, description, sackMesh, iconTexture, entityId, iconName);
         }
         else
         {
