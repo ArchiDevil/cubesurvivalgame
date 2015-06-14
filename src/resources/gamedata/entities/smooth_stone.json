@@ -4,5 +4,6 @@
     "item": "smooth_stone",
     "count": 1,
     "mesh": "smooth_stone.lim",
-    "material": "collectablestone.mtl"
+    "material": "collectablestone.mtl",
+    "scale": 0.125
 }

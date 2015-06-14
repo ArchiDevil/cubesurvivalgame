@@ -180,10 +180,7 @@ void GameObjectsManager::LoadEntities()
         buff = { 1.0f };
         buff = root.get("scale", buff);
         float scale = 1.0f;
-        if (buff.empty())
-            scale = 1.0f;
-        else
-            scale = buff.asFloat();
+        scale = buff.asFloat();
 
         buff = root.get("type", buff);
         std::string type = buff.asString();

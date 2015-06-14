@@ -68,13 +68,12 @@ bool GameState::initState()
     pGame->environmentMgr->Initialize(dayTimer(11, 00));
     pGame->entityMgr->LoadEntities();
 
-    pScene->AddCameraSceneNode();
-    pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
-    pScene->GetActiveCamera()->SetPosition({ 0.0f, 0.0f, 0.0f });
-    pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
+    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode();
+    pCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+    pCamera->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
-    pGame->entityMgr->CreateEntity(Vector3F(-10.0, 10.0, 100.0), "stone");
-    pGame->entityMgr->CreateEntity(Vector3F(10.0, 10.0, 100.0), "tree1");
+    pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
+
     pGame->entityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->itemMgr->GetItemId("smooth_stone"), 10);
 
     LOG_INFO("End of game state initializing");
