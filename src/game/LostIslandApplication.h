@@ -3,12 +3,13 @@
 #include <stack>
 #include <sstream>
 
+#include <System/Win32/Application.h>
+#include <System/cRegWorker.h>
+#include <System/InputEngine.h>
+
 #include <Utilities/IAppState.h>
 #include <Utilities/AppStateMachine.h>
-#include <Utilities/System/Application.h>
 #include <Utilities/timer.h>
-#include <Utilities/cRegWorker.h>
-#include <Utilities/InputEngine.h>
 #include <Utilities/iniloader.h>
 
 #include <SimplePhysicsEngine/PhysicsEngine.h>

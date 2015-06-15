@@ -20,6 +20,7 @@ include_directories(${RootDir})
 set(RENDERER D3D11_RENDER)
 
 option(BUILD_TESTS "Generate projects for tests building" ON)
+option(BUILD_TOOLS "Build engine tools" YES)
 
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER CMake)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -111,7 +112,7 @@ function(AddVSTest TestName Sources)
 endfunction(AddVSTest)
 
 function(VSTestLinkLibraries TestName LinkLibraries)
-    if(NOT BUILD_TESTS)
+    if(NOT BUILD_TESTS OR NOT WIN32)
         return()
     endif()
     foreach(arg ${ARGN})

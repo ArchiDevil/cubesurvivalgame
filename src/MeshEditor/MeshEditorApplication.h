@@ -2,12 +2,13 @@
 
 #include <stack>
 
-#include <Utilities/System/Application.h>
+#include <System/Win32/Application.h>
+#include <System/InputEngine.h>
+#include <System/cRegWorker.h>
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <Utilities/timer.h>
-#include <Utilities/cRegWorker.h>
-#include <Utilities/InputEngine.h>
 #include <Utilities/iniloader.h>
 #include <Utilities/AppStateMachine.h>
 

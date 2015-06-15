@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
 file(GLOB_RECURSE SRC *.cpp *.h)
 
 include_directories($ENV{DXSDK_DIR}/include)
@@ -11,7 +9,7 @@ else()
 endif()
 
 add_executable(MeshEditor ${SRC})
-target_link_libraries(MeshEditor GraphicsEngine Utilities MathLib)
+target_link_libraries(MeshEditor GraphicsEngine Utilities System MathLib)
 target_link_libraries(MeshEditor freetype2 MyGUIDirectX11Platform MyGUIEngine)
 
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)

@@ -5,7 +5,7 @@
 #include "game.h"
 
 #include <Utilities/observer.h>
-#include <Utilities/InputEngine.h>
+#include <System/InputEngine.h>
 
 class Console : public observer < InputEvent >
 {

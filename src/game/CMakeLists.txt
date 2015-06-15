@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
 file(GLOB SRC *.cpp *.h)
 
 file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/world/*.cpp)
@@ -53,6 +51,7 @@ endif()
 
 set(GAME_LIBS   jsoncpp_lib 
                 GraphicsEngine 
+                System 
                 Utilities 
                 MathLib 
                 SimplePhysicsEngine

@@ -5,10 +5,11 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
-#include "ut.h"
-#include "observer.h"
-#include "singleton.h"
-#include "System/System.h"
+#include <Utilities/ut.h>
+#include <Utilities/observer.h>
+#include <Utilities/singleton.h>
+
+#include "Win32/System.h"
 
 enum class InputEventType
 {

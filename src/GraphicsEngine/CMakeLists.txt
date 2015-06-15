@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
 file(GLOB SRC *.cpp *.h)
 
 if(${RENDERER} STREQUAL D3D10_RENDER)

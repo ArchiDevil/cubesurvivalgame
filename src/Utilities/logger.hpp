@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <exception>
+#include <stdexcept>
 
 #if defined (WIN32) || (_WIN32)
     #include <Windows.h>

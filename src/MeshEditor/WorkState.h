@@ -1,14 +1,16 @@
 #pragma once
 
+#include <System/InputEngine.h>
+
 #include <Utilities/observer.h>
-#include <Utilities/InputEngine.h>
+#include <Utilities/IAppState.h>
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 #include <MyGUI.h>
 #include <MyGUI_DirectX11Platform.h>
 
 #include "Common.h"
-#include <Utilities/IAppState.h>
 #include "BlockWorkspace.h"
 
 class WorkState :
