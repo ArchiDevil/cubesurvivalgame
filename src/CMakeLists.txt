@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
 if(MSVC)
-    add_definitions(-DUNICODE -D_UNICODE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
     include_directories($ENV{DXSDK_DIR}/include)
-else()
-    add_definitions(-std=c++0x)
 endif()
 
 add_definitions(-DNOMINMAX)
@@ -16,28 +13,37 @@ elseif(${RENDERER} STREQUAL D3D11_RENDER)
     add_definitions(-DD3D11_RENDER)
 endif()
 
-add_subdirectory(GraphicsEngine)
-add_subdirectory(MathLib)
-add_subdirectory(Utilities)
-add_subdirectory(System)
-add_subdirectory(SimplePhysicsEngine)
-add_subdirectory(game)
+if(MSVC AND WIN32)
+    add_subdirectory(GraphicsEngine)
+    set_target_properties(GraphicsEngine PROPERTIES FOLDER "Libs")
+    
+    add_subdirectory(System)
+    set_target_properties(System PROPERTIES FOLDER "Libs")
+    
+    add_subdirectory(game)
+    set_target_properties(Game PROPERTIES FOLDER "Apps")
+endif()
 
-set_target_properties(GraphicsEngine        PROPERTIES FOLDER "Libs")
-set_target_properties(MathLib               PROPERTIES FOLDER "Libs")
-set_target_properties(Utilities             PROPERTIES FOLDER "Libs")
-set_target_properties(System                PROPERTIES FOLDER "Libs")
-set_target_properties(SimplePhysicsEngine   PROPERTIES FOLDER "Libs")
-set_target_properties(Game                  PROPERTIES FOLDER "Apps")
+add_subdirectory(SimplePhysicsEngine)
+set_target_properties(SimplePhysicsEngine PROPERTIES FOLDER "Libs")
+
+add_subdirectory(MathLib)
+set_target_properties(MathLib PROPERTIES FOLDER "Libs")
+
+add_subdirectory(Utilities)
+set_target_properties(Utilities PROPERTIES FOLDER "Libs")
 
 if(BUILD_TOOLS)
     add_subdirectory(Converter)
-    add_subdirectory(MeshEditor)
     set_target_properties(Converter  PROPERTIES FOLDER "Apps")
-    set_target_properties(MeshEditor PROPERTIES FOLDER "Apps")
+    
+    if(MSVC AND WIN32)
+        add_subdirectory(MeshEditor)
+        set_target_properties(MeshEditor PROPERTIES FOLDER "Apps")
+    endif()
 endif()
 
-if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND MSVC AND WIN32)
     add_custom_target(CopyResources
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/resources/
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources/ ${CMAKE_BINARY_DIR}/src/game/resources/

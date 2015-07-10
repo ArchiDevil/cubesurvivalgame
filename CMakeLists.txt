@@ -11,10 +11,6 @@ if(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR CMAKE_COMPILER_2005 OR MSVC90 OR MSVC
     message(FATAL_ERROR "Visual Studio below 2013 is not supported")
 endif()
 
-if(NOT MSVC)
-    message(FATAL_ERROR "Only Visual Studio supported for now")
-endif()
-
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
 include_directories(${RootDir})
 set(RENDERER D3D11_RENDER)
@@ -124,6 +120,8 @@ endfunction(VSTestLinkLibraries)
 if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
     add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /D_CRT_SECURE_NO_WARNINGS")
+else()
+    add_definitions(-std=c++11)
 endif()
 
 add_subdirectory(src)

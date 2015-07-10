@@ -1,7 +1,7 @@
 file(GLOB SRC *.cpp *.h *.hpp System/*.cpp System/*.h)
 
 if(NOT WIN32)
-    list(REMOVE_ITEM ${SRC} System/Application.cpp
+    list(REMOVE_ITEM SRC    System/Application.cpp
 							System/System.cpp
 							cRegWorker.cpp
                             System/Application.h

@@ -240,7 +240,7 @@ namespace MathLib
     {
         T result = (T)0.0;
         for (size_t i = 0; i < E; ++i)
-            result += ref[0][i] * ((i % 2) ? -1 : 1) * matrixDeterminant(ref.minor(0, i));
+            result += ref[0][i] * ((i % 2) ? -1 : 1) * matrixDeterminant(ref.matrixMinor(0, i));
         return result;
     }
 
@@ -258,7 +258,7 @@ namespace MathLib
         // calculate matrix of minors
         for (size_t i = 0; i < E; ++i)
             for (size_t j = 0; j < E; ++j)
-                out[i][j] = matrixDeterminant(ref.minor(i, j));
+                out[i][j] = matrixDeterminant(ref.matrixMinor(i, j));
 
         // calculate matrix of cofactors
         for (size_t i = 0; i < E; ++i)
