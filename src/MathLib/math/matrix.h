@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "vector3.h"
 #include "vector4.h"
 
@@ -197,7 +199,7 @@ namespace MathLib
             return out;
         }
 
-        matrix<T, E - 1> minor(size_t row, size_t column) const
+        matrix<T, E - 1> matrixMinor(size_t row, size_t column) const
         {
             static_assert(E > 1, "Unable to get minor for 1x1 matrix");
             matrix<T, E - 1> out;

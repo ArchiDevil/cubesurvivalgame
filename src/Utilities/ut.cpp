@@ -206,10 +206,20 @@ bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
 
 bool utils::filesystem::RemoveFile(const std::string & fileName)
 {
+#if defined (WIN32) || (_WIN32)
     return !!DeleteFileA(fileName.c_str());
+#else
+    LOG_ERROR("Not implemented yet.");
+    return false;
+#endif
 }
 
 bool utils::filesystem::RemoveFile(const std::wstring & fileName)
 {
+#if defined (WIN32) || (_WIN32)
     return !!DeleteFileW(fileName.c_str());
+#else
+    LOG_ERROR("Not implemented yet.");
+    return false;
+#endif
 }
