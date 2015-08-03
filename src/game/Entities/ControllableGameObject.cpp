@@ -63,7 +63,7 @@ void ControllableGameObject::CancelCommands()
 
 void ControllableGameObject::CancelCurrentCommand()
 {
-    // HACK IT'S TEMPORARY, WHILE AGGREGATOR IS NOT IMPLEMENTED
+    // HACK: IT'S TEMPORARY, WHILE AGGREGATOR IS NOT IMPLEMENTED
     while (!Actions.empty())
     {
         auto action = std::move(Actions.front());
@@ -97,7 +97,7 @@ void ControllableGameObject::OnStateChange(EntityState from, EntityState to)
         Actions.front()->StateChange(this, from, to);
 }
 
-void ControllableGameObject::Interact(InteractableGameObject * target, InteractionType interaction)
+void ControllableGameObject::InteractWithGameObject(InteractableGameObject * target, InteractionType interaction)
 {
     float radius = 1.0f; // temporarily hardcoded, but must be varied with different interactions
     Vector2F targetPosition = Vector2F(target->GetPosition().x, target->GetPosition().y);
@@ -118,7 +118,29 @@ void ControllableGameObject::Interact(InteractableGameObject * target, Interacti
             throw std::runtime_error("Unable to cast GameObject into LiveGameObject");
         PushCommand(std::make_unique<AttackAction>((LiveGameObject*)target, 1.0f));
         break;
+    case InteractionType::Fishing:
+        break;
     default:
         assert(false);
+        break;
+    }
+}
+
+void ControllableGameObject::InteractWithBlock(const Vector3F & column, InteractionType interaction)
+{
+    switch (interaction)
+    {
+    case InteractionType::Nothing:
+        break;
+    case InteractionType::Collecting:
+        break;
+    case InteractionType::Attacking:
+        break;
+    case InteractionType::Fishing:
+        // do some fishing
+        break;
+    default:
+        assert(false);
+        break;
     }
 }

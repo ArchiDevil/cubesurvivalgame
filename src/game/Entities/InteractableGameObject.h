@@ -6,7 +6,8 @@ enum class InteractionType
 {
     Nothing,
     Collecting,
-    Attacking
+    Attacking,
+    Fishing
     // etc, like crafting, activating and anything you want
 };
 

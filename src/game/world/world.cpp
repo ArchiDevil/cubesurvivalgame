@@ -455,6 +455,5 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
         return true;
     }
 
-    assert(false); // something gone wrong
     return false;
 }

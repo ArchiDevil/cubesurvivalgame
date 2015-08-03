@@ -17,6 +17,7 @@ const float maxR = 60.0f;
 float phi = 0.0f;
 float theta = -35.0f;
 float r = 20.0f;
+size_t mousePath = 0;
 //END OF TEMPORARY
 
 GameState::GameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform)
@@ -192,17 +193,10 @@ void GameState::ProcessInput(double dt)
         return;
 
     if (inputEngine.IsKeyDown(DIK_ESCAPE))
-        this->kill();
+        kill();
 
     if (inputEngine.IsKeyUp(DIK_V))
-    {
-        static bool Wflag = false;
-        Wflag = !Wflag;
-        if (Wflag)
-            pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
-        else
-            pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
-    }
+        switchWireframe();
 
     MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
@@ -222,8 +216,6 @@ void GameState::ProcessInput(double dt)
     if (guiInjected)
         return;
 
-    static size_t mousePath = 0;
-
     if (inputEngine.IsMouseMoved() && inputEngine.IsMouseDown(RButton))
     {
         theta -= (float)mouseInfo.deltaY * (float)dt * 10.0f;
@@ -234,44 +226,9 @@ void GameState::ProcessInput(double dt)
             theta = -5.0f;
     }
 
-    ShiftEngine::GraphicEngineSettings settings = pCtxMgr->GetEngineSettings();
-    vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
-
-    // do the raycasting
-    mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
-    mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-    Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMatrix, viewMatrix, sizes);
-    Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMatrix, viewMatrix, sizes);
-    Ray unprojectedRay = Ray(resultNear, MathLib::normalize(resultFar - resultNear));
-
-    pGame->entityMgr->HighlightEntity(unprojectedRay);
-
     if (inputEngine.IsMouseUp(RButton))
     {
-        // check if we are targeting to entity
-        auto retVal = pGame->entityMgr->GetNearestEntity(unprojectedRay);
-        if (retVal)
-        {
-            InteractableGameObject* entity = (InteractableGameObject*)retVal.get();
-            if (entity)
-            {
-                auto interaction = entity->GetInteraction();
-                pGame->player->Interact(entity, interaction);
-            }
-        }
-        else
-        {
-            if (mousePath <= 15)
-            {
-                Vector3F column = {};
-                if (pGame->world->SelectColumnByRay(unprojectedRay, column))
-                {
-                    pGame->player->CancelCurrentCommand();
-                    pGame->player->Go({ column.x, column.y });
-                }
-            }
-        }
-        mousePath = 0;
+        playerAction({ mouseInfo.clientX, mouseInfo.clientY });
     }
 
     if (inputEngine.IsMouseDown(RButton))
@@ -302,4 +259,94 @@ bool GameState::handleEvent(const InputEvent & event)
     }
 
     return true;
+}
+
+void GameState::switchWireframe()
+{
+#if defined DEBUG || defined _DEBUG
+    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+
+    static bool Wflag = false;
+    Wflag = !Wflag;
+    if (Wflag)
+        pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
+    else
+        pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
+#endif
+}
+
+Ray GameState::getUnprojectedRay(const Vector2I & clientMouseCoords) const
+{
+    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+
+    ShiftEngine::GraphicEngineSettings settings = pCtxMgr->GetEngineSettings();
+    vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
+
+    // do the raycasting
+    mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
+    mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
+    Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
+    Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
+    Ray unprojectedRay = Ray(resultNear, MathLib::normalize(resultFar - resultNear));
+
+    return unprojectedRay;
+}
+
+void GameState::playerAction(const Vector2I & clientMouseCoords)
+{
+    Game * pGame = LostIsland::GetGamePtr();
+
+    Ray unprojectedRay = getUnprojectedRay(clientMouseCoords);
+    pGame->entityMgr->HighlightEntity(unprojectedRay);
+
+    GameObjectPtr selectedObject = pGame->entityMgr->GetNearestEntity(unprojectedRay);
+    Vector3F selectedColumn = {};
+    bool columnSelected = pGame->world->SelectColumnByRay(unprojectedRay, selectedColumn);
+
+    // check if we are targeting to entity
+    if (mousePath > 15)
+    {
+        mousePath = 0;
+        return;
+    }
+
+    mousePath = 0;
+
+    if (selectedObject)
+    {
+        InteractableGameObject * entity = dynamic_cast<InteractableGameObject*>(selectedObject.get());
+        if (!entity)
+            return;
+
+        InteractionType interaction = entity->GetInteraction();
+        pGame->player->InteractWithGameObject(entity, interaction);
+    }
+    else
+    {
+        // HACK: FUCKING GUANO CODE
+        if (!columnSelected)
+            return;
+
+        SlotUnit u = pGame->player->GetInventoryPtr()->GetItemInRightHand();
+        if (u.count)
+        {
+            Item * item = pGame->itemMgr->GetItemById(u.itemId);
+            if (item && item->CanBeUsedOnBlock(pGame->world->GetDataStorage()->GetBlockType((int)selectedColumn.x, (int)selectedColumn.y, (int)selectedColumn.z)))
+            {
+                pGame->player->InteractWithBlock(selectedColumn, item->GetInteractionWithBlock());
+            }
+            else
+            {
+                pGame->player->CancelCurrentCommand();
+                pGame->player->Go({ selectedColumn.x, selectedColumn.y });
+            }
+        }
+        else
+        {
+            pGame->player->CancelCurrentCommand();
+            pGame->player->Go({ selectedColumn.x, selectedColumn.y });
+
+        }
+    }
 }
