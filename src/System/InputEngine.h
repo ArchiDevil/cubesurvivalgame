@@ -32,6 +32,51 @@ struct InputEvent
     long key;
 };
 
+//определяет клавиши для мышки
+enum MouseKeys
+{
+    LButton,
+    RButton
+};
+
+//определяет информацию о мыши, получаемую с модуля ввода
+struct MouseInfo
+{
+    MouseInfo()
+        : deltaX(0)
+        , deltaY(0)
+        , deltaZ(0)
+        , absoluteX(0)
+        , absoluteY(0)
+        , clientX(0)
+        , clientY(0)
+    {}
+
+    MouseInfo(long _deltaX, long _deltaY, long _deltaZ, unsigned long _absoluteX, unsigned long _absoluteY, long _clientX, long _clientY)
+        : deltaX(_deltaX)
+        , deltaY(_deltaY)
+        , deltaZ(_deltaZ)
+        , absoluteX(_absoluteX)
+        , absoluteY(_absoluteY)
+        , clientX(_clientX)
+        , clientY(_clientY)
+    {}
+
+    long deltaX, deltaY, deltaZ;
+    unsigned long absoluteX, absoluteY;
+    long clientX, clientY;
+
+    bool operator == (const MouseInfo & ref) const
+    {
+        return (this->absoluteX == ref.absoluteX) && (this->absoluteY == ref.absoluteY);
+    };
+
+    bool operator != (const MouseInfo & ref) const
+    {
+        return !((this->absoluteX == ref.absoluteX) && (this->absoluteY == ref.absoluteY));
+    };
+};
+
 class InputEngine
     : public singleton < InputEngine >
     , public notifier < InputEvent >

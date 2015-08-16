@@ -64,6 +64,8 @@ bool LostIslandApplication::Initialize()
 #ifdef NDEBUG
     logFile = "";
 #endif // NDEBUG
+    MyGUI::LogManager::getInstance().setSTDOutputEnabled(false);
+
     guiPlatform->initialise(((ShiftEngine::D3D11ContextManager*)ShiftEngine::GetContextManager())->GetDevicePtr(), logFile);
     guiPlatform->getDataManagerPtr()->addResourceLocation("resources/ui/MyGUI_Media", false);
     guiPlatform->getDataManagerPtr()->addResourceLocation("resources/textures", false);
@@ -72,6 +74,7 @@ bool LostIslandApplication::Initialize()
     guiModule->initialise();
 
     guiPlatform->getRenderManagerPtr()->setViewSize(settings.screenWidth, settings.screenHeight);
+
 
     ////////////////////////////
     /// GAME STRUCTURES INIT ///

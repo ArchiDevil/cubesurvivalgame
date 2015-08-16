@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
+    if({RENDERER} STREQUAL D3D10_RENDER)
     include_directories($ENV{DXSDK_DIR}/include)
+    endif()
+else()
+    add_definitions(-std=c++0x)
 endif()
 
 add_definitions(-DNOMINMAX)
@@ -14,13 +18,13 @@ elseif(${RENDERER} STREQUAL D3D11_RENDER)
 endif()
 
 if(MSVC AND WIN32)
-    add_subdirectory(GraphicsEngine)
+add_subdirectory(GraphicsEngine)
     set_target_properties(GraphicsEngine PROPERTIES FOLDER "Libs")
     
     add_subdirectory(System)
     set_target_properties(System PROPERTIES FOLDER "Libs")
     
-    add_subdirectory(game)
+add_subdirectory(game)
     set_target_properties(Game PROPERTIES FOLDER "Apps")
 endif()
 
@@ -38,9 +42,9 @@ if(BUILD_TOOLS)
     set_target_properties(Converter  PROPERTIES FOLDER "Apps")
     
     if(MSVC AND WIN32)
-        add_subdirectory(MeshEditor)
-        set_target_properties(MeshEditor PROPERTIES FOLDER "Apps")
-    endif()
+    add_subdirectory(MeshEditor)
+    set_target_properties(MeshEditor PROPERTIES FOLDER "Apps")
+endif()
 endif()
 
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND MSVC AND WIN32)

@@ -3,8 +3,7 @@
 #include <Utilities/ut.h>
 #include <Utilities/logger.hpp>
 
-#include <D3DX11.h>
-#include <cassert>
+#include <DirectXTex.h>
 
 ShiftEngine::D3D11TextureManager::D3D11TextureManager(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const std::wstring & texturesPath)
     : texturesPath(texturesPath)
@@ -19,34 +18,52 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const
     std::wstring innerName = texturesPath + FileName;
     auto iter = textures.find(innerName);
 
-    if (iter != textures.end() && iter->second != nullptr)
+    if (iter != textures.end() && iter->second)
     {
         return D3D11TexturePtr(iter->second);
     }
     else
     {
-        ID3D11ShaderResourceView * tempT;
-        D3DX11_IMAGE_INFO info;
-        if (FAILED(D3DX11GetImageInfoFromFile(innerName.c_str(), NULL, &info, NULL)) ||
-            FAILED(D3DX11CreateShaderResourceViewFromFile(pDevice, innerName.c_str(), NULL, NULL, &tempT, NULL)))
+        ID3D11ShaderResourceView * shaderResource = nullptr;
+        ID3D11Texture2D * textureResource = nullptr;
+        DirectX::TexMetadata metadata;
+        DirectX::ScratchImage image;
+        if (FAILED(DirectX::LoadFromWICFile(innerName.c_str(), 0, &metadata, image)))
         {
-            return nullptr;
+            LOG_ERROR("Unable to load file: ", utils::Narrow(FileName));
+            return GetErrorTexture();
         }
-        else
+
+        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadata, (ID3D11Resource**)&textureResource)))
         {
-            D3D11TexturePtr buffer = std::shared_ptr<D3D11Texture>(new D3D11Texture(pDeviceContext, info.Width, info.Height, TextureType::Texture2D, tempT));
-            textures[innerName] = buffer;
-            return buffer;
+            LOG_ERROR("Unable to create texture from file: ", utils::Narrow(FileName));
+            return GetErrorTexture();
         }
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+        viewDesc.Format = metadata.format;
+        viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        viewDesc.Texture2D.MostDetailedMip = 0;
+        viewDesc.Texture2D.MipLevels = metadata.mipLevels;
+
+        if (FAILED(pDevice->CreateShaderResourceView(textureResource, &viewDesc, &shaderResource)))
+        {
+            LOG_ERROR("Unable to create ShaderResourceView");
+            return GetErrorTexture();
+        }
+
+        D3D11TexturePtr buffer = std::make_shared<D3D11Texture>(pDeviceContext, metadata.width, metadata.height, TextureType::Texture2D, shaderResource);
+        textures[innerName] = buffer;
+        return buffer;
     }
 }
 
 ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
-                                                                         const std::wstring & negX,
-                                                                         const std::wstring & posY,
-                                                                         const std::wstring & negY,
-                                                                         const std::wstring & posZ,
-                                                                         const std::wstring & negZ)
+    const std::wstring & negX,
+    const std::wstring & posY,
+    const std::wstring & negY,
+    const std::wstring & posZ,
+    const std::wstring & negZ)
 {
     std::wstring superString = negX + posX + negY + posY + negZ + posZ;
 
@@ -62,25 +79,23 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
     ID3D11ShaderResourceView * SRW;
     const size_t elems = 6;
 
-    HRESULT hr = S_OK;
-
-    std::vector<D3DX11_IMAGE_INFO> infos;
-    for (UINT i = 0; i < elems; ++i)
+    std::vector<DirectX::TexMetadata> metadatas;
+    for (size_t i = 0; i < elems; ++i)
     {
-        D3DX11_IMAGE_INFO ii;
-        if (FAILED(D3DX11GetImageInfoFromFile((texturesPath + items[i]).c_str(), nullptr, &ii, &hr)))
+        DirectX::TexMetadata ii;
+        if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + items[i]).c_str(), 0, ii)))
             LOG_ERROR("Unable to get image info for: ", utils::Narrow(items[i]));
 
-        infos.push_back(ii);
+        metadatas.push_back(ii);
     }
 
-    if (infos.size() > 1)
+    if (metadatas.size() > 1)
     {
-        size_t prevWidth = infos[0].Width;
-        size_t prevHeight = infos[0].Height;
-        for (UINT i = 1; i < infos.size(); ++i)
+        size_t prevWidth = metadatas[0].width;
+        size_t prevHeight = metadatas[0].height;
+        for (size_t i = 1; i < metadatas.size(); ++i)
         {
-            if (infos[i].Width != prevWidth || infos[i].Height != prevHeight)
+            if (metadatas[i].width != prevWidth || metadatas[i].height != prevHeight)
             {
                 LOG_FATAL_ERROR("Unable to create cubemap from textures without the same size");
                 return nullptr;
@@ -90,28 +105,17 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
 
     ID3D11Texture2D** srcTex = new ID3D11Texture2D *[elems];
 
-    for (UINT i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elems; ++i)
     {
-        D3DX11_IMAGE_LOAD_INFO loadInfo;
+        bool error = false;
+        DirectX::ScratchImage image;
+        if (FAILED(DirectX::LoadFromWICFile((texturesPath + items[i]).c_str(), 0, &metadatas[i], image)))
+            error = true;
 
-        loadInfo.Width = D3DX11_FROM_FILE;
-        loadInfo.Height = D3DX11_FROM_FILE;
-        loadInfo.Depth = 1;
-        loadInfo.FirstMipLevel = 0;
-        loadInfo.MipLevels = 0; //default
-        loadInfo.Usage = D3D11_USAGE_STAGING;
-        loadInfo.BindFlags = 0;
-        loadInfo.CpuAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-        loadInfo.MiscFlags = 0;
-        loadInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        loadInfo.Filter = D3DX11_FILTER_LINEAR;
-        loadInfo.MipFilter = D3DX11_FILTER_LINEAR;
-        loadInfo.pSrcInfo = 0;
+        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadatas[i], (ID3D11Resource**)&srcTex[i])))
+            error = true;
 
-        if (FAILED(D3DX11CreateTextureFromFile(pDevice,
-            (texturesPath + items[i]).c_str(),
-            &loadInfo, 0,
-            (ID3D11Resource**)&srcTex[i], 0)))
+        if (error)
         {
             LOG_ERROR("Unable to load texture in cubemap: ", utils::Narrow(items[i]));
 
@@ -120,16 +124,16 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
             desc.BindFlags = 0;
             desc.CPUAccessFlags = NULL;
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.Height = infos[0].Height;
-            desc.Width = infos[0].Width;
+            desc.Height = metadatas[0].height;
+            desc.Width = metadatas[0].width;
             desc.MipLevels = 0;
             desc.MiscFlags = NULL;
             desc.SampleDesc.Count = 1;
             desc.SampleDesc.Quality = 0;
             desc.Usage = D3D11_USAGE_STAGING;
             //HACK: crappy code!
-            std::vector<uint32_t> textureData(infos[0].Height * infos[0].Width);
-            for (size_t j = 0; j < infos[0].Height * infos[0].Width; ++j)
+            std::vector<uint32_t> textureData(metadatas[0].height * metadatas[0].width);
+            for (size_t j = 0; j < metadatas[0].height * metadatas[0].width; ++j)
             {
                 textureData[j] = 0xffff00ff;
             }
@@ -138,7 +142,6 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
             pDevice->CreateTexture2D(&desc, &data, &srcTex[i]);
         }
     }
-
 
     D3D11_TEXTURE2D_DESC texElementDesc;
     srcTex[0]->GetDesc(&texElementDesc);
@@ -164,7 +167,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
     }
 
     // for each texture element...
-    for (UINT i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elems; ++i)
     {
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
@@ -172,7 +175,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
@@ -213,25 +216,24 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
 
     HRESULT hr = S_OK;
 
-    std::vector<D3DX11_IMAGE_INFO> infos;
+    std::vector<DirectX::TexMetadata> metadatas;
     //check here info
-    for (UINT i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elems; ++i)
     {
-        D3DX11_IMAGE_INFO ii;
-        if (FAILED(D3DX11GetImageInfoFromFile((texturesPath + names[i]).c_str(), nullptr, &ii, &hr)))
-        {
+        DirectX::TexMetadata ii;
+        if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + names[i]).c_str(), 0, ii)))
             LOG_ERROR("Unable to get image info for: ", utils::Narrow(names[i]));
-        }
-        infos.push_back(ii);
+
+        metadatas.push_back(ii);
     }
 
-    if (infos.size() > 1)
+    if (metadatas.size() > 1)
     {
-        size_t prevWidth = infos[0].Width;
-        size_t prevHeight = infos[0].Height;
-        for (UINT i = 1; i < infos.size(); ++i)
+        size_t prevWidth = metadatas[0].width;
+        size_t prevHeight = metadatas[0].height;
+        for (size_t i = 1; i < metadatas.size(); ++i)
         {
-            if (infos[i].Width != prevWidth || infos[i].Height != prevHeight)
+            if (metadatas[i].width != prevWidth || metadatas[i].height != prevHeight)
             {
                 LOG_FATAL_ERROR("Unable to create texture array from textures without the same size");
             }
@@ -240,28 +242,17 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
 
     ID3D11Texture2D** srcTex = new ID3D11Texture2D *[elems];
 
-    for (UINT i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elems; ++i)
     {
-        D3DX11_IMAGE_LOAD_INFO loadInfo;
+        bool error = false;
+        DirectX::ScratchImage image;
+        if (FAILED(DirectX::LoadFromWICFile((texturesPath + names[i]).c_str(), 0, &metadatas[i], image)))
+            error = true;
 
-        loadInfo.Width = D3DX11_FROM_FILE;
-        loadInfo.Height = D3DX11_FROM_FILE;
-        loadInfo.Depth = 1;
-        loadInfo.FirstMipLevel = 0;
-        loadInfo.MipLevels = 0; //default
-        loadInfo.Usage = D3D11_USAGE_STAGING;
-        loadInfo.BindFlags = 0;
-        loadInfo.CpuAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-        loadInfo.MiscFlags = 0;
-        loadInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        loadInfo.Filter = D3DX11_FILTER_LINEAR;
-        loadInfo.MipFilter = D3DX11_FILTER_LINEAR;
-        loadInfo.pSrcInfo = 0;
+        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadatas[i], (ID3D11Resource**)&srcTex[i])))
+            error = true;
 
-        if (FAILED(D3DX11CreateTextureFromFile(pDevice,
-            (texturesPath + names[i]).c_str(),
-            &loadInfo, 0,
-            (ID3D11Resource**)&srcTex[i], 0)))
+        if (error)
         {
             LOG_ERROR("Unable to load texture in texture array: ", utils::Narrow(names[i]));
 
@@ -270,16 +261,16 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
             desc.BindFlags = 0;
             desc.CPUAccessFlags = NULL;
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.Height = infos[0].Height;
-            desc.Width = infos[0].Width;
+            desc.Height = metadatas[0].height;
+            desc.Width = metadatas[0].width;
             desc.MipLevels = 0;
             desc.MiscFlags = NULL;
             desc.SampleDesc.Count = 1;
             desc.SampleDesc.Quality = 0;
             desc.Usage = D3D11_USAGE_STAGING;
             //HACK: crappy code!
-            std::vector<uint32_t> textureData(infos[0].Height * infos[0].Width);
-            for (size_t j = 0; j < infos[0].Height * infos[0].Width; ++j)
+            std::vector<uint32_t> textureData(metadatas[0].height * metadatas[0].width);
+            for (size_t j = 0; j < metadatas[0].height * metadatas[0].width; ++j)
             {
                 textureData[j] = 0xffff00ff;
             }
@@ -311,7 +302,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
         LOG_ERROR("Unable to create TextureArray!");
 
     // for each texture element...
-    for (UINT i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elems; ++i)
     {
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
@@ -319,7 +310,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
@@ -342,13 +333,13 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
 
 ShiftEngine::TextureInfo ShiftEngine::D3D11TextureManager::GetTextureInfo(const std::wstring & filename)
 {
-    D3DX11_IMAGE_INFO info;
+    DirectX::TexMetadata info;
 
-    if (SUCCEEDED(D3DX11GetImageInfoFromFile(filename.c_str(), NULL, &info, NULL)))
+    if (SUCCEEDED(DirectX::GetMetadataFromWICFile(filename.c_str(), 0, info)))
     {
         TextureInfo out;
-        out.width = info.Width;
-        out.height = info.Height;
+        out.width = info.width;
+        out.height = info.height;
         return out;
     }
     else
@@ -368,7 +359,7 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
     description.ArraySize = 1;
     description.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     description.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    description.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    description.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     description.Height = height;
     description.Width = width;
     description.MipLevels = 1;
@@ -395,8 +386,6 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
         {
             unsigned int xBlock = col * 8 / width;
             unsigned int yBlock = row * 8 / height;
-
-            assert(rowStart + col * 4 + 3 < 256 * 256 * 4);
             UINT colStart = col * 4;
 
             if (xBlock % 2 == yBlock % 2)
@@ -429,7 +418,7 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
 
     texture->Release();
 
-    errorTexture = D3D11TexturePtr(new D3D11Texture(pDeviceContext, width, height, TextureType::Texture2D, pShaderResView));
+    errorTexture = std::make_shared<D3D11Texture>(pDeviceContext, width, height, TextureType::Texture2D, pShaderResView);
 }
 
 ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::GetErrorTexture()
