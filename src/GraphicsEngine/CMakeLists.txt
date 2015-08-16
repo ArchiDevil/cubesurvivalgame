@@ -50,13 +50,15 @@ file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/TextLib/*.h)
 source_group("Header Files\\TextLib" FILES ${LS})
 list(APPEND SRC ${LS})
     
-include_directories($ENV{DXSDK_DIR}/include)
 include_directories(../../3rdparty/tinyxml2)
 
-if(${EX_PLATFORM} EQUAL 64)
-    link_directories($ENV{DXSDK_DIR}/lib/x64)
-else()
-    link_directories($ENV{DXSDK_DIR}/lib/x86)
+if({RENDERER} STREQUAL D3D10_RENDER)
+    include_directories($ENV{DXSDK_DIR}/include)
+    if(${EX_PLATFORM} EQUAL 64)
+        link_directories($ENV{DXSDK_DIR}/lib/x64)
+    else()
+        link_directories($ENV{DXSDK_DIR}/lib/x86)
+    endif()
 endif()
 
 add_library(GraphicsEngine STATIC ${SRC})
@@ -66,6 +68,7 @@ if(NOT UNIX)
 endif()
 
 target_link_libraries(GraphicsEngine tinyxml2 Utilities MathLib)
+target_link_libraries(GraphicsEngine DirectXTex)
 
 if(BUILD_TESTS)
     add_subdirectory(tests)

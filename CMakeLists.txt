@@ -49,6 +49,7 @@ set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF CACHE BOOL "Run JSON post-build tests")
 set(OLD_CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/jsoncpp")
 add_subdirectory(3rdparty/jsoncpp)
+set_property(TARGET jsoncpp_lib PROPERTY FOLDER "3rdparty")
 
 add_definitions(-DMYGUI_STATIC)
 
@@ -83,8 +84,6 @@ include_directories(3rdparty/mygui/MyGUIEngine/include)
 include_directories(3rdparty/mygui/Platforms/DirectX11/DirectX11Platform/include)
 
 set(CMAKE_SOURCE_DIR ${OLD_CMAKE_SOURCE_DIR})
-
-set_property(TARGET jsoncpp_lib	PROPERTY FOLDER "3rdparty")
 
 function(AddVSTest TestName Sources)
     if(NOT BUILD_TESTS OR NOT WIN32)
@@ -139,6 +138,10 @@ if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
     add_definitions("/wd4005 /wd4996 /wd4201 /wd4512 /wd4505 /wd4297 /D_CRT_SECURE_NO_WARNINGS")
 endif()
+
+add_subdirectory(3rdparty/DirectXTex)
+include_directories(3rdparty/DirectXTex)
+set_property(TARGET DirectXTex PROPERTY FOLDER "3rdparty")
 
 add_subdirectory(src)
 

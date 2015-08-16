@@ -16,7 +16,10 @@ file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Models/*.h ${CMAKE_CURRENT_SOUR
 source_group("Header Files\\Models" FILES ${LS})
 list(APPEND SRC ${LS})
 
-include_directories($ENV{DXSDK_DIR}/include)
+if({RENDERER} STREQUAL D3D10_RENDER)
+    include_directories($ENV{DXSDK_DIR}/include)
+endif()
+
 add_library(GUI STATIC ${SRC})
 add_dependencies(GUI GraphicsEngine MathLib Utilities)
 
