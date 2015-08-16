@@ -139,34 +139,34 @@ namespace UnitTests
             resultMat[0][0] = 2.0f; resultMat[0][1] = 3.0f; resultMat[0][2] = 4.0f;
             resultMat[1][0] = 3.0f; resultMat[1][1] = 4.0f; resultMat[1][2] = 5.0f;
             resultMat[2][0] = 4.0f; resultMat[2][1] = 5.0f; resultMat[2][2] = 6.0f;
-            Assert::AreEqual(resultMat, mat.minor(0, 0), L"Minor function is wrong");
+            Assert::AreEqual(resultMat, mat.matrixMinor(0, 0), L"Minor function is wrong");
             Assert::AreEqual(0.0f, matrixDeterminant(resultMat), L"Determinant is wrong");
 
             resultMat[0][0] = 1.0f; resultMat[0][1] = 3.0f; resultMat[0][2] = 4.0f;
             resultMat[1][0] = 2.0f; resultMat[1][1] = 4.0f; resultMat[1][2] = 5.0f;
             resultMat[2][0] = 3.0f; resultMat[2][1] = 5.0f; resultMat[2][2] = 6.0f;
-            Assert::AreEqual(resultMat, mat.minor(0, 1), L"Minor function is wrong");
+            Assert::AreEqual(resultMat, mat.matrixMinor(0, 1), L"Minor function is wrong");
             Assert::AreEqual(0.0f, matrixDeterminant(resultMat), L"Determinant is wrong");
 
             resultMat[0][0] = 1.0f; resultMat[0][1] = 2.0f; resultMat[0][2] = 4.0f;
             resultMat[1][0] = 2.0f; resultMat[1][1] = 3.0f; resultMat[1][2] = 5.0f;
             resultMat[2][0] = 3.0f; resultMat[2][1] = 4.0f; resultMat[2][2] = 6.0f;
-            Assert::AreEqual(resultMat, mat.minor(0, 2), L"Minor function is wrong");
+            Assert::AreEqual(resultMat, mat.matrixMinor(0, 2), L"Minor function is wrong");
             Assert::AreEqual(0.0f, matrixDeterminant(resultMat), L"Determinant is wrong");
 
             resultMat[0][0] = 1.0f; resultMat[0][1] = 2.0f; resultMat[0][2] = 3.0f;
             resultMat[1][0] = 2.0f; resultMat[1][1] = 3.0f; resultMat[1][2] = 4.0f;
             resultMat[2][0] = 3.0f; resultMat[2][1] = 4.0f; resultMat[2][2] = 5.0f;
-            Assert::AreEqual(resultMat, mat.minor(0, 3), L"Minor function is wrong");
+            Assert::AreEqual(resultMat, mat.matrixMinor(0, 3), L"Minor function is wrong");
             Assert::AreEqual(0.0f, matrixDeterminant(resultMat), L"Determinant is wrong");
 
-            auto minorMatrix = resultMat.minor(0, 0);
+            auto minorMatrix = resultMat.matrixMinor(0, 0);
             Assert::AreEqual(-1.0f, matrixDeterminant(minorMatrix), L"Determinant is wrong");
 
             resultMat[0][0] = 0.0f; resultMat[0][1] = 2.0f; resultMat[0][2] = 3.0f;
             resultMat[1][0] = 1.0f; resultMat[1][1] = 3.0f; resultMat[1][2] = 4.0f;
             resultMat[2][0] = 3.0f; resultMat[2][1] = 5.0f; resultMat[2][2] = 6.0f;
-            Assert::AreEqual(resultMat, mat.minor(2, 1), L"Minor function is wrong");
+            Assert::AreEqual(resultMat, mat.matrixMinor(2, 1), L"Minor function is wrong");
             Assert::AreEqual(0.0f, matrixDeterminant(resultMat), L"Determinant is wrong");
 
             matrix<float, 3> testMat;
