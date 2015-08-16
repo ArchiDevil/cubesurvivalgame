@@ -37,4 +37,5 @@
 /3rdparty/tinyxml2/
 /3rdparty/freetype2/
 /3rdparty/mygui/
+/3rdparty/DirectXTex/
 *.log

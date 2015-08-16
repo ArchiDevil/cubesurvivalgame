@@ -11,12 +11,6 @@ def runCmd(arg):
     runcode = None
     while runcode is None:
         runcode = cmd.poll()
-        
-def submodule():
-    print ("git submodule init")    
-    runCmd(['git', 'submodule', 'init'])
-    print ("git submodule update")   
-    runCmd(['git', 'submodule', 'update'])    
 
 def zip3rdparty():
     path = os.path.dirname(os.path.realpath(__file__)) 

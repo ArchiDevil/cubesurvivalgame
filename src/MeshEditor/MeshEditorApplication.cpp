@@ -55,6 +55,8 @@ bool MeshEditorApplication::Initialize()
 #ifdef NDEBUG
     logFile = "";
 #endif // NDEBUG
+    MyGUI::LogManager::getInstance().setSTDOutputEnabled(false);
+
     pPlatform->initialise(((ShiftEngine::D3D11ContextManager*)ShiftEngine::GetContextManager())->GetDevicePtr(), logFile);
     pPlatform->getDataManagerPtr()->addResourceLocation("resources/ui/MyGUI_Media", false);
 
