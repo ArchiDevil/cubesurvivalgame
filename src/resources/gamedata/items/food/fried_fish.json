@@ -1,8 +1,8 @@
 {
-	"id":			"fried_fish",
-    "name":         "Fried fish",
-	"description": 	"",
-	"type": 		"food",
-	"hunger":		25,
-	"icon": 		"cooked_fish.png"
+  "id": "fried_fish",
+  "name": "Fried fish",
+  "description": "",
+  "type": "food",
+  "hunger": 25,
+  "icon": "cooked_fish.png"
 }

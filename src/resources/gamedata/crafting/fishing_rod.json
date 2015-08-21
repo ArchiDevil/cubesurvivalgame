@@ -1,0 +1,18 @@
+{
+  "name": "fishing_rod",
+  "product": "fishing_rod",
+  "items": [
+    {
+      "name": "stick",
+      "count": 1
+    },
+    {
+      "name": "sharpened_stone",
+      "count": 1
+    },
+    {
+      "name": "vine",
+      "count": 1
+    }
+  ]
+}

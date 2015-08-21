@@ -1,10 +1,10 @@
 {
-    "name": "fried_fish",
-    "product" : "fried_fish",
-    "items": [
-        {
-            "name": "raw_fish",
-            "count": 1
-        }
-    ]
+  "name": "fried_fish",
+  "product": "fried_fish",
+  "items": [
+    {
+      "name": "raw_fish",
+      "count": 1
+    }
+  ]
 }

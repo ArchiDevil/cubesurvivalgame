@@ -1,8 +1,8 @@
 {
-	"id":			"coconut",
-    "name":         "Coconut",
-	"description": 	"",
-	"type": 		"food",
-	"hunger":		10,
-	"icon": 		"coconut.png"
+  "id": "coconut",
+  "name": "Coconut",
+  "description": "",
+  "type": "food",
+  "hunger": 10,
+  "icon": "coconut.png"
 }

@@ -11,6 +11,7 @@ static float lenghtOfMove = 0;
 const float threshold = 20.0f;
 
 using namespace MeshEditor;
+using namespace MathLib;
 
 WorkState::WorkState(int x_size, int y_size, int z_size, MyGUI::Gui * pGui, MyGUI::DirectX11Platform * pPlatform)
     : flag(false)
@@ -70,7 +71,7 @@ bool WorkState::update(double dt)
         auto & Input = InputEngine::GetInstance();
         newCoordinates = Vector2I(Input.GetMouseInfo().absoluteX, Input.GetMouseInfo().absoluteY);
         float distance = 0.0f;
-        distance = (float)MathLib::distance(oldCoordinates, newCoordinates);
+        distance = (float)::distance(oldCoordinates, newCoordinates);
         oldCoordinates = newCoordinates;
         lenghtOfMove += distance;
     }
@@ -255,9 +256,9 @@ bool WorkState::ProcessInput(double dt)
     Vector3F nearV, farV;
     mat4f viewMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetViewMatrix();
     mat4f projMat = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetProjectionMatrix();
-    nearV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat, sizes);
-    farV = MathLib::getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat, sizes);
-    Vector3F dir = MathLib::normalize(farV - nearV);
+    nearV = getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 0.0f), projMat, viewMat, sizes);
+    farV = getUnprojectedVector(Vector3F((float)mouseInfo.clientX, (float)mouseInfo.clientY, 1.0f), projMat, viewMat, sizes);
+    Vector3F dir = normalize(farV - nearV);
 
     if (geometryMode)
     {
@@ -266,7 +267,7 @@ bool WorkState::ProcessInput(double dt)
             if (lenghtOfMove < threshold)
             {
                 Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-                float distance = MathLib::distance(camPos, Vector3F());
+                float distance = ::distance(camPos, Vector3F());
 
                 for (float mult = 0.0f; mult < distance*2.0f; mult += 0.1f)
                 {
@@ -286,7 +287,7 @@ bool WorkState::ProcessInput(double dt)
         if (inputEngine.IsMouseUp(LButton))
         {
             Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-            float distance = MathLib::distance(camPos, Vector3F());
+            float distance = ::distance(camPos, Vector3F());
             //calculate new position
             const float step = 0.1f;
             for (float mult = 0.0f; mult < distance * 2.0f; mult += step)
@@ -361,7 +362,7 @@ bool WorkState::ProcessInput(double dt)
         if (inputEngine.IsMouseDown(LButton))
         {
             Vector3F camPos = ShiftEngine::GetSceneGraph()->GetActiveCamera()->GetPosition();
-            float distance = MathLib::distance(camPos, Vector3F());
+            float distance = ::distance(camPos, Vector3F());
 
             for (float mult = 0.0f; mult < distance * 2.0f; mult += 0.1f)
             {

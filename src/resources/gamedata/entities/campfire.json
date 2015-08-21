@@ -1,7 +1,7 @@
 {
-    "id": "campfire",
-    "type": "heater",
-    "heat_count": 10,
-    "mesh": "cube",
-    "material": "campfire.mtl"
+  "id": "campfire",
+  "type": "heater",
+  "heat_count": 10,
+  "mesh": "cube",
+  "material": "campfire.mtl"
 }

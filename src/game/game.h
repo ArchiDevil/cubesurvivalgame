@@ -35,5 +35,7 @@ struct Game
 namespace LostIsland
 {
     void CreateGame();
+    void TerminateGame();
+
     Game * GetGamePtr();
 }

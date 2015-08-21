@@ -10,14 +10,13 @@
 #include "CraftingManager.h"
 
 Game::Game()
-    : player(nullptr)
 {
-    world.reset(new cWorld);
-    environmentMgr.reset(new EnvironmentManager);
-    entityMgr.reset(new GameObjectsManager);
-    gameEventHandler.reset(new GameEventHandler);
+    world.reset(new cWorld());
+    environmentMgr.reset(new EnvironmentManager());
+    entityMgr.reset(new GameObjectsManager());
+    gameEventHandler.reset(new GameEventHandler());
     itemMgr.reset(new ItemManager());
-    craftingMgr.reset(new CraftingManager);
+    craftingMgr.reset(new CraftingManager());
 }
 
 Game::~Game()
@@ -30,6 +29,12 @@ void LostIsland::CreateGame()
 {
     delete GamePtr;
     GamePtr = new Game();
+}
+
+void LostIsland::TerminateGame()
+{
+    delete GamePtr;
+    GamePtr = nullptr;
 }
 
 Game * LostIsland::GetGamePtr()

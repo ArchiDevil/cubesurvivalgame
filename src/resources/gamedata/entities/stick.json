@@ -1,8 +1,8 @@
 {
-    "id": "stick",
-    "type": "collectable",
-    "item": "stick",
-    "count": 1,
-    "mesh": "stick.lim",
-    "material": "stick.mtl"
+  "id": "stick",
+  "type": "collectable",
+  "item": "stick",
+  "count": 1,
+  "mesh": "stick.lim",
+  "material": "stick.mtl"
 }

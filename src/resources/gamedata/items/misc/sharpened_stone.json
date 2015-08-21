@@ -1,7 +1,7 @@
 {
-	"id":			"sharpened_stone",
-    "name":         "Sharpened stone",
-	"description": 	"",
-	"type": 		"misc",
-	"icon": 		"sharp_stone.png"	
+  "id": "sharpened_stone",
+  "name": "Sharpened stone",
+  "description": "",
+  "type": "misc",
+  "icon": "sharp_stone.png"
 }

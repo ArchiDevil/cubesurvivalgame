@@ -1,11 +1,11 @@
 {
-    "name": "sharpened_stone",
-    "product" : "sharpened_stone",
-    "count" : 2,
-    "items": [
-        {
-            "name": "smooth_stone",
-            "count": 2
-        }
-    ]
+  "name": "sharpened_stone",
+  "product": "sharpened_stone",
+  "count": 2,
+  "items": [
+    {
+      "name": "smooth_stone",
+      "count": 2
+    }
+  ]
 }

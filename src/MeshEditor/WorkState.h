@@ -2,6 +2,8 @@
 
 #include <System/InputEngine.h>
 
+#include <MathLib/math.h>
+
 #include <Utilities/observer.h>
 #include <Utilities/IAppState.h>
 
@@ -60,8 +62,8 @@ private:
     MeshEditor::Brush           curBrush;
     ShiftEngine::Sprite         colorBox;
 
-    Vector2I                    oldCoordinates;
-    Vector2I                    newCoordinates;
+    MathLib::Vector2I           oldCoordinates;
+    MathLib::Vector2I           newCoordinates;
     bool                        flag;
     bool                        geometryMode;
 
