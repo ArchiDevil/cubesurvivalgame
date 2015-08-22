@@ -2,6 +2,6 @@
   "id": "tree1",
   "type": "static",
   "mesh": "tree1.lim",
-  "material": "treeobject.mtl",
+  "material": "generic.mtl",
   "inventory": "tree"
 }

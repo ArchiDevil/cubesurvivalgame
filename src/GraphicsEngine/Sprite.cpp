@@ -2,6 +2,8 @@
 
 #include "ShiftEngine.h"
 
+using namespace MathLib;
+
 ShiftEngine::IProgramPtr ShiftEngine::Sprite::SpriteShader;
 
 ShiftEngine::Sprite::Sprite()
@@ -29,11 +31,11 @@ void ShiftEngine::Sprite::Draw()
 
     auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
 
-    MathLib::mat4f mat, scale, pos, rot;
-    pos = MathLib::matrixTranslation(Position.x, Position.y, 0.0f);
-    scale = MathLib::matrixScaling(Scale.x, Scale.y, 0.0f);
-    rot = MathLib::matrixRotationZ(Rotation);
-    mat = MathLib::matrixOrthoOffCenterLH<float, 4>(0.0, (float)settings.screenWidth, (float)settings.screenHeight, 0.0f, 0.0f, 1.0f);
+    mat4f mat, scale, pos, rot;
+    pos = matrixTranslation(Position.x, Position.y, 0.0f);
+    scale = matrixScaling(Scale.x, Scale.y, 0.0f);
+    rot = matrixRotationZ(Rotation);
+    mat = matrixOrthoOffCenterLH<float, 4>(0.0, (float)settings.screenWidth, (float)settings.screenHeight, 0.0f, 0.0f, 1.0f);
     mat = (scale * rot * pos) * mat;
 
     SpriteShader->SetMatrixConstantByName("matRes", (float*)mat);
@@ -114,7 +116,7 @@ void ShiftEngine::Sprite::CreateBuffers(const Vector2F & LT, const Vector2F & RB
 
 void ShiftEngine::Sprite::SetSizeInPixels(int x, int y)
 {
-    if (texture)
+    if (!texture)
         return;
 
     SetScale(Vector2F((float)x / texture->GetWidth(), (float)y / texture->GetHeight()));

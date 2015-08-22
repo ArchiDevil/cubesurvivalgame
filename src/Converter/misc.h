@@ -6,9 +6,6 @@
 
 #include <cstdint>
 
-using MathLib::Vector2F;
-using MathLib::Vector3F;
-
 struct MeshLIMHeader
 {
     const uint32_t version = LIM_HEADER_VERSION;
@@ -21,7 +18,10 @@ struct MeshLIMHeader
 
 struct Vertex
 {
-    Vertex(const MathLib::Vector3F &Pos = {}, const MathLib::Vector3F &Normal = {}, const MathLib::Vector2F &TexCoord = {}, const MathLib::Vector3F &Color = {})
+    Vertex(const MathLib::Vector3F &Pos = {},
+           const MathLib::Vector3F &Normal = {},
+           const MathLib::Vector2F &TexCoord = {},
+           const MathLib::Vector3F &Color = {})
         : Pos(Pos)
         , Normal(Normal)
         , TexCoord(TexCoord)

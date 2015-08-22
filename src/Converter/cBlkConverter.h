@@ -8,7 +8,7 @@ class cBlkConverter : public IConverter
 {
     struct Block
     {
-        Vector3F color = {};
+        MathLib::Vector3F color = {};
         bool exist = false;
     };
 

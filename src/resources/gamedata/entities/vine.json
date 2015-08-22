@@ -1,0 +1,9 @@
+{
+  "id": "vine",
+  "type": "collectable",
+  "item": "vine",
+  "count": 2,
+  "mesh": "vine.lim",
+  "material": "generic.mtl",
+  "scale": 0.125
+}

@@ -116,7 +116,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const f
     floatParams[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const vec2<float> & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector2F & param)
 {
     unsigned int var = 0;
     if (program)
@@ -124,7 +124,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const v
     float2Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const vec3<float> & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector3F & param)
 {
     unsigned int var = 0;
     if (program)
@@ -132,7 +132,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const v
     float3Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const vec4<float> & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector4F & param)
 {
     unsigned int var = 0;
     if (program)
@@ -148,11 +148,11 @@ void ShiftEngine::Material::SetZState(bool zState)
 //must be equal to shader struct with 4-byte pack!
 struct shaderLightRefl
 {
-    vec3<float> color = {};
+    MathLib::Vector3F color = {};
     float type = 0.0f;
-    vec3<float> dir = {};
+    MathLib::Vector3F dir = {};
     float radius = 0.0f;
-    vec3<float> pos = {};
+    MathLib::Vector3F pos = {};
     float pack = 0.0f;
 };
 

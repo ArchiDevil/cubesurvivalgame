@@ -27,7 +27,7 @@ void SimplePhysicsEngine::Update(double dt)
     UpdatePhysics(dt);
 }
 
-PhysObjectPtr SimplePhysicsEngine::CreateEntity(const Vector3F & position, const Vector3F & velocity, const AABB & bbox)
+PhysObjectPtr SimplePhysicsEngine::CreateEntity(const MathLib::Vector3F & position, const MathLib::Vector3F & velocity, const MathLib::AABB & bbox)
 {
     PhysObjectPtr out(new PhysObject(position, velocity, bbox));
     physEntities.push_back(out);
@@ -41,16 +41,16 @@ void SimplePhysicsEngine::UpdatePhysics(double dt)
         float l = 0.0f;
         float r = (float)dt;
         float eps = 1e-6f;
-        Vector3F newPos = object->Position;
+        MathLib::Vector3F newPos = object->Position;
         while (fabs(l - r) > eps)
         {
             float cur_dt = (l + r) / 2.0f;
 
-            Vector3F Velocities = object->Velocities;
+            MathLib::Vector3F Velocities = object->Velocities;
             Velocities.z += gravityAcc * cur_dt;
-            Vector3F delta = Velocities * cur_dt;
+            MathLib::Vector3F delta = Velocities * cur_dt;
             newPos = object->Position + delta;
-            AABB bboxToCalculate = { object->bbox.bMin + newPos, object->bbox.bMax + newPos };
+            MathLib::AABB bboxToCalculate = { object->bbox.bMin + newPos, object->bbox.bMax + newPos };
 
             if (!Physics::IsAABBCollidesWithWorld(bboxToCalculate, dataStorage))
                 l = cur_dt;

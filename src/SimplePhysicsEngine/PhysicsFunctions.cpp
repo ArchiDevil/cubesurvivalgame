@@ -1,6 +1,6 @@
 #include "PhysicsFunctions.h"
 
-bool Physics::IsPointCollidesWithWorld(const Vector3F & Position, WorldStorage * storage)
+bool Physics::IsPointCollidesWithWorld(const MathLib::Vector3F & Position, WorldStorage * storage)
 {
     if (!storage)
         return false;
@@ -16,7 +16,7 @@ bool Physics::IsAABBCollidesWithWorld(const MathLib::AABB & bbox, WorldStorage *
     if (!storage)
         return false;
 
-    Vector3F corners[8];
+    MathLib::Vector3F corners[8];
     bbox.GetVertices(corners);
     for (int i = 0; i < 8; ++i)
         if (corners[i].z < 0.0f || IsPointCollidesWithWorld(corners[i], storage))

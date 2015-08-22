@@ -48,8 +48,8 @@ void ShiftEngine::Renderer::drawSky(RenderQueue &rq)
     {
         currentState.ShaderChanges++;
         auto pos = rq.GetActiveCamera()->GetPosition();
-        skyNode->SetPosition(Vector3F(pos.x, pos.y, pos.z));
-        skyNode->SetScale(Vector3F(10.0f, 10.0f, 10.0f));
+        skyNode->SetPosition(MathLib::Vector3F(pos.x, pos.y, pos.z));
+        skyNode->SetScale(MathLib::Vector3F(10.0f, 10.0f, 10.0f));
         GetContextManager()->SetZState(false);
 
         Material * mat = skyNode->GetMaterialPtr();
