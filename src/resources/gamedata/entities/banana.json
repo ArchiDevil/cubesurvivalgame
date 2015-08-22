@@ -1,0 +1,9 @@
+{
+  "id": "banana",
+  "type": "collectable",
+  "item": "banana",
+  "count": 3,
+  "mesh": "banana.lim",
+  "material": "generic.mtl",
+  "scale": 0.125
+}

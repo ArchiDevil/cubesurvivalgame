@@ -1,0 +1,9 @@
+{
+  "id": "coconut",
+  "type": "collectable",
+  "item": "coconut",
+  "count": 1,
+  "mesh": "coconut.lim",
+  "material": "generic.mtl",
+  "scale": 0.125
+}

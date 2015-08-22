@@ -13,14 +13,14 @@ GameObject::~GameObject()
         sceneNode->KillSelf();
 }
 
-Vector3F GameObject::GetPosition() const
+MathLib::Vector3F GameObject::GetPosition() const
 {
     return sceneNode->GetPosition();
 }
 
-void GameObject::SetPosition(const Vector3F & Position)
+void GameObject::SetPosition(const MathLib::Vector3F & Position)
 {
-    sceneNode->SetPosition(Vector3F(Position.x, Position.y, Position.z));
+    sceneNode->SetPosition(Position);
 }
 
 bool GameObject::MustBeDeleted() const

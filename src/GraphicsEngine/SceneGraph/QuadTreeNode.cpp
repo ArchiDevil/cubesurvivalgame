@@ -5,7 +5,7 @@
 
 ShiftEngine::QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
     : ISceneNode()
-    , bbox(Vector3F(x1, y1, std::numeric_limits<float>::lowest()), Vector3F(x2, y2, std::numeric_limits<float>::max()))
+    , bbox({ x1, y1, std::numeric_limits<float>::lowest() }, { x2, y2, std::numeric_limits<float>::max() })
 {
     for (auto & elem : subtrees)
         elem = nullptr;
@@ -170,7 +170,7 @@ int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) cons
     MathLib::Vector4F vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
-    MathLib::AABB newBbox(MathLib::Vector3F(vecMin.x, vecMin.y, vecMin.z), Vector3F(vecMax.x, vecMax.y, vecMax.z));
+    MathLib::AABB newBbox({ vecMin.x, vecMin.y, vecMin.z }, { vecMax.x, vecMax.y, vecMax.z });
 
     return activeCam->GetFrustumPtr()->CheckQTreeNode(newBbox);
 }

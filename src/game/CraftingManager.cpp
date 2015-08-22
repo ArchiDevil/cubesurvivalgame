@@ -160,7 +160,6 @@ void CraftingManager::LoadRecipes(const std::string & path)
             continue;
         }
         NameHash[name] = hash;
-        LOG_INFO("Successfully loaded ", file);
     }
 }
 

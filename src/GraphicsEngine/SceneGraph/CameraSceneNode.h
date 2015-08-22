@@ -18,7 +18,7 @@ namespace ShiftEngine
         CameraSceneNode(MathLib::Vector3F position);
 
         void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
-        void SetPosition(const Vector3F & pos);
+        void SetPosition(const MathLib::Vector3F & pos);
         void Update();
         void MoveUpDown(float units);
         void MoveLeftRight(float units);

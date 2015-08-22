@@ -20,7 +20,7 @@ public:
     void Initialize(WorldStorage * storage, float gravity = -9.81f);
     void Update(double dt);
 
-    PhysObjectPtr CreateEntity(const Vector3F & position, const Vector3F & velocity, const AABB & bbox);
+    PhysObjectPtr CreateEntity(const MathLib::Vector3F & position, const MathLib::Vector3F & velocity, const MathLib::AABB & bbox);
     int GetPhysEntitiesCount() const;
     const std::vector<CollisionInfo> & GetCollisions() const;
 

@@ -57,7 +57,7 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring 
 {
     auto pCtxMgr = GetContextManager();
     IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
-    MeshNode * out = new MeshNode(data, material, MathLib::AABB(Vector3F(-1.0f, -1.0f, -1.0f), Vector3F(1.0f, 1.0f, 1.0f)));
+    MeshNode * out = new MeshNode(data, material, MathLib::AABB({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
     out->SetSceneGraph(this);
     rootNode->AddChild(out);
     return out;
@@ -110,7 +110,7 @@ ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const Vector3F & direction, const Vector3F & color)
+ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const MathLib::Vector3F & direction, const MathLib::Vector3F & color)
 {
     LightNode * out = new LightNode(LNT_Directional, color);
     out->SetDirection(direction);
@@ -120,7 +120,7 @@ ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const 
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const Vector3F & pos, float radius, const Vector3F & color)
+ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLib::Vector3F & pos, float radius, const MathLib::Vector3F & color)
 {
     LightNode * out = new LightNode(LNT_Point, color);
     out->SetRadius(radius);

@@ -2,10 +2,13 @@
 
 #include "Item.h"
 
-#include <cassert>
+#include <stdexcept>
 
 class Item;
 
+// tools that can be used on blocks or other entities
+// such as pickaxes, fishing rods, showels and etc.
+// 
 class ToolItem : public Item
 {
 public:
@@ -28,8 +31,8 @@ public:
         return true;
     }
 
-    virtual bool UseOnBlock(const Vector3F & blockPosition, BlockTypes blockType)
+    virtual bool UseOnBlock(const MathLib::Vector3F & blockPosition, BlockTypes blockType)
     {
-        assert(false);
+        throw std::runtime_error("You shouldn't be here!");
     }
 };

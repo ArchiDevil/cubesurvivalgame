@@ -36,10 +36,10 @@ namespace ShiftEngine
         MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
         CameraSceneNode * AddCameraSceneNode();
 
-        LightNode * AddDirectionalLightNode(const Vector3F & direction, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
+        LightNode * AddDirectionalLightNode(const MathLib::Vector3F & direction, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
         void RemoveDirectionalLightNode(LightNode * node);
 
-        LightNode * AddPointLightNode(const Vector3F & pos, float radius, const Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
+        LightNode * AddPointLightNode(const MathLib::Vector3F & pos, float radius, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
         SkySceneNode * AddSkySceneNode();
 
         SkySceneNode * GetActiveSkyNode() const;

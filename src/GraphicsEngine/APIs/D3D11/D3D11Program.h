@@ -10,15 +10,11 @@
 #include "D3D11ShaderProgram.h"
 #include "D3D11VertexDeclaration.h"
 
-using std::map;
-using std::string;
-using std::vector;
-
 namespace ShiftEngine
 {
     struct D3D11BufferDescription
     {
-        string Name = "";
+        std::string Name = "";
         bool isDirty = true;
         uint32_t Size = 0;
         uint32_t StartSlotVertex = UINT_MAX;
@@ -31,7 +27,7 @@ namespace ShiftEngine
 
     struct D3D11VarDesc
     {
-        string Name = "";
+        std::string Name = "";
         uint32_t Offset = 0;
         uint32_t Size = 0;
         uint32_t BufferIndex = 0;
@@ -39,7 +35,7 @@ namespace ShiftEngine
 
     struct D3D11ResDesc
     {
-        string Name = "";
+        std::string Name = "";
         uint32_t BindPointVertex = UINT_MAX;
         uint32_t BindPointPixel = UINT_MAX;
         ITexturePtr View = nullptr;
@@ -78,11 +74,11 @@ namespace ShiftEngine
         void SetUniformByIndex(unsigned int index, const void * data);
 
         //mapped buffers
-        vector<D3D11BufferDescription> constantBuffers;
-        vector<D3D11VarDesc> variables;
+        std::vector<D3D11BufferDescription> constantBuffers;
+        std::vector<D3D11VarDesc> variables;
 
         //samplers only
-        vector<D3D11ResDesc> resources;
+        std::vector<D3D11ResDesc> resources;
 
         //shaders to bound
         D3D11ShaderPtr vertexShader = nullptr;

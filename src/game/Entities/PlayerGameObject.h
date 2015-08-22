@@ -25,7 +25,7 @@ public:
     void Update(double dt) override;
     bool Go(const MathLib::Vector2F & target) override;
     void Attack(LiveGameObject * target) const override;
-    void Fishing(const Vector3F & targetBlock) const;
+    void Fishing(const MathLib::Vector3F & targetBlock) const;
 
     InteractionType GetInteraction() const override;
     void DispatchEvent(const IGameEvent *ev) override;

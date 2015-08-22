@@ -31,7 +31,7 @@ public:
         return entityId;
     }
 
-    virtual bool UseInWorld(const Vector3F & position) const override
+    virtual bool UseInWorld(const MathLib::Vector3F & position) const override
     {
         return LostIsland::GetGamePtr()->entityMgr->CreateEntity(position, entityId) != nullptr;
     }

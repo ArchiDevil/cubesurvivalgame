@@ -18,13 +18,13 @@ WorldTesselator::~WorldTesselator()
 
 bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNode * landNode, ShiftEngine::MeshNode * waterNode)
 {
-    static const Vector3F colors[] =
+    static const MathLib::Vector3F colors[] =
     {
-        Vector3F(0.0f, 2.0f, 2.0f),									//EMPTY COLOR
-        Vector3F(231.0f / 255.0f, 208.0f / 255.0f, 82.0f / 255.0f),	//SAND COLOR
-        Vector3F(107.0f / 255.0f, 95.0f / 255.0f, 28.0f / 255.0f),	//DIRT COLOR
-        Vector3F(40.0f / 255.0f, 161.0f / 255.0f, 40.0f / 255.0f),	//GRASS COLOR
-        Vector3F(99.0f / 255.0f, 99.0f / 255.0f, 99.0f / 255.0f),	//STONE COLOR
+        {0.0f, 2.0f, 2.0f},									//EMPTY COLOR
+        {231.0f / 255.0f, 208.0f / 255.0f, 82.0f / 255.0f},	//SAND COLOR
+        {107.0f / 255.0f, 95.0f / 255.0f, 28.0f / 255.0f},	//DIRT COLOR
+        {40.0f / 255.0f, 161.0f / 255.0f, 40.0f / 255.0f},	//GRASS COLOR
+        {99.0f / 255.0f, 99.0f / 255.0f, 99.0f / 255.0f},	//STONE COLOR
     };
 
     const int chunkWidth = ws->GetChunkWidth();
@@ -50,7 +50,7 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
         for (int j = 0; j < chunkWidth; j++)
         {
             float shift1 = (float)noiseGenerator.SimplexNoise((double)(i + blockXstart), (double)(j + blockYstart)) * 30.0f / 255.0f;
-            Vector3F randVector = Vector3F(shift1, shift1, shift1);
+            MathLib::Vector3F randVector = MathLib::Vector3F(shift1, shift1, shift1);
 
             unsigned long curIndex = vertices.size();
 
@@ -68,7 +68,7 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
                 height--;
                 blockType = ws->GetBlockType(blockXstart + i, blockYstart + j, (unsigned int)height - 1);
             }
-            Vector3F color = colors[blockType];
+            MathLib::Vector3F color = colors[blockType];
             unsigned int targetedHeight = (unsigned int)height;
             BlockTypes blocks[3][3];
             for (int w = -1; w <= 1; ++w)
@@ -79,25 +79,25 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             if (blocks[0][1] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[0][2] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[1][2] != BT_Empty) colorModifier -= 0.25f;
-            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 1.0f, (float)height), NormUP, (color + randVector) * colorModifier));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 0.0f, j + 1.0f, (float)height), NormUP, (color + randVector) * colorModifier));
 
             colorModifier = 1.0f;
             if (blocks[2][2] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[2][1] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[1][2] != BT_Empty) colorModifier -= 0.25f;
-            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 1.0f, (float)height), NormUP, (color + randVector) * colorModifier));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 1.0f, j + 1.0f, (float)height), NormUP, (color + randVector) * colorModifier));
 
             colorModifier = 1.0f;
             if (blocks[1][0] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[2][0] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[2][1] != BT_Empty) colorModifier -= 0.25f;
-            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 0.0f, (float)height), NormUP, (color + randVector) * colorModifier));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 1.0f, j + 0.0f, (float)height), NormUP, (color + randVector) * colorModifier));
 
             colorModifier = 1.0f;
             if (blocks[0][0] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[1][0] != BT_Empty) colorModifier -= 0.25f;
             if (blocks[0][1] != BT_Empty) colorModifier -= 0.25f;
-            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 0.0f, (float)height), NormUP, (color + randVector) * colorModifier));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 0.0f, j + 0.0f, (float)height), NormUP, (color + randVector) * colorModifier));
 
             indices.push_back(curIndex + 0);
             indices.push_back(curIndex + 1);
@@ -196,7 +196,7 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
     bbox.bMax.x = (float)chunkWidth;
     bbox.bMax.y = (float)chunkWidth;
 
-    const Vector3F waterColor = { 0.3f, 0.3f, 1.0f };
+    const MathLib::Vector3F waterColor = { 0.3f, 0.3f, 1.0f };
 
     for (int i = 0; i < chunkWidth; i++)
     {
@@ -216,10 +216,10 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
             if (blockType != BT_Water)
                 continue;
 
-            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 1.0f, (float)height), NormUP, waterColor));
-            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 1.0f, (float)height), NormUP, waterColor));
-            vertices.push_back(PNC(Vector3F(i + 1.0f, j + 0.0f, (float)height), NormUP, waterColor));
-            vertices.push_back(PNC(Vector3F(i + 0.0f, j + 0.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 0.0f, j + 1.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 1.0f, j + 1.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 1.0f, j + 0.0f, (float)height), NormUP, waterColor));
+            vertices.push_back(PNC(MathLib::Vector3F(i + 0.0f, j + 0.0f, (float)height), NormUP, waterColor));
 
             indices.push_back(curIndex + 0);
             indices.push_back(curIndex + 1);

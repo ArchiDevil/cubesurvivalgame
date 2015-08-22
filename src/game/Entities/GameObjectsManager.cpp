@@ -21,7 +21,7 @@ GameObjectsManager::GameObjectsManager()
     entityMaterial = GetContextManager()->LoadMaterial(L"entity.mtl", L"genericEntity");
 }
 
-ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position, const Vector3F & Velocity, uint64_t itemId, size_t count)
+ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const MathLib::Vector3F & Position, const MathLib::Vector3F & Velocity, uint64_t itemId, size_t count)
 {
     auto pGame = LostIsland::GetGamePtr();
     auto * item = pGame->itemMgr->GetItemById(itemId);
@@ -32,13 +32,13 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const Vector3F & Position
     }
 
     float scale = 0.15f;
-    MathLib::AABB bbox = { Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f) };
+    MathLib::AABB bbox = { MathLib::Vector3F(-0.5f, -0.5f, -0.5f), MathLib::Vector3F(0.5f, 0.5f, 0.5f) };
     bbox.bMin *= scale;
     bbox.bMax *= scale;
     MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), bbox, entityMaterial.get());
     std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, count, SimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity, bbox), meshNode);
     meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
-    meshNode->SetScale(Vector3F(scale, scale, scale));
+    meshNode->SetScale(scale);
     gameObjects.push_back(out);
     return out;
 }
@@ -71,7 +71,7 @@ GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & positio
     return out;
 }
 
-PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
+PlayerPtr GameObjectsManager::CreatePlayer(const MathLib::Vector3F & Position)
 {
     auto pGame = LostIsland::GetGamePtr();
     if (pGame->player)
@@ -83,7 +83,7 @@ PlayerPtr GameObjectsManager::CreatePlayer(const Vector3F & Position)
     auto pScene = ShiftEngine::GetSceneGraph();
 
     ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), mat.get()), pGame->itemMgr.get());
+    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 1.0f }), mat.get()), pGame->itemMgr.get());
     player->SetPosition(Position);
     gameObjects.push_back(player);
     pGame->player = player.get();

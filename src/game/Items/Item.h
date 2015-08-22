@@ -63,7 +63,7 @@ public:
     }
 
     // next calls are empty to simplify description of inherited items
-    virtual bool UseInWorld(const Vector3F & position) const
+    virtual bool UseInWorld(const MathLib::Vector3F & position) const
     {
         return false;
     }

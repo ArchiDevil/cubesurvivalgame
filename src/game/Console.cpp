@@ -39,7 +39,7 @@ void Console::HandleCommand()
         float y_pos = std::stof(tokens[3]);
         float z_pos = std::stof(tokens[4]);
 
-        pGame->entityMgr->CreateEntity(Vector3F(x_pos, y_pos, z_pos), tokens[1]);
+        pGame->entityMgr->CreateEntity({ x_pos, y_pos, z_pos }, tokens[1]);
     }
     else if (commandName == "add_item")
     {

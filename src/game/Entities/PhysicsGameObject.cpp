@@ -12,7 +12,7 @@ PhysicsGameObject::~PhysicsGameObject()
 
 void PhysicsGameObject::Update(double /*dt*/)
 {
-    sceneNode->SetPosition(Vector3F(physicsObject->Position.x, physicsObject->Position.y, physicsObject->Position.z));
+    sceneNode->SetPosition(physicsObject->Position);
 }
 
 void PhysicsGameObject::SetPosition(MathLib::Vector3F & position)

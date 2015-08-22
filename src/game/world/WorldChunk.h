@@ -17,13 +17,13 @@ enum ChunkStatus
 
 struct WaterVertex
 {
-    WaterVertex(Vector3F _pos, Vector3F _normal)
+    WaterVertex(MathLib::Vector3F _pos, MathLib::Vector3F _normal)
         : pos(_pos), normal(_normal)
     {
     }
 
-    Vector3F pos;
-    Vector3F normal;
+    MathLib::Vector3F pos;
+    MathLib::Vector3F normal;
 };
 
 struct texPos
@@ -33,15 +33,15 @@ struct texPos
     {
     }
 
-    texPos(Vector3F p, Vector2F t, float av)
+    texPos(MathLib::Vector3F p, MathLib::Vector2F t, float av)
         : pos(p)
         , tc(t)
         , animV(av)
     {
     }
 
-    Vector3F pos;
-    Vector2F tc;
+    MathLib::Vector3F pos;
+    MathLib::Vector2F tc;
     float animV;
 };
 

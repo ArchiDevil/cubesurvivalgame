@@ -21,10 +21,10 @@ public:
     virtual void Update(double dt) = 0;
 
     // setters
-    virtual void SetPosition(const Vector3F & Position);
+    virtual void SetPosition(const MathLib::Vector3F & Position);
 
     // getters
-    virtual Vector3F GetPosition() const;
+    virtual MathLib::Vector3F GetPosition() const;
     ShiftEngine::MeshNode * GetSceneNode();
 
     // highlight methods

@@ -16,14 +16,20 @@ ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::
     auto mtl = ShiftEngine::GetContextManager()->LoadMaterial(wmaterialFile, L"generic");
 
     std::wstring wmeshName = utils::Widen(meshName);
-    MeshNode * meshNode = nullptr;
+    ShiftEngine::MeshNode * meshNode = nullptr;
     if (wmeshName == L"cube")
-        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)), mtl.get());
+    {
+        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f }), mtl.get());
+    }
     else
+    {
         meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(wmeshName, mtl.get());
+    }
 
     if (meshNode)
+    {
         meshNode->SetScale(scale);
+    }
 
     return meshNode;
 }

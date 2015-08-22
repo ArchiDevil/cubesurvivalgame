@@ -101,7 +101,7 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
             max.z = points[i].z;
     }
 
-    MathLib::AABB newBbox(Vector3F(min.x, min.y, min.z), Vector3F(max.x, max.y, max.z));
+    MathLib::AABB newBbox({ min.x, min.y, min.z }, { max.x, max.y, max.z });
     return newBbox;
 }
 

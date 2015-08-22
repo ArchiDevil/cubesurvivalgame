@@ -13,14 +13,12 @@ enum Root
     HKEY_CURRENT_CONFIG_R = (((LONG)0x80000005)),
 };
 
-using std::wstring;
-
 class cRegWorker
 {
 public:
     static std::wstring GetString(Root root, std::wstring path, std::wstring parameter);
     static int GetInteger(Root root, std::wstring path, std::wstring parameter);
 
-    void SetString(Root root, const wstring & path, const wstring & param, const wstring & val);
-    void SetInteger(Root rootm, const wstring & path, const wstring & param, int val);
+    void SetString(Root root, const std::wstring & path, const std::wstring & param, const std::wstring & val);
+    void SetInteger(Root rootm, const std::wstring & path, const std::wstring & param, int val);
 };

@@ -116,7 +116,7 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
                 pNoise->SetFrequency(0.5);
                 pNoise->SetOctaves(4);
 
-                Vector3F position = { (float)i, (float)j, 0.0f };
+                MathLib::Vector3F position = { (float)i, (float)j, 0.0f };
                 noise = pNoise->SimplexNoise(i, j);
                 if (noise > 1.1)
                 {
@@ -129,7 +129,7 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
                 DataStorage->SetColumn(i, j, 1, BlockColumn(BlockTypes::BT_Dirt, 1));
                 DataStorage->SetColumn(i, j, 2, BlockColumn(BlockTypes::BT_Grass, 1));
 
-                Vector3F position = { (float)i, (float)j, 0.0f };
+                MathLib::Vector3F position = { (float)i, (float)j, 0.0f };
                 pNoise->SetFrequency(0.4);
                 pNoise->SetOctaves(6);
 
@@ -137,6 +137,25 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
                 if (noise > 1.4)
                 {
                     pEntityMgr->CreateEntity(position, "tree1");
+                    for (int x = -1; x < 2; x++)
+                    {
+                        for (int y = -1; y < 2; y++)
+                        {
+                            pEntityMgr->CreateEntity(position, "vine");
+                        }
+                    }
+                }
+
+                pNoise->SetFrequency(0.5);
+                pNoise->SetOctaves(4);
+
+                noise = pNoise->SimplexNoise(i, j);
+                if (noise > 1.3 && noise < 1.4)
+                {
+                    if(noise > 1.35)
+                        pEntityMgr->CreateEntity(position, "banana");
+                    else
+                        pEntityMgr->CreateEntity(position, "coconut");
                 }
             }
         }
@@ -384,7 +403,7 @@ std::string cWorld::GetWorldName() const
     return worldName;
 }
 
-bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & out) const
+bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, MathLib::Vector3F & out) const
 {
     std::vector<WorldChunk*> foundChunksList;
     unsigned int chunksPerSide = ChunksStorage->GetChunksPerSide();
@@ -408,8 +427,8 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
             for (int yStart = WorldY * ChunkWidth; yStart < WorldY * ChunkWidth + ChunkWidth; ++yStart)
             {
                 MathLib::AABB bbox;
-                bbox.bMin = Vector3F((float)xStart, (float)yStart, (float)DataStorage->GetFullHeight(xStart, yStart));
-                bbox.bMax = Vector3F((float)xStart + 1.0f, (float)yStart + 1.0f, (float)DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
+                bbox.bMin = MathLib::Vector3F((float)xStart, (float)yStart, (float)DataStorage->GetFullHeight(xStart, yStart));
+                bbox.bMax = MathLib::Vector3F((float)xStart + 1.0f, (float)yStart + 1.0f, (float)DataStorage->GetFullHeight(xStart, yStart) + 0.1f);
                 if (MathLib::RayBoxIntersect(unprojectedRay, bbox, 0.0f, 1000.0f))
                     foundBBoxes.push_back(bbox);
             }
@@ -434,7 +453,7 @@ bool cWorld::SelectColumnByRay(const MathLib::Ray & unprojectedRay, Vector3F & o
         return false;
     }
 
-    Vector3F topPoints[4] =
+    MathLib::Vector3F topPoints[4] =
     {
         { resultedBBox->bMin.x, resultedBBox->bMin.y, resultedBBox->bMax.z },
         { resultedBBox->bMin.x, resultedBBox->bMax.y, resultedBBox->bMax.z },

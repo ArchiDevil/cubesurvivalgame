@@ -21,14 +21,14 @@ void ShiftEngine::CameraSceneNode::Initialize(float _screenWidth, float _screenH
     screenWidth = _screenWidth;
     screenHeight = _screenHeight;
 
-    Vector3F LOOK_POS = lookVector + position;
+    MathLib::Vector3F LOOK_POS = lookVector + position;
     matView = MathLib::matrixLookAtRH<float, 4>(position, LOOK_POS, upVector);
     RebuildProjMatrix();
 
     frustum.reset(new CameraFrustum());
 }
 
-void ShiftEngine::CameraSceneNode::SetPosition(const Vector3F & pos)
+void ShiftEngine::CameraSceneNode::SetPosition(const MathLib::Vector3F & pos)
 {
     position.x = pos.x;
     position.y = pos.y;
@@ -52,7 +52,7 @@ void ShiftEngine::CameraSceneNode::MoveForwardBackward(float units)
 
 void ShiftEngine::CameraSceneNode::Update()
 {
-    Vector3F eye = lookVector + position;
+    MathLib::Vector3F eye = lookVector + position;
     matView = MathLib::matrixLookAtRH<float, 4>(position, eye, upVector);
     frustum->BuildFrustum(matView, matProj);
 }
@@ -157,23 +157,23 @@ void ShiftEngine::CameraSceneNode::RebuildProjMatrix()
 void ShiftEngine::CameraSceneNode::RotateByQuaternion(const MathLib::qaFloat & quat)
 {
     // transform all vectors
-    Vector3F look(lookVector.x, lookVector.y, lookVector.z);
+    MathLib::Vector3F look(lookVector.x, lookVector.y, lookVector.z);
     look = look * quat;
     lookVector = look;
 
-    Vector3F up(upVector.x, upVector.y, upVector.z);
+    MathLib::Vector3F up(upVector.x, upVector.y, upVector.z);
     up = up * quat;
     upVector = up;
 
-    Vector3F right(rightVector.x, rightVector.y, rightVector.z);
+    MathLib::Vector3F right(rightVector.x, rightVector.y, rightVector.z);
     right = right * quat;
     rightVector = right;
 
-    Vector3F LOOK_POS = lookVector + position;
+    MathLib::Vector3F LOOK_POS = lookVector + position;
     matView = MathLib::matrixLookAtRH<float, 4>(position, LOOK_POS, upVector);
 }
 
-void ShiftEngine::CameraSceneNode::SetSphericalCoords(const Vector3F & center, float phi, float theta, float r)
+void ShiftEngine::CameraSceneNode::SetSphericalCoords(const MathLib::Vector3F & center, float phi, float theta, float r)
 {
     position = MathLib::GetPointOnSphere(center, r, phi, theta);
     lookVector = center - position;
@@ -185,7 +185,7 @@ void ShiftEngine::CameraSceneNode::SetSphericalCoords(const Vector3F & center, f
     upVector = MathLib::cross(rightVector, lookVector);
     upVector = normalize(upVector);
 
-    Vector3F at = lookVector + position;
+    MathLib::Vector3F at = lookVector + position;
     matView = MathLib::matrixLookAtRH<float, 4>(position, at, upVector);
 }
 
