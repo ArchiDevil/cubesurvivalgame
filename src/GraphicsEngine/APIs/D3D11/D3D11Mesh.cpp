@@ -58,7 +58,14 @@ ShiftEngine::D3D11MeshData::~D3D11MeshData()
     Clear();
 }
 
-bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, const uint8_t * vData, size_t vDataSize, const uint32_t * iData, size_t iDataSize, const VertexSemantic * semantic, const IVertexDeclarationPtr & declaration)
+bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, 
+                                               const uint8_t * vData, 
+                                               size_t vDataSize, 
+                                               const uint32_t * iData, 
+                                               size_t iDataSize, 
+                                               const VertexSemantic * semantic, 
+                                               const IVertexDeclarationPtr & declaration, 
+                                               const MathLib::AABB & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);
@@ -126,6 +133,7 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, const uint8_t * vDa
     vertexSize = vertexSemantic->getVertexSize();
     verticesCount = vDataSize / vertexSize;
     indicesCount = iDataSize / sizeof(uint32_t);
+    bbox = _bbox;
 
     return true;
 }

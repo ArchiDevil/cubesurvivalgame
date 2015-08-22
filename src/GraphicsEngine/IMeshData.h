@@ -23,14 +23,16 @@ namespace ShiftEngine
         size_t GetVertexSize() const { return vertexSize; }
         const VertexSemantic * GetVertexSemantic() const { return vertexSemantic; }
         ShiftEngine::IVertexDeclarationPtr GetVertexDeclaration() const { return vertexDeclaration; }
+        MathLib::AABB GetBBox() const { return bbox; }
 
         virtual bool CreateBuffers(bool dynamic,
-            const uint8_t * vData,
-            size_t vDataSize,
-            const uint32_t * iData,
-            size_t iDataSize,
-            const VertexSemantic * semantic,
-            const IVertexDeclarationPtr & declaration) = 0;
+                                   const uint8_t * vData,
+                                   size_t vDataSize,
+                                   const uint32_t * iData,
+                                   size_t iDataSize,
+                                   const VertexSemantic * semantic,
+                                   const IVertexDeclarationPtr & declaration,
+                                   const MathLib::AABB & bbox) = 0;
 
         IMeshData() = default;
         IMeshData(IMeshData & other) = default;
@@ -42,6 +44,7 @@ namespace ShiftEngine
         size_t indicesCount = 0;
         size_t vertexSize = 0;
         IVertexDeclarationPtr vertexDeclaration = nullptr;
+        MathLib::AABB bbox = {};
     };
 
     typedef std::shared_ptr<IMeshData> IMeshDataPtr;

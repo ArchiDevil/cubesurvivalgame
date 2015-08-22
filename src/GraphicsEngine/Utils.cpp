@@ -107,7 +107,11 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createCube()
     };
 
     IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), indices, &defaultVertexSemantic);
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
+                                                        vertices.size() * sizeof(DefaultVertex), 
+                                                        indices, 
+                                                        &defaultVertexSemantic, 
+                                                        { {-0.5f, -0.5f, 0.0f}, { 0.5f, 0.5f, 1.0f } });
     return pDefaultMesh;
 }
 
@@ -131,7 +135,11 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createPlane()
     };
 
     IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), indices, &defaultVertexSemantic);
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
+                                                        vertices.size() * sizeof(DefaultVertex), 
+                                                        indices, 
+                                                        &defaultVertexSemantic, 
+                                                        { { -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 0.0f } });
     return pDefaultMesh;
 }
 
@@ -198,7 +206,11 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
     }
 
     IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(DefaultVertex), {}, &defaultVertexSemantic);
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
+                                                        vertices.size() * sizeof(DefaultVertex), 
+                                                        {}, 
+                                                        &defaultVertexSemantic,
+                                                        { { -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 1.0f } });
     return pDefaultMesh;
 }
 

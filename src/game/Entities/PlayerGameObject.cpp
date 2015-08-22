@@ -20,7 +20,7 @@ PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManage
 
     auto * pScene = ShiftEngine::GetSceneGraph();
     auto material = ShiftEngine::GetContextManager()->LoadMaterial(L"player.mtl", L"playerTargetMarker");
-    targetMarker = pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 1.0f }), material.get());
+    targetMarker = pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), material.get());
     targetMarker->SetVisibility(false);
     targetMarker->SetScale(0.3f);
 

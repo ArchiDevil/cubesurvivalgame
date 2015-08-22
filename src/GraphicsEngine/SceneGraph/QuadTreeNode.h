@@ -26,6 +26,6 @@ namespace ShiftEngine
         virtual int CheckVisibility(CameraSceneNode * activeCam) const override;
 
         QuadTreeNode * subtrees[4];
-        MathLib::AABB bbox;
+        MathLib::AABB bbox = {};
     };
 }

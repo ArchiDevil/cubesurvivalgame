@@ -42,8 +42,8 @@ void cChunksStorage::Initialize(int ChunksPerSide, int CenterChunkX, int CenterC
     for (int i = 0; i < ChunksPerSide * ChunksPerSide; i++)
     {
         Chunks[i].Initialize(
-            GetSceneGraph()->AddMeshNode(IMeshDataPtr(nullptr), MathLib::AABB({}, { (float)chunkWidth, (float)chunkWidth, 256.0f }), worldChunkMtl.get()),
-            GetSceneGraph()->AddMeshNode(IMeshDataPtr(nullptr), MathLib::AABB({}, { (float)chunkWidth, (float)chunkWidth, 256.0f }), waterChunkMtl.get()),
+            GetSceneGraph()->AddMeshNode(IMeshDataPtr(nullptr), worldChunkMtl.get()),
+            GetSceneGraph()->AddMeshNode(IMeshDataPtr(nullptr), waterChunkMtl.get()),
             chunkWidth);
     }
 

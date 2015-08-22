@@ -63,12 +63,13 @@ ShiftEngine::D3D10MeshData::~D3D10MeshData()
 }
 
 bool ShiftEngine::D3D10MeshData::CreateBuffers(bool dynamic,
-    const uint8_t * vData,
-    size_t vDataSize,
-    const uint32_t * iData,
-    size_t iDataSize,
-    const VertexSemantic * semantic,
-    const IVertexDeclarationPtr & declaration)
+                                               const uint8_t * vData,
+                                               size_t vDataSize,
+                                               const uint32_t * iData,
+                                               size_t iDataSize,
+                                               const VertexSemantic * semantic,
+                                               const IVertexDeclarationPtr & declaration,
+                                               const MathLib::AABB & _bbox)
 {
     assert(pDevice);
 
@@ -135,6 +136,7 @@ bool ShiftEngine::D3D10MeshData::CreateBuffers(bool dynamic,
     vertexSize = vertexSemantic->getVertexSize();
     verticesCount = vDataSize / vertexSize;
     indicesCount = iDataSize / sizeof(uint32_t);
+    bbox = _bbox;
 
     return true;
 }

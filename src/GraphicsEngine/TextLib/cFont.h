@@ -12,40 +12,19 @@
 
 struct sChar
 {
-    sChar()
-        : x(0)
-        , y(0)
-        , Width(0)
-        , Height(0)
-        , XOffset(0)
-        , YOffset(0)
-        , XAdvance(0)
-        , Page(0)
-    {
-    }
-
     //this code taken from tutorial about BMFont
     //clean 16 bytes
-    unsigned short x, y;
-    unsigned short Width, Height;
-    short XOffset;
-    unsigned short YOffset;
-    unsigned short XAdvance;
-    unsigned short Page;
+    unsigned short x = 0, y = 0;
+    unsigned short Width = 0, Height = 0;
+    short XOffset = 0;
+    unsigned short YOffset = 0;
+    unsigned short XAdvance = 0;
+    unsigned short Page = 0;
 };
 
 class cFont
 {
 public:
-    cFont() 
-        : LineHeight(0)
-        , Base(0)
-        , Width(0)
-        , Height(0)
-        , Pages(0) 
-    {
-    }
-
     bool Initialize(const std::wstring & filename, ShiftEngine::ITexturePtr _tp)
     {
         tp = _tp;
@@ -150,10 +129,10 @@ private:
     }
 
 
-    ShiftEngine::ITexturePtr tp;
-    std::string filename;
+    ShiftEngine::ITexturePtr tp = nullptr;
+    std::string filename = "";
 
-    unsigned short Pages;
+    unsigned short Pages = 0;
     sChar data[256];    //for non-unicode characters
 
 };

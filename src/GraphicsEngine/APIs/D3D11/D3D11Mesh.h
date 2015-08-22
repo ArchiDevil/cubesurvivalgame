@@ -22,7 +22,14 @@ namespace ShiftEngine
         D3D11MeshData& operator = (const D3D11MeshData & ref);
         ~D3D11MeshData();
 
-        bool CreateBuffers(bool dynamic, const uint8_t * vData, size_t vDataSize, const uint32_t * iData, size_t iDataSize, const VertexSemantic * semantic, const IVertexDeclarationPtr & declaration) override;
+        bool CreateBuffers(bool dynamic, 
+                           const uint8_t * vData, 
+                           size_t vDataSize, 
+                           const uint32_t * iData, 
+                           size_t iDataSize, 
+                           const VertexSemantic * semantic, 
+                           const IVertexDeclarationPtr & declaration, 
+                           const MathLib::AABB & bbox) override;
         size_t Draw() override;
         void Clear() override;
 

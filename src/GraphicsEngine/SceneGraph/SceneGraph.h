@@ -33,7 +33,7 @@ namespace ShiftEngine
         void DrawAll(double dt) const;
 
         MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);                        //tries to load mesh with meshLoader
-        MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat);
+        MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
         CameraSceneNode * AddCameraSceneNode();
 
         LightNode * AddDirectionalLightNode(const MathLib::Vector3F & direction, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
@@ -53,15 +53,15 @@ namespace ShiftEngine
         void MoveNodeCallback(ISceneNode * node);
 
     protected:
-        ISceneNode * rootNode;
-        CameraSceneNode * activeCamera;
-        SkySceneNode * activeSky;
+        ISceneNode * rootNode = nullptr;
+        CameraSceneNode * activeCamera = nullptr;
+        SkySceneNode * activeSky = nullptr;
         VertexSemantic skySemantic;
         std::vector<LightNode*> directionalLights;
 
-        SceneGraphType type;
+        SceneGraphType type = SGT_Plain;
 
-        MathLib::Vector3F ambientColor;
+        MathLib::Vector3F ambientColor = {};
 
     };
 }

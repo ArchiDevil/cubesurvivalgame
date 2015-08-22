@@ -22,12 +22,13 @@ namespace ShiftEngine
         ~D3D10MeshData();
 
         bool CreateBuffers(bool dynamic,
-            const uint8_t * vData,
-            size_t vDataSize,
-            const uint32_t * iData,
-            size_t iDataSize,
-            const VertexSemantic * semantic,
-            const IVertexDeclarationPtr & declaration) override;
+                           const uint8_t * vData,
+                           size_t vDataSize,
+                           const uint32_t * iData,
+                           size_t iDataSize,
+                           const VertexSemantic * semantic,
+                           const IVertexDeclarationPtr & declaration,
+                           const MathLib::AABB & bbox) override;
 
         size_t Draw() override;
         void Clear() override;

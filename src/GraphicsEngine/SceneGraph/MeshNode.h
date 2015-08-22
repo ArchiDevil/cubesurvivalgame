@@ -14,7 +14,7 @@ namespace ShiftEngine
     class MeshNode : public ISceneNode
     {
     public:
-        MeshNode(const IMeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox);
+        MeshNode(const IMeshDataPtr & _data, const Material * mat);
         virtual ~MeshNode();
 
         virtual int Render();
@@ -30,13 +30,11 @@ namespace ShiftEngine
         void SetMaterial(const ShiftEngine::Material * val);
 
         virtual MathLib::AABB GetBBox() const override;
-        void SetBBox(const MathLib::AABB &bbox);
 
     private:
-        MathLib::AABB bbox;
         Material material;
-        IMeshDataPtr Data;
-        bool isVisible;
+        IMeshDataPtr Data = nullptr;
+        bool isVisible = true;
 
     };
 }

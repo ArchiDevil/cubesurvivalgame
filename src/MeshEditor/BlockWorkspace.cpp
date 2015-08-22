@@ -291,10 +291,10 @@ void MeshEditor::BlockWorkspace::Tesselate()
     }
 
     ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    auto meshData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(wVertex), indices, &semantic);
+    auto meshData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(wVertex), indices, &semantic, AABB({}, storage.GetHalfSize() * 2.0f));
 
     if (!mesh)
-        mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, AABB({}, storage.GetHalfSize() * 2.0f), &GeometryMaterial);
+        mesh = ShiftEngine::GetSceneGraph()->AddMeshNode(meshData, &GeometryMaterial);
     else
         mesh->SetDataPtr(meshData);
 
@@ -393,9 +393,9 @@ void MeshEditor::BlockWorkspace::CreatePlane()
     long ind[6] = { 0, 1, 2, 0, 2, 3 };
 
     ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    auto pMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver, 4 * sizeof(ShiftEngine::DefaultVertex), { std::begin(ind), std::end(ind) }, &ShiftEngine::defaultVertexSemantic);
+    auto pMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver, 4 * sizeof(ShiftEngine::DefaultVertex), { std::begin(ind), std::end(ind) }, &ShiftEngine::defaultVertexSemantic, AABB({}, { 1.0f, 1.0f, 0.0f }));
     ShiftEngine::MaterialPtr planeMtl = ShiftEngine::GetContextManager()->LoadMaterial(L"plane.mtl", L"editorPlane");
-    plane = ShiftEngine::GetSceneGraph()->AddMeshNode(pMesh, AABB({}, { 1.0f, 1.0f, 0.0f }), planeMtl.get());
+    plane = ShiftEngine::GetSceneGraph()->AddMeshNode(pMesh, planeMtl.get());
 }
 
 void MeshEditor::BlockWorkspace::CreateBBox()

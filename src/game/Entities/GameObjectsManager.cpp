@@ -35,7 +35,7 @@ ItemGameObjectPtr GameObjectsManager::CreateItemEntity(const MathLib::Vector3F &
     MathLib::AABB bbox = { MathLib::Vector3F(-0.5f, -0.5f, -0.5f), MathLib::Vector3F(0.5f, 0.5f, 0.5f) };
     bbox.bMin *= scale;
     bbox.bMax *= scale;
-    MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), bbox, entityMaterial.get());
+    MeshNode * meshNode = GetSceneGraph()->AddMeshNode(item->GetMesh(), entityMaterial.get());
     std::shared_ptr<ItemGameObject> out = std::make_shared<ItemGameObject>(itemId, count, SimplePhysicsEngine::GetInstance().CreateEntity(Position, Velocity, bbox), meshNode);
     meshNode->GetMaterialPtr()->SetDiffuseTexture(item->GetTexturePtr());
     meshNode->SetScale(scale);
@@ -58,14 +58,14 @@ void GameObjectsManager::Update(double dt)
 
 GameObjectPtr GameObjectsManager::CreateEntity(const MathLib::Vector3F & position, const std::string & entityId)
 {
-    auto iter = breeds.find(entityId);
-    if (iter == breeds.end())
+    auto breedIter = breeds.find(entityId);
+    if (breedIter == breeds.end())
     {
         LOG_ERROR("Unable to create entity with id: ", entityId);
         return nullptr;
     }
 
-    auto out = iter->second->Clone();
+    auto out = breedIter->second->Clone();
     out->SetPosition(position);
     gameObjects.push_back(out);
     return out;
@@ -83,7 +83,7 @@ PlayerPtr GameObjectsManager::CreatePlayer(const MathLib::Vector3F & Position)
     auto pScene = ShiftEngine::GetSceneGraph();
 
     ShiftEngine::MaterialPtr mat = pCtxMgr->LoadMaterial(L"player.mtl", L"player");
-    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 1.0f }), mat.get()), pGame->itemMgr.get());
+    PlayerPtr player = std::make_shared<PlayerGameObject>(pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), mat.get()), pGame->itemMgr.get());
     player->SetPosition(Position);
     gameObjects.push_back(player);
     pGame->player = player.get();

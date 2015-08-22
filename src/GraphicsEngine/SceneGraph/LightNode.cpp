@@ -4,8 +4,9 @@
 #include "SceneGraph.h"
 
 ShiftEngine::LightNode::LightNode(LightNodeType _type, const MathLib::Vector3F & _color)
-    : ISceneNode(), color(_color),
-    type(_type), active(true)
+    : ISceneNode()
+    , color(_color)
+    , type(_type)
 {
 }
 

@@ -179,12 +179,11 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
     }
 
     ShiftEngine::IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    auto landData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic);
+    auto landData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic, bbox);
     if (!landData)
         return false;
 
     landNode->SetDataPtr(landData);
-    landNode->SetBBox(bbox);
 
     vertices.clear();
     indices.clear();
@@ -235,12 +234,11 @@ bool WorldTesselator::TesselateChunk(int ChunkX, int ChunkY, ShiftEngine::MeshNo
         return true;
 
     pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    auto waterData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic);
+    auto waterData = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), vertices.size() * sizeof(PNC), indices, &nodeSemantic, bbox);
     if (!waterData)
         return false;
 
     waterNode->SetDataPtr(waterData);
-    waterNode->SetBBox(bbox);
 
     return true;
 }

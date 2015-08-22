@@ -5,10 +5,7 @@
 #include <cassert>
 
 ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
-    : activeCamera(nullptr)
-    , activeSky(nullptr)
-    , ambientColor(0.0f, 0.0f, 0.0f)
-    , type(graphType)
+    : type(graphType)
 {
     skySemantic.addSemantic(ET_FLOAT, 3, ES_Position);
     GetContextManager()->GetVertexDeclaration(skySemantic);
@@ -57,15 +54,15 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring 
 {
     auto pCtxMgr = GetContextManager();
     IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
-    MeshNode * out = new MeshNode(data, material, MathLib::AABB({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+    MeshNode * out = new MeshNode(data, material);
     out->SetSceneGraph(this);
     rootNode->AddChild(out);
     return out;
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const MathLib::AABB & bbox, const Material * mat)
+ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
 {
-    MeshNode * out = new MeshNode(dataPtr, mat, bbox);
+    MeshNode * out = new MeshNode(dataPtr, mat);
     rootNode->AddChild(out);
     out->SetSceneGraph(this);
     return out;

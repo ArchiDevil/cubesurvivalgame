@@ -35,9 +35,10 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::LoadMesh(const std::wst
 }
 
 ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::CreateMeshFromVertices(const uint8_t * verticesData,
-    size_t verticesDataSize,
-    const std::vector<uint32_t> & indicesData,
-    const ShiftEngine::VertexSemantic * semantic)
+                                                                                size_t verticesDataSize,
+                                                                                const std::vector<uint32_t> & indicesData,
+                                                                                const ShiftEngine::VertexSemantic * semantic,
+                                                                                const MathLib::AABB & bbox)
 {
     if (!semantic)
         return LoadErrorMesh();
@@ -45,7 +46,7 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D10MeshManager::CreateMeshFromVertices(
     auto vd = GetContextManager()->GetVertexDeclaration(*semantic);
 
     D3D10MeshDataPtr out = std::make_shared<D3D10MeshData>(device);
-    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd))
+    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd, bbox))
     {
         LOG_ERROR("Unable to create mesh from vertices");
         return nullptr;
@@ -107,7 +108,22 @@ bool ShiftEngine::D3D10MeshManager::Load(const std::wstring & filename, D3D10Mes
     if (!declaration)
         declaration = GetContextManager()->GetVertexDeclaration(*sem);
 
-    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size(), sem, declaration))
+    MathLib::AABB calculatedBBox;
+    calculatedBBox.bMin = vertices.position[0];
+    calculatedBBox.bMax = vertices.position[0];
+
+    for (const MathLib::Vector3F & pos : vertices.position)
+    {
+        if (pos.x < calculatedBBox.bMin.x) calculatedBBox.bMin.x = pos.x;
+        if (pos.y < calculatedBBox.bMin.y) calculatedBBox.bMin.y = pos.y;
+        if (pos.z < calculatedBBox.bMin.z) calculatedBBox.bMin.z = pos.z;
+
+        if (pos.x > calculatedBBox.bMax.x) calculatedBBox.bMax.x = pos.x;
+        if (pos.y > calculatedBBox.bMax.y) calculatedBBox.bMax.y = pos.y;
+        if (pos.z > calculatedBBox.bMax.z) calculatedBBox.bMax.z = pos.z;
+    }
+
+    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size(), sem, declaration, calculatedBBox))
         return false;
 
     return true;

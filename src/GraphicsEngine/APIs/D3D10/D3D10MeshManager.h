@@ -17,9 +17,10 @@ namespace ShiftEngine
         D3D10MeshManager(ID3D10Device * _device);
         IMeshDataPtr            LoadMesh(const std::wstring & fileName) override;
         IMeshDataPtr            CreateMeshFromVertices(const uint8_t * verticesData,
-                                                        size_t verticesDataSize,
-                                                        const std::vector<uint32_t> & indicesData,
-                                                        const ShiftEngine::VertexSemantic * semantic) override;
+                                                       size_t verticesDataSize,
+                                                       const std::vector<uint32_t> & indicesData,
+                                                       const ShiftEngine::VertexSemantic * semantic,
+                                                       const MathLib::AABB & bbox) override;
         IMeshDataPtr            LoadErrorMesh() override;
 
     private:

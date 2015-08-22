@@ -19,7 +19,8 @@ namespace ShiftEngine
         IMeshDataPtr CreateMeshFromVertices(const uint8_t * verticesData, 
                                             size_t verticesDataSize, 
                                             const std::vector<uint32_t> & indicesData, 
-                                            const ShiftEngine::VertexSemantic * semantic) override;
+                                            const ShiftEngine::VertexSemantic * semantic,
+                                            const MathLib::AABB & bbox) override;
         IMeshDataPtr LoadErrorMesh() override;
     private:
         bool                    Load(const std::wstring &filename, D3D11MeshData * mesh);

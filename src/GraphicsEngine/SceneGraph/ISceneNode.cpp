@@ -6,11 +6,6 @@
 #include <algorithm>
 
 ShiftEngine::ISceneNode::ISceneNode()
-    : Scale(1.0f, 1.0f, 1.0f)
-    , Rotation(MathLib::quaternionFromVecAngle(MathLib::Vector3F(0.0f, 0.0f, 1.0f), 0.0f))
-    , Position(0.0f, 0.0f, 0.0f)
-    , parent(nullptr)
-    , pSceneGraph(nullptr)
 {
     CreateWorldMatrix();
 }

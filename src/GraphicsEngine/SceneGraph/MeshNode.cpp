@@ -2,9 +2,8 @@
 
 #include "../ShiftEngine.h"
 
-ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat, const MathLib::AABB & _bbox)
+ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
     : ISceneNode()
-    , bbox(_bbox)
     , isVisible(true)
     , material(*mat)
     , Data(_data)
@@ -64,6 +63,10 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::Vector4F points[8];
+    MathLib::AABB bbox = {};
+    if (Data)
+        bbox = Data->GetBBox();
+
     points[0] = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
     points[1] = { bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
     points[2] = { bbox.bMin.x, bbox.bMax.y, bbox.bMin.z, 1.0f };
@@ -103,9 +106,4 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
 
     MathLib::AABB newBbox({ min.x, min.y, min.z }, { max.x, max.y, max.z });
     return newBbox;
-}
-
-void ShiftEngine::MeshNode::SetBBox(const MathLib::AABB &bbox)
-{
-    this->bbox = bbox;
 }

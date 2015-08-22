@@ -56,17 +56,16 @@ namespace ShiftEngine
 
         void CreateWorldMatrix();
 
-        SceneGraph * pSceneGraph;
+        SceneGraph * pSceneGraph = nullptr;;
 
     private:
-        MathLib::Vector3F Position;
-        MathLib::Vector3F Scale;
-        MathLib::qaFloat Rotation;
+        MathLib::Vector3F Position = { 0.0f, 0.0f, 0.0f };
+        MathLib::Vector3F Scale = { 1.0f, 1.0f, 1.0f };
+        MathLib::qaFloat Rotation = MathLib::quaternionFromVecAngle(MathLib::Vector3F(0.0f, 0.0f, 1.0f), 0.0f);
 
         MathLib::mat4f worldMatrix;
 
-        ISceneNode * parent;
+        ISceneNode * parent = nullptr;
         ChildsList children;    //semi-automatic shared ptrs
-
     };
 }

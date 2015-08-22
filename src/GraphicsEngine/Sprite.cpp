@@ -110,8 +110,8 @@ void ShiftEngine::Sprite::CreateBuffers(const Vector2F & LT, const Vector2F & RB
         (uint8_t*)ver.data(),
         ver.size() * sizeof(PlainSpriteVertex),
         ind,
-        &ShiftEngine::plainSpriteVertexSemantic
-        );
+        &ShiftEngine::plainSpriteVertexSemantic,
+        {});
 }
 
 void ShiftEngine::Sprite::SetSizeInPixels(int x, int y)

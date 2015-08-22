@@ -36,10 +36,11 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadMesh(const std::wst
     }
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesData, 
-                                                                                size_t verticesDataSize, 
-                                                                                const std::vector<uint32_t> & indicesData, 
-                                                                                const ShiftEngine::VertexSemantic * semantic)
+ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesData,
+                                                                                size_t verticesDataSize,
+                                                                                const std::vector<uint32_t> & indicesData,
+                                                                                const ShiftEngine::VertexSemantic * semantic,
+                                                                                const MathLib::AABB & bbox)
 {
     if (!semantic)
         return LoadErrorMesh();
@@ -48,7 +49,7 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(
     ID3D11DeviceContext *pImmediate = nullptr;
     pDevice->GetImmediateContext(&pImmediate);
     D3D11MeshDataPtr out = std::make_shared<D3D11MeshData>(nullptr, nullptr, pDevice, pImmediate);
-    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd))
+    if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd, bbox))
     {
         LOG_ERROR("Unable to create mesh from vertices");
         return nullptr;
@@ -69,6 +70,9 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     std::vector<uint32_t> indices;
 
     if (!ShiftEngine::Utilities::getVerticesFromFile(filename, vertices, indices))
+        return false;
+
+    if (vertices.position.empty())
         return false;
 
     UpdateVertices(vertices, indices);
@@ -110,7 +114,22 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     if (!declaration)
         declaration = GetContextManager()->GetVertexDeclaration(*sem);
 
-    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size() * sizeof(uint32_t), sem, declaration))
+    MathLib::AABB calculatedBBox;
+    calculatedBBox.bMin = vertices.position[0];
+    calculatedBBox.bMax = vertices.position[0];
+
+    for (const MathLib::Vector3F & pos : vertices.position)
+    {
+        if (pos.x < calculatedBBox.bMin.x) calculatedBBox.bMin.x = pos.x;
+        if (pos.y < calculatedBBox.bMin.y) calculatedBBox.bMin.y = pos.y;
+        if (pos.z < calculatedBBox.bMin.z) calculatedBBox.bMin.z = pos.z;
+
+        if (pos.x > calculatedBBox.bMax.x) calculatedBBox.bMax.x = pos.x;
+        if (pos.y > calculatedBBox.bMax.y) calculatedBBox.bMax.y = pos.y;
+        if (pos.z > calculatedBBox.bMax.z) calculatedBBox.bMax.z = pos.z;
+    }
+
+    if (!mesh->CreateBuffers(true, vertexData.data(), vertexData.size(), indices.data(), indices.size() * sizeof(uint32_t), sem, declaration, calculatedBBox))
         return false;
 
     return true;

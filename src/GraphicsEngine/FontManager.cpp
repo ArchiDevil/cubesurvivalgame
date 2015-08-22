@@ -185,7 +185,7 @@ void ShiftEngine::FontManager::DrawBatchedText()
 
         auto* pCtxMgr = GetContextManager();
 
-        batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)v.data(), v.size() * sizeof(TextPoint), i, &plainSpriteVertexSemantic);
+        batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)v.data(), v.size() * sizeof(TextPoint), i, &plainSpriteVertexSemantic, {});
 
         auto cbs = pCtxMgr->GetBlendingState();
         pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);

@@ -19,7 +19,7 @@ ShiftEngine::MeshNode * CreateMeshNode(const std::string & meshName, const std::
     ShiftEngine::MeshNode * meshNode = nullptr;
     if (wmeshName == L"cube")
     {
-        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f }), mtl.get());
+        meshNode = ShiftEngine::GetSceneGraph()->AddMeshNode(ShiftEngine::Utilities::createCube(), mtl.get());
     }
     else
     {
