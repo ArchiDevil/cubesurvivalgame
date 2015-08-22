@@ -20,6 +20,8 @@ float r = 20.0f;
 size_t mousePath = 0;
 //END OF TEMPORARY
 
+using namespace MathLib;
+
 GameState::GameState(IniWorker * iw, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform)
     : iniLoader(iw)
     , console()
@@ -71,11 +73,12 @@ bool GameState::initState()
 
     ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode();
     pCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
-    pCamera->RotateByQuaternion(MathLib::quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
+    pCamera->RotateByQuaternion(quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
     pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
 
     pGame->entityMgr->CreateItemEntity(Vector3F(-7.0f, 0.0f, 120.0f), Vector3F(), pGame->itemMgr->GetItemId("smooth_stone"), 10);
+    pGame->entityMgr->CreateItemEntity(Vector3F(-5.0f, 0.0f, 120.0f), Vector3F(), pGame->itemMgr->GetItemId("fishing_rod"), 1);
 
     LOG_INFO("End of game state initializing");
 
@@ -178,7 +181,15 @@ void GameState::ProcessInput(double dt)
     auto mouseInfo = inputEngine.GetMouseInfo();
 
     for (int i = DIK_1; i < DIK_0 + 1; ++i)
-        pGame->gameHud->SelectSlot(i - DIK_1);
+    {
+        if (inputEngine.IsKeyUp(i))
+        {
+            unsigned slot = i - DIK_1;
+            pGame->gameHud->SelectSlot(slot);
+            pGame->player->GetInventoryPtr()->SetItemIntoRightHand(slot);
+            break;
+        }
+    }
 
     if (inputEngine.IsKeyUp(DIK_C))
         pGame->gameHud->SwitchCraftingWindow();
@@ -227,15 +238,13 @@ void GameState::ProcessInput(double dt)
     }
 
     if (inputEngine.IsMouseUp(RButton))
-    {
         playerAction({ mouseInfo.clientX, mouseInfo.clientY });
-    }
 
     if (inputEngine.IsMouseDown(RButton))
         mousePath += abs(mouseInfo.deltaX) + abs(mouseInfo.deltaY);
 
     r -= (float)mouseInfo.deltaZ * (float)dt;
-    r = MathLib::clamp(r, minR, maxR);
+    r = clamp(r, minR, maxR);
 }
 
 bool GameState::handleEvent(const InputEvent & event)
@@ -275,7 +284,7 @@ void GameState::switchWireframe()
 #endif
 }
 
-Ray GameState::getUnprojectedRay(const Vector2I & clientMouseCoords) const
+MathLib::Ray GameState::getUnprojectedRay(const MathLib::Vector2I & clientMouseCoords) const
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
@@ -286,14 +295,14 @@ Ray GameState::getUnprojectedRay(const Vector2I & clientMouseCoords) const
     // do the raycasting
     mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
     mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-    Vector3F resultNear = MathLib::getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
-    Vector3F resultFar = MathLib::getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
-    Ray unprojectedRay = Ray(resultNear, MathLib::normalize(resultFar - resultNear));
+    Vector3F resultNear = getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
+    Vector3F resultFar = getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
+    Ray unprojectedRay = Ray(resultNear, normalize(resultFar - resultNear));
 
     return unprojectedRay;
 }
 
-void GameState::playerAction(const Vector2I & clientMouseCoords)
+void GameState::playerAction(const MathLib::Vector2I & clientMouseCoords)
 {
     Game * pGame = LostIsland::GetGamePtr();
 
@@ -332,9 +341,9 @@ void GameState::playerAction(const Vector2I & clientMouseCoords)
         if (u.count)
         {
             Item * item = pGame->itemMgr->GetItemById(u.itemId);
-            if (item && item->CanBeUsedOnBlock(pGame->world->GetDataStorage()->GetBlockType((int)selectedColumn.x, (int)selectedColumn.y, (int)selectedColumn.z)))
+            if (item && item->CanBeUsedOnBlock(pGame->world->GetDataStorage()->GetBlockType((int)selectedColumn.x, (int)selectedColumn.y, (int)selectedColumn.z - 1)))
             {
-                pGame->player->InteractWithBlock(selectedColumn, item->GetInteractionWithBlock());
+                pGame->player->InteractWithBlock({ selectedColumn.x, selectedColumn.y }, item->GetInteractionWithBlock());
             }
             else
             {
@@ -346,7 +355,6 @@ void GameState::playerAction(const Vector2I & clientMouseCoords)
         {
             pGame->player->CancelCurrentCommand();
             pGame->player->Go({ selectedColumn.x, selectedColumn.y });
-
         }
     }
 }

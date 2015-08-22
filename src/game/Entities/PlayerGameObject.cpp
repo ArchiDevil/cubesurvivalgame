@@ -13,9 +13,14 @@ PlayerGameObject::PlayerGameObject(ShiftEngine::MeshNode * sceneNode, ItemManage
     , targetMarker(nullptr)
     , Inventory(pItemMgr, 10)
 {
+    AddTransition(EntityState::ToolUsing, EntityState::Waiting);
+    AddTransition(EntityState::Waiting, EntityState::ToolUsing);
+    AddTransition(EntityState::Moving, EntityState::ToolUsing);
+    AddTransition(EntityState::Rotating, EntityState::ToolUsing);
+
     auto * pScene = ShiftEngine::GetSceneGraph();
     auto material = ShiftEngine::GetContextManager()->LoadMaterial(L"player.mtl", L"playerTargetMarker");
-    targetMarker = pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB(Vector3F(-0.5f, -0.5f, 0.0f), Vector3F(0.5f, 0.5f, 1.0f)), material.get());
+    targetMarker = pScene->AddMeshNode(ShiftEngine::Utilities::createCube(), MathLib::AABB({ -0.5f, -0.5f, 0.0f }, { 0.5f, 0.5f, 1.0f }), material.get());
     targetMarker->SetVisibility(false);
     targetMarker->SetScale(0.3f);
 
@@ -163,7 +168,7 @@ void PlayerGameObject::SetMaxHunger(unsigned int val)
     maxHunger = val;
 }
 
-void PlayerGameObject::Fishing(const Vector3F & targetBlock) const
+void PlayerGameObject::Fishing(const MathLib::Vector3F & targetBlock) const
 {
     // player goes to the some point near water and fish here
 }

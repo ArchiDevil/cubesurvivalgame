@@ -7,10 +7,6 @@
 //STL INCLUDES
 #include <vector>
 
-using MathLib::Vector2F;
-using MathLib::Vector3F;
-using MathLib::qaFloat;
-
 namespace ShiftEngine
 {
     class SceneGraph;
@@ -36,16 +32,16 @@ namespace ShiftEngine
         void SetParent(ISceneNode * _parent);
         void RemoveParent();
 
-        Vector3F GetPosition() const;
-        void SetPosition(const Vector3F & val);
+        MathLib::Vector3F GetPosition() const;
+        void SetPosition(const MathLib::Vector3F & val);
 
-        Vector3F GetScale() const;
-        void SetScale(const Vector3F & val);
+        MathLib::Vector3F GetScale() const;
+        void SetScale(const MathLib::Vector3F & val);
         void SetScale(float val);
 
-        qaFloat GetRotation() const;
-        void SetRotation(const qaFloat & val);
-        void RotateBy(const qaFloat & val);
+        MathLib::qaFloat GetRotation() const;
+        void SetRotation(const MathLib::qaFloat & val);
+        void RotateBy(const MathLib::qaFloat & val);
 
         SceneGraph * GetSceneGraph() const;
         void SetSceneGraph(SceneGraph * val);
@@ -63,9 +59,9 @@ namespace ShiftEngine
         SceneGraph * pSceneGraph;
 
     private:
-        Vector3F Position;
-        Vector3F Scale;
-        qaFloat Rotation;
+        MathLib::Vector3F Position;
+        MathLib::Vector3F Scale;
+        MathLib::qaFloat Rotation;
 
         MathLib::mat4f worldMatrix;
 

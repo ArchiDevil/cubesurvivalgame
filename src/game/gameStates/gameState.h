@@ -18,9 +18,6 @@
 #include <Utilities/IManager.h>
 #include <Utilities/observer.h>
 
-using MathLib::Vector3D;
-using MathLib::Vector2D;
-
 class GameState final
     : public IAppState
     , public IManager
@@ -45,8 +42,8 @@ private:
     void ProcessInput(double dt);
 
     void switchWireframe();
-    Ray getUnprojectedRay(const Vector2I & clientMouseCoords) const;
-    void playerAction(const Vector2I & clientMouseCoords);
+    MathLib::Ray getUnprojectedRay(const MathLib::Vector2I & clientMouseCoords) const;
+    void playerAction(const MathLib::Vector2I & clientMouseCoords);
 
     IniWorker *                     iniLoader = nullptr;
 

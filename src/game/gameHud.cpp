@@ -26,15 +26,12 @@ void GameHUD::Draw()
     int screenWidth = settings.screenWidth;
     int screenHeight = settings.screenHeight;
 
-    auto pGame = LostIsland::GetGamePtr();
-    auto pPlayer = pGame->player;
-    SlotUnit handItem = pPlayer->GetInventoryPtr()->GetItemInRightHand();
-
     itemPanel->Draw();
     selectedBorder->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + selectedSlot*48.0f, screenHeight - 30.0f });
     selectedBorder->Draw();
 
-    const std::vector<SlotUnit> &items = pPlayer->GetInventoryPtr()->GetItems();
+    auto pPlayerInventory = LostIsland::GetGamePtr()->player->GetInventoryPtr();
+    const std::vector<SlotUnit> &items = pPlayerInventory->GetItems();
     for (size_t i = 0; i < itemsSprites.size(); ++i)
     {
         itemsSprites[i]->Draw();
@@ -76,8 +73,6 @@ void GameHUD::OnUserInventoryChange()
 void GameHUD::SelectSlot(uint32_t slot)
 {
     selectedSlot = slot;
-    auto pGame = LostIsland::GetGamePtr();
-    pGame->player->GetInventoryPtr()->RemoveItemFromRightHand();
 }
 
 uint32_t GameHUD::GetSelectedSlot() const

@@ -117,6 +117,7 @@ const SlotUnit & GameObjectInventory::FindSlotWithItem(item_id_t itemId) const
 
 PlayerInventory::PlayerInventory(ItemManager * pItemMgr, size_t inventorySize)
     : GameObjectInventory(pItemMgr, inventorySize)
+    , rightHand(0, 0)
 {
 }
 
@@ -132,6 +133,12 @@ bool PlayerInventory::AddItem(item_id_t itemId, size_t count)
         rightHand = { itemId, count };
 
     return GameObjectInventory::AddItem(itemId, count);
+}
+
+void PlayerInventory::SetItemIntoRightHand(unsigned slot)
+{
+    SlotUnit u = GameObjectInventory::GetItemInSlot(slot);
+    rightHand = u;
 }
 
 SlotUnit PlayerInventory::GetItemInRightHand() const

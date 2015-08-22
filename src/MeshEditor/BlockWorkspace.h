@@ -27,7 +27,7 @@ namespace MeshEditor
         void ApplyBrushBlock(const Brush &b, bool remove);
         void AddBlock(size_t x, size_t y, size_t z);
         void RemoveBlock(size_t x, size_t y, size_t z);
-        void SetBlockColor(size_t x, size_t y, size_t z, const Vector3F & color);
+        void SetBlockColor(size_t x, size_t y, size_t z, const MathLib::Vector3F & color);
 
         Block GetBlock(size_t x, size_t y, int z) const;
         void Undo();
@@ -42,7 +42,7 @@ namespace MeshEditor
         void VanishColor(bool flag);
         void Resize(int Xup, int Yup, int Zup, int Xdown, int Ydown, int Zdown);
 
-        Vector3F GetHalfSize() const;
+        MathLib::Vector3F GetHalfSize() const;
         int GetMaxSize() const;
 
     private:

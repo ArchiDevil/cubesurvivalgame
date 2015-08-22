@@ -16,7 +16,8 @@ enum class EntityState
     Dying,
     Decay,
     Collecting,
-    Attacking
+    Attacking,
+    ToolUsing,
 };
 
 class IEntityState
@@ -37,16 +38,16 @@ class WaitingState : public IEntityState
 {
 public:
     WaitingState();
-    virtual void Update(LiveGameObject * entity, double dt) override;
-    virtual EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
 };
 
 class RotatingState : public IEntityState
 {
 public:
     RotatingState(const MathLib::Vector2F & targetPosition);
-    virtual void Update(LiveGameObject * entity, double dt) override;
-    virtual EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
 
 private:
     const MathLib::Vector2F targetPosition = {};
@@ -57,8 +58,8 @@ class MovingState : public IEntityState
 {
 public:
     MovingState(const MathLib::Vector2F & targetPosition);
-    virtual void Update(LiveGameObject * entity, double dt) override;
-    virtual EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
 
 private:
     MathLib::Vector2F targetPosition = {};
@@ -69,8 +70,8 @@ class DyingState : public IEntityState
 {
 public:
     DyingState(double dyingTime);
-    virtual void Update(LiveGameObject * entity, double dt) override;
-    virtual EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
 
 private:
     double accumulatedTime = 0.0;
@@ -81,8 +82,8 @@ class DecayState : public IEntityState
 {
 public:
     DecayState(float decayTime);
-    virtual void Update(LiveGameObject * entity, double dt) override;
-    virtual EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
 
 private:
     float elapsedTime = 0.0f;
@@ -92,8 +93,8 @@ class CollectingState : public IEntityState
 {
 public:
     CollectingState(double collectingTime);
-    virtual EntityState GetType() const override;
-    virtual void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
 
 private:
     const double collectingTime;
@@ -105,12 +106,24 @@ class AttackingState : public IEntityState
 {
 public:
     AttackingState(LiveGameObject * target, double cycleTime);
-    virtual EntityState GetType() const override;
-    virtual void Update(LiveGameObject * entity, double dt) override;
+    EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
 
 private:
-    LiveGameObject * target;
+    LiveGameObject * target = nullptr;
     const double cycleTime;
     double accumulatedTime = 0.0;
 
+};
+
+class ToolUsingState : public IEntityState
+{
+public:
+    ToolUsingState(double totalTime);
+    EntityState GetType() const override;
+    void Update(LiveGameObject * entity, double dt) override;
+
+private:
+    const double totalTime;
+    double accumulatedTime = 0.0;
 };

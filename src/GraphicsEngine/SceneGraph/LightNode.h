@@ -14,7 +14,7 @@ namespace ShiftEngine
     class LightNode : public ISceneNode
     {
     public:
-        LightNode(LightNodeType type, const MathLib::Vector3F & color = Vector3F(1.0f, 1.0f, 1.0f));
+        LightNode(LightNodeType type, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
         ~LightNode();
 
         virtual void PushToRQ(RenderQueue & rq) override;

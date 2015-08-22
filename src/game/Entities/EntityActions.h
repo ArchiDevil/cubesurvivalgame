@@ -62,13 +62,12 @@ class MoveAction final : public IEntityAction
 public:
     MoveAction(const MathLib::Vector2F & targetPosition);
 
-protected:
-    virtual void onStart(ControllableGameObject * gameObject) override;
-    virtual void onEnd(ControllableGameObject * gameObject) override;
-    virtual void onCancel(ControllableGameObject * gameObject) override;
-    virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
-
 private:
+    void onStart(ControllableGameObject * gameObject) override;
+    void onEnd(ControllableGameObject * gameObject) override;
+    void onCancel(ControllableGameObject * gameObject) override;
+    void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
+
     MathLib::Vector2F targetPosition = {};
     bool rotated = false;
 
@@ -79,13 +78,12 @@ class CollectingAction final : public IEntityAction
 public:
     CollectingAction(double collecting_time, CollectableGameObject * collectable, float maximumDistance);
 
-protected:
-    virtual void onStart(ControllableGameObject * gameObject) override;
-    virtual void onEnd(ControllableGameObject * gameObject) override;
-    virtual void onCancel(ControllableGameObject * gameObject) override;
-    virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
-
 private:
+    void onStart(ControllableGameObject * gameObject) override;
+    void onEnd(ControllableGameObject * gameObject) override;
+    void onCancel(ControllableGameObject * gameObject) override;
+    void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
+
     float maximum_distance = 0.0f; // distance to collect
     CollectableGameObject * collectable = nullptr;
     double collecting_time = 0.0;
@@ -95,15 +93,30 @@ private:
 class AttackAction final : public IEntityAction
 {
 public:
-    AttackAction(LiveGameObject * object, float maximum_distance);
+    AttackAction(LiveGameObject * object, float maximumDistance);
 
-protected:
-    virtual void onStart(ControllableGameObject * gameObject) override;
-    virtual void onEnd(ControllableGameObject * gameObject) override;
-    virtual void onCancel(ControllableGameObject * gameObject) override;
-    virtual void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
+private:
+    void onStart(ControllableGameObject * gameObject) override;
+    void onEnd(ControllableGameObject * gameObject) override;
+    void onCancel(ControllableGameObject * gameObject) override;
+    void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
 
     LiveGameObject * target = nullptr;
     float maximum_distance = 0.0f;
 
+};
+
+class FishingAction final : public IEntityAction
+{
+public:
+    FishingAction(double fishingTime, float maximumDistance);
+
+private:
+    void onStart(ControllableGameObject * gameObject) override;
+    void onEnd(ControllableGameObject * gameObject) override;
+    void onCancel(ControllableGameObject * gameObject) override;
+    void onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState) override;
+
+    double fishing_time = 0.0;
+    float maximum_distance = 0.0f;
 };

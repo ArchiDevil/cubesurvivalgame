@@ -4,14 +4,11 @@
 
 #include <memory>
 
-using MathLib::Vector3F;
-using MathLib::AABB;
-
 struct PhysObject
 {
-    PhysObject(Vector3F _pos = Vector3F(),
-               Vector3F _vel = Vector3F(),
-               AABB bbox = AABB())
+    PhysObject(MathLib::Vector3F _pos = MathLib::Vector3F(),
+               MathLib::Vector3F _vel = MathLib::Vector3F(),
+               MathLib::AABB bbox = MathLib::AABB())
                : Position(_pos)
                , Velocities(_vel)
                , bbox(bbox)
@@ -19,9 +16,9 @@ struct PhysObject
     {
     }
 
-    Vector3F Position;
-    Vector3F Velocities;
-    AABB bbox;
+    MathLib::Vector3F Position;
+    MathLib::Vector3F Velocities;
+    MathLib::AABB bbox;
     bool toDelete;
 };
 

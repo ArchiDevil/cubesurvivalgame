@@ -3,12 +3,10 @@
 #include <SimplePhysicsEngine/types.h>
 #include "GameObject.h"
 
-using ShiftEngine::MeshNode;
-
 class PhysicsGameObject : public GameObject
 {
 public:
-    PhysicsGameObject(PhysObjectPtr physicsObject, MeshNode * meshNode);
+    PhysicsGameObject(PhysObjectPtr physicsObject, ShiftEngine::MeshNode * meshNode);
     virtual ~PhysicsGameObject();
 
     virtual void Update(double dt);

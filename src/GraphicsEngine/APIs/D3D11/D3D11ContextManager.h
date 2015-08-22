@@ -20,10 +20,6 @@
 #include "../../Material.h"
 #include "../../FontManager.h"
 
-using MathLib::Vector2F;
-using MathLib::vec3;
-using MathLib::vec4;
-
 namespace ShiftEngine
 {
     class D3D11ContextManager : public IContextManager

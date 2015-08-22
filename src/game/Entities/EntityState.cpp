@@ -44,11 +44,11 @@ void RotatingState::Update(LiveGameObject * entity, double dt)
     if (!pSceneNode)
         return;
     rotatingTime += dt / 4.0;
-    Vector3F thisPos = pSceneNode->GetPosition();
+    MathLib::Vector3F thisPos = pSceneNode->GetPosition();
     thisPos.z = 0.0f;
-    Vector3F target = Vector3F(targetPosition.x, targetPosition.y, 0.0);
-    Vector3F faceStart = Vector3F(-1.0f, 0.0f, 0.0f) * pSceneNode->GetRotation();
-    Vector3F faceEnd = thisPos - target;
+    MathLib::Vector3F target = MathLib::Vector3F(targetPosition.x, targetPosition.y, 0.0);
+    MathLib::Vector3F faceStart = MathLib::Vector3F(-1.0f, 0.0f, 0.0f) * pSceneNode->GetRotation();
+    MathLib::Vector3F faceEnd = thisPos - target;
     auto rotation = MathLib::shortest_arc(faceStart, faceEnd);
     if (MathLib::angle(faceStart, faceEnd) <= 0.1f)
     {
@@ -79,9 +79,9 @@ void MovingState::Update(LiveGameObject * entity, double dt)
     auto * pSceneNode = entity->GetSceneNode();
     if (!pSceneNode)
         return;
-    Vector3F currentPos = pSceneNode->GetPosition();
+    MathLib::Vector3F currentPos = pSceneNode->GetPosition();
     currentPos.z = 0.0f;
-    Vector3F targetPos = Vector3F(targetPosition.x, targetPosition.y, 0.0f);
+    MathLib::Vector3F targetPos = MathLib::Vector3F(targetPosition.x, targetPosition.y, 0.0f);
     if (MathLib::distance(currentPos, targetPos) <= 0.1f)
     {
         pSceneNode->SetPosition(targetPos);
@@ -196,5 +196,27 @@ void AttackingState::Update(LiveGameObject * entity, double dt)
         accumulatedTime -= cycleTime;
         entity->Attack(target);
         entity->DispatchState(std::make_unique<WaitingState>());
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+ToolUsingState::ToolUsingState(double totalTime)
+    : totalTime(totalTime)
+{
+}
+
+EntityState ToolUsingState::GetType() const
+{
+    return EntityState::ToolUsing;
+}
+
+void ToolUsingState::Update(LiveGameObject * entity, double dt)
+{
+    accumulatedTime += dt;
+    if (accumulatedTime >= totalTime)
+    {
+        entity->DispatchState(std::make_unique<WaitingState>());
+        // switch to waiting or previous
     }
 }

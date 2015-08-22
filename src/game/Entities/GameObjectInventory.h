@@ -51,6 +51,8 @@ public:
     PlayerInventory(ItemManager * pItemMgr, size_t inventorySize);
     virtual bool AddItem(item_id_t itemId, size_t count) override;
 
+    void SetItemIntoRightHand(unsigned slot);
+
     //SlotUnit GetItemInLeftHand() const;
     SlotUnit GetItemInRightHand() const;
 

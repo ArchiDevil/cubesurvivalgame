@@ -10,10 +10,6 @@
 #include "MaterialInfo.h"
 #include "MiscTypes.h"
 
-using MathLib::vec2;
-using MathLib::vec3;
-using MathLib::vec4;
-
 namespace ShiftEngine
 {
     class Renderer;
@@ -21,9 +17,9 @@ namespace ShiftEngine
     //just move LightNode?
     struct LightInfo
     {
-        Vector3F Color = {};
-        Vector3F Position = {};
-        Vector3F Direction = {};
+        MathLib::Vector3F Color = {};
+        MathLib::Vector3F Position = {};
+        MathLib::Vector3F Direction = {};
         LightNodeType Type = LNT_Point;
         float Radius = 1.0f;
     };
@@ -65,9 +61,9 @@ namespace ShiftEngine
         Material(IProgramPtr _program, MaterialInfo & mtlParams);
 
         void SetNamedParam(const std::string & parameter, const float param);
-        void SetNamedParam(const std::string & parameter, const vec2<float> & param);
-        void SetNamedParam(const std::string & parameter, const vec3<float> & param);
-        void SetNamedParam(const std::string & parameter, const vec4<float> & param);
+        void SetNamedParam(const std::string & parameter, const MathLib::vec2<float> & param);
+        void SetNamedParam(const std::string & parameter, const MathLib::vec3<float> & param);
+        void SetNamedParam(const std::string & parameter, const MathLib::vec4<float> & param);
 
         void SetZState(bool zState);
 
@@ -99,9 +95,9 @@ namespace ShiftEngine
         IProgramPtr                                     program = nullptr;
 
         std::map<std::string, float>                    floatParams;
-        std::map<std::string, vec2<float>>              float2Params;
-        std::map<std::string, vec3<float>>              float3Params;
-        std::map<std::string, vec4<float>>              float4Params;
+        std::map<std::string, MathLib::vec2<float>>     float2Params;
+        std::map<std::string, MathLib::vec3<float>>     float3Params;
+        std::map<std::string, MathLib::vec4<float>>     float4Params;
 
         bool                                            ZState = true;
         std::vector<engineUniforms>                     knownUniforms;

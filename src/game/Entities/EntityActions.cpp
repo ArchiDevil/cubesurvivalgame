@@ -115,7 +115,8 @@ void CollectingAction::onStart(ControllableGameObject * gameObject)
 
 void CollectingAction::onEnd(ControllableGameObject * /*gameObject*/)
 {
-    LostIsland::GetGamePtr()->gameEventHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(collectable->GetItemId(), collectable->GetCount()));
+    GameEventHandler * pHandler = LostIsland::GetGamePtr()->gameEventHandler.get();
+    pHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(collectable->GetItemId(), collectable->GetCount()));
     collectable->Delete();
 }
 
@@ -150,9 +151,9 @@ void ActionAggregator::onCancel(ControllableGameObject * /*gameObject*/)
 
 //////////////////////////////////////////////////////////////////////////
 
-AttackAction::AttackAction(LiveGameObject * object, float maximum_distance)
+AttackAction::AttackAction(LiveGameObject * object, float maximumDistance)
     : target(object)
-    , maximum_distance(maximum_distance)
+    , maximum_distance(maximumDistance)
 {
 }
 
@@ -178,4 +179,38 @@ void AttackAction::onStateChange(ControllableGameObject * gameObject, EntityStat
 
     if (target->GetHealth() > 0) // target is dead
         gameObject->DispatchState(std::make_unique<AttackingState>(target, 0.7));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+FishingAction::FishingAction(double fishingTime, float maximumDistance)
+    : fishing_time(fishingTime)
+    , maximum_distance(maximumDistance)
+{
+}
+
+void FishingAction::onStart(ControllableGameObject * gameObject)
+{
+    gameObject->DispatchState(std::make_unique<ToolUsingState>(fishing_time));
+}
+
+void FishingAction::onEnd(ControllableGameObject * gameObject)
+{
+    GameEventHandler * pHandler = LostIsland::GetGamePtr()->gameEventHandler.get();
+    // UNDONE: remove string from here
+    item_id_t fishId = LostIsland::GetGamePtr()->itemMgr->GetItemId("raw_fish");
+    pHandler->DispatchEvent(std::make_unique<PlayerPicksItem>(fishId, 1));
+
+    gameObject->DispatchState(std::make_unique<WaitingState>());
+}
+
+void FishingAction::onCancel(ControllableGameObject * gameObject)
+{
+    gameObject->DispatchState(std::make_unique<WaitingState>());
+}
+
+void FishingAction::onStateChange(ControllableGameObject * gameObject, EntityState oldState, EntityState newState)
+{
+    if (oldState == EntityState::ToolUsing && newState == EntityState::Waiting)
+        End(gameObject);
 }

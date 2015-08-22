@@ -12,12 +12,14 @@ public:
                 const std::string & desc,
                 ShiftEngine::IMeshDataPtr data,
                 ShiftEngine::ITexturePtr ptr,
-                const std::string & imageName)
-                : ToolItem(name, desc, data, ptr, imageName)
+                const std::string & imageName,
+                unsigned fishingQuality)
+        : ToolItem(name, desc, data, ptr, imageName)
+        , fishingQuality(fishingQuality)
     {
     }
 
-    bool UseOnBlock(const Vector3F & blockPosition, BlockTypes blockType) override
+    bool UseOnBlock(const MathLib::Vector3F & blockPosition, BlockTypes blockType) override
     {
         return true;
     }
@@ -27,4 +29,15 @@ public:
         return InteractionType::Fishing;
     }
 
+    unsigned GetFishingQuality() const
+    {
+        return fishingQuality;
+    }
+
+    bool CanBeUsedOnBlock(BlockTypes type) const override
+    {
+        return type == BT_Water;
+    }
+
+    unsigned fishingQuality = 0;
 };

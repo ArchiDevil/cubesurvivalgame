@@ -5,6 +5,8 @@
 #include "../world/blockColumn.h"
 #include "../world/worldStorage.h"
 
+#include <Utilities/logger.hpp>
+
 ControllableGameObject::ControllableGameObject(ShiftEngine::MeshNode * sceneNode)
     : LiveGameObject(sceneNode)
 {
@@ -99,15 +101,16 @@ void ControllableGameObject::OnStateChange(EntityState from, EntityState to)
 
 void ControllableGameObject::InteractWithGameObject(InteractableGameObject * target, InteractionType interaction)
 {
-    float radius = 1.0f; // temporarily hardcoded, but must be varied with different interactions
-    Vector2F targetPosition = Vector2F(target->GetPosition().x, target->GetPosition().y);
-    Vector2F direction = targetPosition - Vector2F(GetPosition().x, GetPosition().y);
+    float radius = 1.0f; // temporarily hardcoded, but could be varied with different interactions
+    MathLib::Vector2F targetPosition = MathLib::Vector2F(target->GetPosition().x, target->GetPosition().y);
+    MathLib::Vector2F direction = targetPosition - MathLib::Vector2F(GetPosition().x, GetPosition().y);
     direction = MathLib::normalize(direction);
     targetPosition -= direction * radius;
+
     switch (interaction)
     {
     case InteractionType::Nothing:
-        break;
+        return;
     case InteractionType::Collecting:
         PushCommand(std::make_unique<MoveAction>(targetPosition));
         PushCommand(std::make_unique<CollectingAction>(3.0, (CollectableGameObject*)target, 3.0f));
@@ -121,26 +124,26 @@ void ControllableGameObject::InteractWithGameObject(InteractableGameObject * tar
     case InteractionType::Fishing:
         break;
     default:
-        assert(false);
-        break;
+        LOG_FATAL_ERROR("Unable to do this action for this interaction type");
     }
 }
 
-void ControllableGameObject::InteractWithBlock(const Vector3F & column, InteractionType interaction)
+void ControllableGameObject::InteractWithBlock(const MathLib::Vector2F & column, InteractionType interaction)
 {
+    float radius = 2.0f; // temporarily hardcoded, but could be varied with different interactions
+    MathLib::Vector2F targetPosition = column;
+    MathLib::Vector2F direction = MathLib::normalize(column - MathLib::Vector2F(GetPosition().x, GetPosition().y));
+    targetPosition -= direction * radius;
+
     switch (interaction)
     {
     case InteractionType::Nothing:
-        break;
-    case InteractionType::Collecting:
-        break;
-    case InteractionType::Attacking:
-        break;
+        return;
     case InteractionType::Fishing:
-        // do some fishing
+        PushCommand(std::make_unique<MoveAction>(targetPosition));
+        PushCommand(std::make_unique<FishingAction>(2.0, radius));
         break;
     default:
-        assert(false);
-        break;
+        LOG_FATAL_ERROR("Unable to do this action for this interaction type");
     }
 }

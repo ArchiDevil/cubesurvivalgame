@@ -7,11 +7,13 @@
 #include "EntityItem.h"
 #include "FishingItem.h"
 
-#include <Utilities/fnv.h>
 #include <json/json.h>
+
 #include <GraphicsEngine/ShiftEngine.h>
+
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
+#include <Utilities/fnv.h>
 
 #include <cassert>
 
@@ -99,6 +101,15 @@ void ItemManager::LoadDefinitions(const std::string & path)
         {
             std::string entityId = root.get("entity", null).asString();
             HashItem[hash] = new EntityItem(name, description, sackMesh, iconTexture, entityId, iconName);
+        }
+        else if (type == "tool")
+        {
+            std::string toolType = root.get("tooltype", null).asString();
+            if (toolType == "fishing")
+            {
+                unsigned fishingQuality = root.get("fishingquality", null).asUInt();
+                HashItem[hash] = new FishingItem(name, description, sackMesh, iconTexture, iconName, fishingQuality);
+            }
         }
         else
         {
