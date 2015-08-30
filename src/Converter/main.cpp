@@ -10,18 +10,29 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3)
+    if (argc != 2 && argc != 3)
     {
         std::cout << "Usage: Converter.exe <input_file> <output_file>" << std::endl;
+        std::cout << "Usage: Converter.exe <input_file>" << std::endl;
         return 1;
     }
 
     std::string open = argv[1];
-    std::string save = argv[2];
+    std::string save = "";
+    auto ext = utils::ExtractExtension(utils::Widen(open));
+
+    if (argc == 2)
+    {
+        save = std::string(open).erase(open.size() - ext.size()) + "lim";
+        std::cout << "Saving to default " << save << std::endl;
+    }
+    else
+    {
+        save = argv[2];
+    }
 
     std::unique_ptr<IConverter> converter = nullptr;
 
-    auto ext = utils::ExtractExtension(utils::Widen(open));
     if (ext == L"x")
     {
         converter.reset(new cXConverter());
