@@ -15,7 +15,6 @@ MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z)
     , plane(nullptr)
     , mesh(nullptr)
     , tesselated(false)
-    , light(nullptr)
 {
     GridTexture = ShiftEngine::GetContextManager()->LoadTexture(L"gridCell.png");
     GeometryMaterial = ShiftEngine::Material(ShiftEngine::GetContextManager()->LoadShader(L"wsShaderGeometry.fx"));
@@ -31,8 +30,9 @@ MeshEditor::BlockWorkspace::BlockWorkspace(size_t x, size_t y, size_t z)
 
 MeshEditor::BlockWorkspace::~BlockWorkspace()
 {
-    if (light)
-        ShiftEngine::GetSceneGraph()->RemoveDirectionalLightNode(light);
+    for(auto & light : lights)
+        if (light)
+            ShiftEngine::GetSceneGraph()->RemoveDirectionalLightNode(light);
     if (mesh)
         mesh->KillSelf();
     if (plane)
@@ -46,7 +46,8 @@ void MeshEditor::BlockWorkspace::Initialize()
     Tesselate();
     CreateBBox();
     CreatePlane();
-    light = ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
+    lights[0] = ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, 1.0f, -1.0f));
+    lights[1] = ShiftEngine::GetSceneGraph()->AddDirectionalLightNode(Vector3F(1.0f, -1.0f, -1.0f));
     LOG_INFO("Workspace initialized");
 }
 

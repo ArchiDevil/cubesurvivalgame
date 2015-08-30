@@ -60,7 +60,7 @@ namespace MeshEditor
         ShiftEngine::MeshNode * bbox;
         ShiftEngine::MeshNode * plane;
         ShiftEngine::MeshNode * mesh;
-        ShiftEngine::LightNode * light;
+        ShiftEngine::LightNode * lights[2];
 
         ShiftEngine::Material ColorMaterial;
         ShiftEngine::Material GeometryMaterial;

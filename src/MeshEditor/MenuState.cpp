@@ -198,6 +198,9 @@ void MenuState::RemoveFile(MyGUI::Widget* _sender)
 {
     MyGUI::ListBox * pList = pWindow->findWidget("file_list")->castType<MyGUI::ListBox>();
     size_t selectedFile = pList->getIndexSelected();
+    if (selectedFile == MyGUI::ITEM_NONE)
+        return;
+
     std::wstring fileName = pList->getItemNameAt(selectedFile).asWStr();
     if (!fileName.empty())
     {
