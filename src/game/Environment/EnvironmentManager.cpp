@@ -9,7 +9,7 @@ EnvironmentManager::EnvironmentManager()
     : minimalTemperature(18.0f)
     , maximalTemperature(26.0f)
 {
-    // this is default temperature parameters for first milestone
+    // there are default temperature parameters for first milestone
 }
 
 EnvironmentManager::~EnvironmentManager()
@@ -18,26 +18,26 @@ EnvironmentManager::~EnvironmentManager()
         ShiftEngine::GetSceneGraph()->RemoveDirectionalLightNode(pSun);
 }
 
-void EnvironmentManager::Initialize(const dayTimer & initialTime)
+void EnvironmentManager::Initialize(const DayTimer & initialTime)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     SetTime(initialTime);
-    pSun = pScene->AddDirectionalLightNode({});
+    pSun = pScene->AddDirectionalLightNode({}, {0.9f, 0.9f, 0.8f});
 }
 
-void EnvironmentManager::SetTime(const dayTimer & t)
+void EnvironmentManager::SetTime(const DayTimer & t)
 {
     time = t;
 }
 
-dayTimer EnvironmentManager::GetTime() const
+DayTimer EnvironmentManager::GetTime() const
 {
     return time;
 }
 
 void EnvironmentManager::Update(double deltaTime)
 {
-    time.update(deltaTime);
+    time.Update(deltaTime);
     if (pSun)
         pSun->SetDirection(-GetSunPosition());
 }
@@ -56,13 +56,12 @@ MathLib::Vector3F EnvironmentManager::GetSunPosition() const
     // need to rotate yAngle
 
     const float maxTime = 24 * 60.0f;
-    float currentTime = (float)time.getRawTime() - (maxTime / 2.0f);
+    float currentTime = (float)time.GetRawTime() - (maxTime / 2.0f);
     float yAngle = -currentTime / maxTime * 360.0f;
     return MathLib::GetPointOnSphere({}, 10000.0f, 0.0f, yAngle);
 }
 
 float EnvironmentManager::GetEnvironmentTemperature() const
 {
-    float currentTemp = minimalTemperature + (maximalTemperature - minimalTemperature) * sinf((float)time.getRawTime() / (24.0f * 60.0f) * M_PIF);
-    return currentTemp;
+    return minimalTemperature + (maximalTemperature - minimalTemperature) * sinf((float)time.GetRawTime() / (24.0f * 60.0f) * M_PIF);
 }

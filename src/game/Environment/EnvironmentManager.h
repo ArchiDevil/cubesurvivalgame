@@ -16,15 +16,15 @@ public:
     EnvironmentManager();
     ~EnvironmentManager();
 
-    void Initialize(const dayTimer & initialTime);
+    void Initialize(const DayTimer & initialTime);
     void Update(double deltaTime);
-    void SetTime(const dayTimer & t);
-    dayTimer GetTime() const;
+    void SetTime(const DayTimer & t);
+    DayTimer GetTime() const;
     MathLib::Vector3F GetSunPosition() const;
     float GetEnvironmentTemperature() const;
 
 private:
-    dayTimer time;
+    DayTimer time;
 
     float minimalTemperature; // temperature at the midnight
     float maximalTemperature; // temperature at the midday

@@ -1,18 +1,18 @@
 #pragma once
 
-class dayTimer
+class DayTimer
 {
 public:
-    dayTimer(unsigned int hours = 0, unsigned int minutes = 0)
+    DayTimer(unsigned int hours = 0, unsigned int minutes = 0)
         : m_hours(hours)
         , m_minutes(minutes)
     {
         currentTime = (double)hours * 60.0 + (double)minutes;
     }
 
-    void setTime(int hours, int minutes)
+    void SetTime(int hours, int minutes)
     {
-        if (!valid(hours, minutes))
+        if (!IsValid(hours, minutes))
             return;
 
         m_hours = hours;
@@ -20,17 +20,17 @@ public:
         currentTime = (double)hours * 60.0 + (double)minutes;
     }
 
-    unsigned int getHours() const
+    unsigned int GetHours() const
     {
         return m_hours;
     }
 
-    unsigned int getMinutes() const
+    unsigned int GetMinutes() const
     {
         return m_minutes;
     }
 
-    void update(double deltaTime)
+    void Update(double deltaTime)
     {
         currentTime += deltaTime;
 
@@ -41,13 +41,13 @@ public:
         m_minutes = (int)currentTime % 60;
     }
 
-    double getRawTime() const
+    double GetRawTime() const
     {
         return currentTime;
     }
 
 private:
-    bool valid(int hours, int minutes) const
+    bool IsValid(int hours, int minutes) const
     {
         return hours <= 23 && hours >= 0 && minutes >= 0 && minutes <= 59;
     }

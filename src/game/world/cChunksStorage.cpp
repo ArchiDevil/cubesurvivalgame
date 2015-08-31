@@ -30,7 +30,7 @@ void cChunksStorage::Initialize(int ChunksPerSide, int CenterChunkX, int CenterC
     landSemantics.addSemantic(ET_FLOAT, 3, ES_Normal);
     landSemantics.addSemantic(ET_FLOAT, 1, ES_Color);
     auto landIL = pCtxMgr->GetVertexDeclaration(landSemantics);
-    MaterialPtr worldChunkMtl = pCtxMgr->LoadMaterial(L"worldChunk.mtl", L"worldChunk");
+    MaterialPtr worldChunkMtl = pCtxMgr->LoadMaterial(L"generic.mtl", L"generic");
 
     waterSemantics.addSemantic(ET_FLOAT, 3, ES_Position);
     waterSemantics.addSemantic(ET_FLOAT, 3, ES_Normal);

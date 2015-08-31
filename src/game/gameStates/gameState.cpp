@@ -68,7 +68,7 @@ bool GameState::initState()
 
     pGame->player = pGame->entityMgr->CreatePlayer(Vector3F()).get();
 
-    pGame->environmentMgr->Initialize(dayTimer(11, 00));
+    pGame->environmentMgr->Initialize(DayTimer(11, 00));
     pGame->entityMgr->LoadEntities();
 
     ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode();
@@ -126,8 +126,8 @@ bool GameState::render(double dt)
     const int infoSize = 2;
     std::ostringstream di[infoSize];
     di[0] << "FPS: " << pRenderer->GetFPS();
-    di[1] << "Time of day: " << pGame->environmentMgr->GetTime().getHours() << ":"
-        << pGame->environmentMgr->GetTime().getMinutes();
+    di[1] << "Time of day: " << pGame->environmentMgr->GetTime().GetHours() << ":"
+        << pGame->environmentMgr->GetTime().GetMinutes();
 #endif
 
     ////////////

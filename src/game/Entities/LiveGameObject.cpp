@@ -35,25 +35,23 @@ void LiveGameObject::Update(double dt)
 {
     FiniteStateMachine::GetCurrentState()->Update(this, dt);
 
-    auto pGame = LostIsland::GetGamePtr();
-    auto bbox = sceneNode->GetBBox();
-    int heights[4] = { 0 };
-    int minX = (int)std::floor(bbox.bMin.x);
-    int maxX = (int)std::floor(bbox.bMax.x);
-    int minY = (int)std::floor(bbox.bMin.y);
-    int maxY = (int)std::floor(bbox.bMax.y);
-    heights[0] = pGame->world->GetDataStorage()->GetFullHeight(minX, minY);
-    heights[1] = pGame->world->GetDataStorage()->GetFullHeight(minX, maxY);
-    heights[2] = pGame->world->GetDataStorage()->GetFullHeight(maxX, minY);
-    heights[3] = pGame->world->GetDataStorage()->GetFullHeight(maxX, maxY);
-
-    float maxHeight = (float)heights[0];
-    for (int i = 0; i < 4; ++i)
-        if (maxHeight < heights[i])
-            maxHeight = (float)heights[i];
+    auto pDataStorage = LostIsland::GetGamePtr()->world->GetDataStorage();
 
     auto position = GetPosition();
-    position.z = maxHeight;
+
+    int topX = (int)std::floor(position.x + 0.5f);
+    int topY = (int)std::floor(position.y + 0.5f);
+    int bottomX = (int)std::floor(position.x - 0.5f);
+    int bottomY = (int)std::floor(position.y - 0.5f);
+
+    float k = position.x - bottomX - 0.5f;
+    float v1 = MathLib::LinearInterpolation<float>((float)pDataStorage->GetFullHeight(bottomX, topY), (float)pDataStorage->GetFullHeight(topX, topY), k);
+    float v2 = MathLib::LinearInterpolation<float>((float)pDataStorage->GetFullHeight(bottomX, bottomY), (float)pDataStorage->GetFullHeight(topX, bottomY), k);
+
+    k = position.y - bottomY - 0.5f;
+    float v3 = MathLib::LinearInterpolation(v1, v2, k);
+
+    position.z = v3;
     SetPosition(position);
 }
 

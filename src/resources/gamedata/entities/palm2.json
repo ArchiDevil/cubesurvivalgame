@@ -1,7 +1,7 @@
 {
-  "id": "tree1",
+  "id": "palm1",
   "type": "static",
-  "mesh": "tree1.lim",
+  "mesh": "palm_tree2.lim",
   "material": "generic.mtl",
   "inventory": "tree"
 }

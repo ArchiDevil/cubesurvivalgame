@@ -44,20 +44,38 @@ namespace MathLib
             return -acos(tempVec.x);
     }
 
-    float LinearInterpolation(float a, float b, float k);
-    float CosineInterpolation(float a, float b, float k);
+    template<typename T>
+    inline T LinearInterpolation(T a, T b, T k)
+    {
+        return a + (b - a) * k;
+    }
 
-    Vector3F GetPointOnSphere(Vector3F center, float radius, float xAngle, float yAngle);
+    template<typename T>
+    inline T CosineInterpolation(T a, T b, T k)
+    {
+        T ft = k * (T)M_PI;
+        T f = (1 - std::cos(ft)) * 0.5f;
+        return a*(1 - f) + b*f;
+    }
+
+    template<typename T>
+    inline vec3<T> GetPointOnSphere(vec3<T> center, T radius, T xAngle, T yAngle)
+    {
+        T x = radius * std::sin(yAngle * (T)0.0175) * std::cos(xAngle * (T)0.0175) + center.x;
+        T y = radius * std::sin(yAngle * (T)0.0175) * std::sin(xAngle * (T)0.0175) + center.y;
+        T z = radius * std::cos(yAngle * (T)0.0175) + center.z;
+        return vec3<T>(x, y, z);
+    }
 
     template<typename T>
     T degrad(T degress)
     {
-        return degress * T(M_PI) / T(180.0);
+        return degress * (T)M_PI / (T)180.0;
     }
 
     template<typename T>
     T raddeg(T radians)
     {
-        return radians * T(180.0) / T(M_PI);
+        return radians * (T)180.0 / (T)M_PI;
     }
 }
