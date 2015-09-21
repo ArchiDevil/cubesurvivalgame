@@ -10,6 +10,7 @@ class GameHUD
 {
 public:
     GameHUD(MyGUI::Gui * guiModule);
+    ~GameHUD();
 
     void Draw();
     void Update(double dt);
@@ -25,6 +26,7 @@ private:
     void OnCraftRequest(MyGUI::Widget * _sender);
     void OnSelectRecipe(MyGUI::Widget * _sender, size_t row);
     void OnCloseCraftingWindowClick(MyGUI::Widget * _sender, const std::string & eventName);
+    void OnCloseInventoryWindowClick(MyGUI::Widget * _sender, const std::string & eventName);
 
     void CreateOtherElements();
     void CreateInventoryWindow();
@@ -36,13 +38,7 @@ private:
     std::unique_ptr<ShiftEngine::Sprite>                    selectedBorder = nullptr;
     std::array<std::unique_ptr<ShiftEngine::Sprite>, 10>    itemsSprites; // for now it's just only 10 items in inventory
 
-    std::unique_ptr<ShiftEngine::Sprite>                    progressBarBack = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite>                    healthBar = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite>                    warmthBar = nullptr;
-    std::unique_ptr<ShiftEngine::Sprite>                    hungerBar = nullptr;
-
     MyGUI::Gui *                                            guiModule = nullptr;
-
     MyGUI::Window *                                         craftingWindow = nullptr;
     MyGUI::Window *                                         inventoryWindow = nullptr;
 };

@@ -19,6 +19,10 @@ GameHUD::GameHUD(MyGUI::Gui * guiModule)
     CreateOtherElements();
 }
 
+GameHUD::~GameHUD()
+{
+}
+
 void GameHUD::Draw()
 {
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
@@ -37,8 +41,8 @@ void GameHUD::Draw()
         itemsSprites[i]->Draw();
         if (items[i].count)
         {
-            int xpos = screenWidth / 2 - (int)itemPanel->GetTextureDimensions().x / 2 + 25 + i * 48;
-            int ypos = screenHeight - 40;
+            float xpos = (float)screenWidth / 2.0f - (int)itemPanel->GetTextureDimensions().x / 2 + 25 + i * 48;
+            float ypos = (float)screenHeight - 40.0f;
             pCtxMgr->GetFontManager()->DrawTextTL(std::to_string(items[i].count), xpos, ypos);
         }
     }
@@ -46,6 +50,7 @@ void GameHUD::Draw()
 
 void GameHUD::OnUserInventoryChange()
 {
+
     auto pGame = LostIsland::GetGamePtr();
     auto & pItemMgr = pGame->itemMgr;
 
@@ -59,6 +64,7 @@ void GameHUD::OnUserInventoryChange()
     if (maxi > 10)
         maxi = 10;
 
+    // remove after removing old UI
     for (size_t i = 0; i < maxi; ++i)
     {
         auto item = pItemMgr->GetItemById(items[i].itemId);
@@ -67,6 +73,25 @@ void GameHUD::OnUserInventoryChange()
 
         itemsSprites[i]->SetTexture(item->GetTexturePtr());
         itemsSprites[i]->SetSizeInPixels(44, 44);
+    }
+
+    int widthMargin = 5;
+    for (size_t i = 0; i < items.size(); ++i)
+    {
+        auto item = pItemMgr->GetItemById(items[i].itemId);
+        if (!item || !items[i].count)
+            continue;
+
+        ImageBox * pImage = inventoryWindow->findWidget("slot_" + std::to_string(i))->castType<ImageBox>();
+        pImage->setImageTexture(item->GetImageFile());
+
+        TextBox * pTextBox = pImage->findWidget("count")->castType<TextBox>();
+        pTextBox->setCaption(std::to_string(items[i].count));
+        IntSize textSize = pTextBox->getTextSize();
+        textSize.width += widthMargin;
+        IntSize imageSize = pImage->getSize();
+        pTextBox->setPosition({ imageSize.width - textSize.width, imageSize.height - textSize.height });
+        pTextBox->setSize(textSize);
     }
 }
 
@@ -85,6 +110,7 @@ void GameHUD::SwitchInventoryWindow()
     if (!inventoryWindow)
         return;
 
+    OnUserInventoryChange();
     inventoryWindow->setVisible(!inventoryWindow->getVisible());
 }
 
@@ -201,14 +227,14 @@ void GameHUD::OnSelectRecipe(Widget * _sender, size_t row)
         if (!slot.itemId || slot.count < pair.second)
         {
             ingredientImage->setAlpha(0.5f);
-            ingredientName->setTextColour(Colour(1.0f, 0.0f, 0.0f));
-            ingredientCount->setTextColour(Colour(1.0f, 0.0f, 0.0f));
+            ingredientName->setTextColour({ 1.0f, 0.0f, 0.0f });
+            ingredientCount->setTextColour({ 1.0f, 0.0f, 0.0f });
         }
         else
         {
             ingredientImage->setAlpha(1.0f);
-            ingredientName->setTextColour(Colour(0.0f, 0.0f, 0.0f));
-            ingredientCount->setTextColour(Colour(0.0f, 0.0f, 0.0f));
+            ingredientName->setTextColour({ 0.0f, 0.0f, 0.0f });
+            ingredientCount->setTextColour({ 0.0f, 0.0f, 0.0f });
         }
 
         ingredientImage->setImageTexture(pItem->GetImageFile());
@@ -220,6 +246,11 @@ void GameHUD::OnSelectRecipe(Widget * _sender, size_t row)
 void GameHUD::OnCloseCraftingWindowClick(MyGUI::Widget * _sender, const std::string & eventName)
 {
     craftingWindow->setVisible(false);
+}
+
+void GameHUD::OnCloseInventoryWindowClick(MyGUI::Widget * _sender, const std::string & eventName)
+{
+    inventoryWindow->setVisible(false);
 }
 
 void GameHUD::CreateOtherElements()
@@ -249,7 +280,7 @@ void GameHUD::CreateOtherElements()
     for (int i = 0; i < 3; ++i)
     {
         ProgressBar * bar = guiModule->createWidget<ProgressBar>("ProgressBar",
-                                                                 IntCoord(8, screenHeight - 90 + i * 30, 200, 24),
+                                                                 { 8, screenHeight - 90 + i * 30, 200, 24 },
                                                                  Align::Default,
                                                                  "Overlapped",
                                                                  names[i]);
@@ -262,45 +293,75 @@ void GameHUD::CreateOtherElements()
 
 void GameHUD::CreateInventoryWindow()
 {
-    inventoryWindow = guiModule->createWidget<Window>("WindowCX", IntCoord(300, 300, 600, 330), Align::Default, "Overlapped");
-    inventoryWindow->setMovable(false);
+    const int imageMargin = 10;
+    const int imageSize = 64;
+    const int stride = imageSize + imageMargin;
+    const int rows = 4;
+    const int columns = 4;
+    const int leftPanelWidth = 0; // for now, it has 0 width, cause we render it without params
+
+    IntCoord windowCoords
+    {
+        100,                                                 // x
+        100,                                                 // y
+        leftPanelWidth + columns * stride + imageMargin * 2, // left panel + margin + count of columns + margin
+        rows * stride + 22 + imageMargin * 2                 // margin + count of rows + windows header width (22 pixels) + margin
+    };
+
+    inventoryWindow = guiModule->createWidget<Window>("WindowCX", windowCoords, Align::Default, "Overlapped");
     inventoryWindow->setVisible(false);
+    inventoryWindow->setCaption("Inventory window");
+    inventoryWindow->eventWindowButtonPressed += newDelegate(this, &GameHUD::OnCloseInventoryWindowClick);
+
+    for (int row = 0; row < rows; ++row)
+    {
+        for (int column = 0; column < columns; ++column)
+        {
+            std::string slotName = "slot_" + std::to_string(row * 4 + column);
+            int startX = leftPanelWidth + imageMargin + stride * column;
+            int startY = imageMargin + stride * row;
+
+            ImageBox * pImage = inventoryWindow->createWidget<ImageBox>("ImageBox", { startX, startY, imageSize, imageSize }, Align::Default, slotName);
+            // no coords and no size for creation, they will be updated on inventory change callback
+            TextBox * pTextBox = pImage->createWidget<TextBox>("TextBox", {}, Align::Right | Align::Bottom, "count");
+        }
+    }
 }
 
 void GameHUD::CreateCraftingWindow()
 {
-    craftingWindow = guiModule->createWidget<Window>("WindowCX", IntCoord(300, 300, 600, 330), Align::Default, "Overlapped");
+    craftingWindow = guiModule->createWidget<Window>("WindowCX", { 100, 100, 600, 330 }, Align::Default, "Overlapped");
     craftingWindow->setVisible(false);
     craftingWindow->setCaption("Crafting window");
     craftingWindow->eventWindowButtonPressed += newDelegate(this, &GameHUD::OnCloseCraftingWindowClick);
 
-    ListBox * list = craftingWindow->createWidget<ListBox>("ListBox", IntCoord(2, 2, 196, craftingWindow->getHeight() - 43), Align::Default, "recipes_list");
-    list->eventListChangePosition += newDelegate(this, &GameHUD::OnSelectRecipe);
+    ListBox * recipes_list = craftingWindow->createWidget<ListBox>("ListBox", { 2, 2, 196, craftingWindow->getHeight() - 43 }, Align::Default, "recipes_list");
+    recipes_list->eventListChangePosition += newDelegate(this, &GameHUD::OnSelectRecipe);
 
-    Button * button = craftingWindow->createWidget<Button>("Button", IntCoord(206, craftingWindow->getHeight() - 63, craftingWindow->getWidth() - 15 - 186, 21), Align::Bottom);
-    button->setCaption("CRAFT");
-    button->eventMouseButtonClick += newDelegate(this, &GameHUD::OnCraftRequest);
+    Button * craft_button = craftingWindow->createWidget<Button>("Button", { 206, craftingWindow->getHeight() - 63, craftingWindow->getWidth() - 15 - 186, 21 }, Align::Bottom);
+    craft_button->setCaption("CRAFT");
+    craft_button->eventMouseButtonClick += newDelegate(this, &GameHUD::OnCraftRequest);
 
     OnCraftingProgress();
 
-    IntCoord imageCoords = { list->getLeft() + list->getWidth() + 8, 2, 64, 64 };
+    IntCoord imageCoords{ recipes_list->getLeft() + recipes_list->getWidth() + 8, 2, 64, 64 };
     craftingWindow->createWidget<ImageBox>("ImageBox", imageCoords, Align::Default, "item_image");
 
-    IntCoord imageNameCoords = { 288 + 16, 2, 200, 32 };
+    IntCoord imageNameCoords{ 288 + 16, 2, 200, 32 };
     craftingWindow->createWidget<TextBox>("TextBox", imageNameCoords, Align::Default, "item_name")->setCaption("EMPTY NAME");
 
-    IntCoord imageDescriptionCoords = { 288 + 16, 2 + 20, 200, 32 };
+    IntCoord imageDescriptionCoords{ 288 + 16, 2 + 20, 200, 32 };
     craftingWindow->createWidget<TextBox>("TextBox", imageDescriptionCoords, Align::Default, "item_description")->setCaption("EMPTY DESC");
 
-    int availableWidth = craftingWindow->getWidth() - 4 - list->getWidth() - 8; // 4 for borders and 8 for list margin
+    int availableWidth = craftingWindow->getWidth() - 4 - recipes_list->getWidth() - 8; // 4 for borders and 8 for list margin
     for (int i = 0; i < 2; ++i)
     {
         for (int j = 0; j < 2; ++j)
         {
             std::string name = "ingredient_icon_" + std::to_string(i * 2 + j);
-            IntCoord imageWidgetCoords =
+            IntCoord imageWidgetCoords
             {
-                list->getLeft() + list->getWidth() + 8 + j * availableWidth / 2,
+                recipes_list->getLeft() + recipes_list->getWidth() + 8 + j * availableWidth / 2,
                 72 + i * 70,
                 64,
                 64
@@ -308,7 +369,7 @@ void GameHUD::CreateCraftingWindow()
             craftingWindow->createWidget<ImageBox>("ImageBox", imageWidgetCoords, Align::Default, name);
 
             name = "ingredient_name_" + std::to_string(i * 2 + j);
-            IntCoord nameWidgetCoords =
+            IntCoord nameWidgetCoords
             {
                 imageWidgetCoords.left + imageWidgetCoords.width + 4,
                 imageWidgetCoords.top,
@@ -319,7 +380,7 @@ void GameHUD::CreateCraftingWindow()
             t->setCaption("NAME");
 
             name = "ingredient_count_" + std::to_string(i * 2 + j);
-            IntCoord countWidgetCoords =
+            IntCoord countWidgetCoords
             {
                 imageWidgetCoords.left + imageWidgetCoords.width + 4,
                 imageWidgetCoords.top + 32,

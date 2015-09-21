@@ -64,7 +64,7 @@ bool LostIslandApplication::Initialize()
 #ifdef NDEBUG
     logFile = "";
 #endif // NDEBUG
-    MyGUI::LogManager::getInstance().setSTDOutputEnabled(false);
+    // MyGUI::LogManager::getInstance().setSTDOutputEnabled(false);
 
     guiPlatform->initialise(((ShiftEngine::D3D11ContextManager*)ShiftEngine::GetContextManager())->GetDevicePtr(), logFile);
     guiPlatform->getDataManagerPtr()->addResourceLocation("resources/ui/MyGUI_Media", false);
