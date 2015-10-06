@@ -1,21 +1,6 @@
 file(GLOB SRC *.cpp *.h)
 
-if(${RENDERER} STREQUAL D3D10_RENDER)
-    set(DXSDK_LIBS  d3d10.lib
-                    d3dx10.lib
-                    d3dcompiler.lib
-                    dxguid.lib
-                    dinput8.lib
-                    dxgi.lib)
-                    
-    file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/APIs/D3D10/*.cpp)
-    source_group("Source Files\\D3D10" FILES ${LS})
-    list(APPEND SRC ${LS})
-
-    file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/APIs/D3D10/*.h)
-    source_group("Header Files\\D3D10" FILES ${LS})
-    list(APPEND SRC ${LS})
-elseif(${RENDERER} STREQUAL D3D11_RENDER)
+if(${RENDERER} STREQUAL D3D11_RENDER)
     set(DXSDK_LIBS  d3d11.lib
                     d3dx11.lib
                     d3dcompiler.lib
@@ -49,15 +34,6 @@ source_group("Header Files\\TextLib" FILES ${LS})
 list(APPEND SRC ${LS})
     
 include_directories(../../3rdparty/tinyxml2)
-
-if(${RENDERER} STREQUAL D3D10_RENDER)
-    include_directories($ENV{DXSDK_DIR}/include)
-    if(${EX_PLATFORM} EQUAL 64)
-        link_directories($ENV{DXSDK_DIR}/lib/x64)
-    else()
-        link_directories($ENV{DXSDK_DIR}/lib/x86)
-    endif()
-endif()
 
 add_library(GraphicsEngine STATIC ${SRC})
 
