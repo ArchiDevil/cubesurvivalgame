@@ -11,9 +11,7 @@ endif()
 
 add_definitions(-DNOMINMAX)
 
-if(${RENDERER} STREQUAL D3D10_RENDER)
-    add_definitions(-DD3D10_RENDER)
-elseif(${RENDERER} STREQUAL D3D11_RENDER)
+if(${RENDERER} STREQUAL D3D11_RENDER)
     add_definitions(-DD3D11_RENDER)
 endif()
 
