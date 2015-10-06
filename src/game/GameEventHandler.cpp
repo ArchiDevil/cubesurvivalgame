@@ -101,7 +101,6 @@ void GameEventHandler::Process(PlayerPicksItem* ev)
 {
     auto pGame = LostIsland::GetGamePtr();
     pGame->player->GetInventoryPtr()->AddItem(ev->itemId, ev->count);
-    pGame->player->GetInventoryPtr()->SetItemIntoRightHand(pGame->gameHud->GetSelectedSlot());
 }
 
 void GameEventHandler::Process(PlayerDropsItem* ev)

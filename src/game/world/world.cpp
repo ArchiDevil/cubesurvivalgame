@@ -136,7 +136,7 @@ void cWorld::GenerateChunk(int WorldX, int WorldY)
                 noise = pNoise->SimplexNoise(i, j);
                 if (noise > 1.4)
                 {
-                    pEntityMgr->CreateEntity(position, "tree1");
+                    pEntityMgr->CreateEntity(position, "palm1");
                     for (int x = -1; x < 2; x++)
                     {
                         for (int y = -1; y < 2; y++)

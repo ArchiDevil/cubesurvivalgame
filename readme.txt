@@ -1,4 +1,4 @@
-Islands World (Tech demo D3D11) 0.0.3.229
+Lost Island (Tech demo D3D11) 0.0.3.272
 used:
     Direct3D 11
     DirectInput 8
@@ -6,6 +6,7 @@ used:
     freetype2
     tinyxml2
     jsoncpp
+    DirectXTex
 
 Keys:
 V           - turn on/off wireframe

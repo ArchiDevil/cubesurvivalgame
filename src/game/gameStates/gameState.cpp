@@ -180,17 +180,6 @@ void GameState::ProcessInput(double dt)
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
 
-    for (int i = DIK_1; i < DIK_0 + 1; ++i)
-    {
-        if (inputEngine.IsKeyUp(i))
-        {
-            unsigned slot = i - DIK_1;
-            pGame->gameHud->SelectSlot(slot);
-            pGame->player->GetInventoryPtr()->SetItemIntoRightHand(slot);
-            break;
-        }
-    }
-
     if (inputEngine.IsKeyUp(DIK_C))
         pGame->gameHud->SwitchCraftingWindow();
 

@@ -11,6 +11,18 @@
 using ShiftEngine::Sprite;
 using namespace MyGUI;
 
+static const char slotNamePrefix[] = "slot_";
+
+#if _MSC_VER < 1900
+    #define constexpr
+#endif
+
+template<typename T, size_t N>
+constexpr size_t countof(T(&)[N])
+{
+    return N;
+}
+
 GameHUD::GameHUD(MyGUI::Gui * guiModule)
     : guiModule(guiModule)
 {
@@ -25,27 +37,6 @@ GameHUD::~GameHUD()
 
 void GameHUD::Draw()
 {
-    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
-    auto settings = pCtxMgr->GetEngineSettings();
-    int screenWidth = settings.screenWidth;
-    int screenHeight = settings.screenHeight;
-
-    itemPanel->Draw();
-    selectedBorder->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + selectedSlot*48.0f, screenHeight - 30.0f });
-    selectedBorder->Draw();
-
-    auto pPlayerInventory = LostIsland::GetGamePtr()->player->GetInventoryPtr();
-    const std::vector<SlotUnit> &items = pPlayerInventory->GetItems();
-    for (size_t i = 0; i < itemsSprites.size(); ++i)
-    {
-        itemsSprites[i]->Draw();
-        if (items[i].count)
-        {
-            float xpos = (float)screenWidth / 2.0f - (int)itemPanel->GetTextureDimensions().x / 2 + 25 + i * 48;
-            float ypos = (float)screenHeight - 40.0f;
-            pCtxMgr->GetFontManager()->DrawTextTL(std::to_string(items[i].count), xpos, ypos);
-        }
-    }
 }
 
 void GameHUD::ReloadInventory()
@@ -53,26 +44,7 @@ void GameHUD::ReloadInventory()
     auto pGame = LostIsland::GetGamePtr();
     auto & pItemMgr = pGame->itemMgr;
 
-    for (int i = 0; i < 10; ++i)
-    {
-        itemsSprites[i]->SetTexture(ShiftEngine::ITexturePtr(nullptr));
-    }
-
     const std::vector<SlotUnit> &items = pGame->player->GetInventoryPtr()->GetItems();
-    size_t maxi = items.size();
-    if (maxi > 10)
-        maxi = 10;
-
-    // remove after removing old UI
-    for (size_t i = 0; i < maxi; ++i)
-    {
-        auto item = pItemMgr->GetItemById(items[i].itemId);
-        if (!item)
-            continue;
-
-        itemsSprites[i]->SetTexture(item->GetTexturePtr());
-        itemsSprites[i]->SetSizeInPixels(44, 44);
-    }
 
     int widthMargin = 5;
     for (size_t i = 0; i < items.size(); ++i)
@@ -81,7 +53,7 @@ void GameHUD::ReloadInventory()
         if (!item || !items[i].count)
             continue;
 
-        ImageBox * pImage = inventoryWindow->findWidget("slot_" + std::to_string(i))->castType<ImageBox>();
+        ImageBox * pImage = inventoryWindow->findWidget(slotNamePrefix + std::to_string(i))->castType<ImageBox>();
         pImage->setImageTexture(item->GetImageFile());
 
         TextBox * pTextBox = pImage->findWidget("count")->castType<TextBox>();
@@ -92,16 +64,6 @@ void GameHUD::ReloadInventory()
         pTextBox->setPosition({ imageSize.width - textSize.width, imageSize.height - textSize.height });
         pTextBox->setSize(textSize);
     }
-}
-
-void GameHUD::SelectSlot(uint32_t slot)
-{
-    selectedSlot = slot;
-}
-
-uint32_t GameHUD::GetSelectedSlot() const
-{
-    return selectedSlot;
 }
 
 void GameHUD::SwitchInventoryWindow()
@@ -252,34 +214,44 @@ void GameHUD::OnCloseInventoryWindowClick(MyGUI::Widget * _sender, const std::st
     inventoryWindow->setVisible(false);
 }
 
+void GameHUD::OnInventoryImageClick(MyGUI::Widget * _sender)
+{
+    if (!_sender)
+        return;
+
+    constexpr int size = countof(slotNamePrefix);
+    auto pPlayer = LostIsland::GetGamePtr()->player;
+
+    int slotIndex = 0;
+    std::string name = _sender->getName();
+    if (name.empty())
+        return;
+
+    std::string slotString = name.substr(size - 1);
+    slotIndex = std::stoi(slotString);
+    pPlayer->GetInventoryPtr()->SetItemIntoRightHand(slotIndex);
+
+    item_id_t itemId = pPlayer->GetInventoryPtr()->GetItemInSlot(slotIndex).itemId;
+    Item * pItem = LostIsland::GetGamePtr()->itemMgr->GetItemById(itemId);
+    if (!pItem)
+        return;
+
+    rightHandImage->setImageTexture(pItem->GetImageFile());
+}
+
 void GameHUD::CreateOtherElements()
 {
     auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
     int screenWidth = settings.screenWidth;
     int screenHeight = settings.screenHeight;
 
-    itemPanel.reset(new Sprite(L"gui/itemPanel.png"));
-    float xPos = (float)screenWidth / 2.0f;
-    itemPanel->SetPosition({ xPos, screenHeight - 30.0f });
-
-    selectedBorder.reset(new Sprite(L"gui/selecteditem.png"));
-    selectedBorder->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + selectedSlot*48.0f, screenHeight - 30.0f });
-    selectedBorder->SetSizeInPixels(48, 48);
-
-    for (size_t i = 0; i < itemsSprites.size(); ++i)
-    {
-        auto & sprite = itemsSprites[i];
-        sprite.reset(new Sprite());
-        sprite->SetPosition({ screenWidth / 2 - itemPanel->GetTextureDimensions().x / 2 + 24.0f + i*48.0f, screenHeight - 30.0f });
-    }
-
     const char * names[] = { "health_bar", "warmth_bar", "hunger_bar" };
     const Colour colors[] = { { 1.0f, 0.0f, 0.0f }, { 0.8f, 0.8f, 0.8f }, { 0.8f, 0.8f, 0.0f } };
 
     for (int i = 0; i < 3; ++i)
     {
-        ProgressBar * bar = guiModule->createWidget<ProgressBar>("ProgressBar",
-                                                                 { 8, screenHeight - 90 + i * 30, 200, 24 },
+        ProgressBar * bar = guiModule->createWidget<ProgressBar>("ProgressBarFill",
+        { 8, screenHeight - 90 + i * 30, 200, 24 },
                                                                  Align::Default,
                                                                  "Overlapped",
                                                                  names[i]);
@@ -288,6 +260,20 @@ void GameHUD::CreateOtherElements()
         bar->setProgressPosition(50);
         bar->setColour(colors[i]);
     }
+
+    const int panelSize = 76;
+    const int panelMargin = 5;
+    IntCoord itemCoords
+    {
+        screenWidth - panelSize - panelMargin, 
+        screenHeight - panelSize - panelMargin, 
+        panelSize, 
+        panelSize
+    };
+
+    rightHandPanel = guiModule->createWidget<Widget>("ItemBoxNoScroll", itemCoords, Align::Default, "Overlapped");
+    rightHandImage = rightHandPanel->createWidget<ImageBox>("ImageBox", { 5, 5, 64, 64 }, Align::Default);
+
 }
 
 void GameHUD::CreateInventoryWindow()
@@ -316,11 +302,12 @@ void GameHUD::CreateInventoryWindow()
     {
         for (int column = 0; column < columns; ++column)
         {
-            std::string slotName = "slot_" + std::to_string(row * 4 + column);
+            std::string slotName = slotNamePrefix + std::to_string(row * 4 + column);
             int startX = leftPanelWidth + imageMargin + stride * column;
             int startY = imageMargin + stride * row;
 
             ImageBox * pImage = inventoryWindow->createWidget<ImageBox>("ImageBox", { startX, startY, imageSize, imageSize }, Align::Default, slotName);
+            pImage->eventMouseButtonClick += newDelegate(this, &GameHUD::OnInventoryImageClick);
             // no coords and no size for creation, they will be updated on inventory change callback
             TextBox * pTextBox = pImage->createWidget<TextBox>("TextBox", {}, Align::Right | Align::Bottom, "count");
         }
