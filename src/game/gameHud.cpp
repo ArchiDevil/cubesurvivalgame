@@ -48,9 +48,8 @@ void GameHUD::Draw()
     }
 }
 
-void GameHUD::OnUserInventoryChange()
+void GameHUD::ReloadInventory()
 {
-
     auto pGame = LostIsland::GetGamePtr();
     auto & pItemMgr = pGame->itemMgr;
 
@@ -110,7 +109,7 @@ void GameHUD::SwitchInventoryWindow()
     if (!inventoryWindow)
         return;
 
-    OnUserInventoryChange();
+    ReloadInventory();
     inventoryWindow->setVisible(!inventoryWindow->getVisible());
 }
 
@@ -163,7 +162,7 @@ void GameHUD::OnCraftRequest(Widget * _sender)
     {
         // do something
     }
-    OnUserInventoryChange();
+    ReloadInventory();
 }
 
 void GameHUD::OnSelectRecipe(Widget * _sender, size_t row)

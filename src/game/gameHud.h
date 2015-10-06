@@ -14,7 +14,7 @@ public:
 
     void Draw();
     void Update(double dt);
-    void OnUserInventoryChange();
+    void ReloadInventory();
     void OnCraftingProgress();
     void SelectSlot(uint32_t slot);
     uint32_t GetSelectedSlot() const;
@@ -32,13 +32,13 @@ private:
     void CreateInventoryWindow();
     void CreateCraftingWindow();
 
+    MyGUI::Gui *                                            guiModule = nullptr;
+    MyGUI::Window *                                         craftingWindow = nullptr;
+    MyGUI::Window *                                         inventoryWindow = nullptr;
+
     //TODO: remove all and replace on MyGUI widgets
     uint32_t                                                selectedSlot = 0;
     std::unique_ptr<ShiftEngine::Sprite>                    itemPanel = nullptr;
     std::unique_ptr<ShiftEngine::Sprite>                    selectedBorder = nullptr;
     std::array<std::unique_ptr<ShiftEngine::Sprite>, 10>    itemsSprites; // for now it's just only 10 items in inventory
-
-    MyGUI::Gui *                                            guiModule = nullptr;
-    MyGUI::Window *                                         craftingWindow = nullptr;
-    MyGUI::Window *                                         inventoryWindow = nullptr;
 };

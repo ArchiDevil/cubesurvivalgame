@@ -6,7 +6,7 @@
 
 LiveGameObject::LiveGameObject(ShiftEngine::MeshNode * sceneNode)
     : InteractableGameObject(sceneNode)
-    , inventory(LostIsland::GetGamePtr()->itemMgr.get(), 10)
+    , inventory(LostIsland::GetGamePtr()->itemMgr.get(), playerInventorySize)
 {
     FiniteStateMachine::AddTransition(EntityState::Waiting, EntityState::Dying);
     FiniteStateMachine::AddTransition(EntityState::Dying, EntityState::Decay);
